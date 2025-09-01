@@ -1,4 +1,4 @@
-# For Vercel deployment
+# Railway deployment settings
 import os
 from pathlib import Path
 
@@ -6,7 +6,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-vercel-deployment-key-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-railway-deployment-key-change-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,13 +61,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'stockchart.wsgi.application'
 
-# Database - Using SQLite for Vercel
+# Database - PostgreSQL for Railway (Railway provides DATABASE_URL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',  # In-memory database for serverless
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# If Railway provides DATABASE_URL, use PostgreSQL
+if 'DATABASE_URL' in os.environ:
+    import dj_database_url
+    DATABASES['default'] = dj_database_url.parse(os.environ['DATABASE_URL'])
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -93,11 +99,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = None  # Disable static file collection for serverless
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = None  # Disable media files for serverless
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -122,3 +129,6 @@ CORS_ALLOW_ALL_ORIGINS = True  # For demo purposes
 
 # Admin site header
 ADMIN_SITE_HEADER = "스톡차트 관리자 패널"
+
+# Railway specific settings
+PORT = os.environ.get('PORT', 8000)
