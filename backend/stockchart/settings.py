@@ -9,13 +9,27 @@ from pathlib import Path
 from decouple import config
 import os
 
+# Try to import dj_database_url for production deployments
+try:
+    import dj_database_url
+    HAS_DJ_DATABASE_URL = True
+except ImportError:
+    HAS_DJ_DATABASE_URL = False
+
 # 프로젝트 기본 경로
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 보안 설정
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*.stockchart.kr']
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    '*.stockchart.kr',
+    '*.railway.app',
+    '*.herokuapp.com',
+    '*.vercel.app'
+]
 
 # 애플리케이션 정의
 INSTALLED_APPS = [
@@ -37,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -69,16 +84,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'stockchart.wsgi.application'
 
 # 데이터베이스 설정
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DATABASE_NAME', default='stockchart_db'),
-        'USER': config('DATABASE_USER', default='postgres'),
-        'PASSWORD': config('DATABASE_PASSWORD', default='password'),
-        'HOST': config('DATABASE_HOST', default='localhost'),
-        'PORT': config('DATABASE_PORT', default='5432'),
+# 데이터베이스 설정
+if 'DATABASE_URL' in os.environ and HAS_DJ_DATABASE_URL:
+    # Production: Use Railway/Heroku database URL
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
     }
-}
+else:
+    # Development: Use local PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DATABASE_NAME', default='stockchart_db'),
+            'USER': config('DATABASE_USER', default='postgres'),
+            'PASSWORD': config('DATABASE_PASSWORD', default='password'),
+            'HOST': config('DATABASE_HOST', default='localhost'),
+            'PORT': config('DATABASE_PORT', default='5432'),
+        }
+    }
 
 # 비밀번호 검증
 AUTH_PASSWORD_VALIDATORS = [

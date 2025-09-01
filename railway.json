@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "python backend/manage.py migrate && python backend/manage.py collectstatic --noinput && gunicorn --pythonpath backend stockchart.wsgi",
+    "healthcheckPath": "/api/status/"
+  }
+}
