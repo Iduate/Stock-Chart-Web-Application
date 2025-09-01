@@ -12,7 +12,6 @@ urlpatterns = [
     path('api/charts/', include('charts.urls')),
     path('api/payments/', include('payment_system.urls')),
     path('api/market/', include('market_data.urls')),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
 
 # 개발 환경에서 미디어 파일 서빙

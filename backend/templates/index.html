@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주식차트 예측 플랫폼</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .hero-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 50px 0;
+            padding: 50px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-primary-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="#">
+                <i class="fas fa-chart-line me-2"></i>주식차트 예측
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link text-white" href="#features">기능</a>
+                <a class="nav-link text-white" href="#about">소개</a>
+                <a class="nav-link text-white" href="/admin/">관리자</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section text-center text-white">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-rocket me-3"></i>
+                주식차트 예측 플랫폼
+            </h1>
+            <p class="lead mb-5">AI 기반 주식 차트 분석과 예측으로 더 스마트한 투자를 시작하세요</p>
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3><i class="fas fa-users"></i></h3>
+                        <h4>10,000+</h4>
+                        <p>활성 사용자</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3><i class="fas fa-chart-area"></i></h3>
+                        <h4>500+</h4>
+                        <p>분석된 종목</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3><i class="fas fa-trophy"></i></h3>
+                        <h4>85%</h4>
+                        <p>예측 정확도</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary-custom btn-lg me-3">
+                <i class="fas fa-play-circle me-2"></i>지금 시작하기
+            </button>
+            <button class="btn btn-outline-light btn-lg">
+                <i class="fas fa-info-circle me-2"></i>더 알아보기
+            </button>
+        </div>
+
+        <div id="features" class="row">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-user-plus fa-3x text-gradient"></i>
+                    </div>
+                    <h4 class="text-center mb-3">간편한 사용자 등록</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>소셜 로그인 (Google, Apple)</li>
+                        <li><i class="fas fa-check text-success me-2"></i>빠른 회원가입</li>
+                        <li><i class="fas fa-check text-success me-2"></i>개인화된 대시보드</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-chart-line fa-3x text-gradient"></i>
+                    </div>
+                    <h4 class="text-center mb-3">고급 차트 분석</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>실시간 차트 편집</li>
+                        <li><i class="fas fa-check text-success me-2"></i>AI 기반 예측</li>
+                        <li><i class="fas fa-check text-success me-2"></i>기술적 분석 도구</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-trophy fa-3x text-gradient"></i>
+                    </div>
+                    <h4 class="text-center mb-3">수익률 랭킹</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>실시간 순위표</li>
+                        <li><i class="fas fa-check text-success me-2"></i>포트폴리오 비교</li>
+                        <li><i class="fas fa-check text-success me-2"></i>경쟁 시스템</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-credit-card fa-3x text-gradient"></i>
+                    </div>
+                    <h4 class="text-center mb-3">프리미엄 서비스</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>PayPal 결제 지원</li>
+                        <li><i class="fas fa-check text-success me-2"></i>암호화폐 결제</li>
+                        <li><i class="fas fa-check text-success me-2"></i>프리미엄 분석 도구</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="row mt-5">
+            <div class="col-12">
+                <div class="feature-card text-center">
+                    <h2 class="text-gradient mb-4">기술 스택</h2>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <i class="fab fa-python fa-3x text-primary mb-2"></i>
+                            <h5>Python & Django</h5>
+                            <p>강력한 백엔드 프레임워크</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <i class="fas fa-database fa-3x text-success mb-2"></i>
+                            <h5>PostgreSQL</h5>
+                            <p>안정적인 데이터베이스</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <i class="fab fa-js-square fa-3x text-warning mb-2"></i>
+                            <h5>JavaScript</h5>
+                            <p>동적 프론트엔드</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <i class="fas fa-cloud fa-3x text-info mb-2"></i>
+                            <h5>클라우드 API</h5>
+                            <p>실시간 시장 데이터</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-4 text-center text-white">
+        <div class="container">
+            <p>&copy; 2024 주식차트 예측 플랫폼. 모든 권리 보유.</p>
+            <div class="mt-3">
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
