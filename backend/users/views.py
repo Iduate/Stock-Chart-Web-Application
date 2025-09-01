@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from oauth2_provider.models import AccessToken
 from .models import User, UserProfile, Subscription
 from .serializers import UserSerializer, UserProfileSerializer, SubscriptionSerializer
 import uuid
