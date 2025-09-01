@@ -4,10 +4,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd backend && python manage.py migrate && python manage.py create_superuser_auto && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:$PORT stockchart.wsgi:application",
-    "healthcheckPath": "/",
-    "healthcheckTimeout": 100,
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "startCommand": "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py create_superuser_auto && gunicorn --bind 0.0.0.0:$PORT stockchart.wsgi:application"
   }
 }
