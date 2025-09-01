@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드 - StockChart</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin-body">
+    <!-- 사이드바 -->
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-chart-line"></i> StockChart</h2>
+            <p>관리자 패널</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item active">
+                    <a href="#dashboard" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i> 대시보드
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#users" onclick="showSection('users')">
+                        <i class="fas fa-users"></i> 사용자 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#predictions" onclick="showSection('predictions')">
+                        <i class="fas fa-chart-bar"></i> 예측 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#payments" onclick="showSection('payments')">
+                        <i class="fas fa-credit-card"></i> 결제 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#stocks" onclick="showSection('stocks')">
+                        <i class="fas fa-coins"></i> 종목 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#events" onclick="showSection('events')">
+                        <i class="fas fa-calendar-alt"></i> 이벤트 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#analytics" onclick="showSection('analytics')">
+                        <i class="fas fa-analytics"></i> 분석
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i> 설정
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="admin-main">
+        <!-- 헤더 -->
+        <header class="admin-header">
+            <div class="header-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="pageTitle">대시보드</h1>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <span>총 사용자: <strong id="totalUsers">0</strong></span>
+                    <span>활성 예측: <strong id="activePredictions">0</strong></span>
+                    <span>오늘 수익: <strong id="todayRevenue">₩0</strong></span>
+                </div>
+                <div class="user-menu">
+                    <span>관리자님</span>
+                    <button onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 대시보드 섹션 -->
+        <section id="dashboard" class="admin-section active">
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>총 사용자</h3>
+                        <p class="stat-number" id="dashTotalUsers">1,234</p>
+                        <span class="stat-change positive">+12% 이번 달</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>총 예측</h3>
+                        <p class="stat-number" id="dashTotalPredictions">5,678</p>
+                        <span class="stat-change positive">+18% 이번 달</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>월 수익</h3>
+                        <p class="stat-number" id="dashMonthlyRevenue">₩2,345,000</p>
+                        <span class="stat-change positive">+25% 이번 달</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>평균 정확도</h3>
+                        <p class="stat-number" id="dashAvgAccuracy">72.5%</p>
+                        <span class="stat-change negative">-2% 이번 달</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <h3>사용자 등록 추이</h3>
+                    <canvas id="userRegistrationChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>예측 생성 추이</h3>
+                    <canvas id="predictionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="recent-activities">
+                <h3>최근 활동</h3>
+                <div class="activity-list" id="recentActivities">
+                    <!-- 활동 목록이 동적으로 추가됨 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 사용자 관리 섹션 -->
+        <section id="users" class="admin-section">
+            <div class="section-header">
+                <h2>사용자 관리</h2>
+                <div class="section-actions">
+                    <input type="text" placeholder="사용자 검색..." class="search-input">
+                    <button class="btn btn-primary" onclick="showAddUserModal()">
+                        <i class="fas fa-plus"></i> 사용자 추가
+                    </button>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>사용자명</th>
+                            <th>이메일</th>
+                            <th>유형</th>
+                            <th>구독 상태</th>
+                            <th>가입일</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 사용자 데이터가 동적으로 추가됨 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 예측 관리 섹션 -->
+        <section id="predictions" class="admin-section">
+            <div class="section-header">
+                <h2>예측 관리</h2>
+                <div class="section-filters">
+                    <select class="filter-select">
+                        <option value="">전체 상태</option>
+                        <option value="pending">대기중</option>
+                        <option value="completed">완료</option>
+                        <option value="cancelled">취소됨</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">전체 시장</option>
+                        <option value="crypto">암호화폐</option>
+                        <option value="kr_stock">한국 주식</option>
+                        <option value="us_stock">미국 주식</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table id="predictionsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>사용자</th>
+                            <th>종목</th>
+                            <th>예측 가격</th>
+                            <th>목표일</th>
+                            <th>상태</th>
+                            <th>정확도</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 예측 데이터가 동적으로 추가됨 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 결제 관리 섹션 -->
+        <section id="payments" class="admin-section">
+            <div class="section-header">
+                <h2>결제 관리</h2>
+                <div class="payment-stats">
+                    <div class="stat-item">
+                        <span>오늘 수익: ₩123,456</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>이번 달 수익: ₩2,345,678</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>활성 구독자: 1,234명</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table id="paymentsTable">
+                    <thead>
+                        <tr>
+                            <th>결제 ID</th>
+                            <th>사용자</th>
+                            <th>요금제</th>
+                            <th>금액</th>
+                            <th>결제 방법</th>
+                            <th>상태</th>
+                            <th>결제일</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 결제 데이터가 동적으로 추가됨 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 종목 관리 섹션 -->
+        <section id="stocks" class="admin-section">
+            <div class="section-header">
+                <h2>종목 관리</h2>
+                <button class="btn btn-primary" onclick="showAddStockModal()">
+                    <i class="fas fa-plus"></i> 종목 추가
+                </button>
+            </div>
+
+            <div class="data-table">
+                <table id="stocksTable">
+                    <thead>
+                        <tr>
+                            <th>심볼</th>
+                            <th>이름</th>
+                            <th>시장</th>
+                            <th>현재 가격</th>
+                            <th>상태</th>
+                            <th>마지막 업데이트</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 종목 데이터가 동적으로 추가됨 -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 이벤트 관리 섹션 -->
+        <section id="events" class="admin-section">
+            <div class="section-header">
+                <h2>이벤트 관리</h2>
+                <button class="btn btn-primary" onclick="showAddEventModal()">
+                    <i class="fas fa-plus"></i> 이벤트 추가
+                </button>
+            </div>
+
+            <div class="events-grid" id="eventsGrid">
+                <!-- 이벤트 카드들이 동적으로 추가됨 -->
+            </div>
+        </section>
+
+        <!-- 분석 섹션 -->
+        <section id="analytics" class="admin-section">
+            <div class="section-header">
+                <h2>사이트 분석</h2>
+                <div class="date-range-picker">
+                    <input type="date" id="startDate">
+                    <span>~</span>
+                    <input type="date" id="endDate">
+                    <button class="btn btn-outline">적용</button>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="chart-container">
+                    <h3>일별 방문자 수</h3>
+                    <canvas id="visitorsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>인기 종목</h3>
+                    <canvas id="popularStocksChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>사용자 행동 분석</h3>
+                    <canvas id="userBehaviorChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>수익 분석</h3>
+                    <canvas id="revenueAnalysisChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 설정 섹션 -->
+        <section id="settings" class="admin-section">
+            <div class="section-header">
+                <h2>시스템 설정</h2>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>일반 설정</h3>
+                    <div class="setting-item">
+                        <label>사이트 제목</label>
+                        <input type="text" value="StockChart" class="form-input">
+                    </div>
+                    <div class="setting-item">
+                        <label>기본 언어</label>
+                        <select class="form-input">
+                            <option value="ko">한국어</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>API 설정</h3>
+                    <div class="setting-item">
+                        <label>Alpha Vantage API 키</label>
+                        <input type="password" class="form-input" placeholder="API 키 입력">
+                    </div>
+                    <div class="setting-item">
+                        <label>Twelve Data API 키</label>
+                        <input type="password" class="form-input" placeholder="API 키 입력">
+                    </div>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>결제 설정</h3>
+                    <div class="setting-item">
+                        <label>PayPal 클라이언트 ID</label>
+                        <input type="password" class="form-input" placeholder="클라이언트 ID 입력">
+                    </div>
+                    <div class="setting-item">
+                        <label>PayPal 시크릿</label>
+                        <input type="password" class="form-input" placeholder="시크릿 입력">
+                    </div>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>이메일 설정</h3>
+                    <div class="setting-item">
+                        <label>SMTP 서버</label>
+                        <input type="text" class="form-input" placeholder="smtp.gmail.com">
+                    </div>
+                    <div class="setting-item">
+                        <label>SMTP 포트</label>
+                        <input type="number" class="form-input" placeholder="587">
+                    </div>
+                    <button class="btn btn-primary">저장</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
