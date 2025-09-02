@@ -24,10 +24,8 @@ urlpatterns = [
     path('', views.home, name='home'),
 ]
 
-# 정적 파일 서빙 설정 - 커스텀 MIME 타입 핸들링
-urlpatterns += [
-    re_path(r'^static/(?P<path>.*)$', serve_static_with_mime, name='serve_static_custom'),
-]
+# 정적 파일 서빙 설정 - 커스텀 MIME 타입 핸들링 (최우선)
+urlpatterns.insert(0, re_path(r'^static/(?P<path>.*)$', serve_static_with_mime, name='serve_static_custom'))
 
 # 백업 정적 파일 서빙 (표준 방식)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
