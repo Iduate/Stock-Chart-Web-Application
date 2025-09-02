@@ -15,9 +15,18 @@ def home(request):
             content = file.read()
         
         # CSS와 JS 파일 경로를 Django static URL로 변경
-        content = content.replace('href="css/', f'href="{settings.STATIC_URL}css/')
-        content = content.replace('src="js/', f'src="{settings.STATIC_URL}js/')
-        content = content.replace('src="images/', f'src="{settings.STATIC_URL}images/')
+        # Railway에서도 작동하도록 절대 경로로 변경
+        static_url = settings.STATIC_URL
+        if not static_url.endswith('/'):
+            static_url += '/'
+            
+        content = content.replace('href="css/', f'href="{static_url}css/')
+        content = content.replace('src="js/', f'src="{static_url}js/')
+        content = content.replace('src="images/', f'src="{static_url}images/')
+        content = content.replace('href="favicon.ico"', f'href="{static_url}favicon.ico"')
+        
+        # 디버깅을 위해 실제 static URL을 HTML 주석으로 추가
+        content = content.replace('</head>', f'<!-- Static URL: {static_url} -->\n</head>')
         
         return HttpResponse(content, content_type='text/html')
     except FileNotFoundError:
