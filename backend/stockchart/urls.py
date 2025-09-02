@@ -23,28 +23,17 @@ urlpatterns = [
     path('', views.home, name='home'),
 ]
 
-# 정적 파일 서빙 - Railway에서도 작동하도록 명시적 설정
-urlpatterns += [
-    re_path(r'^static/(?P<path>.*)$', views.serve_static_file, name='serve_static'),
-]
+# 정적 파일 서빙 설정 (개발 및 프로덕션 모두)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# 개발 환경에서 미디어 파일 및 정적 파일 서빙
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    
-    # frontend 디렉토리의 정적 파일들을 직접 서빙
-    frontend_static_dirs = [
-        os.path.join(settings.BASE_DIR.parent, 'frontend'),
+# Railway에서 정적 파일이 제대로 서빙되도록 추가 설정
+if not settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^static/(?P<path>.*)$', serve, {
+            'document_root': settings.STATIC_ROOT,
+        }),
     ]
-    
-    for static_dir in frontend_static_dirs:
-        if os.path.exists(static_dir):
-            urlpatterns += static(settings.STATIC_URL, document_root=static_dir)
-else:
-    # Production static file serving
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 관리자 사이트 한국어 설정
 admin.site.site_header = "주식차트 예측 플랫폼 관리자"

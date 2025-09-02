@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -151,12 +152,14 @@ STATICFILES_FINDERS = [
 ]
 
 # 정적 파일 저장소 설정 (Railway 호환성)
-# WhiteNoise 대신 기본 정적 파일 저장소 사용
+# 기본 정적 파일 저장소 사용 (압축 없음)
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# WhiteNoise 설정 (간단한 설정으로 변경)
+# WhiteNoise 설정 (최소한의 설정)
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = True
+WHITENOISE_MAX_AGE = 0  # 캐시 비활성화로 디버깅
+WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
