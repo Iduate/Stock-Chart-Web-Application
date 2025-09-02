@@ -3,6 +3,7 @@ Enhanced Market Data Service for Stock Chart Web Application
 Utilizes Alpha Vantage, Twelve Data, Finnhub, and Polygon APIs for comprehensive market data
 """
 
+import os
 import requests
 import json
 from decimal import Decimal
@@ -20,12 +21,23 @@ class MarketDataService:
     """통합 마켓 데이터 서비스 - 4개 API 통합"""
     
     def __init__(self):
-        self.alpha_vantage_key = settings.ALPHA_VANTAGE_API_KEY
-        self.twelve_data_key = settings.TWELVE_DATA_API_KEY
-        self.finnhub_key = settings.FINNHUB_API_KEY
-        self.polygon_key = settings.POLYGON_API_KEY
-        self.tiingo_key = settings.TIINGO_API_KEY
-        self.marketstack_key = settings.MARKETSTACK_API_KEY
+        # API 키 로딩 시 예외 처리
+        try:
+            self.alpha_vantage_key = getattr(settings, 'ALPHA_VANTAGE_API_KEY', '') or os.environ.get('ALPHA_VANTAGE_API_KEY', '')
+            self.twelve_data_key = getattr(settings, 'TWELVE_DATA_API_KEY', '') or os.environ.get('TWELVE_DATA_API_KEY', '')
+            self.finnhub_key = getattr(settings, 'FINNHUB_API_KEY', '') or os.environ.get('FINNHUB_API_KEY', '')
+            self.polygon_key = getattr(settings, 'POLYGON_API_KEY', '') or os.environ.get('POLYGON_API_KEY', '')
+            self.tiingo_key = getattr(settings, 'TIINGO_API_KEY', '') or os.environ.get('TIINGO_API_KEY', '')
+            self.marketstack_key = getattr(settings, 'MARKETSTACK_API_KEY', '') or os.environ.get('MARKETSTACK_API_KEY', '')
+        except Exception as e:
+            logger.error(f"Error loading API keys: {e}")
+            # 기본값 설정
+            self.alpha_vantage_key = os.environ.get('ALPHA_VANTAGE_API_KEY', '')
+            self.twelve_data_key = os.environ.get('TWELVE_DATA_API_KEY', '')
+            self.finnhub_key = os.environ.get('FINNHUB_API_KEY', '')
+            self.polygon_key = os.environ.get('POLYGON_API_KEY', '')
+            self.tiingo_key = os.environ.get('TIINGO_API_KEY', '')
+            self.marketstack_key = os.environ.get('MARKETSTACK_API_KEY', '')
         
         # Log API key availability (without exposing the keys)
         api_keys_status = {
@@ -44,6 +56,8 @@ class MarketDataService:
         
         if available_apis == 0:
             logger.warning("⚠️ No API keys configured! Market data will not be available.")
+        elif available_apis < 3:
+            logger.warning(f"⚠️ Only {available_apis} API keys configured. Consider adding more for better reliability.")
         
         # API Base URLs
         self.alpha_vantage_base = "https://www.alphavantage.co/query"

@@ -66,6 +66,26 @@ def home(request):
 @api_view(['GET'])
 def api_status(request):
     """API 상태 확인"""
+    # 직접 환경변수 체크
+    env_check = {
+        'ALPHA_VANTAGE_API_KEY': os.environ.get('ALPHA_VANTAGE_API_KEY', 'NOT_SET'),
+        'TWELVE_DATA_API_KEY': os.environ.get('TWELVE_DATA_API_KEY', 'NOT_SET'),
+        'FINNHUB_API_KEY': os.environ.get('FINNHUB_API_KEY', 'NOT_SET'),
+        'POLYGON_API_KEY': os.environ.get('POLYGON_API_KEY', 'NOT_SET'),
+        'TIINGO_API_KEY': os.environ.get('TIINGO_API_KEY', 'NOT_SET'),
+        'MARKETSTACK_API_KEY': os.environ.get('MARKETSTACK_API_KEY', 'NOT_SET'),
+    }
+    
+    # 설정에서 확인
+    settings_check = {
+        'alpha_vantage': getattr(settings, 'ALPHA_VANTAGE_API_KEY', 'NOT_IN_SETTINGS'),
+        'twelve_data': getattr(settings, 'TWELVE_DATA_API_KEY', 'NOT_IN_SETTINGS'),
+        'finnhub': getattr(settings, 'FINNHUB_API_KEY', 'NOT_IN_SETTINGS'),
+        'polygon': getattr(settings, 'POLYGON_API_KEY', 'NOT_IN_SETTINGS'),
+        'tiingo': getattr(settings, 'TIINGO_API_KEY', 'NOT_IN_SETTINGS'),
+        'marketstack': getattr(settings, 'MARKETSTACK_API_KEY', 'NOT_IN_SETTINGS'),
+    }
+    
     # API 키 상태 확인 (보안을 위해 키 값은 노출하지 않음)
     api_keys_status = {
         'alpha_vantage': bool(getattr(settings, 'ALPHA_VANTAGE_API_KEY', None)),
@@ -87,7 +107,10 @@ def api_status(request):
             'DEBUG': os.environ.get('DEBUG', 'Not Set'),
             'RAILWAY_PROJECT_ID': bool(os.environ.get('RAILWAY_PROJECT_ID')),
             'ALPHA_VANTAGE_API_KEY': bool(os.environ.get('ALPHA_VANTAGE_API_KEY')),
-        }
+        },
+        'direct_env_check': {k: 'SET' if v != 'NOT_SET' else 'NOT_SET' for k, v in env_check.items()},
+        'settings_values': {k: 'SET' if v != 'NOT_IN_SETTINGS' else 'NOT_IN_SETTINGS' for k, v in settings_check.items()},
+        'raw_env_sample': os.environ.get('ALPHA_VANTAGE_API_KEY', 'NONE')[:10] + '...' if os.environ.get('ALPHA_VANTAGE_API_KEY') else 'NONE'
     })
 
 @api_view(['GET'])
