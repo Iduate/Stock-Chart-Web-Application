@@ -66,10 +66,28 @@ def home(request):
 @api_view(['GET'])
 def api_status(request):
     """API 상태 확인"""
+    # API 키 상태 확인 (보안을 위해 키 값은 노출하지 않음)
+    api_keys_status = {
+        'alpha_vantage': bool(getattr(settings, 'ALPHA_VANTAGE_API_KEY', None)),
+        'twelve_data': bool(getattr(settings, 'TWELVE_DATA_API_KEY', None)),
+        'finnhub': bool(getattr(settings, 'FINNHUB_API_KEY', None)),
+        'polygon': bool(getattr(settings, 'POLYGON_API_KEY', None)),
+        'tiingo': bool(getattr(settings, 'TIINGO_API_KEY', None)),
+        'marketstack': bool(getattr(settings, 'MARKETSTACK_API_KEY', None)),
+    }
+    
     return Response({
         'status': 'success',
         'message': '스톡차트 API가 정상 작동중입니다',
-        'version': '1.0.0'
+        'version': '1.0.0',
+        'debug_mode': settings.DEBUG,
+        'api_keys_configured': api_keys_status,
+        'available_apis': sum(api_keys_status.values()),
+        'environment_variables': {
+            'DEBUG': os.environ.get('DEBUG', 'Not Set'),
+            'RAILWAY_PROJECT_ID': bool(os.environ.get('RAILWAY_PROJECT_ID')),
+            'ALPHA_VANTAGE_API_KEY': bool(os.environ.get('ALPHA_VANTAGE_API_KEY')),
+        }
     })
 
 @api_view(['GET'])
