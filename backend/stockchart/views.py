@@ -6,7 +6,7 @@ import os
 from django.conf import settings
 
 def home(request):
-    """홈페이지 뷰 - frontend/index.html 서빙"""
+    """홈페이지 뷰 - frontend/index.html 서빙 (CSS/JS 인라인 포함)"""
     # frontend 디렉토리의 index.html 파일 경로
     frontend_path = os.path.join(settings.BASE_DIR.parent, 'frontend', 'index.html')
     
@@ -14,24 +14,54 @@ def home(request):
         with open(frontend_path, 'r', encoding='utf-8') as file:
             content = file.read()
         
-        # CSS와 JS 파일 경로를 Django static URL로 변경
-        # Railway에서도 작동하도록 절대 경로로 변경
+        # CSS 파일들을 인라인으로 포함
+        css_files = ['style.css', 'market-data.css']
+        inline_css = ""
+        
+        for css_file in css_files:
+            css_path = os.path.join(settings.BASE_DIR.parent, 'frontend', 'css', css_file)
+            if os.path.exists(css_path):
+                with open(css_path, 'r', encoding='utf-8') as f:
+                    css_content = f.read()
+                    inline_css += f"\n/* {css_file} */\n{css_content}\n"
+        
+        # JS 파일들을 인라인으로 포함
+        js_files = ['app.js']
+        inline_js = ""
+        
+        for js_file in js_files:
+            js_path = os.path.join(settings.BASE_DIR.parent, 'frontend', 'js', js_file)
+            if os.path.exists(js_path):
+                with open(js_path, 'r', encoding='utf-8') as f:
+                    js_content = f.read()
+                    inline_js += f"\n/* {js_file} */\n{js_content}\n"
+        
+        # CSS 링크들을 인라인 스타일로 교체
+        content = content.replace('<link rel="stylesheet" href="css/style.css">', f'<style>{inline_css}</style>')
+        content = content.replace('<link rel="stylesheet" href="css/market-data.css">', '')
+        
+        # JS 스크립트들을 인라인으로 교체
+        content = content.replace('<script src="js/app.js"></script>', f'<script>{inline_js}</script>')
+        
+        # 기타 정적 파일 경로는 그대로 유지 (이미지 등)
         static_url = settings.STATIC_URL
         if not static_url.endswith('/'):
             static_url += '/'
             
-        content = content.replace('href="css/', f'href="{static_url}css/')
-        content = content.replace('src="js/', f'src="{static_url}js/')
         content = content.replace('src="images/', f'src="{static_url}images/')
         content = content.replace('href="favicon.ico"', f'href="{static_url}favicon.ico"')
         
-        # 디버깅을 위해 실제 static URL을 HTML 주석으로 추가
-        content = content.replace('</head>', f'<!-- Static URL: {static_url} | DEBUG: {settings.DEBUG} -->\n</head>')
+        # 디버깅 정보 추가
+        content = content.replace('</head>', f'<!-- Inline CSS/JS embedded to bypass MIME issues | DEBUG: {settings.DEBUG} -->\n</head>')
         
         return HttpResponse(content, content_type='text/html')
-    except FileNotFoundError:
+        
+    except FileNotFoundError as e:
         # 만약 frontend 파일이 없으면 기존 템플릿 사용
         return render(request, 'home.html')
+    except Exception as e:
+        # 에러 발생시 디버깅 정보와 함께 표시
+        return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html')
 
 @api_view(['GET'])
 def api_status(request):
