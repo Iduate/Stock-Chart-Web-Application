@@ -8,5 +8,11 @@ router.register(r'markets', views.MarketViewSet)
 router.register(r'events', views.EventViewSet, basename='event')
 
 urlpatterns = [
+    # Simple endpoints first (before router)
+    path('charts/', views.get_charts, name='get_charts'),
+    path('rankings/', views.get_rankings, name='get_rankings'),
+    path('events/', views.get_events, name='get_events'),
+    
+    # DRF router endpoints
     path('', include(router.urls)),
 ]

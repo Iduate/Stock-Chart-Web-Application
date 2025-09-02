@@ -1,59 +1,18 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_http_methods
-from django.core.cache import cache
-from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from .services import MarketDataService
+from .services import market_service
 from .models import MarketData, PriceHistory
 from .serializers import MarketDataSerializer, PriceHistorySerializer
 import json
 import logging
 
 logger = logging.getLogger(__name__)
-market_service = MarketDataService()
-
-@api_view(['GET'])
-def get_crypto_data(request, symbol):
-    """암호화폐 데이터 조회 API - 실제 API 데이터만 사용"""
-    try:
-        vs_currency = request.GET.get('vs_currency', 'USD')
-        logger.info(f"Crypto data requested for {symbol} vs {vs_currency}")
-        
-        # 메인 서비스에서 데이터 조회 (이미 폴백 시스템 포함)
-        data = market_service.get_crypto_data(symbol, vs_currency)
-        
-        if data:
-            logger.info(f"Successfully retrieved crypto data for {symbol} from {data.get('source', 'unknown')}")
-            return Response(data, status=status.HTTP_200_OK)
-        
-        # 모든 API가 실패한 경우 명확한 에러 메시지 반환
-        logger.error(f"All crypto APIs failed for {symbol}")
-        return Response(
-            {
-                'error': f'암호화폐 데이터를 찾을 수 없습니다: {symbol}',
-                'message': 'All available crypto APIs are currently unavailable or the symbol is not supported',
-                'symbol': symbol,
-                'supported_symbols': ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE']
-            }, 
-            status=status.HTTP_503_SERVICE_UNAVAILABLE
-        )
-        
-    except Exception as e:
-        logger.error(f"암호화폐 데이터 조회 오류 {symbol}: {e}")
-        return Response(
-            {
-                'error': '암호화폐 데이터 조회 중 오류가 발생했습니다',
-                'message': str(e),
-                'symbol': symbol
-            }, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
 
 
 @api_view(['GET'])
@@ -456,93 +415,5 @@ def add_to_watchlist(request):
         logger.error(f"관심 종목 추가 오류: {e}")
         return Response(
             {'error': '관심 종목 추가 중 오류가 발생했습니다'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_tiingo_quote(request, symbol):
-    """Tiingo API를 사용한 실시간 시세 조회"""
-    try:
-        data = market_service._get_tiingo_quote(symbol)
-        
-        if data:
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {'error': f'Tiingo에서 {symbol} 데이터를 찾을 수 없습니다'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-    except Exception as e:
-        logger.error(f"Tiingo 시세 조회 오류: {e}")
-        return Response(
-            {'error': 'Tiingo 시세 조회 중 오류가 발생했습니다'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_tiingo_historical(request, symbol):
-    """Tiingo API를 사용한 히스토리컬 데이터 조회"""
-    try:
-        period = request.GET.get('period', '1year')
-        
-        data = market_service._get_tiingo_historical(symbol, period)
-        
-        if data:
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {'error': f'Tiingo에서 {symbol} 히스토리컬 데이터를 찾을 수 없습니다'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-    except Exception as e:
-        logger.error(f"Tiingo 히스토리컬 데이터 조회 오류: {e}")
-        return Response(
-            {'error': 'Tiingo 히스토리컬 데이터 조회 중 오류가 발생했습니다'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_marketstack_quote(request, symbol):
-    """Marketstack API를 사용한 실시간 시세 조회"""
-    try:
-        data = market_service._get_marketstack_quote(symbol)
-        
-        if data:
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {'error': f'Marketstack에서 {symbol} 데이터를 찾을 수 없습니다'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-    except Exception as e:
-        logger.error(f"Marketstack 시세 조회 오류: {e}")
-        return Response(
-            {'error': 'Marketstack 시세 조회 중 오류가 발생했습니다'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_marketstack_historical(request, symbol):
-    """Marketstack API를 사용한 히스토리컬 데이터 조회"""
-    try:
-        period = request.GET.get('period', '1year')
-        
-        data = market_service._get_marketstack_historical(symbol, period)
-        
-        if data:
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {'error': f'Marketstack에서 {symbol} 히스토리컬 데이터를 찾을 수 없습니다'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-    except Exception as e:
-        logger.error(f"Marketstack 히스토리컬 데이터 조회 오류: {e}")
-        return Response(
-            {'error': 'Marketstack 히스토리컬 데이터 조회 중 오류가 발생했습니다'}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )

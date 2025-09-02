@@ -1,94 +1,372 @@
-// 글로벌 변수
-let currentUser = null;
-let currentPage = 1;
-let totalPages = 1;
-let charts = [];
-let selectedStock = null;
+// Stock Chart Web Application - Main JavaScript File
+// API Base URL Configuration  
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
+console.log('App.js loaded - Crypto fix version 1.3 - ' + new Date().getTime());
 
-// API 기본 URL
-const API_BASE_URL = 'http://localhost:8000/api';
+// Test function to manually call crypto
+window.testCrypto = function() {
+    console.log('Manual crypto test called');
+    loadCryptoData();
+};
 
-// 페이지 로드시 초기화
+// Global variables for chart instances
+let heroChart = null;
+let predictionChart = null;
+let currentSeries = null;
+
+// Initialize application when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, checking LightweightCharts...');
+    
+    // Check if LightweightCharts is available
+    if (typeof LightweightCharts === 'undefined') {
+        console.error('LightweightCharts library not loaded! Please check if the script is included.');
+        // Try to load it dynamically
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js';
+        script.onload = function() {
+            console.log('LightweightCharts loaded dynamically');
+            initializeApp();
+            initializeCharts();
+            loadMarketData();
+            startRealTimeUpdates();
+        };
+        document.head.appendChild(script);
+        return;
+    }
+    
     initializeApp();
     initializeCharts();
-    loadCharts();
-    loadRanking('accuracy');
-    loadEvents();
-    setupEventListeners();
+    loadMarketData();
+    startRealTimeUpdates();
 });
 
-// 앱 초기화
+// Initialize main application features
 function initializeApp() {
-    // 로그인 상태 확인
+    // Check login status
     const token = localStorage.getItem('accessToken');
     if (token) {
         validateToken(token);
     }
     
-    // 모바일 네비게이션 설정
+    // Setup mobile navigation
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     
-    hamburger.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
-    });
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+    }
     
-    // 네비게이션 링크 클릭시 메뉴 닫기
+    // Setup navigation links
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
+        link.addEventListener('click', function(e) {
+            if (navMenu) navMenu.classList.remove('active');
+            
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#') && href !== '#') {
+                e.preventDefault();
+                const sectionId = href.substring(1);
+                scrollToSection(sectionId);
+            }
         });
     });
+    
+    // Update active navigation
+    updateActiveNavigation();
+    window.addEventListener('scroll', debounce(updateActiveNavigation, 100));
+    
+    // Add API testing UI
+    addAPITestingUI();
 }
 
-// 차트 초기화
+// Initialize charts
 function initializeCharts() {
-    // 히어로 섹션 차트
+    console.log('Initializing charts...');
+    
+    // Initialize hero chart
     const heroChartElement = document.getElementById('heroChart');
-    if (heroChartElement) {
-        const heroChart = LightweightCharts.createChart(heroChartElement, {
-            width: heroChartElement.clientWidth,
-            height: 400,
-            layout: {
-                background: { color: 'transparent' },
-                textColor: 'white',
-            },
-            grid: {
-                vertLines: { color: 'rgba(255,255,255,0.1)' },
-                horzLines: { color: 'rgba(255,255,255,0.1)' },
-            },
-            rightPriceScale: {
-                borderColor: 'rgba(255,255,255,0.2)',
-            },
-            timeScale: {
-                borderColor: 'rgba(255,255,255,0.2)',
-            },
-        });
+    console.log('Hero chart element:', heroChartElement);
+    
+    if (heroChartElement && typeof LightweightCharts !== 'undefined') {
+        console.log('Creating hero chart...');
+        console.log('LightweightCharts available:', typeof LightweightCharts);
+        console.log('LightweightCharts object:', LightweightCharts);
         
-        // 샘플 데이터
-        const sampleData = generateSampleData();
-        const lineSeries = heroChart.addLineSeries({
-            color: '#ffd700',
-            lineWidth: 2,
-        });
-        lineSeries.setData(sampleData);
+        try {
+            // Ensure the element has proper dimensions
+            if (heroChartElement.clientWidth === 0) {
+                heroChartElement.style.width = '100%';
+                heroChartElement.style.height = '400px';
+            }
+            
+            window.heroChart = LightweightCharts.createChart(heroChartElement, {
+                width: heroChartElement.clientWidth || 800,
+                height: 400,
+                layout: {
+                    backgroundColor: '#ffffff',
+                    textColor: '#333',
+                },
+                grid: {
+                    vertLines: { color: '#f0f0f0' },
+                    horzLines: { color: '#f0f0f0' },
+                },
+                crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+                rightPriceScale: { borderColor: '#cccccc' },
+                timeScale: { borderColor: '#cccccc' },
+            });
+            
+            console.log('Hero chart created:', window.heroChart);
+            
+            // Verify the chart object has the required methods
+            if (typeof window.heroChart.addLineSeries === 'function') {
+                loadStockChart('AAPL');
+            } else {
+                console.error('Chart created but addLineSeries method is missing');
+                // Try alternative approach
+                setTimeout(() => {
+                    loadStockChart('AAPL');
+                }, 100);
+            }
+        } catch (error) {
+            console.error('Failed to create hero chart:', error);
+        }
+    } else {
+        console.error('Hero chart element not found or LightweightCharts not available');
     }
     
-    // 예측 차트
+    // Initialize prediction chart
     const predictionChartElement = document.getElementById('predictionChart');
-    if (predictionChartElement) {
-        const predictionChart = LightweightCharts.createChart(predictionChartElement, {
-            width: predictionChartElement.clientWidth,
-            height: 400,
-        });
+    if (predictionChartElement && typeof LightweightCharts !== 'undefined') {
+        console.log('Creating prediction chart...');
+        
+        try {
+            // Ensure the element has proper dimensions
+            if (predictionChartElement.clientWidth === 0) {
+                predictionChartElement.style.width = '100%';
+                predictionChartElement.style.height = '300px';
+            }
+            
+            window.predictionChart = LightweightCharts.createChart(predictionChartElement, {
+                width: predictionChartElement.clientWidth || 600,
+                height: 300,
+                layout: {
+                    backgroundColor: '#ffffff',
+                    textColor: '#333',
+                },
+                grid: {
+                    vertLines: { color: '#f0f0f0' },
+                    horzLines: { color: '#f0f0f0' },
+                },
+            });
+            
+            console.log('Prediction chart created:', window.predictionChart);
+        } catch (error) {
+            console.error('Failed to create prediction chart:', error);
+        }
     }
 }
 
-// 샘플 데이터 생성
+// Load stock chart with multiple API fallback
+async function loadStockChart(symbol) {
+    console.log(`Loading stock chart for ${symbol}...`);
+    
+    // Verify chart object exists and has required methods
+    if (!window.heroChart) {
+        console.error('Hero chart not initialized');
+        return;
+    }
+    
+    const apiSources = [
+        { name: 'Primary Historical', endpoint: `historical/${symbol}/` },
+        { name: 'Tiingo', endpoint: `tiingo/${symbol}/` },
+        { name: 'Marketstack', endpoint: `marketstack/${symbol}/` },
+        { name: 'Enhanced', endpoint: `enhanced/${symbol}/` }
+    ];
+    
+    let data = null;
+    let usedSource = null;
+    
+    for (const source of apiSources) {
+        try {
+            console.log(`Trying ${source.name} API...`);
+            const response = await fetch(`${API_BASE_URL}/market-data/${source.endpoint}`);
+            if (response.ok) {
+                const apiData = await response.json();
+                if (apiData && (Array.isArray(apiData) || apiData.data)) {
+                    data = Array.isArray(apiData) ? apiData : apiData.data;
+                    usedSource = source.name;
+                    console.log(`Successfully loaded data from ${source.name}:`, data);
+                    break;
+                }
+            }
+        } catch (error) {
+            console.log(`${source.name} API failed:`, error.message);
+        }
+    }
+    
+    try {
+        if (data && window.heroChart) {
+            console.log('Adding line series to chart...');
+            
+            // Check if heroChart has the addLineSeries method
+            if (typeof window.heroChart.addLineSeries !== 'function') {
+                console.error('heroChart.addLineSeries is not a function. Chart object:', window.heroChart);
+                console.error('Available methods:', Object.getOwnPropertyNames(window.heroChart));
+                
+                // Try to recreate the chart
+                const heroChartElement = document.getElementById('heroChart');
+                if (heroChartElement) {
+                    console.log('Attempting to recreate chart...');
+                    window.heroChart = LightweightCharts.createChart(heroChartElement, {
+                        width: heroChartElement.clientWidth || 800,
+                        height: 400,
+                        layout: {
+                            backgroundColor: '#ffffff',
+                            textColor: '#333',
+                        },
+                        grid: {
+                            vertLines: { color: '#f0f0f0' },
+                            horzLines: { color: '#f0f0f0' },
+                        },
+                        crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+                        rightPriceScale: { borderColor: '#cccccc' },
+                        timeScale: { borderColor: '#cccccc' },
+                    });
+                    console.log('Chart recreated:', window.heroChart);
+                }
+                
+                if (typeof window.heroChart.addLineSeries !== 'function') {
+                    throw new Error('Invalid chart object - addLineSeries method not available after recreation');
+                }
+            }
+            
+            // Remove existing series
+            try {
+                if (window.currentSeries) {
+                    window.heroChart.removeSeries(window.currentSeries);
+                }
+            } catch (e) {
+                console.log('No existing series to remove');
+            }
+            
+            const lineSeries = window.heroChart.addLineSeries({
+                color: '#ffd700',
+                lineWidth: 3,
+                priceFormat: {
+                    type: 'price',
+                    precision: 2,
+                    minMove: 0.01,
+                },
+            });
+            
+            window.currentSeries = lineSeries;
+            
+            // Format data
+            console.log('Raw data before formatting:', data.length, 'items');
+            
+            const formattedData = data.map((item, index) => {
+                // More comprehensive field checking
+                const time = item.date || item.time || item.datetime || item.timestamp;
+                const value = parseFloat(
+                    item.close || item.price || item.value || item.c || 
+                    item.Close || item.Price || item.Value || item.adjusted_close
+                );
+                
+                if (index < 2) {
+                    console.log(`Item ${index}:`, { 
+                        extractedTime: time, 
+                        extractedValue: value
+                    });
+                }
+                
+                // Convert date string to timestamp if needed
+                let processedTime = time;
+                if (typeof time === 'string') {
+                    // Try to parse as date
+                    const parsed = new Date(time);
+                    if (!isNaN(parsed.getTime())) {
+                        processedTime = Math.floor(parsed.getTime() / 1000); // Convert to seconds
+                    }
+                } else if (typeof time === 'number' && time > 1000000000000) {
+                    // If it's a millisecond timestamp, convert to seconds
+                    processedTime = Math.floor(time / 1000);
+                }
+                
+                return { time: processedTime, value, originalIndex: index };
+            }).filter((item) => {
+                const isValid = item.time && !isNaN(item.value) && item.value > 0;
+                if (!isValid && item.originalIndex < 3) {
+                    console.log(`Filtered out item ${item.originalIndex}:`, item);
+                }
+                return isValid;
+            });
+            
+            console.log('Formatted data for chart:', formattedData.slice(0, 5));
+            console.log('Total formatted data points:', formattedData.length);
+            
+            lineSeries.setData(formattedData);
+            console.log('Chart data set successfully');
+            
+            if (formattedData.length > 0) {
+                window.heroChart.timeScale().fitContent();
+                console.log('Chart time scale fitted');
+            }
+            
+            updateChartTitle(symbol, data[data.length - 1]);
+        } else {
+            console.error('No data or chart not available');
+            // Use sample data as fallback
+            if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
+                const sampleData = generateSampleData();
+                
+                try {
+                    if (window.currentSeries) {
+                        window.heroChart.removeSeries(window.currentSeries);
+                    }
+                } catch (e) {
+                    console.log('No existing series to remove');
+                }
+                
+                const lineSeries = window.heroChart.addLineSeries({
+                    color: '#ffd700',
+                    lineWidth: 2,
+                });
+                window.currentSeries = lineSeries;
+                lineSeries.setData(sampleData);
+                console.log('Sample data loaded as fallback');
+            }
+        }
+    } catch (error) {
+        console.error('Stock chart load error:', error);
+        // Fallback to sample data
+        if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
+            const sampleData = generateSampleData();
+            
+            try {
+                if (window.currentSeries) {
+                    window.heroChart.removeSeries(window.currentSeries);
+                }
+            } catch (e) {
+                console.log('No existing series to remove');
+            }
+            
+            const lineSeries = window.heroChart.addLineSeries({
+                color: '#ffd700',
+                lineWidth: 2,
+            });
+            window.currentSeries = lineSeries;
+            lineSeries.setData(sampleData);
+            console.log('Sample data loaded as error fallback');
+        }
+    }
+}
+
+// Generate sample data for fallback
 function generateSampleData() {
     const data = [];
-    const startPrice = 50000;
+    const startPrice = 150;
     let price = startPrice;
     const startDate = new Date('2024-01-01');
     
@@ -96,659 +374,495 @@ function generateSampleData() {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
         
-        price += (Math.random() - 0.5) * 2000;
+        price += (Math.random() - 0.5) * 5;
+        price = Math.max(price, startPrice * 0.7);
+        price = Math.min(price, startPrice * 1.5);
+        
         data.push({
             time: date.toISOString().split('T')[0],
-            value: Math.max(price, 10000)
+            value: parseFloat(price.toFixed(2))
         });
     }
     
     return data;
 }
 
-// 이벤트 리스너 설정
-function setupEventListeners() {
-    // 로그인 폼
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
+// Update chart title
+function updateChartTitle(symbol, latestData) {
+    const titleElement = document.querySelector('.chart-title');
+    if (titleElement && latestData) {
+        const price = latestData.close || latestData.price || latestData.value || 0;
+        titleElement.textContent = `${symbol} - $${price.toFixed(2)}`;
     }
-    
-    // 회원가입 폼
-    const signupForm = document.getElementById('signupForm');
-    if (signupForm) {
-        signupForm.addEventListener('submit', handleSignup);
-    }
-    
-    // 예측 관련
-    const stockSelect = document.getElementById('stockSelect');
-    if (stockSelect) {
-        loadStocks();
-        stockSelect.addEventListener('change', handleStockChange);
-    }
-    
-    // 필터 및 검색
-    const marketFilter = document.getElementById('marketFilter');
-    const statusFilter = document.getElementById('statusFilter');
-    const searchInput = document.getElementById('searchInput');
-    
-    if (marketFilter) marketFilter.addEventListener('change', filterCharts);
-    if (statusFilter) statusFilter.addEventListener('change', filterCharts);
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(filterCharts, 300));
-    }
-    
-    // 페이지네이션
-    const prevPage = document.getElementById('prevPage');
-    const nextPage = document.getElementById('nextPage');
-    
-    if (prevPage) prevPage.addEventListener('click', () => changePage(currentPage - 1));
-    if (nextPage) nextPage.addEventListener('click', () => changePage(currentPage + 1));
 }
 
-// 토큰 검증
+// Load market data
+async function loadMarketData() {
+    console.log('Loading market data...');
+    console.log('About to call crypto data...');
+    try {
+        console.log('Loading popular stocks...');
+        await loadPopularStocks();
+        
+        console.log('Loading crypto data...');
+        await loadCryptoData();
+        
+        console.log('Loading market indices...');
+        await loadMarketIndices();
+    } catch (error) {
+        console.error('Error in loadMarketData:', error);
+    }
+    console.log('Market data loading completed');
+}
+
+// Load popular stocks
+async function loadPopularStocks() {
+    try {
+        console.log('Loading popular stocks...');
+        const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
+        const stockData = [];
+        
+        for (const symbol of symbols) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/market-data/quote/${symbol}/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    stockData.push({ symbol, ...data });
+                } else {
+                    console.error(`Failed to fetch ${symbol} data`);
+                    stockData.push({ symbol, error: true });
+                }
+            } catch (error) {
+                console.error(`Error loading ${symbol}:`, error);
+                stockData.push({ symbol, error: true });
+            }
+        }
+        
+        console.log('Stock data loaded:', stockData);
+        displayPopularStocks(stockData);
+    } catch (error) {
+        console.error('Popular stocks load error:', error);
+    }
+}
+
+// Display popular stocks
+function displayPopularStocks(stockData) {
+    const container = document.querySelector('.popular-stocks');
+    if (!container) {
+        console.error('Popular stocks container not found');
+        return;
+    }
+    
+    console.log('Stock data received:', stockData);
+    
+    const html = stockData.map(stock => {
+        if (stock.error) {
+            console.error('Stock error:', stock.symbol, stock.error);
+            return '';
+        }
+        
+        console.log('Processing stock:', stock);
+        
+        const price = stock.price || stock.current_price || stock.close || stock.value || 0;
+        const change = stock.change || stock.change_percent || stock.percent_change || 0;
+        const isPositive = change >= 0;
+        
+        return `
+            <div class="stock-item" data-symbol="${stock.symbol}">
+                <div class="stock-info">
+                    <h4>${stock.symbol}</h4>
+                    <p class="stock-price">$${price.toFixed(2)}</p>
+                </div>
+                <div class="stock-change ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}${change.toFixed(2)}%
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    console.log('Generated HTML:', html);
+    container.innerHTML = html || '<p>Loading stock data...</p>';
+}
+
+// Load crypto data
+async function loadCryptoData() {
+    console.log('🚀 CRYPTO DATA FUNCTION CALLED!');
+    console.log('loadCryptoData started...');
+    const container = document.querySelector('.popular-cryptos');
+    if (!container) {
+        console.error('❌ Crypto container not found!');
+        return;
+    }
+    
+    console.log('✅ Crypto container found:', container);
+    
+    // Show loading state
+    container.innerHTML = '<div class="loading-message">Loading cryptocurrency data...</div>';
+    console.log('📊 Loading state set');
+    
+    try {
+        const symbols = ['BTC', 'ETH', 'ADA', 'BNB'];
+        const cryptoData = [];
+        
+        for (const symbol of symbols) {
+            try {
+                console.log(`Loading crypto data for ${symbol}...`);
+                const response = await fetch(`${API_BASE_URL}/market-data/crypto/${symbol}/`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`Successfully loaded ${symbol}:`, data);
+                    cryptoData.push({ symbol, ...data, success: true });
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.warn(`Failed to load ${symbol}:`, response.status, errorData);
+                    cryptoData.push({ 
+                        symbol, 
+                        error: true,
+                        errorMessage: errorData.error || `Failed to load ${symbol} data`,
+                        status: response.status
+                    });
+                }
+            } catch (error) {
+                console.error(`${symbol} crypto data error:`, error);
+                cryptoData.push({ 
+                    symbol, 
+                    error: true,
+                    errorMessage: `Network error loading ${symbol}`,
+                    networkError: true
+                });
+            }
+        }
+        
+        displayCryptoData(cryptoData);
+        console.log('✅ displayCryptoData called with:', cryptoData.length, 'items');
+    } catch (error) {
+        console.error('Crypto data load error:', error);
+        container.innerHTML = `
+            <div class="error-message">
+                <h3>Error Loading Cryptocurrency Data</h3>
+                <p>Unable to load cryptocurrency data at this time. Please try again later.</p>
+                <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
+            </div>
+        `;
+    }
+}
+
+// Display crypto data
+function displayCryptoData(cryptoData) {
+    console.log('🎯 displayCryptoData function called!');
+    console.log('📊 Crypto data to display:', cryptoData);
+    
+    const container = document.querySelector('.popular-cryptos');
+    if (!container) {
+        console.error('❌ Crypto container not found in displayCryptoData!');
+        return;
+    }
+    
+    console.log('✅ Container found in display function:', container);
+    
+    console.log('Crypto data received:', cryptoData);
+    
+    // Check if we have any successful data
+    const successfulData = cryptoData.filter(crypto => crypto.success);
+    const failedData = cryptoData.filter(crypto => crypto.error);
+    
+    if (successfulData.length === 0) {
+        // All APIs failed
+        container.innerHTML = `
+            <div class="error-state">
+                <h3>Cryptocurrency Data Unavailable</h3>
+                <p>All cryptocurrency APIs are currently unavailable. Please try again later.</p>
+                <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
+                <div class="error-details">
+                    ${failedData.map(crypto => 
+                        `<small>${crypto.symbol}: ${crypto.errorMessage}</small>`
+                    ).join('<br>')}
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Mix of successful and failed data
+    const html = cryptoData.map(crypto => {
+        if (crypto.error) {
+            return `
+                <div class="crypto-item error">
+                    <div class="crypto-info">
+                        <h4>${crypto.symbol}</h4>
+                        <p class="crypto-error">Data unavailable</p>
+                        <small>${crypto.errorMessage}</small>
+                    </div>
+                    <div class="crypto-status error">
+                        Error
+                    </div>
+                </div>
+            `;
+        }
+        
+        const price = crypto.price || crypto.current_price || 0;
+        const change = crypto.change || crypto.change_percent || 0;
+        const isPositive = change >= 0;
+        const source = crypto.source || 'unknown';
+        
+        return `
+            <div class="crypto-item success">
+                <div class="crypto-info">
+                    <h4>${crypto.symbol}</h4>
+                    <p class="crypto-price">$${price.toFixed(2)}</p>
+                    <small class="data-source">Source: ${source}</small>
+                </div>
+                <div class="crypto-change ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}${change.toFixed(2)}%
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = html;
+}
+
+// Load market indices
+async function loadMarketIndices() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/market-data/indices/`);
+        if (response.ok) {
+            const data = await response.json();
+            displayMarketIndices(data);
+        }
+    } catch (error) {
+        console.error('Market indices load error:', error);
+    }
+}
+
+// Display market indices
+function displayMarketIndices(indicesData) {
+    const container = document.querySelector('.market-indices');
+    if (!container) return;
+    
+    console.log('Indices data received:', indicesData);
+    
+    // Check if data is an array or needs to be converted
+    let dataArray = [];
+    if (Array.isArray(indicesData)) {
+        dataArray = indicesData;
+    } else if (indicesData && typeof indicesData === 'object') {
+        // If it's an object, try to extract array or create sample data
+        if (indicesData.data && Array.isArray(indicesData.data)) {
+            dataArray = indicesData.data;
+        } else {
+            // Create sample data if API doesn't return proper format
+            dataArray = [
+                { name: 'S&P 500', value: '4,450.12', change: 0.75 },
+                { name: 'NASDAQ', value: '13,850.45', change: -0.32 },
+                { name: 'DOW', value: '34,580.23', change: 0.45 }
+            ];
+        }
+    } else {
+        // Fallback to sample data
+        dataArray = [
+            { name: 'S&P 500', value: '4,450.12', change: 0.75 },
+            { name: 'NASDAQ', value: '13,850.45', change: -0.32 },
+            { name: 'DOW', value: '34,580.23', change: 0.45 }
+        ];
+    }
+    
+    const html = dataArray.map(index => {
+        const isPositive = index.change >= 0;
+        return `
+            <div class="index-item">
+                <div class="index-info">
+                    <h4>${index.name}</h4>
+                    <p class="index-value">${index.value}</p>
+                </div>
+                <div class="index-change ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}${index.change}%
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = html;
+}
+
+// Navigation and UI functions
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function updateActiveNavigation() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Authentication functions
 async function validateToken(token) {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/verify/`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
+            body: JSON.stringify({ token })
         });
         
         if (response.ok) {
             const userData = await response.json();
-            currentUser = userData;
-            updateUIForLoggedInUser();
+            updateUIForLoggedInUser(userData);
         } else {
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
         }
     } catch (error) {
-        console.error('토큰 검증 실패:', error);
-        localStorage.removeItem('accessToken');
+        console.error('Token validation error:', error);
     }
 }
 
-// 로그인 처리
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/login/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('accessToken', data.access_token);
-            currentUser = data.user;
-            updateUIForLoggedInUser();
-            hideLoginModal();
-            showNotification('로그인에 성공했습니다!', 'success');
-        } else {
-            const errorData = await response.json();
-            showNotification(errorData.message || '로그인에 실패했습니다.', 'error');
-        }
-    } catch (error) {
-        console.error('로그인 오류:', error);
-        showNotification('로그인 중 오류가 발생했습니다.', 'error');
-    }
-}
-
-// 회원가입 처리
-async function handleSignup(event) {
-    event.preventDefault();
-    
-    const username = document.getElementById('signupUsername').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
-    const referralCode = document.getElementById('referralCode').value;
-    
-    if (password !== passwordConfirm) {
-        showNotification('비밀번호가 일치하지 않습니다.', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/signup/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username,
-                email,
-                password,
-                referral_code: referralCode
-            }),
-        });
-        
-        if (response.ok) {
-            hideSignupModal();
-            showNotification('회원가입이 완료되었습니다! 로그인해주세요.', 'success');
-            showLoginModal();
-        } else {
-            const errorData = await response.json();
-            showNotification(errorData.message || '회원가입에 실패했습니다.', 'error');
-        }
-    } catch (error) {
-        console.error('회원가입 오류:', error);
-        showNotification('회원가입 중 오류가 발생했습니다.', 'error');
-    }
-}
-
-// Google 로그인
-function loginWithGoogle() {
-    // Google OAuth 구현
-    showNotification('Google 로그인 기능을 준비중입니다.', 'info');
-}
-
-// Apple 로그인
-function loginWithApple() {
-    // Apple OAuth 구현
-    showNotification('Apple 로그인 기능을 준비중입니다.', 'info');
-}
-
-// 로그인된 사용자 UI 업데이트
-function updateUIForLoggedInUser() {
+function updateUIForLoggedInUser(userData) {
+    // Update UI to show user is logged in
     const loginBtn = document.querySelector('.login-btn');
-    if (loginBtn && currentUser) {
-        loginBtn.textContent = `${currentUser.username}님`;
-        loginBtn.onclick = showUserMenu;
-    }
-}
-
-// 종목 목록 로드
-async function loadStocks() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/stocks/`);
-        if (response.ok) {
-            const stocks = await response.json();
-            const stockSelect = document.getElementById('stockSelect');
-            
-            stockSelect.innerHTML = '<option value="">종목을 선택하세요</option>';
-            stocks.forEach(stock => {
-                const option = document.createElement('option');
-                option.value = stock.id;
-                option.textContent = `${stock.name} (${stock.symbol})`;
-                option.dataset.currentPrice = stock.current_price || 0;
-                stockSelect.appendChild(option);
-            });
-        }
-    } catch (error) {
-        console.error('종목 로드 오류:', error);
-    }
-}
-
-// 종목 변경 처리
-function handleStockChange(event) {
-    const selectedOption = event.target.selectedOptions[0];
-    if (selectedOption && selectedOption.value) {
-        selectedStock = {
-            id: selectedOption.value,
-            name: selectedOption.textContent,
-            currentPrice: parseFloat(selectedOption.dataset.currentPrice) || 0
-        };
-        
-        document.getElementById('currentPrice').value = selectedStock.currentPrice;
-        loadStockChart(selectedStock.id);
-    }
-}
-
-// 주식 차트 로드
-async function loadStockChart(stockId) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/stocks/${stockId}/chart/`);
-        if (response.ok) {
-            const chartData = await response.json();
-            updatePredictionChart(chartData);
-        }
-    } catch (error) {
-        console.error('차트 로드 오류:', error);
-    }
-}
-
-// 예측 차트 업데이트
-function updatePredictionChart(data) {
-    const chartElement = document.getElementById('predictionChart');
-    if (chartElement && data) {
-        // 기존 차트 제거
-        chartElement.innerHTML = '';
-        
-        // 새 차트 생성
-        const chart = LightweightCharts.createChart(chartElement, {
-            width: chartElement.clientWidth,
-            height: 400,
-        });
-        
-        const candlestickSeries = chart.addCandlestickSeries({
-            upColor: '#26a69a',
-            downColor: '#ef5350',
-            borderVisible: false,
-            wickUpColor: '#26a69a',
-            wickDownColor: '#ef5350',
-        });
-        
-        candlestickSeries.setData(data);
-    }
-}
-
-// 예측 저장
-async function submitPrediction() {
-    if (!currentUser) {
-        showNotification('예측을 저장하려면 로그인이 필요합니다.', 'warning');
-        showLoginModal();
-        return;
-    }
+    const signupBtn = document.querySelector('.signup-btn');
     
-    const stockId = document.getElementById('stockSelect').value;
-    const predictedPrice = document.getElementById('predictedPrice').value;
-    const targetDate = document.getElementById('targetDate').value;
-    const duration = document.getElementById('duration').value;
-    const isPublic = document.getElementById('isPublic').checked;
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (signupBtn) signupBtn.style.display = 'none';
     
-    if (!stockId || !predictedPrice || !targetDate) {
-        showNotification('모든 필드를 입력해주세요.', 'warning');
-        return;
-    }
-    
+    // Add user menu or profile section
+    console.log('User logged in:', userData);
+}
+
+// Chart and ranking functions
+async function loadCharts() {
     try {
-        const response = await fetch(`${API_BASE_URL}/predictions/`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                stock_id: stockId,
-                predicted_price: predictedPrice,
-                target_date: targetDate,
-                duration_days: duration,
-                is_public: isPublic
-            }),
-        });
-        
+        const response = await fetch(`${API_BASE_URL}/charts/`);
         if (response.ok) {
-            showNotification('예측이 성공적으로 저장되었습니다!', 'success');
-            clearPredictionForm();
-            loadCharts(); // 차트 목록 새로고침
+            const charts = await response.json();
+            displayCharts(charts);
         } else {
-            const errorData = await response.json();
-            showNotification(errorData.message || '예측 저장에 실패했습니다.', 'error');
+            displaySampleCharts();
         }
     } catch (error) {
-        console.error('예측 저장 오류:', error);
-        showNotification('예측 저장 중 오류가 발생했습니다.', 'error');
+        console.error('Charts load error:', error);
+        displaySampleCharts();
     }
 }
 
-// 예측 폼 초기화
-function clearPredictionForm() {
-    document.getElementById('stockSelect').value = '';
-    document.getElementById('currentPrice').value = '';
-    document.getElementById('predictedPrice').value = '';
-    document.getElementById('targetDate').value = '';
-    document.getElementById('duration').value = '7';
-    document.getElementById('isPublic').checked = true;
-}
-
-// 차트 목록 로드
-async function loadCharts(page = 1) {
-    try {
-        const marketFilter = document.getElementById('marketFilter').value;
-        const statusFilter = document.getElementById('statusFilter').value;
-        const searchTerm = document.getElementById('searchInput').value;
-        
-        let url = `${API_BASE_URL}/predictions/?page=${page}`;
-        if (marketFilter) url += `&market=${marketFilter}`;
-        if (statusFilter) url += `&status=${statusFilter}`;
-        if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
-        
-        const response = await fetch(url);
-        if (response.ok) {
-            const data = await response.json();
-            charts = data.results;
-            currentPage = page;
-            totalPages = Math.ceil(data.count / 20);
-            
-            renderCharts();
-            updatePagination();
-        }
-    } catch (error) {
-        console.error('차트 로드 오류:', error);
-    }
-}
-
-// 차트 렌더링
-function renderCharts() {
+function displayCharts(charts) {
     const chartsGrid = document.getElementById('chartsGrid');
     if (!chartsGrid) return;
     
-    chartsGrid.innerHTML = '';
+    console.log('Charts data received:', charts);
+    
+    if (!Array.isArray(charts)) {
+        console.error('Charts data is not an array:', charts);
+        chartsGrid.innerHTML = '<div class="no-results">Chart data format error</div>';
+        return;
+    }
     
     if (charts.length === 0) {
-        chartsGrid.innerHTML = '<p class="no-results">검색 결과가 없습니다.</p>';
+        chartsGrid.innerHTML = '<div class="no-results">No charts to display</div>';
         return;
     }
     
-    charts.forEach(chart => {
-        const chartCard = createChartCard(chart);
-        chartsGrid.appendChild(chartCard);
-    });
-}
-
-// 차트 카드 생성
-function createChartCard(chart) {
-    const card = document.createElement('div');
-    card.className = 'chart-card';
-    
-    const statusClass = chart.status === 'completed' ? 'status-completed' : 'status-pending';
-    const statusText = chart.status === 'completed' ? '완료됨' : '예측 중';
-    
-    const profitRate = chart.profit_rate ? `${chart.profit_rate}%` : '-';
-    const accuracy = chart.accuracy_percentage ? `${chart.accuracy_percentage}%` : '-';
-    
-    card.innerHTML = `
-        <div class="chart-header">
-            <div class="chart-title">${chart.stock.name} (${chart.stock.symbol})</div>
-            <span class="chart-status ${statusClass}">${statusText}</span>
-        </div>
-        <div class="chart-info">
-            <div><span>예측자:</span> <span>${chart.user.username}</span></div>
-            <div><span>현재 가격:</span> <span>₩${chart.current_price.toLocaleString()}</span></div>
-            <div><span>예측 가격:</span> <span>₩${chart.predicted_price.toLocaleString()}</span></div>
-            <div><span>목표일:</span> <span>${new Date(chart.target_date).toLocaleDateString()}</span></div>
-            <div><span>수익률:</span> <span>${profitRate}</span></div>
-            <div><span>정확도:</span> <span>${accuracy}</span></div>
-        </div>
-        <div class="chart-actions">
-            <span><i class="fas fa-eye"></i> ${chart.views_count}</span>
-            <span><i class="fas fa-heart"></i> ${chart.likes_count}</span>
-            <span><i class="fas fa-comment"></i> ${chart.comments_count}</span>
-            <button class="btn btn-outline btn-sm" onclick="viewChart(${chart.id})">상세보기</button>
-        </div>
-    `;
-    
-    return card;
-}
-
-// 차트 필터링
-function filterCharts() {
-    loadCharts(1);
-}
-
-// 페이지 변경
-function changePage(page) {
-    if (page >= 1 && page <= totalPages) {
-        loadCharts(page);
-    }
-}
-
-// 페이지네이션 업데이트
-function updatePagination() {
-    const pageInfo = document.getElementById('pageInfo');
-    const prevPage = document.getElementById('prevPage');
-    const nextPage = document.getElementById('nextPage');
-    
-    if (pageInfo) {
-        pageInfo.textContent = `${currentPage} / ${totalPages}`;
-    }
-    
-    if (prevPage) {
-        prevPage.disabled = currentPage <= 1;
-    }
-    
-    if (nextPage) {
-        nextPage.disabled = currentPage >= totalPages;
-    }
-}
-
-// 랭킹 로드
-async function loadRanking(type) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/rankings/${type}/`);
-        if (response.ok) {
-            const rankings = await response.json();
-            renderRanking(rankings, type);
-        }
-    } catch (error) {
-        console.error('랭킹 로드 오류:', error);
-    }
-}
-
-// 랭킹 렌더링
-function renderRanking(rankings, type) {
-    const rankingTable = document.getElementById('rankingTable');
-    if (!rankingTable) return;
-    
-    let headers, getValue;
-    
-    switch (type) {
-        case 'accuracy':
-            headers = ['순위', '사용자', '정확도', '예측 수', '평균 수익률'];
-            getValue = (user) => [user.rank, user.username, `${user.prediction_accuracy}%`, user.prediction_count, `${user.avg_profit_rate}%`];
-            break;
-        case 'profit':
-            headers = ['순위', '사용자', '총 수익률', '예측 수', '정확도'];
-            getValue = (user) => [user.rank, user.username, `${user.total_profit}%`, user.prediction_count, `${user.prediction_accuracy}%`];
-            break;
-        case 'predictions':
-            headers = ['순위', '사용자', '예측 수', '정확도', '평균 수익률'];
-            getValue = (user) => [user.rank, user.username, user.prediction_count, `${user.prediction_accuracy}%`, `${user.avg_profit_rate}%`];
-            break;
-    }
-    
-    rankingTable.innerHTML = `
-        <div class="ranking-header">
-            ${headers.map(header => `<span>${header}</span>`).join('')}
-        </div>
-        ${rankings.map(user => `
-            <div class="ranking-row">
-                ${getValue(user).map(value => `<span>${value}</span>`).join('')}
+    const chartsHTML = charts.map(chart => `
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>${chart.stock_name} (${chart.stock_symbol})</h3>
+                <span class="chart-status ${chart.status}">${getStatusText(chart.status)}</span>
             </div>
-        `).join('')}
-    `;
-}
-
-// 랭킹 탭 변경
-function showRanking(type) {
-    // 탭 버튼 활성화 상태 변경
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    
-    loadRanking(type);
-}
-
-// 이벤트 로드
-async function loadEvents() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/events/`);
-        if (response.ok) {
-            const events = await response.json();
-            renderEvents(events);
-        }
-    } catch (error) {
-        console.error('이벤트 로드 오류:', error);
-    }
-}
-
-// 이벤트 렌더링
-function renderEvents(events) {
-    const eventsGrid = document.getElementById('eventsGrid');
-    if (!eventsGrid) return;
-    
-    eventsGrid.innerHTML = '';
-    
-    events.forEach(event => {
-        const eventCard = createEventCard(event);
-        eventsGrid.appendChild(eventCard);
-    });
-}
-
-// 이벤트 카드 생성
-function createEventCard(event) {
-    const card = document.createElement('div');
-    card.className = 'event-card';
-    
-    const statusClass = event.status === 'active' ? 'status-active' : 'status-upcoming';
-    const statusText = event.status === 'active' ? '진행중' : '예정';
-    
-    card.innerHTML = `
-        <span class="event-status ${statusClass}">${statusText}</span>
-        <h3>${event.title}</h3>
-        <p>${event.description}</p>
-        <div class="event-info">
-            <div><strong>시작일:</strong> ${new Date(event.start_date).toLocaleDateString()}</div>
-            <div><strong>종료일:</strong> ${new Date(event.end_date).toLocaleDateString()}</div>
-            <div><strong>상금:</strong> ${event.prize_description}</div>
-            <div><strong>참가자:</strong> ${event.participants_count}명</div>
+            <div class="chart-info">
+                <div class="price-info">
+                    <div class="price-item">
+                        <span class="label">Current:</span>
+                        <span class="value">${formatPrice(chart.current_price)}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="label">Predicted:</span>
+                        <span class="value predicted">${formatPrice(chart.predicted_price)}</span>
+                    </div>
+                </div>
+                <div class="chart-meta">
+                    <p class="user">Predictor: ${chart.user.username}</p>
+                    <p class="date">Target: ${formatDate(chart.target_date)}</p>
+                    <p class="created">Created: ${formatDate(chart.created_at)}</p>
+                </div>
+            </div>
+            <div class="chart-actions">
+                <button class="btn btn-sm btn-outline" onclick="viewChart(${chart.id})">
+                    View Details
+                </button>
+            </div>
         </div>
-        <button class="btn btn-primary" onclick="participateEvent(${event.id})">참가하기</button>
-    `;
+    `).join('');
     
-    return card;
+    chartsGrid.innerHTML = chartsHTML;
 }
 
-// 이벤트 참가
-async function participateEvent(eventId) {
-    if (!currentUser) {
-        showNotification('이벤트 참가하려면 로그인이 필요합니다.', 'warning');
-        showLoginModal();
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/events/${eventId}/participate/`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json',
-            },
-        });
-        
-        if (response.ok) {
-            showNotification('이벤트에 성공적으로 참가했습니다!', 'success');
-            loadEvents(); // 이벤트 목록 새로고침
-        } else {
-            const errorData = await response.json();
-            showNotification(errorData.message || '이벤트 참가에 실패했습니다.', 'error');
+function displaySampleCharts() {
+    const sampleCharts = [
+        {
+            id: 1,
+            user: { username: 'InvestorKing' },
+            stock_name: 'Apple',
+            stock_symbol: 'AAPL',
+            predicted_price: 185.50,
+            current_price: 182.30,
+            target_date: '2025-09-15',
+            created_at: '2025-09-01',
+            status: 'pending'
+        },
+        {
+            id: 2,
+            user: { username: 'TechAnalyst' },
+            stock_name: 'Google',
+            stock_symbol: 'GOOGL',
+            predicted_price: 145.75,
+            current_price: 142.20,
+            target_date: '2025-09-20',
+            created_at: '2025-08-30',
+            status: 'pending'
         }
-    } catch (error) {
-        console.error('이벤트 참가 오류:', error);
-        showNotification('이벤트 참가 중 오류가 발생했습니다.', 'error');
-    }
-}
-
-// 구독 처리
-async function subscribePlan(planType) {
-    if (!currentUser) {
-        showNotification('구독하려면 로그인이 필요합니다.', 'warning');
-        showLoginModal();
-        return;
-    }
+    ];
     
-    try {
-        const response = await fetch(`${API_BASE_URL}/payments/subscribe/`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ plan_type: planType }),
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            // PayPal 결제 페이지로 리다이렉트
-            window.location.href = data.payment_url;
-        } else {
-            const errorData = await response.json();
-            showNotification(errorData.message || '구독 처리에 실패했습니다.', 'error');
-        }
-    } catch (error) {
-        console.error('구독 오류:', error);
-        showNotification('구독 처리 중 오류가 발생했습니다.', 'error');
-    }
+    displayCharts(sampleCharts);
 }
 
-// 유틸리티 함수들
-function showLoginModal() {
-    document.getElementById('loginModal').style.display = 'block';
-}
-
-function hideLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
-}
-
-function showSignupModal() {
-    hideLoginModal();
-    document.getElementById('signupModal').style.display = 'block';
-}
-
-function hideSignupModal() {
-    document.getElementById('signupModal').style.display = 'none';
-}
-
-function scrollToSection(sectionId) {
-    document.getElementById(sectionId).scrollIntoView({
-        behavior: 'smooth'
-    });
-}
-
-function viewChart(chartId) {
-    // 차트 상세 페이지로 이동 또는 모달 표시
-    showNotification('차트 상세 보기 기능을 준비중입니다.', 'info');
-}
-
-function showNotification(message, type = 'info') {
-    // 알림 표시 (토스트 메시지)
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    
-    // 스타일 적용
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 5px;
-        color: white;
-        font-weight: 500;
-        z-index: 3000;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    // 타입별 배경색
-    const colors = {
-        success: '#4CAF50',
-        error: '#f44336',
-        warning: '#ff9800',
-        info: '#2196F3'
+// Utility functions
+function getStatusText(status) {
+    const statusMap = {
+        'pending': 'Pending',
+        'completed': 'Completed',
+        'expired': 'Expired'
     };
-    
-    notification.style.backgroundColor = colors[type] || colors.info;
-    
-    document.body.appendChild(notification);
-    
-    // 3초 후 제거
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
+    return statusMap[status] || status;
+}
+
+function formatPrice(price) {
+    return typeof price === 'number' ? `$${price.toFixed(2)}` : '$0.00';
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString();
 }
 
 function debounce(func, wait) {
@@ -763,29 +877,382 @@ function debounce(func, wait) {
     };
 }
 
-// CSS 애니메이션 추가
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+// Real-time updates
+function startRealTimeUpdates() {
+    setInterval(() => {
+        loadMarketData();
+    }, 30000); // Update every 30 seconds
+}
+
+// API Integration Functions for Tiingo and Marketstack
+async function loadTiingoData(symbol) {
+    try {
+        console.log(`Loading Tiingo data for ${symbol}...`);
+        const response = await fetch(`${API_BASE_URL}/market-data/tiingo/${symbol}/`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Tiingo data received:', data);
+        return data;
+    } catch (error) {
+        console.error(`Tiingo API error for ${symbol}:`, error);
+        return null;
+    }
+}
+
+async function loadMarketstackData(symbol) {
+    try {
+        console.log(`Loading Marketstack data for ${symbol}...`);
+        const response = await fetch(`${API_BASE_URL}/market-data/marketstack/${symbol}/`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Marketstack data received:', data);
+        return data;
+    } catch (error) {
+        console.error(`Marketstack API error for ${symbol}:`, error);
+        return null;
+    }
+}
+
+async function loadEnhancedMarketData() {
+    console.log('Loading enhanced market data with multiple APIs...');
+    
+    const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA'];
+    const apiSources = [
+        { name: 'Alpha Vantage', endpoint: 'quote' },
+        { name: 'Tiingo', endpoint: 'tiingo' },
+        { name: 'Marketstack', endpoint: 'marketstack' }
+    ];
+    
+    const container = document.querySelector('.api-comparison .api-results');
+    if (!container) {
+        console.log('API comparison container not found');
+        return;
     }
     
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
+    let html = '<div class="api-grid">';
+    
+    for (const symbol of symbols) {
+        html += `<div class="symbol-section"><h4>${symbol}</h4>`;
+        
+        for (const api of apiSources) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/market-data/${api.endpoint}/${symbol}/`);
+                const data = await response.json();
+                
+                if (data && !data.error) {
+                    const price = data.price || data.current_price || data.close || 'N/A';
+                    const change = data.change || data.change_percent || 'N/A';
+                    
+                    html += `
+                        <div class="api-result">
+                            <strong>${api.name}:</strong> 
+                            $${typeof price === 'number' ? price.toFixed(2) : price}
+                            <span class="change">(${typeof change === 'number' ? change.toFixed(2) : change}%)</span>
+                        </div>
+                    `;
+                } else {
+                    html += `<div class="api-result error"><strong>${api.name}:</strong> Error loading data</div>`;
+                }
+            } catch (error) {
+                html += `<div class="api-result error"><strong>${api.name}:</strong> ${error.message}</div>`;
+            }
+        }
+        
+        html += '</div>';
     }
     
-    .no-results {
-        text-align: center;
-        color: #666;
-        font-size: 1.1rem;
-        margin: 2rem 0;
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+async function testAllAPIs(symbol = 'AAPL') {
+    console.log(`Testing all APIs for ${symbol}...`);
+    
+    const apis = [
+        { name: 'Alpha Vantage', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
+        { name: 'Twelve Data', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
+        { name: 'Finnhub', url: `${API_BASE_URL}/market-data/enhanced/${symbol}/` },
+        { name: 'Polygon', url: `${API_BASE_URL}/market-data/polygon/historical/${symbol}/` },
+        { name: 'Tiingo', url: `${API_BASE_URL}/market-data/tiingo/${symbol}/` },
+        { name: 'Marketstack', url: `${API_BASE_URL}/market-data/marketstack/${symbol}/` }
+    ];
+    
+    const results = {};
+    
+    for (const api of apis) {
+        try {
+            console.log(`Testing ${api.name}...`);
+            const response = await fetch(api.url);
+            const data = await response.json();
+            results[api.name] = {
+                status: response.status,
+                success: response.ok,
+                data: data,
+                price: data.price || data.current_price || data.close || 'N/A'
+            };
+        } catch (error) {
+            results[api.name] = {
+                status: 'Error',
+                success: false,
+                error: error.message
+            };
+        }
     }
     
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+    console.log('API Test Results:', results);
+    
+    // Display results
+    const container = document.querySelector('.api-comparison .api-results');
+    if (container) {
+        let html = `<h4>API Test Results for ${symbol}</h4><div class="test-results">`;
+        
+        Object.entries(results).forEach(([apiName, result]) => {
+            const statusClass = result.success ? 'success' : 'error';
+            html += `
+                <div class="api-result ${statusClass}">
+                    <strong>${apiName}:</strong> 
+                    Status: ${result.status} | 
+                    Price: $${result.price}
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
     }
-`;
-document.head.appendChild(style);
+    
+    return results;
+}
+
+function addAPITestingUI() {
+    const marketSection = document.querySelector('#market');
+    if (!marketSection) return;
+    
+    if (!document.querySelector('.api-comparison')) {
+        const apiContainer = document.createElement('div');
+        apiContainer.className = 'api-comparison';
+        apiContainer.innerHTML = `
+            <div class="api-testing-header">
+                <h3>Multi-API Market Data Testing</h3>
+                <div class="api-controls">
+                    <button onclick="loadEnhancedMarketData()" class="btn btn-primary">Test All APIs</button>
+                    <button onclick="testAllAPIs('AAPL')" class="btn btn-secondary">Test AAPL APIs</button>
+                    <button onclick="testAllAPIs('GOOGL')" class="btn btn-secondary">Test GOOGL APIs</button>
+                    <button onclick="testAllAPIs('TSLA')" class="btn btn-secondary">Test TSLA APIs</button>
+                </div>
+            </div>
+            <div class="api-results">
+                <p>Click buttons above to test different API sources for market data.</p>
+            </div>
+        `;
+        
+        const marketData = document.querySelector('.market-data');
+        if (marketData) {
+            marketData.parentNode.insertBefore(apiContainer, marketData.nextSibling);
+        }
+    }
+}
+
+// Initialize everything when the page loads
+window.addEventListener('load', function() {
+    console.log('Page fully loaded, initializing application...');
+    if (typeof LightweightCharts === 'undefined') {
+        console.error('LightweightCharts library not loaded!');
+    }
+});
+
+// Login Modal Functions
+function showLoginModal() {
+    console.log('Login modal requested');
+    
+    // Create modal HTML using existing CSS classes
+    const modalHTML = `
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeLoginModal()">&times;</span>
+                <h2>로그인</h2>
+                <div class="social-login">
+                    <p>소셜 로그인</p>
+                    <button class="btn-google" onclick="loginWithGoogle()">
+                        <span>Google로 로그인</span>
+                    </button>
+                    <button class="btn-apple" onclick="loginWithApple()">
+                        <span>Apple로 로그인</span>
+                    </button>
+                </div>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">이메일</label>
+                        <input type="email" id="loginEmail" name="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">비밀번호</label>
+                        <input type="password" id="loginPassword" name="password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary">로그인</button>
+                </form>
+                <div class="modal-footer">
+                    <p>계정이 없으신가요? <a href="#" onclick="showRegisterModal()">회원가입</a></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = document.getElementById('loginModal');
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    // Add event listener to close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeLoginModal();
+        }
+    });
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    console.log('Login attempt:', email);
+    
+    // TODO: Implement actual login logic with backend
+    alert('로그인 기능은 현재 개발 중입니다.');
+    closeLoginModal();
+}
+
+function showRegisterModal() {
+    closeLoginModal();
+    
+    const modalHTML = `
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeRegisterModal()">&times;</span>
+                <h2>회원가입</h2>
+                <div class="social-login">
+                    <p>소셜 회원가입</p>
+                    <button class="btn-google" onclick="registerWithGoogle()">
+                        <span>Google로 회원가입</span>
+                    </button>
+                    <button class="btn-apple" onclick="registerWithApple()">
+                        <span>Apple로 회원가입</span>
+                    </button>
+                </div>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="regName">이름</label>
+                        <input type="text" id="regName" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">이메일</label>
+                        <input type="email" id="regEmail" name="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">비밀번호</label>
+                        <input type="password" id="regPassword" name="password" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">비밀번호 확인</label>
+                        <input type="password" id="regConfirmPassword" name="confirmPassword" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary">회원가입</button>
+                </form>
+                <div class="modal-footer">
+                    <p>이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = document.getElementById('registerModal');
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeRegisterModal();
+        }
+    });
+}
+
+function closeRegisterModal() {
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.remove();
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+}
+
+function handleRegister(event) {
+    event.preventDefault();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+    }
+    
+    // TODO: Implement actual registration logic
+    alert('회원가입 기능은 현재 개발 중입니다.');
+    closeRegisterModal();
+}
+
+function loginWithGoogle() {
+    // TODO: Implement Google OAuth
+    alert('Google 로그인 기능은 현재 개발 중입니다.');
+}
+
+function loginWithApple() {
+    // TODO: Implement Apple OAuth  
+    alert('Apple 로그인 기능은 현재 개발 중입니다.');
+}
+
+function registerWithGoogle() {
+    // TODO: Implement Google OAuth for registration
+    alert('Google 회원가입 기능은 현재 개발 중입니다.');
+}
+
+function registerWithApple() {
+    // TODO: Implement Apple OAuth for registration
+    alert('Apple 회원가입 기능은 현재 개발 중입니다.');
+}
+
+// Prediction Functions
+function startPrediction() {
+    console.log('Start prediction clicked');
+    alert('예측 기능은 현재 개발 중입니다. 곧 출시 예정입니다!');
+}
+
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Utility function to validate token
+function validateToken(token) {
+    // TODO: Implement token validation with backend
+    console.log('Validating token:', token);
+}

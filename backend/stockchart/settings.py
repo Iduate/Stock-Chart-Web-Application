@@ -142,6 +142,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
+    BASE_DIR.parent / 'frontend',  # frontend 디렉토리 추가
 ]
 
 MEDIA_URL = '/media/'
@@ -174,8 +175,16 @@ OAUTH2_PROVIDER = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "https://stockchart.kr",
 ]
+
+# 개발 환경에서 모든 Origin 허용 (보안상 주의)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# API 엔드포인트에 대한 CORS 허용
+CORS_ALLOW_CREDENTIALS = True
 
 # 사용자 정의 설정
 AUTH_USER_MODEL = 'users.User'
@@ -195,5 +204,9 @@ PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='')
 PAYPAL_CLIENT_SECRET = config('PAYPAL_CLIENT_SECRET', default='')
 ALPHA_VANTAGE_API_KEY = config('ALPHA_VANTAGE_API_KEY', default='')
 TWELVE_DATA_API_KEY = config('TWELVE_DATA_API_KEY', default='')
+FINNHUB_API_KEY = config('FINNHUB_API_KEY', default='')
+POLYGON_API_KEY = config('POLYGON_API_KEY', default='')
+TIINGO_API_KEY = config('TIINGO_API_KEY', default='')
+MARKETSTACK_API_KEY = config('MARKETSTACK_API_KEY', default='')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
