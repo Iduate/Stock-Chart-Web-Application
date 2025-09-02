@@ -145,6 +145,11 @@ STATICFILES_DIRS = [
     BASE_DIR.parent / 'frontend',  # frontend 디렉토리 추가
 ]
 
+# WhiteNoise 설정 (정적 파일 압축 및 캐싱)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

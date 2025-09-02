@@ -27,6 +27,24 @@ class MarketDataService:
         self.tiingo_key = settings.TIINGO_API_KEY
         self.marketstack_key = settings.MARKETSTACK_API_KEY
         
+        # Log API key availability (without exposing the keys)
+        api_keys_status = {
+            'alpha_vantage': bool(self.alpha_vantage_key),
+            'twelve_data': bool(self.twelve_data_key),
+            'finnhub': bool(self.finnhub_key),
+            'polygon': bool(self.polygon_key),
+            'tiingo': bool(self.tiingo_key),
+            'marketstack': bool(self.marketstack_key),
+        }
+        logger.info(f"API Keys Status: {api_keys_status}")
+        
+        # Count available APIs
+        available_apis = sum(api_keys_status.values())
+        logger.info(f"Available APIs: {available_apis}/6")
+        
+        if available_apis == 0:
+            logger.warning("⚠️ No API keys configured! Market data will not be available.")
+        
         # API Base URLs
         self.alpha_vantage_base = "https://www.alphavantage.co/query"
         self.twelve_data_base = "https://api.twelvedata.com"

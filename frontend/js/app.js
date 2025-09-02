@@ -1,7 +1,10 @@
 // Stock Chart Web Application - Main JavaScript File
-// API Base URL Configuration  
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
-console.log('App.js loaded - Crypto fix version 1.3 - ' + new Date().getTime());
+// API Base URL Configuration - Auto-detect environment
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://127.0.0.1:8000/api' 
+    : '/api';  // Use relative path for production
+console.log('App.js loaded - Production API fix version 1.4 - ' + new Date().getTime());
+console.log('API Base URL:', API_BASE_URL);
 
 // Test function to manually call crypto
 window.testCrypto = function() {

@@ -35,6 +35,10 @@ if settings.DEBUG:
     for static_dir in frontend_static_dirs:
         if os.path.exists(static_dir):
             urlpatterns += static(settings.STATIC_URL, document_root=static_dir)
+else:
+    # Production static file serving
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 관리자 사이트 한국어 설정
 admin.site.site_header = "주식차트 예측 플랫폼 관리자"
