@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from .services import market_service
+from .services import get_market_service
 from .models import MarketData, PriceHistory
 from .serializers import MarketDataSerializer, PriceHistorySerializer
 import json
@@ -21,7 +21,7 @@ def get_real_time_quote(request, symbol):
     """실시간 시세 조회 API"""
     try:
         market = request.GET.get('market', 'us_stock')
-        data = market_service.get_real_time_quote(symbol, market)
+        data = get_market_service().get_real_time_quote(symbol, market)
         
         if data:
             return Response(data, status=status.HTTP_200_OK)
@@ -47,7 +47,7 @@ def get_historical_data(request, symbol):
         interval = request.GET.get('interval', '1day')
         market = request.GET.get('market', 'us_stock')
         
-        data = market_service.get_historical_data(symbol, period, interval, market)
+        data = get_market_service().get_historical_data(symbol, period, interval, market)
         
         if data:
             return Response({'data': data}, status=status.HTTP_200_OK)
@@ -70,7 +70,7 @@ def get_crypto_data(request, symbol):
     """암호화폐 데이터 조회 API"""
     try:
         vs_currency = request.GET.get('vs_currency', 'USD')
-        data = market_service.get_crypto_data(symbol, vs_currency)
+        data = get_market_service().get_crypto_data(symbol, vs_currency)
         
         if data:
             return Response(data, status=status.HTTP_200_OK)
@@ -92,7 +92,7 @@ def get_crypto_data(request, symbol):
 def get_forex_data(request, from_symbol, to_symbol):
     """외환 데이터 조회 API"""
     try:
-        data = market_service.get_forex_data(from_symbol, to_symbol)
+        data = get_market_service().get_forex_data(from_symbol, to_symbol)
         
         if data:
             return Response(data, status=status.HTTP_200_OK)
@@ -114,7 +114,7 @@ def get_forex_data(request, from_symbol, to_symbol):
 def get_market_indices(request):
     """시장 지수 조회 API"""
     try:
-        data = market_service.get_market_indices()
+        data = get_market_service().get_market_indices()
         
         if data:
             return Response({'indices': data}, status=status.HTTP_200_OK)
@@ -143,7 +143,7 @@ def search_symbols(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        data = market_service.search_symbols(query)
+        data = get_market_service().search_symbols(query)
         
         return Response({'results': data}, status=status.HTTP_200_OK)
         
@@ -165,7 +165,7 @@ def get_popular_stocks(request):
         
         results = []
         for symbol in popular_symbols:
-            data = market_service.get_real_time_quote(symbol, 'us_stock')
+            data = get_market_service().get_real_time_quote(symbol, 'us_stock')
             if data:
                 results.append(data)
         
@@ -189,7 +189,7 @@ def get_top_cryptos(request):
         
         results = []
         for symbol in top_cryptos:
-            data = market_service.get_crypto_data(symbol, 'USD')
+            data = get_market_service().get_crypto_data(symbol, 'USD')
             if data:
                 results.append(data)
         
@@ -230,7 +230,7 @@ def save_market_data(request):
 def get_enhanced_data(request, symbol):
     """통합 강화 데이터 - 4개 API 활용"""
     try:
-        enhanced_data = market_service.get_enhanced_real_time_data(symbol.upper())
+        enhanced_data = get_market_service().get_enhanced_real_time_data(symbol.upper())
         
         if enhanced_data:
             return Response(enhanced_data, status=status.HTTP_200_OK)
@@ -253,7 +253,7 @@ def get_polygon_historical(request, symbol):
     """Polygon API 과거 데이터"""
     try:
         period = request.GET.get('period', '1Y')
-        data = market_service.get_polygon_historical_data(symbol.upper(), period)
+        data = get_market_service().get_polygon_historical_data(symbol.upper(), period)
         
         if data:
             return Response({
@@ -280,7 +280,7 @@ def get_polygon_historical(request, symbol):
 def get_finnhub_crypto(request, symbol):
     """Finnhub 암호화폐 데이터"""
     try:
-        crypto_data = market_service.get_finnhub_crypto_price(symbol.upper())
+        crypto_data = get_market_service().get_finnhub_crypto_price(symbol.upper())
         
         if crypto_data:
             return Response(crypto_data, status=status.HTTP_200_OK)
@@ -302,7 +302,7 @@ def get_finnhub_crypto(request, symbol):
 def get_finnhub_forex(request, from_currency, to_currency):
     """Finnhub 외환 환율"""
     try:
-        forex_data = market_service.get_finnhub_forex_rate(from_currency.upper(), to_currency.upper())
+        forex_data = get_market_service().get_finnhub_forex_rate(from_currency.upper(), to_currency.upper())
         
         if forex_data:
             return Response(forex_data, status=status.HTTP_200_OK)
@@ -327,7 +327,7 @@ def get_market_news(request):
         symbol = request.GET.get('symbol', None)
         limit = int(request.GET.get('limit', 10))
         
-        news = market_service.get_market_news(symbol, limit)
+        news = get_market_service().get_market_news(symbol, limit)
         return Response({
             'symbol': symbol,
             'news': news
@@ -346,7 +346,7 @@ def get_market_news(request):
 def get_company_profile(request, symbol):
     """Finnhub 회사 프로필"""
     try:
-        profile = market_service.get_company_profile(symbol.upper())
+        profile = get_market_service().get_company_profile(symbol.upper())
         
         if profile:
             return Response(profile, status=status.HTTP_200_OK)
@@ -373,7 +373,7 @@ def get_watchlist(request):
         watchlist_data = []
         
         for symbol in watchlist_symbols:
-            quote = market_service.get_real_time_quote(symbol)
+            quote = get_market_service().get_real_time_quote(symbol)
             if quote:
                 watchlist_data.append(quote)
         

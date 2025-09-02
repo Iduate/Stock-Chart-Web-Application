@@ -1177,5 +1177,12 @@ class MarketDataService:
             return None
 
 
-# 전역 인스턴스
-market_service = MarketDataService()
+# 전역 인스턴스 - 지연 초기화
+_market_service = None
+
+def get_market_service():
+    """MarketDataService 인스턴스를 지연 초기화로 반환"""
+    global _market_service
+    if _market_service is None:
+        _market_service = MarketDataService()
+    return _market_service
