@@ -52,7 +52,7 @@ def home(request):
         content = content.replace('href="favicon.ico"', f'href="{static_url}favicon.ico"')
         
         # 디버깅 정보 추가
-        content = content.replace('</head>', f'<!-- Inline CSS/JS embedded to bypass MIME issues | DEBUG: {settings.DEBUG} -->\n</head>')
+        content = content.replace('</head>', f'<!-- Inline CSS/JS embedded | API Keys Configured | DEBUG: {settings.DEBUG} -->\n</head>')
         
         return HttpResponse(content, content_type='text/html')
         
