@@ -23,6 +23,11 @@ urlpatterns = [
     path('', views.home, name='home'),
 ]
 
+# 정적 파일 서빙 - Railway에서도 작동하도록 명시적 설정
+urlpatterns += [
+    re_path(r'^static/(?P<path>.*)$', views.serve_static_file, name='serve_static'),
+]
+
 # 개발 환경에서 미디어 파일 및 정적 파일 서빙
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
