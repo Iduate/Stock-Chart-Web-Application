@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
@@ -8,7 +8,6 @@ from charts.views import get_rankings, get_events
 import os
 
 urlpatterns = [
-    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('api/status/', views.api_status, name='api_status'),
     path('api/auth/', include('users.urls')),
@@ -20,6 +19,8 @@ urlpatterns = [
     # 추가 API 엔드포인트
     path('api/rankings/<str:ranking_type>/', get_rankings, name='rankings'),
     path('api/events/', get_events, name='events'),
+    # 홈페이지는 마지막에 위치 (모든 static 파일 처리 후)
+    path('', views.home, name='home'),
 ]
 
 # 개발 환경에서 미디어 파일 및 정적 파일 서빙

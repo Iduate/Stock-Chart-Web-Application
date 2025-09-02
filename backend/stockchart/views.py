@@ -7,6 +7,11 @@ from django.conf import settings
 
 def home(request):
     """홈페이지 뷰 - frontend/index.html 서빙"""
+    # static 파일 요청은 WhiteNoise가 처리하도록 함
+    if request.path.startswith('/static/'):
+        from django.http import Http404
+        raise Http404("Static file not found")
+    
     # frontend 디렉토리의 index.html 파일 경로
     frontend_path = os.path.join(settings.BASE_DIR.parent, 'frontend', 'index.html')
     
