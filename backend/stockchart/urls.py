@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from . import views
+from .static_serve import serve_static_with_mime
 from charts.views import get_rankings, get_events
 import os
 
@@ -23,17 +24,13 @@ urlpatterns = [
     path('', views.home, name='home'),
 ]
 
-# 정적 파일 서빙 설정 (개발 및 프로덕션 모두)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# 정적 파일 서빙 설정 - 커스텀 MIME 타입 핸들링
+urlpatterns += [
+    re_path(r'^static/(?P<path>.*)$', serve_static_with_mime, name='serve_static_custom'),
+]
 
-# Railway에서 정적 파일이 제대로 서빙되도록 추가 설정
-if not settings.DEBUG:
-    urlpatterns += [
-        re_path(r'^static/(?P<path>.*)$', serve, {
-            'document_root': settings.STATIC_ROOT,
-        }),
-    ]
+# 백업 정적 파일 서빙 (표준 방식)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # 관리자 사이트 한국어 설정
 admin.site.site_header = "주식차트 예측 플랫폼 관리자"

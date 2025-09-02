@@ -21,7 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 보안 설정
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-key')
+
+# Railway에서 정적 파일 서빙을 위해 DEBUG=True 유지
 DEBUG = config('DEBUG', default=True, cast=bool)
+
+# Railway 환경 감지 및 디버그 모드 강제 활성화
+RAILWAY_ENVIRONMENT = os.environ.get('RAILWAY_ENVIRONMENT', False)
+if RAILWAY_ENVIRONMENT or os.environ.get('RAILWAY_PROJECT_ID'):
+    DEBUG = True  # Railway에서는 정적 파일 서빙을 위해 강제로 DEBUG=True
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
@@ -51,7 +58,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -151,15 +157,8 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# 정적 파일 저장소 설정 (Railway 호환성)
-# 기본 정적 파일 저장소 사용 (압축 없음)
+# 정적 파일 저장소 설정 (기본 Django 저장소 사용)
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-# WhiteNoise 설정 (최소한의 설정)
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
-WHITENOISE_MAX_AGE = 0  # 캐시 비활성화로 디버깅
-WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
