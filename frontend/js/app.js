@@ -83,6 +83,9 @@ function initializeApp() {
     // Initialize stock selector
     initializeStockSelector();
     
+    // Load market data
+    loadMarketData();
+    
     // Add API testing UI
     addAPITestingUI();
 }
@@ -707,10 +710,16 @@ function updateActiveNavigation() {
 
 // Initialize stock selector dropdown
 function initializeStockSelector() {
+    console.log('Initializing stock selector...');
     const stockSelect = document.getElementById('stockSelect');
     const currentPriceInput = document.getElementById('currentPrice');
     
-    if (!stockSelect) return;
+    console.log('Stock select element:', stockSelect);
+    
+    if (!stockSelect) {
+        console.error('Stock select element not found!');
+        return;
+    }
     
     // Popular stocks to populate the dropdown
     const popularStocks = [
@@ -744,6 +753,8 @@ function initializeStockSelector() {
         stockSelect.removeChild(stockSelect.lastChild);
     }
     
+    console.log('Adding stock options...');
+    
     // Add stock options
     popularStocks.forEach(stock => {
         const option = document.createElement('option');
@@ -751,6 +762,8 @@ function initializeStockSelector() {
         option.textContent = `${stock.symbol} - ${stock.name}`;
         stockSelect.appendChild(option);
     });
+    
+    console.log(`Added ${popularStocks.length} stock options to dropdown`);
     
     // Add event listener for stock selection
     stockSelect.addEventListener('change', async function() {
