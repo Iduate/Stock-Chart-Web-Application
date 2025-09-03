@@ -101,24 +101,13 @@ function initializeCharts() {
             // Ensure the element has proper dimensions
             if (heroChartElement.clientWidth === 0) {
                 heroChartElement.style.width = '100%';
-                heroChartElement.style.height = '400px';
+                heroChartElement.style.height = window.innerWidth <= 480 ? '200px' : (window.innerWidth <= 768 ? '250px' : '400px');
             }
             
-            window.heroChart = LightweightCharts.createChart(heroChartElement, {
-                width: heroChartElement.clientWidth || 800,
-                height: 400,
-                layout: {
-                    backgroundColor: '#ffffff',
-                    textColor: '#333',
-                },
-                grid: {
-                    vertLines: { color: '#f0f0f0' },
-                    horzLines: { color: '#f0f0f0' },
-                },
-                crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-                rightPriceScale: { borderColor: '#cccccc' },
-                timeScale: { borderColor: '#cccccc' },
-            });
+            const chartWidth = heroChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 800);
+            const chartHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 400);
+            
+            window.heroChart = LightweightCharts.createChart(heroChartElement, getMobileChartConfig(chartWidth, chartHeight));
             
             console.log('Hero chart created:', window.heroChart);
             
@@ -148,27 +137,22 @@ function initializeCharts() {
             // Ensure the element has proper dimensions
             if (predictionChartElement.clientWidth === 0) {
                 predictionChartElement.style.width = '100%';
-                predictionChartElement.style.height = '300px';
+                predictionChartElement.style.height = window.innerWidth <= 480 ? '200px' : (window.innerWidth <= 768 ? '250px' : '300px');
             }
             
-            window.predictionChart = LightweightCharts.createChart(predictionChartElement, {
-                width: predictionChartElement.clientWidth || 600,
-                height: 300,
-                layout: {
-                    backgroundColor: '#ffffff',
-                    textColor: '#333',
-                },
-                grid: {
-                    vertLines: { color: '#f0f0f0' },
-                    horzLines: { color: '#f0f0f0' },
-                },
-            });
+            const chartWidth = predictionChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 600);
+            const chartHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 300);
+            
+            window.predictionChart = LightweightCharts.createChart(predictionChartElement, getMobileChartConfig(chartWidth, chartHeight));
             
             console.log('Prediction chart created:', window.predictionChart);
         } catch (error) {
             console.error('Failed to create prediction chart:', error);
         }
     }
+    
+    // Add responsive chart resize handling
+    addChartResizeHandler();
 }
 
 // Load stock chart with multiple API fallback
@@ -1258,4 +1242,118 @@ function scrollToSection(sectionId) {
 function validateToken(token) {
     // TODO: Implement token validation with backend
     console.log('Validating token:', token);
+}
+
+// Add responsive chart resize handler
+function addChartResizeHandler() {
+    let resizeTimeout;
+    
+    function resizeCharts() {
+        // Resize hero chart
+        const heroChartElement = document.getElementById('heroChart');
+        if (heroChartElement && window.heroChart) {
+            const newWidth = heroChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 800);
+            const newHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 400);
+            
+            try {
+                window.heroChart.applyOptions({
+                    width: newWidth,
+                    height: newHeight
+                });
+                
+                // Update chart element height
+                heroChartElement.style.height = newHeight + 'px';
+            } catch (error) {
+                console.error('Error resizing hero chart:', error);
+            }
+        }
+        
+        // Resize prediction chart
+        const predictionChartElement = document.getElementById('predictionChart');
+        if (predictionChartElement && window.predictionChart) {
+            const newWidth = predictionChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 600);
+            const newHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 300);
+            
+            try {
+                window.predictionChart.applyOptions({
+                    width: newWidth,
+                    height: newHeight
+                });
+                
+                // Update chart element height
+                predictionChartElement.style.height = newHeight + 'px';
+            } catch (error) {
+                console.error('Error resizing prediction chart:', error);
+            }
+        }
+    }
+    
+    // Add window resize event listener with debouncing
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeCharts, 250);
+    });
+    
+    // Add orientation change event listener for mobile devices
+    window.addEventListener('orientationchange', function() {
+        setTimeout(resizeCharts, 500); // Delay to allow orientation change to complete
+    });
+}
+
+// Initialize mobile-optimized chart configuration
+function getMobileChartConfig(width, height) {
+    const isMobile = window.innerWidth <= 768;
+    
+    return {
+        width: width,
+        height: height,
+        layout: {
+            background: { type: 'solid', color: 'transparent' },
+            textColor: '#333',
+            fontSize: isMobile ? 10 : 12,
+        },
+        grid: {
+            vertLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+                visible: !isMobile || window.innerWidth > 480, // Hide grid on very small screens
+            },
+            horzLines: {
+                color: 'rgba(197, 203, 206, 0.5)',
+                visible: !isMobile || window.innerWidth > 480,
+            },
+        },
+        crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+        },
+        rightPriceScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            scaleMargins: {
+                top: 0.1,
+                bottom: 0.1,
+            },
+            minimumWidth: isMobile ? 40 : 60,
+        },
+        timeScale: {
+            borderColor: 'rgba(197, 203, 206, 0.8)',
+            timeVisible: true,
+            secondsVisible: false,
+            fixLeftEdge: true,
+            fixRightEdge: true,
+        },
+        handleScroll: {
+            mouseWheel: !isMobile,
+            pressedMouseMove: true,
+            horzTouchDrag: true,
+            vertTouchDrag: isMobile,
+        },
+        handleScale: {
+            axisPressedMouseMove: true,
+            mouseWheel: !isMobile,
+            pinch: isMobile,
+        },
+        kineticScroll: {
+            touch: isMobile,
+            mouse: false,
+        },
+    };
 }
