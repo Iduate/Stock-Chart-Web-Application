@@ -547,19 +547,24 @@ p {
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     transition: all var(--transition-base);
+    position: relative;
+    z-index: 1002;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .hamburger:hover {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(99, 102, 241, 0.2);
 }
 
 .bar {
     width: 24px;
-    height: 2px;
+    height: 3px;
     background: var(--text-primary);
     margin: 3px 0;
     transition: all var(--transition-base);
     border-radius: var(--radius-full);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .hamburger.active .bar:nth-child(1) {
@@ -3450,11 +3455,47 @@ input[type="checkbox"]:hover {
     
     .container, .hero-container, .charts-grid, 
     .market-data-grid, .features-grid, .pricing-cards,
-    section, main, div {
+    section, main {
         max-width: 100% !important;
         width: 100% !important;
         overflow-x: hidden !important;
         box-sizing: border-box !important;
+    }
+    
+    /* 일반 div 요소 - 네비게이션 제외 */
+    div:not(.hamburger):not(.nav-menu):not(.nav-container):not(.navbar):not(.bar) {
+        max-width: 100% !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* 햄버거 메뉴 강제 표시 */
+    .hamburger {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 1001 !important;
+    }
+    
+    /* 네비게이션 메뉴 */
+    .nav-menu {
+        position: fixed !important;
+        left: -100% !important;
+        top: 70px !important;
+        flex-direction: column !important;
+        background-color: #667eea !important;
+        width: 100% !important;
+        text-align: center !important;
+        transition: 0.3s !important;
+        box-shadow: 0 10px 27px rgba(0,0,0,0.05) !important;
+        padding: 2rem 0 !important;
+        z-index: 1000 !important;
+    }
+    
+    .nav-menu.active {
+        left: 0 !important;
     }
     
     /* 특별히 차트와 관련된 요소들 */
@@ -3473,7 +3514,7 @@ input[type="checkbox"]:hover {
     }
     
     /* 텍스트와 이미지 오버플로우 방지 */
-    h1, h2, h3, h4, h5, h6, p, span, div {
+    h1, h2, h3, h4, h5, h6, p, span {
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         hyphens: auto !important;
