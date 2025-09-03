@@ -549,22 +549,24 @@ p {
     transition: all var(--transition-base);
     position: relative;
     z-index: 1002;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .hamburger:hover {
-    background: rgba(99, 102, 241, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 .bar {
     width: 24px;
     height: 3px;
-    background: var(--text-primary);
+    background: #ffffff;
     margin: 3px 0;
     transition: all var(--transition-base);
     border-radius: var(--radius-full);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .hamburger.active .bar:nth-child(1) {
@@ -3470,19 +3472,48 @@ input[type="checkbox"]:hover {
         box-sizing: border-box !important;
     }
     
-    /* 햄버거 메뉴 강제 표시 */
+    /* 햄버거 메뉴 강제 표시 - 디버그 스타일 */
     .hamburger {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         position: relative !important;
         z-index: 1001 !important;
+        margin-left: auto !important;
+        flex-shrink: 0 !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 3px solid #ff4444 !important;
+        padding: 8px !important;
+        border-radius: 8px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
     }
     
-    /* 네비게이션 메뉴 */
+    .hamburger .bar {
+        background: #333333 !important;
+        width: 20px !important;
+        height: 3px !important;
+        margin: 2px 0 !important;
+    }
+    
+    /* 네비게이션 컨테이너 모바일 최적화 */
+    .nav-container {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0 1rem !important;
+        width: 100% !important;
+    }
+    
+    /* 네비게이션 메뉴 숨기기 */
     .nav-menu {
+        display: none !important;
+    }
+    
+    .nav-menu.active {
+        display: flex !important;
         position: fixed !important;
-        left: -100% !important;
+        left: 0 !important;
         top: 70px !important;
         flex-direction: column !important;
         background-color: #667eea !important;
@@ -3492,10 +3523,6 @@ input[type="checkbox"]:hover {
         box-shadow: 0 10px 27px rgba(0,0,0,0.05) !important;
         padding: 2rem 0 !important;
         z-index: 1000 !important;
-    }
-    
-    .nav-menu.active {
-        left: 0 !important;
     }
     
     /* 특별히 차트와 관련된 요소들 */
