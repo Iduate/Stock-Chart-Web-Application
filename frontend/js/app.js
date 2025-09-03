@@ -80,6 +80,9 @@ function initializeApp() {
     updateActiveNavigation();
     window.addEventListener('scroll', debounce(updateActiveNavigation, 100));
     
+    // Initialize stock selector
+    initializeStockSelector();
+    
     // Add API testing UI
     addAPITestingUI();
 }
@@ -700,6 +703,134 @@ function updateActiveNavigation() {
             link.classList.add('active');
         }
     });
+}
+
+// Initialize stock selector dropdown
+function initializeStockSelector() {
+    const stockSelect = document.getElementById('stockSelect');
+    const currentPriceInput = document.getElementById('currentPrice');
+    
+    if (!stockSelect) return;
+    
+    // Popular stocks to populate the dropdown
+    const popularStocks = [
+        // US Stocks
+        { symbol: 'AAPL', name: 'Apple Inc.' },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+        { symbol: 'MSFT', name: 'Microsoft Corporation' },
+        { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+        { symbol: 'TSLA', name: 'Tesla Inc.' },
+        { symbol: 'META', name: 'Meta Platforms Inc.' },
+        { symbol: 'NVDA', name: 'NVIDIA Corporation' },
+        { symbol: 'NFLX', name: 'Netflix Inc.' },
+        { symbol: 'JPM', name: 'JPMorgan Chase & Co.' },
+        { symbol: 'V', name: 'Visa Inc.' },
+        // Korean Stocks (KRX)
+        { symbol: '005930.KS', name: '삼성전자' },
+        { symbol: '000660.KS', name: 'SK하이닉스' },
+        { symbol: '035420.KS', name: 'NAVER' },
+        { symbol: '207940.KS', name: '삼성바이오로직스' },
+        { symbol: '006400.KS', name: '삼성SDI' },
+        { symbol: '051910.KS', name: 'LG화학' },
+        { symbol: '005380.KS', name: '현대차' },
+        { symbol: '012330.KS', name: '현대모비스' },
+        // Crypto (for demonstration)
+        { symbol: 'BTC-USD', name: 'Bitcoin USD' },
+        { symbol: 'ETH-USD', name: 'Ethereum USD' }
+    ];
+    
+    // Clear existing options except the first one
+    while (stockSelect.children.length > 1) {
+        stockSelect.removeChild(stockSelect.lastChild);
+    }
+    
+    // Add stock options
+    popularStocks.forEach(stock => {
+        const option = document.createElement('option');
+        option.value = stock.symbol;
+        option.textContent = `${stock.symbol} - ${stock.name}`;
+        stockSelect.appendChild(option);
+    });
+    
+    // Add event listener for stock selection
+    stockSelect.addEventListener('change', async function() {
+        const selectedSymbol = this.value;
+        if (selectedSymbol) {
+            console.log('Selected stock:', selectedSymbol);
+            
+            // Load current price
+            try {
+                const priceData = await fetchStockPrice(selectedSymbol);
+                if (priceData && priceData.price) {
+                    currentPriceInput.value = priceData.price.toFixed(2);
+                } else {
+                    currentPriceInput.value = 'N/A';
+                }
+            } catch (error) {
+                console.error('Error fetching stock price:', error);
+                currentPriceInput.value = 'Error';
+            }
+        } else {
+            currentPriceInput.value = '';
+        }
+    });
+}
+
+// Fetch current stock price
+async function fetchStockPrice(symbol) {
+    try {
+        // Try multiple APIs for stock price
+        const apis = [
+            () => fetchFromAlphaVantage(symbol),
+            () => fetchFromYahooFinance(symbol),
+            () => fetchFromTwelveData(symbol)
+        ];
+        
+        for (const api of apis) {
+            try {
+                const data = await api();
+                if (data && data.price) {
+                    return data;
+                }
+            } catch (error) {
+                console.warn('API failed, trying next:', error.message);
+            }
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('All APIs failed:', error);
+        return null;
+    }
+}
+
+// Simplified price fetching functions
+async function fetchFromAlphaVantage(symbol) {
+    const response = await fetch(`/api/market-data/alpha-vantage/?symbol=${symbol}`);
+    if (response.ok) {
+        const data = await response.json();
+        return { price: parseFloat(data.price) };
+    }
+    throw new Error('Alpha Vantage API failed');
+}
+
+async function fetchFromYahooFinance(symbol) {
+    // Simplified Yahoo Finance alternative
+    const response = await fetch(`/api/market-data/yahoo/?symbol=${symbol}`);
+    if (response.ok) {
+        const data = await response.json();
+        return { price: parseFloat(data.price) };
+    }
+    throw new Error('Yahoo Finance API failed');
+}
+
+async function fetchFromTwelveData(symbol) {
+    const response = await fetch(`/api/market-data/twelve-data/?symbol=${symbol}`);
+    if (response.ok) {
+        const data = await response.json();
+        return { price: parseFloat(data.price) };
+    }
+    throw new Error('Twelve Data API failed');
 }
 
 // Authentication functions
