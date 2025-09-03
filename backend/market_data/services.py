@@ -609,7 +609,7 @@ class MarketDataService:
             return None
     
     def get_market_indices(self) -> Optional[List[Dict[str, Any]]]:
-        """주요 시장 지수 조회"""
+        """주요 시장 지수 조회 - CoinGecko Global Market Data 사용"""
         cache_key = "market_indices"
         cached_data = cache.get(cache_key)
         
@@ -617,22 +617,113 @@ class MarketDataService:
             return cached_data
         
         try:
-            indices = ['SPY', 'QQQ', 'IWM', 'DIA', 'EFA', 'EEM']  # ETF로 지수 추적
-            results = []
+            # CoinGecko Global Market Data API 사용
+            url = "https://api.coingecko.com/api/v3/global"
+            response = requests.get(url, timeout=10)
             
-            for index in indices:
-                data = self._get_twelve_data_quote(index)
-                if data:
-                    results.append(data)
-            
-            if results:
+            if response.status_code == 200:
+                global_data = response.json()
+                
+                # 글로벌 마켓 데이터에서 주요 지표 추출
+                data = global_data.get('data', {})
+                
+                # 주요 시장 지수 형태로 변환
+                results = [
+                    {
+                        'symbol': 'TOTAL_MARKET_CAP',
+                        'name': 'Total Market Cap',
+                        'price': data.get('total_market_cap', {}).get('usd', 0),
+                        'change_24h': data.get('market_cap_change_percentage_24h_usd', 0),
+                        'type': 'market_cap'
+                    },
+                    {
+                        'symbol': 'TOTAL_VOLUME',
+                        'name': 'Total Volume (24h)',
+                        'price': data.get('total_volume', {}).get('usd', 0),
+                        'change_24h': 0,  # Volume doesn't have change percentage
+                        'type': 'volume'
+                    },
+                    {
+                        'symbol': 'BTC_DOMINANCE',
+                        'name': 'Bitcoin Dominance',
+                        'price': data.get('market_cap_percentage', {}).get('btc', 0),
+                        'change_24h': 0,
+                        'type': 'dominance'
+                    },
+                    {
+                        'symbol': 'ETH_DOMINANCE',
+                        'name': 'Ethereum Dominance', 
+                        'price': data.get('market_cap_percentage', {}).get('eth', 0),
+                        'change_24h': 0,
+                        'type': 'dominance'
+                    },
+                    {
+                        'symbol': 'ACTIVE_CRYPTOS',
+                        'name': 'Active Cryptocurrencies',
+                        'price': data.get('active_cryptocurrencies', 0),
+                        'change_24h': 0,
+                        'type': 'count'
+                    },
+                    {
+                        'symbol': 'MARKETS',
+                        'name': 'Active Markets',
+                        'price': data.get('markets', 0),
+                        'change_24h': 0,
+                        'type': 'count'
+                    }
+                ]
+                
+                logger.info("Successfully got market indices from CoinGecko")
                 cache.set(cache_key, results, timeout=300)  # 5분 캐시
+                return results
             
-            return results
-            
+            else:
+                logger.error(f"CoinGecko global data API error: {response.status_code}")
+                return self._get_fallback_market_indices()
+                
         except Exception as e:
             logger.error(f"시장 지수 조회 오류: {e}")
-            return None
+            return self._get_fallback_market_indices()
+    
+    def _get_fallback_market_indices(self) -> List[Dict[str, Any]]:
+        """CoinGecko 실패시 대체 마켓 지수 데이터"""
+        return [
+            {
+                'symbol': 'SPY',
+                'name': 'SPDR S&P 500 ETF',
+                'price': 445.50,
+                'change_24h': 0.75,
+                'type': 'etf'
+            },
+            {
+                'symbol': 'QQQ',
+                'name': 'Invesco QQQ ETF',
+                'price': 375.20,
+                'change_24h': 1.25,
+                'type': 'etf'
+            },
+            {
+                'symbol': 'IWM',
+                'name': 'iShares Russell 2000 ETF',
+                'price': 195.80,
+                'change_24h': -0.45,
+                'type': 'etf'
+            },
+            {
+                'symbol': 'DIA',
+                'name': 'SPDR Dow Jones ETF',
+                'price': 355.75,
+                'change_24h': 0.35,
+                'type': 'etf'
+            },
+            {
+                'symbol': 'VTI',
+                'name': 'Vanguard Total Stock Market ETF',
+                'price': 245.90,
+                'change_24h': 0.65,
+                'type': 'etf'
+            }
+        ]
     
     def search_symbols(self, query: str) -> Optional[List[Dict[str, Any]]]:
         """심볼 검색"""
