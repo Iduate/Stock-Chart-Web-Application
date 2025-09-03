@@ -920,12 +920,12 @@ function displayCharts(charts) {
     
     if (!Array.isArray(charts)) {
         console.error('Charts data is not an array:', charts);
-        chartsGrid.innerHTML = '<div class="no-results">Chart data format error</div>';
+        chartsGrid.innerHTML = '<div class="no-results">차트 데이터 형식 오류</div>';
         return;
     }
     
     if (charts.length === 0) {
-        chartsGrid.innerHTML = '<div class="no-results">No charts to display</div>';
+        chartsGrid.innerHTML = '<div class="no-results">표시할 차트가 없습니다</div>';
         return;
     }
     
@@ -952,23 +952,23 @@ function displayCharts(charts) {
                     <div class="chart-info">
                         <div class="price-info">
                             <div class="price-item">
-                                <span class="label">Current:</span>
+                                <span class="label">현재가:</span>
                                 <span class="value">${formatPrice(currentPrice)}</span>
                             </div>
                             <div class="price-item">
-                                <span class="label">Predicted:</span>
+                                <span class="label">예측가:</span>
                                 <span class="value predicted">${formatPrice(predictedPrice)}</span>
                             </div>
                         </div>
                         <div class="chart-meta">
-                            <p class="user">Predictor: ${username}</p>
-                            <p class="date">Target: ${formatDate(targetDate)}</p>
-                            <p class="created">Created: ${formatDate(createdAt)}</p>
+                            <p class="user">예측자: ${username}</p>
+                            <p class="date">목표일: ${formatDate(targetDate)}</p>
+                            <p class="created">생성일: ${formatDate(createdAt)}</p>
                         </div>
                     </div>
                     <div class="chart-actions">
                         <button class="btn btn-sm btn-outline" onclick="viewChart(${chart.id || 0})">
-                            View Details
+                            상세보기
                         </button>
                     </div>
                 </div>
@@ -980,7 +980,7 @@ function displayCharts(charts) {
         
     } catch (error) {
         console.error('Error generating charts HTML:', error);
-        chartsGrid.innerHTML = '<div class="no-results">Error displaying charts</div>';
+        chartsGrid.innerHTML = '<div class="no-results">차트 표시 중 오류 발생</div>';
     }
 }
 
@@ -988,8 +988,8 @@ function displaySampleCharts() {
     const sampleCharts = [
         {
             id: 1,
-            user: { username: 'InvestorKing' },
-            stock_name: 'Apple',
+            user: { username: '투자왕' },
+            stock_name: '애플',
             stock_symbol: 'AAPL',
             predicted_price: 185.50,
             current_price: 182.30,
@@ -999,8 +999,8 @@ function displaySampleCharts() {
         },
         {
             id: 2,
-            user: { username: 'TechAnalyst' },
-            stock_name: 'Google',
+            user: { username: '구글러' },
+            stock_name: '구글',
             stock_symbol: 'GOOGL',
             predicted_price: 145.75,
             current_price: 142.20,
@@ -1016,9 +1016,9 @@ function displaySampleCharts() {
 // Utility functions
 function getStatusText(status) {
     const statusMap = {
-        'pending': 'Pending',
-        'completed': 'Completed',
-        'expired': 'Expired'
+        'pending': '예측중',
+        'completed': '완료됨',
+        'expired': '만료됨'
     };
     return statusMap[status] || status;
 }
