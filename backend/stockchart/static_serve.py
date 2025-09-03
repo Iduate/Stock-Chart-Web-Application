@@ -100,3 +100,74 @@ def serve_static_with_mime(request, path):
         print(f"DEBUG: Error serving file: {str(e)}")
         logger.error(f"Error serving static file {path}: {str(e)}")
         raise Http404(f"Error serving static file: {str(e)}")
+
+
+def serve_frontend_file(request, path):
+    """
+    Serve files directly from frontend directory
+    """
+    logger.info(f"Serving frontend file: {path}")
+    print(f"DEBUG: Serving frontend file: {path}")
+    
+    # Frontend 파일 경로 구성
+    frontend_path = os.path.join(settings.BASE_DIR.parent, 'frontend', path)
+    
+    # 디버깅: 파일 경로 확인
+    print(f"DEBUG: Frontend file path: {frontend_path}")
+    print(f"DEBUG: File exists: {os.path.exists(frontend_path)}")
+    
+    # 파일이 존재하지 않으면 404
+    if not os.path.exists(frontend_path):
+        print(f"DEBUG: Frontend file not found: {frontend_path}")
+        raise Http404("Frontend file not found")
+    
+    try:
+        # 파일 읽기
+        with open(frontend_path, 'rb') as f:
+            content = f.read()
+        
+        # MIME 타입 결정
+        content_type = 'text/plain'  # 기본값
+        
+        # 파일 확장자에 따른 MIME 타입 설정
+        if path.endswith('.css'):
+            content_type = 'text/css; charset=utf-8'
+            print(f"DEBUG: Setting CSS MIME type for {path}")
+        elif path.endswith('.js'):
+            content_type = 'application/javascript; charset=utf-8'
+            print(f"DEBUG: Setting JS MIME type for {path}")
+        elif path.endswith('.map'):
+            content_type = 'application/json'
+        elif path.endswith('.ico'):
+            content_type = 'image/x-icon'
+        elif path.endswith('.png'):
+            content_type = 'image/png'
+        elif path.endswith('.jpg') or path.endswith('.jpeg'):
+            content_type = 'image/jpeg'
+        elif path.endswith('.gif'):
+            content_type = 'image/gif'
+        elif path.endswith('.svg'):
+            content_type = 'image/svg+xml'
+        else:
+            # mimetypes 모듈 사용
+            mime_type, _ = mimetypes.guess_type(path)
+            if mime_type:
+                content_type = mime_type
+                print(f"DEBUG: Guessed MIME type: {content_type}")
+        
+        # HTTP 응답 생성
+        response = HttpResponse(content, content_type=content_type)
+        
+        # 디버깅 헤더 추가
+        response['X-Served-By'] = 'Frontend-File-Server'
+        response['X-Debug-Path'] = path
+        response['X-Debug-Content-Type'] = content_type
+        
+        print(f"DEBUG: Frontend response created successfully with content-type: {content_type}")
+        
+        return response
+        
+    except Exception as e:
+        print(f"DEBUG: Error serving frontend file: {str(e)}")
+        logger.error(f"Error serving frontend file {path}: {str(e)}")
+        raise Http404(f"Error serving frontend file: {str(e)}")

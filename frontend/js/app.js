@@ -83,8 +83,14 @@ function initializeApp() {
     // Initialize stock selector
     initializeStockSelector();
     
+    // Initialize predictions display
+    initMyPredictions();
+    
     // Load market data
     loadMarketData();
+    
+    // Load charts for chart board
+    loadCharts();
     
     // Add API testing UI
     addAPITestingUI();
@@ -392,7 +398,6 @@ function updateChartTitle(symbol, latestData) {
 // Load market data
 async function loadMarketData() {
     console.log('Loading market data...');
-    console.log('About to call crypto data...');
     try {
         console.log('Loading popular stocks...');
         await loadPopularStocks();
@@ -792,58 +797,38 @@ function initializeStockSelector() {
 // Fetch current stock price
 async function fetchStockPrice(symbol) {
     try {
-        // Try multiple APIs for stock price
-        const apis = [
-            () => fetchFromAlphaVantage(symbol),
-            () => fetchFromYahooFinance(symbol),
-            () => fetchFromTwelveData(symbol)
-        ];
-        
-        for (const api of apis) {
-            try {
-                const data = await api();
-                if (data && data.price) {
-                    return data;
-                }
-            } catch (error) {
-                console.warn('API failed, trying next:', error.message);
+        // Use the existing Django API endpoints
+        const response = await fetch(`/api/market-data/quote/${symbol}/`);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Stock price data:', data);
+            // Extract price from the response (adjust based on actual API response format)
+            if (data.price) {
+                return { price: parseFloat(data.price) };
+            } else if (data.current_price) {
+                return { price: parseFloat(data.current_price) };
+            } else if (data.close) {
+                return { price: parseFloat(data.close) };
             }
         }
-        
-        return null;
+        throw new Error('Price not found in API response');
     } catch (error) {
-        console.error('All APIs failed:', error);
+        console.error('Error fetching stock price:', error);
         return null;
     }
 }
 
-// Simplified price fetching functions
+// Remove the other API functions since we're using the Django endpoints
 async function fetchFromAlphaVantage(symbol) {
-    const response = await fetch(`/api/market-data/alpha-vantage/?symbol=${symbol}`);
-    if (response.ok) {
-        const data = await response.json();
-        return { price: parseFloat(data.price) };
-    }
-    throw new Error('Alpha Vantage API failed');
+    throw new Error('Use Django API instead');
 }
 
 async function fetchFromYahooFinance(symbol) {
-    // Simplified Yahoo Finance alternative
-    const response = await fetch(`/api/market-data/yahoo/?symbol=${symbol}`);
-    if (response.ok) {
-        const data = await response.json();
-        return { price: parseFloat(data.price) };
-    }
-    throw new Error('Yahoo Finance API failed');
+    throw new Error('Use Django API instead');
 }
 
 async function fetchFromTwelveData(symbol) {
-    const response = await fetch(`/api/market-data/twelve-data/?symbol=${symbol}`);
-    if (response.ok) {
-        const data = await response.json();
-        return { price: parseFloat(data.price) };
-    }
-    throw new Error('Twelve Data API failed');
+    throw new Error('Use Django API instead');
 }
 
 // Authentication functions
@@ -884,12 +869,39 @@ function updateUIForLoggedInUser(userData) {
 
 // Chart and ranking functions
 async function loadCharts() {
+    console.log('Loading charts...');
+    
     try {
         const response = await fetch(`${API_BASE_URL}/charts/`);
+        console.log('Charts API response status:', response.status);
+        
         if (response.ok) {
-            const charts = await response.json();
+            const data = await response.json();
+            console.log('Charts API response data:', data);
+            
+            // Handle different response formats
+            let charts = data;
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                // If response is an object, look for common array properties
+                if (Array.isArray(data.results)) {
+                    charts = data.results;
+                    console.log('Using data.results array');
+                } else if (Array.isArray(data.charts)) {
+                    charts = data.charts;
+                    console.log('Using data.charts array');
+                } else if (Array.isArray(data.data)) {
+                    charts = data.data;
+                    console.log('Using data.data array');
+                } else {
+                    console.log('Response is object but no array found, using sample charts');
+                    displaySampleCharts();
+                    return;
+                }
+            }
+            
             displayCharts(charts);
         } else {
+            console.log('Charts API failed with status:', response.status, 'using sample charts');
             displaySampleCharts();
         }
     } catch (error) {
@@ -903,6 +915,8 @@ function displayCharts(charts) {
     if (!chartsGrid) return;
     
     console.log('Charts data received:', charts);
+    console.log('Charts data type:', typeof charts);
+    console.log('Charts is array:', Array.isArray(charts));
     
     if (!Array.isArray(charts)) {
         console.error('Charts data is not an array:', charts);
@@ -915,38 +929,59 @@ function displayCharts(charts) {
         return;
     }
     
-    const chartsHTML = charts.map(chart => `
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>${chart.stock_name} (${chart.stock_symbol})</h3>
-                <span class="chart-status ${chart.status}">${getStatusText(chart.status)}</span>
-            </div>
-            <div class="chart-info">
-                <div class="price-info">
-                    <div class="price-item">
-                        <span class="label">Current:</span>
-                        <span class="value">${formatPrice(chart.current_price)}</span>
+    try {
+        const chartsHTML = charts.map((chart, index) => {
+            console.log(`Processing chart ${index}:`, chart);
+            
+            // Validate required fields with fallbacks
+            const stockName = chart.stock_name || 'Unknown Stock';
+            const stockSymbol = chart.stock_symbol || 'N/A';
+            const username = (chart.user && chart.user.username) ? chart.user.username : 'Anonymous';
+            const currentPrice = chart.current_price || 0;
+            const predictedPrice = chart.predicted_price || 0;
+            const status = chart.status || 'pending';
+            const targetDate = chart.target_date || new Date().toISOString().split('T')[0];
+            const createdAt = chart.created_at || new Date().toISOString().split('T')[0];
+            
+            return `
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>${stockName} (${stockSymbol})</h3>
+                        <span class="chart-status ${status}">${getStatusText(status)}</span>
                     </div>
-                    <div class="price-item">
-                        <span class="label">Predicted:</span>
-                        <span class="value predicted">${formatPrice(chart.predicted_price)}</span>
+                    <div class="chart-info">
+                        <div class="price-info">
+                            <div class="price-item">
+                                <span class="label">Current:</span>
+                                <span class="value">${formatPrice(currentPrice)}</span>
+                            </div>
+                            <div class="price-item">
+                                <span class="label">Predicted:</span>
+                                <span class="value predicted">${formatPrice(predictedPrice)}</span>
+                            </div>
+                        </div>
+                        <div class="chart-meta">
+                            <p class="user">Predictor: ${username}</p>
+                            <p class="date">Target: ${formatDate(targetDate)}</p>
+                            <p class="created">Created: ${formatDate(createdAt)}</p>
+                        </div>
+                    </div>
+                    <div class="chart-actions">
+                        <button class="btn btn-sm btn-outline" onclick="viewChart(${chart.id || 0})">
+                            View Details
+                        </button>
                     </div>
                 </div>
-                <div class="chart-meta">
-                    <p class="user">Predictor: ${chart.user.username}</p>
-                    <p class="date">Target: ${formatDate(chart.target_date)}</p>
-                    <p class="created">Created: ${formatDate(chart.created_at)}</p>
-                </div>
-            </div>
-            <div class="chart-actions">
-                <button class="btn btn-sm btn-outline" onclick="viewChart(${chart.id})">
-                    View Details
-                </button>
-            </div>
-        </div>
-    `).join('');
-    
-    chartsGrid.innerHTML = chartsHTML;
+            `;
+        }).join('');
+        
+        chartsGrid.innerHTML = chartsHTML;
+        console.log('Charts successfully displayed');
+        
+    } catch (error) {
+        console.error('Error generating charts HTML:', error);
+        chartsGrid.innerHTML = '<div class="no-results">Error displaying charts</div>';
+    }
 }
 
 function displaySampleCharts() {
@@ -994,6 +1029,11 @@ function formatPrice(price) {
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString();
+}
+
+function viewChart(chartId) {
+    // For now, just show an alert with chart details
+    alert(`Chart details for ID: ${chartId}\n\nThis feature will show detailed chart analysis and prediction history.`);
 }
 
 function debounce(func, wait) {
@@ -1500,4 +1540,232 @@ function getMobileChartConfig(width, height) {
             mouse: false,
         },
     };
+}
+
+// Prediction submission functionality
+function submitPrediction() {
+    console.log('Submit prediction clicked');
+    
+    // Get form values
+    const stockSelect = document.getElementById('stockSelect');
+    const currentPrice = document.getElementById('currentPrice');
+    const predictedPrice = document.getElementById('predictedPrice');
+    const targetDate = document.getElementById('targetDate');
+    const duration = document.getElementById('duration');
+    const sharePublicly = document.getElementById('isPublic');
+    
+    // Validate required fields
+    if (!stockSelect.value) {
+        alert('종목을 선택해주세요.');
+        return;
+    }
+    
+    if (!currentPrice.value || currentPrice.value === 'N/A' || currentPrice.value === 'Error') {
+        alert('현재 가격이 로드되지 않았습니다. 다른 종목을 선택해보세요.');
+        return;
+    }
+    
+    if (!predictedPrice.value) {
+        alert('예측 가격을 입력해주세요.');
+        return;
+    }
+    
+    if (!targetDate.value) {
+        alert('목표 날짜를 선택해주세요.');
+        return;
+    }
+    
+    // Create prediction object
+    const prediction = {
+        symbol: stockSelect.value,
+        stockName: stockSelect.options[stockSelect.selectedIndex].text,
+        currentPrice: parseFloat(currentPrice.value),
+        predictedPrice: parseFloat(predictedPrice.value),
+        targetDate: targetDate.value,
+        forecastPeriod: duration.value,
+        sharePublicly: sharePublicly ? sharePublicly.checked : false,
+        createdAt: new Date().toISOString(),
+        userId: 'anonymous', // For now, since we don't have user auth
+        accuracy: null, // Will be calculated later
+        status: 'pending'
+    };
+    
+    // Calculate prediction change percentage
+    const changePercent = ((prediction.predictedPrice - prediction.currentPrice) / prediction.currentPrice * 100).toFixed(2);
+    prediction.changePercent = parseFloat(changePercent);
+    
+    console.log('Prediction data:', prediction);
+    
+    // Save to localStorage (since we don't have backend integration yet)
+    let predictions = JSON.parse(localStorage.getItem('stockPredictions') || '[]');
+    prediction.id = Date.now(); // Simple ID generation
+    predictions.push(prediction);
+    localStorage.setItem('stockPredictions', JSON.stringify(predictions));
+    
+    // Show success message
+    showPredictionSuccess(prediction);
+    
+    // Clear form
+    clearPredictionForm();
+    
+    // Refresh predictions display
+    refreshPredictionsDisplay();
+}
+
+function showPredictionSuccess(prediction) {
+    const message = `
+        ✅ 예측이 성공적으로 저장되었습니다!
+        
+        📊 ${prediction.stockName}
+        💰 현재가: $${prediction.currentPrice}
+        🎯 예측가: $${prediction.predictedPrice}
+        📈 변화율: ${prediction.changePercent > 0 ? '+' : ''}${prediction.changePercent}%
+        📅 목표일: ${prediction.targetDate}
+        
+        ${prediction.sharePublicly ? '🌐 공개 예측으로 저장되었습니다.' : '🔒 비공개 예측으로 저장되었습니다.'}
+    `;
+    
+    alert(message);
+}
+
+function clearPredictionForm() {
+    document.getElementById('stockSelect').value = '';
+    document.getElementById('currentPrice').value = '';
+    document.getElementById('predictedPrice').value = '';
+    document.getElementById('targetDate').value = '';
+    document.getElementById('duration').value = '1week';
+    const sharePublicly = document.getElementById('isPublic');
+    if (sharePublicly) sharePublicly.checked = true;
+}
+
+// Start prediction function (for the main CTA button)
+function startPrediction() {
+    console.log('Start prediction clicked');
+    scrollToSection('prediction');
+}
+
+// Show login modal function (referenced in HTML)
+function showLoginModal() {
+    alert('로그인 기능은 곧 구현될 예정입니다!');
+}
+
+// Load and display saved predictions
+function loadMyPredictions() {
+    const predictions = JSON.parse(localStorage.getItem('stockPredictions') || '[]');
+    
+    // Update statistics
+    updatePredictionStats(predictions);
+    
+    // Display predictions list
+    displayPredictionsList(predictions);
+}
+
+function updatePredictionStats(predictions) {
+    const totalElement = document.getElementById('totalPredictions');
+    const publicElement = document.getElementById('publicPredictions');
+    const avgReturnElement = document.getElementById('avgReturn');
+    
+    if (!totalElement || !publicElement || !avgReturnElement) return;
+    
+    const total = predictions.length;
+    const publicCount = predictions.filter(p => p.sharePublicly).length;
+    
+    // Calculate average expected return
+    let avgReturn = 0;
+    if (total > 0) {
+        const totalReturn = predictions.reduce((sum, p) => {
+            const currentPrice = parseFloat(p.currentPrice);
+            const predictedPrice = parseFloat(p.predictedPrice);
+            const returnPercent = ((predictedPrice - currentPrice) / currentPrice) * 100;
+            return sum + returnPercent;
+        }, 0);
+        avgReturn = totalReturn / total;
+    }
+    
+    totalElement.textContent = total;
+    publicElement.textContent = publicCount;
+    avgReturnElement.textContent = avgReturn.toFixed(1) + '%';
+}
+
+function displayPredictionsList(predictions) {
+    const listElement = document.getElementById('predictionsList');
+    const noDataElement = document.getElementById('noPredictions');
+    
+    if (!listElement || !noDataElement) return;
+    
+    if (predictions.length === 0) {
+        listElement.style.display = 'none';
+        noDataElement.style.display = 'block';
+        return;
+    }
+    
+    listElement.style.display = 'block';
+    noDataElement.style.display = 'none';
+    
+    // Sort predictions by date (newest first)
+    const sortedPredictions = [...predictions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    listElement.innerHTML = sortedPredictions.map(prediction => {
+        const currentPrice = parseFloat(prediction.currentPrice);
+        const predictedPrice = parseFloat(prediction.predictedPrice);
+        const changePercent = ((predictedPrice - currentPrice) / currentPrice) * 100;
+        const changeClass = changePercent >= 0 ? 'positive' : 'negative';
+        const changeSymbol = changePercent >= 0 ? '+' : '';
+        
+        const createdDate = new Date(prediction.timestamp).toLocaleDateString('ko-KR');
+        const targetDate = new Date(prediction.targetDate).toLocaleDateString('ko-KR');
+        
+        return `
+            <div class="prediction-card">
+                <div class="prediction-header">
+                    <div class="prediction-stock">${prediction.stockName}</div>
+                    <div class="prediction-date">${createdDate}</div>
+                </div>
+                
+                <div class="prediction-details">
+                    <div class="prediction-detail">
+                        <div class="prediction-detail-label">현재 가격</div>
+                        <div class="prediction-detail-value">$${currentPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="prediction-detail">
+                        <div class="prediction-detail-label">예측 가격</div>
+                        <div class="prediction-detail-value">$${predictedPrice.toFixed(2)}</div>
+                    </div>
+                    <div class="prediction-detail">
+                        <div class="prediction-detail-label">목표 날짜</div>
+                        <div class="prediction-detail-value">${targetDate}</div>
+                    </div>
+                    <div class="prediction-detail">
+                        <div class="prediction-detail-label">예상 수익률</div>
+                        <div class="prediction-detail-value prediction-change ${changeClass}">
+                            ${changeSymbol}${changePercent.toFixed(2)}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prediction-status">
+                    <span class="status-badge ${prediction.sharePublicly ? 'public' : 'private'}">
+                        ${prediction.sharePublicly ? '🌐 공개' : '🔒 비공개'}
+                    </span>
+                    <span class="prediction-detail-label">예측 기간: ${prediction.duration}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Initialize predictions display when page loads
+function initMyPredictions() {
+    // Load predictions when the page loads
+    if (document.getElementById('predictionsList')) {
+        loadMyPredictions();
+    }
+}
+
+// Update the existing submitPrediction function to refresh the predictions display
+function refreshPredictionsDisplay() {
+    // Refresh the predictions display if we're on that section
+    if (document.getElementById('predictionsList')) {
+        loadMyPredictions();
+    }
 }

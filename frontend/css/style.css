@@ -1765,6 +1765,18 @@ section p {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.form-input[readonly] {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #e9ecef;
+}
+
+.form-input[readonly]:focus {
+    border-color: #e9ecef;
+    box-shadow: none;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1777,6 +1789,161 @@ section p {
     border-radius: 10px;
     padding: 1rem;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 내 예측 섹션 */
+.my-predictions-section {
+    background: #f8f9fa;
+    padding: 4rem 0;
+}
+
+.predictions-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.predictions-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.predictions-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.prediction-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prediction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.prediction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.prediction-stock {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.prediction-date {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.prediction-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.prediction-detail {
+    text-align: center;
+}
+
+.prediction-detail-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.prediction-detail-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.prediction-change {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.prediction-change.positive {
+    color: #28a745;
+}
+
+.prediction-change.negative {
+    color: #dc3545;
+}
+
+.prediction-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-badge.public {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-badge.private {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: #6c757d;
+    margin-bottom: 2rem;
 }
 
 /* 랭킹 */

@@ -28,6 +28,9 @@
                     <a href="#prediction" class="nav-link">예측하기</a>
                 </li>
                 <li class="nav-item">
+                    <a href="#my-predictions" class="nav-link">내 예측</a>
+                </li>
+                <li class="nav-item">
                     <a href="#ranking" class="nav-link">랭킹</a>
                 </li>
                 <li class="nav-item">
@@ -147,7 +150,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="currentPrice">현재 가격</label>
-                        <input type="number" id="currentPrice" class="form-input" readonly>
+                        <input type="number" id="currentPrice" class="form-input" placeholder="가격이 자동으로 로드됩니다" readonly>
                     </div>
                     <div class="form-group">
                         <label for="predictedPrice">예측 가격</label>
@@ -188,6 +191,45 @@
 
             <div class="chart-container glass">
                 <div id="predictionChart"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 내 예측 섹션 -->
+    <section id="my-predictions" class="section my-predictions-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title animate-fade-in-up">내 예측 현황</h2>
+                <p class="section-subtitle">저장된 예측들을 확인하고 성과를 추적해보세요</p>
+            </div>
+
+            <div class="predictions-container">
+                <div class="predictions-stats card">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalPredictions">0</div>
+                        <div class="stat-label">총 예측 수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="publicPredictions">0</div>
+                        <div class="stat-label">공개 예측</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="avgReturn">0%</div>
+                        <div class="stat-label">평균 예상 수익률</div>
+                    </div>
+                </div>
+
+                <div class="predictions-list" id="predictionsList">
+                    <!-- 예측 목록이 동적으로 추가됨 -->
+                </div>
+
+                <div class="no-predictions" id="noPredictions" style="display: none;">
+                    <div class="empty-state">
+                        <h3>아직 저장된 예측이 없습니다</h3>
+                        <p>첫 번째 예측을 만들어보세요!</p>
+                        <button class="btn btn-primary" onclick="scrollToSection('prediction')">예측하기</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -298,6 +340,7 @@
                     <ul>
                         <li><a href="#charts">차트 보드</a></li>
                         <li><a href="#prediction">예측하기</a></li>
+                        <li><a href="#my-predictions">내 예측</a></li>
                         <li><a href="#ranking">랭킹</a></li>
                         <li><a href="#events">이벤트</a></li>
                     </ul>
@@ -397,6 +440,6 @@
         </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=1.4"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from . import views
-from .static_serve import serve_static_with_mime
+from .static_serve import serve_static_with_mime, serve_frontend_file
 from charts.views import get_rankings, get_events
 import os
 
@@ -24,8 +24,10 @@ urlpatterns = [
     path('', views.home, name='home'),
 ]
 
-# 정적 파일 서빙 설정 - 커스텀 MIME 타입 핸들링 (최우선)
-urlpatterns.insert(0, re_path(r'^static/(?P<path>.*)$', serve_static_with_mime, name='serve_static_custom'))
+# Frontend 파일 직접 서빙 (최우선)
+urlpatterns.insert(0, re_path(r'^(?P<path>(?:js|css|images)/.*\.(js|css|png|jpg|jpeg|gif|ico|svg))$', serve_frontend_file, name='serve_frontend'))
+# 정적 파일 서빙 설정 - 커스텀 MIME 타입 핸들링
+urlpatterns.insert(1, re_path(r'^static/(?P<path>.*)$', serve_static_with_mime, name='serve_static_custom'))
 
 # 백업 정적 파일 서빙 (표준 방식)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
