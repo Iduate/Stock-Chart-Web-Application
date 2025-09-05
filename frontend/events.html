@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <met    <!-- 이벤트 섹션 -->
+    <section id="events" class="section events-section">
+        <div class="container">
+            <div class="page-header">
+                <h1>🎯 트레이딩 이벤트</h1>
+                <p>다양한 이벤트에 참여하고 특별한 리워드를 획득하세요</p>
+            </div>
+
+            <div class="events-hero">
+                <div class="hero-content">
+                    <h2>🔥 이달의 메가 챌린지</h2>
+                    <p>가장 높은 수익률을 달성한 상위 10명에게 특별 리워드 지급</p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="number">₩10,000,000</span>
+                            <label>총 상금</label>
+                        </div>
+                        <div class="stat">
+                            <span class="number">1,247</span>
+                            <label>참가자</label>
+                        </div>
+                        <div class="stat">
+                            <span class="number">12일</span>
+                            <label>남은 시간</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg">지금 참가하기</button>
+                </div>
+                <div class="hero-visual">
+                    <div class="trophy-animation">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="events-navigation">
+                <div class="event-filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-globe"></i>
+                        <span>전체 이벤트</span>
+                    </button>
+                    <button class="filter-btn" data-filter="competition">
+                        <i class="fas fa-trophy"></i>
+                        <span>경진대회</span>
+                    </button>
+                    <button class="filter-btn" data-filter="challenge">
+                        <i class="fas fa-target"></i>
+                        <span>챌린지</span>
+                    </button>
+                    <button class="filter-btn" data-filter="learning">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>학습 이벤트</span>
+                    </button>
+                    <button class="filter-btn" data-filter="social">
+                        <i class="fas fa-users"></i>
+                        <span>소셜 이벤트</span>
+                    </button>
+                </div>
+                
+                <div class="event-search">
+                    <input type="text" class="search-input" placeholder="이벤트 검색...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <div class="events-grid">
+                <!-- Featured Event -->
+                <div class="event-card featured" data-category="competition">
+                    <div class="event-badge featured-badge">🌟 Featured</div>
+                    <div class="event-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad1)'/%3E%3Ctext x='200' y='100' text-anchor='middle' fill='white' font-size='32' font-weight='bold'%3E🏆%3C/text%3E%3Ctext x='200' y='130' text-anchor='middle' fill='white' font-size='16'%3E월간 챔피언십%3C/text%3E%3C/svg%3E" alt="Event Image">
+                        <div class="event-overlay">
+                            <span class="event-type">📈 경진대회</span>
+                        </div>
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <h3>월간 트레이딩 챔피언십</h3>
+                            <div class="event-status active">진행 중</div>
+                        </div>
+                        <p class="event-description">
+                            한 달 동안 가장 높은 수익률을 달성한 트레이더를 찾습니다. 
+                            실력을 입증하고 거액의 상금을 획득하세요!
+                        </p>
+                        <div class="event-details">
+                            <div class="detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>2024.01.01 - 2024.01.31</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-users"></i>
+                                <span>1,247명 참가</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-trophy"></i>
+                                <span>₩5,000,000 상금</span>
+                            </div>
+                        </div>
+                        <div class="event-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <span class="progress-text">12일 남음</span>
+                        </div>
+                        <div class="event-actions">
+                            <button class="btn btn-primary">참가하기</button>
+                            <button class="btn btn-outline">자세히 보기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regular Events -->
+                <div class="event-card" data-category="challenge">
+                    <div class="event-badge challenge-badge">🎯 챌린지</div>
+                    <div class="event-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306d6a0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad2)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📊%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E7일 챌린지%3C/text%3E%3C/svg%3E" alt="Challenge">
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <h3>7일 연속 예측 챌린지</h3>
+                            <div class="event-status upcoming">곧 시작</div>
+                        </div>
+                        <p class="event-description">
+                            7일 연속으로 정확한 예측을 달성하면 특별 배지와 보너스 포인트를 드립니다.
+                        </p>
+                        <div class="event-details">
+                            <div class="detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>2024.02.01 시작</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-gift"></i>
+                                <span>배지 + 1000P</span>
+                            </div>
+                        </div>
+                        <div class="event-actions">
+                            <button class="btn btn-outline">알림 설정</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card" data-category="learning">
+                    <div class="event-badge learning-badge">🎓 학습</div>
+                    <div class="event-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad3)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📚%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E웨비나%3C/text%3E%3C/svg%3E" alt="Learning">
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <h3>전문가 웨비나: 기술적 분석 마스터</h3>
+                            <div class="event-status active">라이브</div>
+                        </div>
+                        <p class="event-description">
+                            전문 트레이더의 실시간 기술적 분석 강의에 참여하세요.
+                        </p>
+                        <div class="event-details">
+                            <div class="detail">
+                                <i class="fas fa-clock"></i>
+                                <span>오후 8:00 - 9:30</span>
+                            </div>
+                            <div class="detail">
+                                <i class="fas fa-users"></i>
+                                <span>89명 참여 중</span>
+                            </div>
+                        </div>
+                        <div class="event-actions">
+                            <button class="btn btn-primary">참여하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-card" data-category="social">
+                    <div class="event-badge social-badge">👥 소셜</div>
+                    <div class="event-image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23be185d;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad4)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E🤝%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E커뮤니티%3C/text%3E%3C/svg%3E" alt="Social">
+                    </div>
+                    <div class="event-content">
+                        <div class="event-header">
+                            <h3>신규 회원 추천 이벤트</h3>
+                            <div class="event-status active">진행 중</div>
+                        </div>
+                        <p class="event-description">
+                            친구를 추천하고 둘 다 특별 혜택을 받으세요!
+                        </p>
+                        <div class="event-details">
+                            <div class="detail">
+                                <i class="fas fa-gift"></i>
+                                <span>추천인 + 신규 모두 혜택</span>
+                            </div>
+                        </div>
+                        <div class="event-actions">
+                            <button class="btn btn-primary">친구 초대</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-events-section">
+                <h3>🎪 내 이벤트 참가 현황</h3>
+                <div class="my-events-grid">
+                    <div class="my-event-card">
+                        <div class="event-icon">🏆</div>
+                        <div class="event-info">
+                            <h4>월간 챔피언십</h4>
+                            <p>현재 순위: <strong>#23</strong></p>
+                            <div class="progress-indicator">
+                                <span class="rank-badge bronze">브론즈</span>
+                                <span class="next-rank">실버까지 5등 ↑</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">현황 보기</button>
+                    </div>
+                    
+                    <div class="my-event-card">
+                        <div class="event-icon">🎯</div>
+                        <div class="event-info">
+                            <h4>7일 연속 예측</h4>
+                            <p>진행도: <strong>4/7일</strong></p>
+                            <div class="streak-indicator">
+                                <div class="streak-dots">
+                                    <span class="dot completed"></span>
+                                    <span class="dot completed"></span>
+                                    <span class="dot completed"></span>
+                                    <span class="dot completed"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-primary">예측하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="events-info">
+                <h3>💡 이벤트 안내</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>참가 방법</h4>
+                        <p>이벤트 카드의 '참가하기' 버튼을 클릭하여 쉽게 참가할 수 있습니다.</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-trophy"></i>
+                        <h4>리워드</h4>
+                        <p>상금, 배지, 포인트, 프리미엄 기능 등 다양한 리워드가 제공됩니다.</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-bell"></i>
+                        <h4>알림</h4>
+                        <p>관심 있는 이벤트의 알림을 설정하여 놓치지 마세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>F-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이벤트 - StockChart</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="home.html" class="nav-link">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a href="charts.html" class="nav-link">차트 보드</a>
+                </li>
+                <li class="nav-item">
+                    <a href="prediction.html" class="nav-link">예측하기</a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-predictions.html" class="nav-link">내 예측</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ranking.html" class="nav-link">랭킹</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link active">이벤트</a>
+                </li>
+                <li class="nav-item">
+                    <a href="subscription.html" class="nav-link">구독</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link login-btn" onclick="showLoginModal()">로그인</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 이벤트 섹션 -->
+    <section id="events" class="section events-section">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="animate-fade-in-up">진행중인 이벤트</h1>
+                <p class="section-subtitle">예측 대회에 참가하고 상금을 받아보세요</p>
+            </div>
+
+            <div class="events-grid" id="eventsGrid">
+                <!-- 이벤트 카드들이 동적으로 추가됨 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>StockChart</h4>
+                    <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>서비스</h4>
+                    <ul>
+                        <li><a href="charts.html">차트 보드</a></li>
+                        <li><a href="prediction.html">예측하기</a></li>
+                        <li><a href="my-predictions.html">내 예측</a></li>
+                        <li><a href="ranking.html">랭킹</a></li>
+                        <li><a href="events.html">이벤트</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>고객지원</h4>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">문의하기</a></li>
+                        <li><a href="#">이용약관</a></li>
+                        <li><a href="#">개인정보처리방침</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>연락처</h4>
+                    <p>이메일: support@stockchart.kr</p>
+                    <p>전화: 02-1234-5678</p>
+                    <p>주소: 서울시 강남구 테헤란로 123</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideLoginModal()">&times;</span>
+            <h2>로그인</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="이메일" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">로그인</button>
+            </form>
+            <div class="social-login">
+                <p>또는 소셜 계정으로 로그인</p>
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    <i class="fab fa-google"></i> Google로 로그인
+                </button>
+                <button class="btn btn-apple" onclick="loginWithApple()">
+                    <i class="fab fa-apple"></i> Apple로 로그인
+                </button>
+            </div>
+            <p class="modal-footer">
+                계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 회원가입 모달 -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideSignupModal()">&times;</span>
+            <h2>회원가입</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <input type="text" id="signupUsername" placeholder="사용자명" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="signupEmail" placeholder="이메일" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signupPassword" placeholder="비밀번호" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="agreeTerms" required>
+                        이용약관 및 개인정보처리방침에 동의합니다.
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">회원가입</button>
+            </form>
+            <div class="social-login">
+                <p>또는 소셜 계정으로 가입</p>
+                <button class="btn btn-google" onclick="signupWithGoogle()">
+                    <i class="fab fa-google"></i> Google로 가입
+                </button>
+                <button class="btn btn-apple" onclick="signupWithApple()">
+                    <i class="fab fa-apple"></i> Apple로 가입
+                </button>
+            </div>
+            <p class="modal-footer">
+                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/app.js?v=1.5"></script>
+</body>
+</html>

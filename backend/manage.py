@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!"C:\Users\DAVID IDUATE\Desktop\STOCK\.venv\Scripts\python.exe"
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

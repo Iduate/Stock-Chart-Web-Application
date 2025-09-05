@@ -1,9 +1,41 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import os
 from django.conf import settings
+
+def serve_html_page(request, page_name=None):
+    """다중 페이지 HTML 파일들을 서빙하는 뷰"""
+    # 기본 페이지는 home.html
+    if not page_name:
+        page_name = 'home.html'
+    elif not page_name.endswith('.html'):
+        page_name += '.html'
+    
+    # 허용된 페이지 목록 (보안을 위해)
+    allowed_pages = [
+        'home.html', 'charts.html', 'prediction.html', 
+        'my-predictions.html', 'ranking.html', 'events.html', 
+        'subscription.html', 'index.html'
+    ]
+    
+    if page_name not in allowed_pages:
+        raise Http404(f"Page '{page_name}' not found")
+    
+    # frontend 디렉토리의 HTML 파일 경로
+    frontend_path = os.path.join(settings.BASE_DIR.parent, 'frontend', page_name)
+    
+    try:
+        with open(frontend_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        
+        return HttpResponse(content, content_type='text/html')
+        
+    except FileNotFoundError:
+        raise Http404(f"Page '{page_name}' not found")
+    except Exception as e:
+        return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html')
 
 def home(request):
     """홈페이지 뷰 - frontend/index.html 서빙 (CSS/JS 인라인 포함)"""

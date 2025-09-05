@@ -20,6 +20,16 @@ urlpatterns = [
     # 추가 API 엔드포인트
     path('api/rankings/<str:ranking_type>/', get_rankings, name='rankings'),
     path('api/events/', get_events, name='events'),
+    
+    # Multi-page HTML routes
+    path('home.html', views.serve_html_page, {'page_name': 'home.html'}, name='home_page'),
+    path('charts.html', views.serve_html_page, {'page_name': 'charts.html'}, name='charts_page'),
+    path('prediction.html', views.serve_html_page, {'page_name': 'prediction.html'}, name='prediction_page'),
+    path('my-predictions.html', views.serve_html_page, {'page_name': 'my-predictions.html'}, name='my_predictions_page'),
+    path('ranking.html', views.serve_html_page, {'page_name': 'ranking.html'}, name='ranking_page'),
+    path('events.html', views.serve_html_page, {'page_name': 'events.html'}, name='events_page'),
+    path('subscription.html', views.serve_html_page, {'page_name': 'subscription.html'}, name='subscription_page'),
+    
     # 홈페이지는 마지막에 위치 (모든 static 파일 처리 후)
     path('', views.home, name='home'),
 ]
