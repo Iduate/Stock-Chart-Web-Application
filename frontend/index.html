@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockChart - 주식차트 예측 플랫폼</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         // Redirect to home page
         window.location.href = 'home.html';
     </script>
     <style>
         body {
-            font-family: 'Noto Sans KR', sans-serif;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #131722;
             color: white;
         }
         .loader {
@@ -26,11 +27,18 @@
         .loader h1 {
             margin-bottom: 20px;
             font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader h1 i {
+            margin-right: 12px;
+            color: #2962ff;
         }
         .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
+            border: 4px solid rgba(41, 98, 255, 0.2);
             border-radius: 50%;
-            border-top: 4px solid white;
+            border-top: 4px solid #2962ff;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
@@ -40,15 +48,33 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .loading-message {
+            margin-top: 16px;
+            color: #787b86;
+            font-size: 14px;
+        }
+        .manual-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #2962ff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .manual-link:hover {
+            color: #5b8eff;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="loader">
-        <h1>📈 StockChart</h1>
+        <h1><i class="fas fa-chart-line"></i> StockChart</h1>
         <div class="spinner"></div>
-        <p>페이지를 로딩 중입니다...</p>
-        <p><a href="home.html" style="color: white; text-decoration: underline;">여기를 클릭하여 이동하기</a></p>
+        <p class="loading-message">페이지를 로딩 중입니다...</p>
+        <p><a href="home.html" class="manual-link">여기를 클릭하여 이동하기</a></p>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 </html>
 <body>
