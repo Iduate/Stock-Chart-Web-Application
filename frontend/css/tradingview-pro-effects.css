@@ -1,0 +1,332 @@
+/* TradingView Pro Animations and Trust Indicators */
+
+/* Chart Loading Animation */
+.chart-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--tv-pro-chart-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: opacity 0.4s ease;
+}
+
+.chart-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(41, 98, 255, 0.2);
+  border-radius: 50%;
+  border-top: 3px solid var(--tv-pro-bright-blue);
+  animation: chart-spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes chart-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.chart-loading-text {
+  font-size: 0.85rem;
+  color: var(--tv-pro-ui-text-secondary);
+  font-weight: 500;
+}
+
+/* Data Source Indicator */
+.data-source-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background-color: rgba(19, 23, 34, 0.7);
+  color: var(--tv-pro-ui-text-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.data-source-indicator i {
+  color: var(--tv-pro-trust-indicator);
+  margin-right: 4px;
+  font-size: 0.7rem;
+}
+
+/* Security Badge */
+.security-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(19, 23, 34, 0.7);
+  color: var(--tv-pro-verified-badge);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  z-index: 5;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium indicators */
+.premium-indicator {
+  display: inline-flex;
+  align-items: center;
+  color: var(--tv-pro-yellow);
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-left: 8px;
+}
+
+.premium-indicator i {
+  margin-right: 3px;
+}
+
+/* Theme Toggle */
+.theme-toggle-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.theme-toggle {
+  background-color: var(--tv-pro-button-secondary);
+  color: var(--tv-pro-ui-text);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--tv-pro-shadow-md);
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--tv-pro-button-secondary-hover);
+  transform: translateY(-2px);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+}
+
+/* Light Theme Overrides */
+body.light-theme {
+  --tv-pro-chart-bg: #FFFFFF;
+  --tv-pro-ui-bg: #F5F5F5;
+  --tv-pro-ui-element: #E0E3EB;
+  --tv-pro-ui-element-hover: #D1D4DC;
+  --tv-pro-ui-border: #D1D4DC;
+  --tv-pro-ui-text: #131722;
+  --tv-pro-ui-text-secondary: #787B86;
+  --tv-pro-darker-blue: #F5F5F5;
+  --tv-pro-card-bg: #FFFFFF;
+  --tv-pro-card-border: #E0E3EB;
+  --tv-pro-header-bg: #FFFFFF;
+  --tv-pro-header-border: #E0E3EB;
+  --tv-pro-chart-grid: #E0E3EB77;
+}
+
+/* Chart Tooltip */
+.chart-tooltip {
+  background-color: var(--tv-pro-card-bg);
+  border: 1px solid var(--tv-pro-card-border);
+  box-shadow: var(--tv-pro-shadow-md);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+  z-index: 1000;
+}
+
+.chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.chart-tooltip-label {
+  color: var(--tv-pro-ui-text-secondary);
+  margin-right: 12px;
+}
+
+.chart-tooltip-value {
+  color: var(--tv-pro-ui-text);
+  font-weight: 600;
+  font-family: var(--tv-font-mono);
+}
+
+/* Time Period Selector */
+.time-period-selector {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--tv-pro-shadow-sm);
+}
+
+.time-period-option {
+  padding: 6px 12px;
+  background-color: var(--tv-pro-ui-element);
+  color: var(--tv-pro-ui-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-align: center;
+  min-width: 40px;
+}
+
+.time-period-option:hover {
+  background-color: var(--tv-pro-ui-element-hover);
+  color: var(--tv-pro-ui-text);
+}
+
+.time-period-option.active {
+  background-color: var(--tv-pro-button-primary);
+  color: white;
+}
+
+/* Trust animation for data */
+.trusted-data-update {
+  animation: trusted-pulse 1s ease;
+}
+
+@keyframes trusted-pulse {
+  0% { background-color: rgba(8, 153, 129, 0); }
+  50% { background-color: rgba(8, 153, 129, 0.1); }
+  100% { background-color: rgba(8, 153, 129, 0); }
+}
+
+/* Pro subscription badge */
+.pro-badge {
+  background: linear-gradient(90deg, #F7CB4D, #F0B90B);
+  color: var(--tv-pro-ui-text-inverse);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-left: 6px;
+  box-shadow: 0 2px 4px rgba(240, 185, 11, 0.3);
+}
+
+/* Chart price tag - professional TradingView style */
+.chart-price-tag {
+  position: absolute;
+  right: 0;
+  background-color: var(--tv-pro-card-bg);
+  border-left: 1px solid var(--tv-pro-card-border);
+  border-bottom: 1px solid var(--tv-pro-card-border);
+  padding: 4px 6px;
+  font-size: 0.8rem;
+  border-bottom-left-radius: 4px;
+  font-weight: 600;
+  font-family: var(--tv-font-mono);
+  color: var(--tv-pro-ui-text);
+  z-index: 3;
+}
+
+/* Analyst recommendations */
+.analyst-ratings {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: var(--tv-pro-ui-element);
+  border: 1px solid var(--tv-pro-card-border);
+}
+
+.rating-label {
+  margin-right: 12px;
+  color: var(--tv-pro-ui-text);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.rating-bars {
+  display: flex;
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rating-buy {
+  background-color: var(--tv-pro-green);
+}
+
+.rating-hold {
+  background-color: var(--tv-pro-orange);
+}
+
+.rating-sell {
+  background-color: var(--tv-pro-red);
+}
+
+.rating-count {
+  margin-left: 12px;
+  color: var(--tv-pro-ui-text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Dark mode transition */
+.dark-mode-transition {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Chart legend */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--tv-pro-card-border);
+  background-color: var(--tv-pro-chart-bg);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.legend-label {
+  color: var(--tv-pro-ui-text-secondary);
+  margin-right: 4px;
+}
+
+.legend-value {
+  color: var(--tv-pro-ui-text);
+  font-weight: 600;
+  font-family: var(--tv-font-mono);
+}

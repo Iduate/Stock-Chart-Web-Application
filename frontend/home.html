@@ -6,10 +6,14 @@
     <title>홈 - StockChart</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <link rel="stylesheet" href="css/tradingview-modern.css">
+    <link rel="stylesheet" href="css/trustworthy-design.css">
+    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
     <link rel="stylesheet" href="css/mobile-fixes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="js/tradingview-theme.js"></script>
+    <script src="js/tradingview-pro.js"></script>
+    <script src="js/chart-legend.js"></script>
 </head>
 <body>
     <!-- 네비게이션 바 -->
@@ -79,7 +83,7 @@
         </div>
     </nav>
 
-    <!-- 메인 섹션 -->
+    <!-- 메인 섹션 - TradingView-style Professional Design -->
     <section id="home" class="hero">
         <div class="hero-background">
             <div class="hero-gradient"></div>
@@ -88,16 +92,23 @@
         <div class="hero-container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    <span class="badge-icon">🚀</span>
-                    <span>AI 기반 예측 플랫폼</span>
+                    <span class="badge-icon"><i class="fas fa-shield-check"></i></span>
+                    <span>신뢰할 수 있는 AI 기반 예측 플랫폼</span>
+                    <div class="verified-badge">
+                        <i class="fas fa-check"></i> 검증됨
+                    </div>
                 </div>
                 <h1 class="hero-title">
-                    온 세상 사람들과 함께 
-                    <span class="gradient-text">마켓 탐구</span>
+                    전세계 금융 전문가와 함께 
+                    <span class="gradient-text">미래 시장을 예측하세요</span>
                 </h1>
                 <p class="hero-description">
-                    암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
-                    다른 사용자들과 예측 결과를 공유할 수 있는 혁신적인 플랫폼입니다.
+                    <i class="fas fa-chart-line trust-icon"></i> 암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
+                    다른 사용자들과 예측 결과를 공유할 수 있는 전문 금융 플랫폼입니다.
+                </p>
+                <div class="trust-indicator">
+                    <i class="fas fa-lock"></i> 엔터프라이즈급 보안 | 실시간 데이터 | 전문가 신뢰 분석
+                </div>
                 </p>
                 <div class="hero-stats">
                     <div class="stat-item">

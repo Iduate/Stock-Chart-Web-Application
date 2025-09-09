@@ -1,0 +1,469 @@
+/* TradingView-inspired Professional Design - For increased trust and professional appearance */
+/* Import high quality fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* TradingView Pro Color Palette */
+  --tv-pro-dark-blue: #131722;
+  --tv-pro-darker-blue: #0c0e15;
+  --tv-pro-light-blue: #2a2e39;
+  --tv-pro-bright-blue: #2962FF;
+  --tv-pro-green: #089981;
+  --tv-pro-red: #F23645;
+  --tv-pro-orange: #FF9800;
+  --tv-pro-yellow: #FFD600;
+  --tv-pro-purple: #7E57C2;
+  
+  /* Professional UI Colors */
+  --tv-pro-ui-bg: #131722;
+  --tv-pro-ui-element: #2A2E39;
+  --tv-pro-ui-element-hover: #363C4E;
+  --tv-pro-ui-border: #4F5361;
+  --tv-pro-ui-text: #D1D4DC;
+  --tv-pro-ui-text-secondary: #787B86;
+  
+  /* Chart Colors */
+  --tv-pro-chart-bg: #131722;
+  --tv-pro-chart-grid: #24273244;
+  --tv-pro-chart-axis: #787B86;
+  
+  /* Trust Indicators */
+  --tv-pro-trust-indicator: #2962FF;
+  --tv-pro-verified-badge: #089981;
+  
+  /* UI Elements */
+  --tv-pro-button-primary: #2962FF;
+  --tv-pro-button-primary-hover: #1E53E5;
+  --tv-pro-button-secondary: #2A2E39;
+  --tv-pro-button-secondary-hover: #363C4E;
+  
+  /* Card Elements */
+  --tv-pro-card-bg: #1E222D;
+  --tv-pro-card-border: #2A2E39;
+  --tv-pro-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  
+  /* Header and Navigation */
+  --tv-pro-header-bg: #131722;
+  --tv-pro-header-border: #2A2E39;
+  
+  /* Shadows for depth */
+  --tv-pro-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --tv-pro-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --tv-pro-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Base styles for trustworthy appearance */
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background-color: var(--tv-pro-ui-bg);
+  color: var(--tv-pro-ui-text);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced Header Design */
+.navbar {
+  background-color: var(--tv-pro-header-bg);
+  border-bottom: 1px solid var(--tv-pro-header-border);
+  box-shadow: var(--tv-pro-shadow-sm);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo a {
+  display: flex;
+  align-items: center;
+  color: var(--tv-pro-ui-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.logo-text {
+  margin-left: 8px;
+  letter-spacing: -0.02em;
+}
+
+.nav-menu {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.nav-item {
+  height: 100%;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: var(--tv-pro-ui-text-secondary);
+  text-decoration: none;
+  padding: 0 16px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-link.active {
+  color: var(--tv-pro-ui-text);
+}
+
+.nav-link.active:after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--tv-pro-trust-indicator);
+}
+
+.nav-link:hover {
+  color: var(--tv-pro-ui-text);
+  background-color: rgba(42, 46, 57, 0.4);
+}
+
+.nav-link i {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+/* Trustworthy Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background-color: var(--tv-pro-button-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--tv-pro-button-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--tv-pro-button-secondary);
+  color: var(--tv-pro-ui-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--tv-pro-button-secondary-hover);
+}
+
+/* Trust Indicators */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--tv-pro-verified-badge);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.verified-badge i {
+  margin-right: 3px;
+  font-size: 0.7rem;
+}
+
+.trust-indicator {
+  display: flex;
+  align-items: center;
+  color: var(--tv-pro-ui-text-secondary);
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+.trust-indicator i {
+  color: var(--tv-pro-trust-indicator);
+  margin-right: 6px;
+  font-size: 0.8rem;
+}
+
+/* Professional Cards */
+.card {
+  background-color: var(--tv-pro-card-bg);
+  border: 1px solid var(--tv-pro-card-border);
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--tv-pro-shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--tv-pro-shadow-md);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--tv-pro-card-border);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--tv-pro-ui-text);
+  margin: 0;
+}
+
+/* Chart Container Enhancements */
+.chart-container {
+  background-color: var(--tv-pro-chart-bg);
+  border: 1px solid var(--tv-pro-card-border);
+  border-radius: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  box-shadow: var(--tv-pro-shadow-md);
+  position: relative;
+  height: 400px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--tv-pro-card-border);
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tv-pro-ui-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.chart-title-symbol {
+  margin-right: 8px;
+  font-weight: 700;
+  color: var(--tv-pro-ui-text);
+}
+
+.chart-title-exchange {
+  color: var(--tv-pro-ui-text-secondary);
+  font-weight: normal;
+  font-size: 0.8rem;
+}
+
+.chart-toolbar {
+  display: flex;
+  gap: 6px;
+}
+
+.chart-tool {
+  background: var(--tv-pro-button-secondary);
+  border: none;
+  color: var(--tv-pro-ui-text);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-tool:hover {
+  background: var(--tv-pro-button-secondary-hover);
+}
+
+/* Loading Indicators */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: var(--tv-pro-ui-text-secondary);
+}
+
+.loading i {
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Data Table Enhancements */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table th, .data-table td {
+  padding: 10px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--tv-pro-card-border);
+}
+
+.data-table th {
+  background-color: var(--tv-pro-ui-element);
+  color: var(--tv-pro-ui-text-secondary);
+  font-weight: 500;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.data-table td {
+  font-size: 0.9rem;
+}
+
+.data-table tr:hover td {
+  background-color: rgba(42, 46, 57, 0.3);
+}
+
+/* TrustBar - a visual indicator of reliability */
+.trust-bar-container {
+  margin-top: 24px;
+  padding: 12px 16px;
+  background-color: var(--tv-pro-darker-blue);
+  border-radius: 4px;
+  border-left: 4px solid var(--tv-pro-trust-indicator);
+  display: flex;
+  align-items: center;
+}
+
+.trust-bar-icon {
+  font-size: 1.5rem;
+  color: var(--tv-pro-trust-indicator);
+  margin-right: 14px;
+}
+
+.trust-bar-text {
+  flex: 1;
+}
+
+.trust-bar-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--tv-pro-ui-text);
+}
+
+.trust-bar-message {
+  font-size: 0.9rem;
+  color: var(--tv-pro-ui-text-secondary);
+}
+
+/* Footer enhancements */
+.footer {
+  background-color: var(--tv-pro-darker-blue);
+  border-top: 1px solid var(--tv-pro-card-border);
+  padding: 24px 0;
+  margin-top: 40px;
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.footer-section h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--tv-pro-ui-text);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: var(--tv-pro-ui-text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--tv-pro-ui-text);
+}
+
+.footer-bottom {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--tv-pro-card-border);
+  text-align: center;
+  color: var(--tv-pro-ui-text-secondary);
+  font-size: 0.8rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0 12px;
+  }
+  
+  .nav-link {
+    padding: 0 10px;
+    font-size: 0.8rem;
+  }
+  
+  .nav-link i {
+    margin-right: 4px;
+  }
+  
+  .chart-container {
+    height: 300px;
+  }
+}
