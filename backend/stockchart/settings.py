@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'payment_system',
     'payments',
     'market_data',
+    'marketdata',
 ]
 
 MIDDLEWARE = [
