@@ -1,0 +1,94 @@
+/* Mobile Optimization Fixes
+   These styles address issues with mobile display where charts and content
+   are getting cut off on the right side of small screens
+*/
+
+/* Prevent horizontal overflow on all elements */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+}
+
+/* Fix mobile body and html overflow */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* Chart container fixes for mobile */
+.chart-container, 
+.chart-container-hero, 
+.chart-container-prediction,
+.featured-chart-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    margin: 0 auto;
+}
+
+/* Make sure charts fit within their containers */
+.chart-container canvas,
+.chart-container-hero canvas,
+.chart-container-prediction canvas,
+.featured-chart-container canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Adjust grid for mobile views */
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .chart-card {
+        padding: var(--space-md);
+    }
+    
+    /* Ensure proper padding for content */
+    .container {
+        padding: 0 var(--space-md);
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Fix table overflow issues */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* Very small screens adjustments */
+@media (max-width: 480px) {
+    /* Adjust padding and margins for small devices */
+    .chart-card {
+        padding: var(--space-sm);
+    }
+    
+    /* Make sure fonts are smaller on mobile */
+    body {
+        font-size: 14px;
+    }
+    
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    
+    /* Simplify navigation for very small screens */
+    .nav-menu .nav-item {
+        padding: 0.5rem 0;
+    }
+    
+    /* Ensure chart heights are appropriate for small screens */
+    .chart-container,
+    .chart-container-hero,
+    .chart-container-prediction,
+    .featured-chart-container {
+        height: 250px !important;
+    }
+}

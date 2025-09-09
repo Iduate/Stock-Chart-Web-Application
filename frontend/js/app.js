@@ -1433,20 +1433,26 @@ function addChartResizeHandler() {
     let resizeTimeout;
     
     function resizeCharts() {
+        const isMobile = window.innerWidth <= 768;
+        const isVerySmall = window.innerWidth <= 480;
+        
         // Resize hero chart
         const heroChartElement = document.getElementById('heroChart');
         if (heroChartElement && window.heroChart) {
-            const newWidth = heroChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 800);
-            const newHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 400);
+            // Calculate safe dimensions that won't overflow
+            const containerWidth = heroChartElement.parentElement.clientWidth || window.innerWidth;
+            const safeWidth = Math.min(containerWidth - 20, window.innerWidth - 20);
+            const safeHeight = isVerySmall ? 250 : (isMobile ? 300 : 400);
             
             try {
                 window.heroChart.applyOptions({
-                    width: newWidth,
-                    height: newHeight
+                    width: safeWidth,
+                    height: safeHeight
                 });
                 
-                // Update chart element height
-                heroChartElement.style.height = newHeight + 'px';
+                // Update chart element dimensions
+                heroChartElement.style.width = safeWidth + 'px';
+                heroChartElement.style.height = safeHeight + 'px';
             } catch (error) {
                 console.error('Error resizing hero chart:', error);
             }
@@ -1455,8 +1461,10 @@ function addChartResizeHandler() {
         // Resize prediction chart
         const predictionChartElement = document.getElementById('predictionChart');
         if (predictionChartElement && window.predictionChart) {
-            const newWidth = predictionChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 600);
-            const newHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 300);
+            // Calculate safe dimensions
+            const containerWidth = predictionChartElement.parentElement.clientWidth || window.innerWidth;
+            const safeWidth = Math.min(containerWidth - 20, window.innerWidth - 20);
+            const safeHeight = isVerySmall ? 250 : (isMobile ? 280 : 300);
             
             try {
                 window.predictionChart.applyOptions({
@@ -1487,23 +1495,28 @@ function addChartResizeHandler() {
 // Initialize mobile-optimized chart configuration
 function getMobileChartConfig(width, height) {
     const isMobile = window.innerWidth <= 768;
+    const isVerySmall = window.innerWidth <= 480;
+    
+    // Ensure chart is never wider than screen
+    const safeWidth = Math.min(width, window.innerWidth - 20);
+    const safeHeight = isVerySmall ? 250 : (isMobile ? 300 : height);
     
     return {
-        width: width,
-        height: height,
+        width: safeWidth,
+        height: safeHeight,
         layout: {
             background: { type: 'solid', color: 'transparent' },
             textColor: '#333',
-            fontSize: isMobile ? 10 : 12,
+            fontSize: isVerySmall ? 9 : (isMobile ? 10 : 12),
         },
         grid: {
             vertLines: {
                 color: 'rgba(197, 203, 206, 0.5)',
-                visible: !isMobile || window.innerWidth > 480, // Hide grid on very small screens
+                visible: !isVerySmall, // Hide grid on very small screens
             },
             horzLines: {
                 color: 'rgba(197, 203, 206, 0.5)',
-                visible: !isMobile || window.innerWidth > 480,
+                visible: !isVerySmall,
             },
         },
         crosshair: {

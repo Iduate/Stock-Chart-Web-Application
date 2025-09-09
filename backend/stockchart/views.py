@@ -68,8 +68,16 @@ def home(request):
                     js_content = f.read()
                     inline_js += f"\n/* {js_file} */\n{js_content}\n"
         
+        # Load mobile fixes CSS
+        mobile_fixes_css = ""
+        mobile_fixes_path = os.path.join(settings.BASE_DIR.parent, 'frontend', 'css', 'mobile-fixes.css')
+        if os.path.exists(mobile_fixes_path):
+            with open(mobile_fixes_path, 'r', encoding='utf-8') as f:
+                mobile_fixes_css = f.read()
+                
         # CSS 링크들을 인라인 스타일로 교체
         content = content.replace('<link rel="stylesheet" href="css/style.css">', f'<style>{inline_css}</style>')
+        content = content.replace('<link rel="stylesheet" href="css/mobile-fixes.css">', f'<style>{mobile_fixes_css}</style>')
         content = content.replace('<link rel="stylesheet" href="css/market-data.css">', '')
         
         # JS 스크립트들을 인라인으로 교체
