@@ -23,10 +23,6 @@ class PaymentMethod(models.Model):
         verbose_name = '결제 수단'
         verbose_name_plural = '결제 수단들'
     
-    class Meta:
-        verbose_name = '결제 수단'
-        verbose_name_plural = '결제 수단들'
-    
     def __str__(self):
         return self.name
 
