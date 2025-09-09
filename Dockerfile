@@ -1,6 +1,9 @@
 # Use Python 3.12 slim image
 FROM python:3.12-slim
 
+# Cache bust: Django settings fix 2025-09-09
+ENV CACHE_BUST=20250909-fix-django-apps
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

@@ -19,6 +19,11 @@ class PaymentMethod(models.Model):
     description = models.TextField('설명', blank=True)
     
     class Meta:
+        app_label = 'payments'
+        verbose_name = '결제 수단'
+        verbose_name_plural = '결제 수단들'
+    
+    class Meta:
         verbose_name = '결제 수단'
         verbose_name_plural = '결제 수단들'
     
@@ -44,6 +49,7 @@ class PaymentPlan(models.Model):
     created_at = models.DateTimeField('생성일', auto_now_add=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '결제 요금제'
         verbose_name_plural = '결제 요금제들'
     
@@ -83,6 +89,7 @@ class Payment(models.Model):
     completed_at = models.DateTimeField('완료일', null=True, blank=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '결제'
         verbose_name_plural = '결제들'
         ordering = ['-created_at']
@@ -112,6 +119,7 @@ class Coupon(models.Model):
     created_at = models.DateTimeField('생성일', auto_now_add=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '쿠폰'
         verbose_name_plural = '쿠폰들'
     
@@ -127,6 +135,7 @@ class CouponUsage(models.Model):
     used_at = models.DateTimeField('사용일', auto_now_add=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '쿠폰 사용 내역'
         verbose_name_plural = '쿠폰 사용 내역들'
         unique_together = ['user', 'coupon']
@@ -141,6 +150,7 @@ class Referral(models.Model):
     created_at = models.DateTimeField('생성일', auto_now_add=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '추천'
         verbose_name_plural = '추천들'
         unique_together = ['referrer', 'referred']
@@ -162,5 +172,6 @@ class CommissionPayment(models.Model):
     created_at = models.DateTimeField('생성일', auto_now_add=True)
     
     class Meta:
+        app_label = 'payments'
         verbose_name = '수수료 지급'
         verbose_name_plural = '수수료 지급들'
