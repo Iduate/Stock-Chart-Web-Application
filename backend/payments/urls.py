@@ -5,6 +5,12 @@ from . import views
 router = DefaultRouter()
 router.register(r'plans', views.PaymentPlanViewSet)
 router.register(r'payments', views.PaymentViewSet)
+
+# Add webhook URL
+urlpatterns = [
+    path('', include(router.urls)),
+    path('webhook/paypal/', views.paypal_webhook, name='paypal-webhook'),
+]
 router.register(r'coupons', views.CouponViewSet)
 
 urlpatterns = [

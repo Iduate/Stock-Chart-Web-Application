@@ -1,7 +1,61 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <met    <!-- 이벤트 섹션 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이벤트 - StockChart</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="stylesheet" href="css/tradingview-modern.css">
+    <link rel="stylesheet" href="css/trustworthy-design.css">
+    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
+    <link rel="stylesheet" href="css/mobile-fixes.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="home.html" class="nav-link">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a href="charts.html" class="nav-link">차트 보드</a>
+                </li>
+                <li class="nav-item">
+                    <a href="prediction.html" class="nav-link">예측하기</a>
+                </li>
+                <li class="nav-item">
+                    <a href="my-predictions.html" class="nav-link">내 예측</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ranking.html" class="nav-link">랭킹</a>
+                </li>
+                <li class="nav-item">
+                    <a href="events.html" class="nav-link active">이벤트</a>
+                </li>
+                <li class="nav-item">
+                    <a href="subscription.html" class="nav-link">구독</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="showAuthModal()">로그인/가입</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 이벤트 섹션 -->
     <section id="events" class="section events-section">
         <div class="container">
             <div class="page-header">
@@ -59,7 +113,7 @@
                         <span>소셜 이벤트</span>
                     </button>
                 </div>
-                
+
                 <div class="event-search">
                     <input type="text" class="search-input" placeholder="이벤트 검색...">
                     <i class="fas fa-search"></i>
@@ -71,7 +125,8 @@
                 <div class="event-card featured" data-category="competition">
                     <div class="event-badge featured-badge">🌟 Featured</div>
                     <div class="event-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad1)'/%3E%3Ctext x='200' y='100' text-anchor='middle' fill='white' font-size='32' font-weight='bold'%3E🏆%3C/text%3E%3Ctext x='200' y='130' text-anchor='middle' fill='white' font-size='16'%3E월간 챔피언십%3C/text%3E%3C/svg%3E" alt="Event Image">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad1)'/%3E%3Ctext x='200' y='100' text-anchor='middle' fill='white' font-size='32' font-weight='bold'%3E🏆%3C/text%3E%3Ctext x='200' y='130' text-anchor='middle' fill='white' font-size='16'%3E월간 챔피언십%3C/text%3E%3C/svg%3E"
+                            alt="Event Image">
                         <div class="event-overlay">
                             <span class="event-type">📈 경진대회</span>
                         </div>
@@ -82,7 +137,7 @@
                             <div class="event-status active">진행 중</div>
                         </div>
                         <p class="event-description">
-                            한 달 동안 가장 높은 수익률을 달성한 트레이더를 찾습니다. 
+                            한 달 동안 가장 높은 수익률을 달성한 트레이더를 찾습니다.
                             실력을 입증하고 거액의 상금을 획득하세요!
                         </p>
                         <div class="event-details">
@@ -116,7 +171,8 @@
                 <div class="event-card" data-category="challenge">
                     <div class="event-badge challenge-badge">🎯 챌린지</div>
                     <div class="event-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306d6a0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad2)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📊%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E7일 챌린지%3C/text%3E%3C/svg%3E" alt="Challenge">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306d6a0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad2)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📊%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E7일 챌린지%3C/text%3E%3C/svg%3E"
+                            alt="Challenge">
                     </div>
                     <div class="event-content">
                         <div class="event-header">
@@ -145,7 +201,8 @@
                 <div class="event-card" data-category="learning">
                     <div class="event-badge learning-badge">🎓 학습</div>
                     <div class="event-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad3)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📚%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E웨비나%3C/text%3E%3C/svg%3E" alt="Learning">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad3)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📚%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E웨비나%3C/text%3E%3C/svg%3E"
+                            alt="Learning">
                     </div>
                     <div class="event-content">
                         <div class="event-header">
@@ -174,7 +231,8 @@
                 <div class="event-card" data-category="social">
                     <div class="event-badge social-badge">👥 소셜</div>
                     <div class="event-image">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23be185d;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad4)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E🤝%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E커뮤니티%3C/text%3E%3C/svg%3E" alt="Social">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23be185d;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='160' fill='url(%23grad4)'/%3E%3Ctext x='150' y='80' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E🤝%3C/text%3E%3Ctext x='150' y='110' text-anchor='middle' fill='white' font-size='14'%3E커뮤니티%3C/text%3E%3C/svg%3E"
+                            alt="Social">
                     </div>
                     <div class="event-content">
                         <div class="event-header">
@@ -212,7 +270,7 @@
                         </div>
                         <button class="btn btn-sm btn-outline">현황 보기</button>
                     </div>
-                    
+
                     <div class="my-event-card">
                         <div class="event-icon">🎯</div>
                         <div class="event-info">
@@ -259,185 +317,188 @@
     </section>F-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>이벤트 - StockChart</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/mobile-fixes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="home.html" class="nav-link">홈</a>
-                </li>
-                <li class="nav-item">
-                    <a href="charts.html" class="nav-link">차트 보드</a>
-                </li>
-                <li class="nav-item">
-                    <a href="prediction.html" class="nav-link">예측하기</a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-predictions.html" class="nav-link">내 예측</a>
-                </li>
-                <li class="nav-item">
-                    <a href="ranking.html" class="nav-link">랭킹</a>
-                </li>
-                <li class="nav-item">
-                    <a href="events.html" class="nav-link active">이벤트</a>
-                </li>
-                <li class="nav-item">
-                    <a href="subscription.html" class="nav-link">구독</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link login-btn" onclick="showLoginModal()">로그인</a>
-                </li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
+    </head>
 
-    <!-- 이벤트 섹션 -->
-    <section id="events" class="section events-section">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="animate-fade-in-up">진행중인 이벤트</h1>
-                <p class="section-subtitle">예측 대회에 참가하고 상금을 받아보세요</p>
+    <body>
+        <!-- 네비게이션 바 -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="home.html" class="nav-link">홈</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="charts.html" class="nav-link">차트 보드</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="prediction.html" class="nav-link">예측하기</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="my-predictions.html" class="nav-link">내 예측</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="ranking.html" class="nav-link">랭킹</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="events.html" class="nav-link active">이벤트</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="subscription.html" class="nav-link">구독</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link login-btn" onclick="showLoginModal()">로그인</a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
+        </nav>
 
-            <div class="events-grid" id="eventsGrid">
-                <!-- 이벤트 카드들이 동적으로 추가됨 -->
+        <!-- 이벤트 섹션 -->
+        <section id="events" class="section events-section">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="animate-fade-in-up">진행중인 이벤트</h1>
+                    <p class="section-subtitle">예측 대회에 참가하고 상금을 받아보세요</p>
+                </div>
+
+                <div class="events-grid" id="eventsGrid">
+                    <!-- 이벤트 카드들이 동적으로 추가됨 -->
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- 푸터 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>StockChart</h4>
-                    <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+        <!-- 푸터 -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h4>StockChart</h4>
+                        <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-section">
+                        <h4>서비스</h4>
+                        <ul>
+                            <li><a href="charts.html">차트 보드</a></li>
+                            <li><a href="prediction.html">예측하기</a></li>
+                            <li><a href="my-predictions.html">내 예측</a></li>
+                            <li><a href="ranking.html">랭킹</a></li>
+                            <li><a href="events.html">이벤트</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>고객지원</h4>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">문의하기</a></li>
+                            <li><a href="#">이용약관</a></li>
+                            <li><a href="#">개인정보처리방침</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>연락처</h4>
+                        <p>이메일: support@stockchart.kr</p>
+                        <p>전화: 02-1234-5678</p>
+                        <p>주소: 서울시 강남구 테헤란로 123</p>
                     </div>
                 </div>
-                <div class="footer-section">
-                    <h4>서비스</h4>
-                    <ul>
-                        <li><a href="charts.html">차트 보드</a></li>
-                        <li><a href="prediction.html">예측하기</a></li>
-                        <li><a href="my-predictions.html">내 예측</a></li>
-                        <li><a href="ranking.html">랭킹</a></li>
-                        <li><a href="events.html">이벤트</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>고객지원</h4>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">문의하기</a></li>
-                        <li><a href="#">이용약관</a></li>
-                        <li><a href="#">개인정보처리방침</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>연락처</h4>
-                    <p>이메일: support@stockchart.kr</p>
-                    <p>전화: 02-1234-5678</p>
-                    <p>주소: 서울시 강남구 테헤란로 123</p>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+        </footer>
+
+        <!-- 로그인 모달 -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="hideLoginModal()">&times;</span>
+                <h2>로그인</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="이메일" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">로그인</button>
+                </form>
+                <div class="social-login">
+                    <p>또는 소셜 계정으로 로그인</p>
+                    <button class="btn btn-google" onclick="loginWithGoogle()">
+                        <i class="fab fa-google"></i> Google로 로그인
+                    </button>
+                    <button class="btn btn-apple" onclick="loginWithApple()">
+                        <i class="fab fa-apple"></i> Apple로 로그인
+                    </button>
+                </div>
+                <p class="modal-footer">
+                    계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
+                </p>
             </div>
         </div>
-    </footer>
 
-    <!-- 로그인 모달 -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideLoginModal()">&times;</span>
-            <h2>로그인</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="이메일" required>
+        <!-- 회원가입 모달 -->
+        <div id="signupModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="hideSignupModal()">&times;</span>
+                <h2>회원가입</h2>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <input type="text" id="signupUsername" placeholder="사용자명" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="signupEmail" placeholder="이메일" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="signupPassword" placeholder="비밀번호" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="agreeTerms" required>
+                            이용약관 및 개인정보처리방침에 동의합니다.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">회원가입</button>
+                </form>
+                <div class="social-login">
+                    <p>또는 소셜 계정으로 가입</p>
+                    <button class="btn btn-google" onclick="signupWithGoogle()">
+                        <i class="fab fa-google"></i> Google로 가입
+                    </button>
+                    <button class="btn btn-apple" onclick="signupWithApple()">
+                        <i class="fab fa-apple"></i> Apple로 가입
+                    </button>
                 </div>
-                <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="비밀번호" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">로그인</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 로그인</p>
-                <button class="btn btn-google" onclick="loginWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 로그인
-                </button>
-                <button class="btn btn-apple" onclick="loginWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 로그인
-                </button>
+                <p class="modal-footer">
+                    이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
+                </p>
             </div>
-            <p class="modal-footer">
-                계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
-            </p>
         </div>
-    </div>
 
-    <!-- 회원가입 모달 -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideSignupModal()">&times;</span>
-            <h2>회원가입</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <input type="text" id="signupUsername" placeholder="사용자명" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="signupEmail" placeholder="이메일" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPassword" placeholder="비밀번호" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" required>
-                        이용약관 및 개인정보처리방침에 동의합니다.
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">회원가입</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 가입</p>
-                <button class="btn btn-google" onclick="signupWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 가입
-                </button>
-                <button class="btn btn-apple" onclick="signupWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 가입
-                </button>
-            </div>
-            <p class="modal-footer">
-                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
-            </p>
-        </div>
-    </div>
+        <script src="js/app.js?v=1.5"></script>
+    </body>
 
-    <script src="js/app.js?v=1.5"></script>
-</body>
 </html>

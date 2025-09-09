@@ -20,22 +20,73 @@ class ChartPredictionViewSet(viewsets.ModelViewSet):
         return ChartPrediction.objects.filter(user=self.request.user)
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        """
+        Create a new prediction and automatically set it to public
+        """
+        # Save the prediction and automatically set is_public to True
+        serializer.save(
+            user=self.request.user,
+            is_public=True  # Always make predictions public
+        )
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def public_predictions(self, request):
-        """공개 예측 목록"""
+        """
+        공개 예측 목록 - 사용자 타입에 따라 접근 제한
+        """
+        # Check if user can access premium content
+        from users.visit_tracker import VisitTracker
+        tracker = VisitTracker(request)
+        
+        if not tracker.can_access_premium():
+            return Response({
+                'error': 'Free access limit reached',
+                'payment_required': True
+            }, status=402)  # 402 Payment Required
+        
+        # If the user is anonymous or a free user, increment their access count
+        if not request.user.is_authenticated:
+            tracker.increment_visit()
+        elif request.user.user_type == 'free':
+            request.user.increment_free_access()
+        
+        # Get public predictions
         predictions = ChartPrediction.objects.filter(is_public=True).order_by('-created_at')
+        
+        # If user is not paid/admin, limit the number of returned predictions
+        if request.user.is_authenticated and request.user.user_type not in ['paid', 'admin']:
+            predictions = predictions[:10]  # Limited access for free users
+        
         serializer = self.get_serializer(predictions, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def rankings(self, request):
-        """수익률 랭킹"""
+        """
+        수익률 랭킹 - 사용자 타입에 따라 접근 제한
+        """
+        # Check if user can access premium content
+        from users.visit_tracker import VisitTracker
+        tracker = VisitTracker(request)
+        
+        if not tracker.can_access_premium():
+            return Response({
+                'error': 'Free access limit reached',
+                'payment_required': True
+            }, status=402)  # 402 Payment Required
+        
+        # If the user is anonymous or a free user, increment their access count
+        if not request.user.is_authenticated:
+            tracker.increment_visit()
+        elif request.user.user_type == 'free':
+            request.user.increment_free_access()
+        
+        # Get completed predictions ranked by profit rate
         predictions = ChartPrediction.objects.filter(
             is_public=True,
             status='completed'
         ).order_by('-profit_rate')[:50]
+        
         serializer = self.get_serializer(predictions, many=True)
         return Response(serializer.data)
 

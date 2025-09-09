@@ -1,0 +1,94 @@
+/* Chart view toggle styles */
+.chart-view-options {
+    display: flex;
+    margin-left: 15px;
+}
+
+.view-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    margin: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.view-btn:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.view-btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-left: none;
+}
+
+.view-btn i {
+    margin-right: 4px;
+}
+
+.view-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Grid view (default) */
+.charts-grid.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* List view */
+.charts-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.charts-grid.list-view .chart-card {
+    display: flex;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+}
+
+.charts-grid.list-view .chart-card .chart-header {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 15px;
+}
+
+.charts-grid.list-view .chart-card .chart-preview-area {
+    width: 160px;
+    height: 80px;
+    margin: 0 15px;
+}
+
+.charts-grid.list-view .chart-card .chart-footer {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .charts-grid.list-view .chart-card {
+        flex-direction: column;
+    }
+
+    .charts-grid.list-view .chart-card .chart-preview-area {
+        width: 100%;
+        height: 120px;
+        margin: 10px 0;
+    }
+}

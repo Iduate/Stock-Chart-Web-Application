@@ -1,13 +1,13 @@
 // Stock Chart Web Application - Main JavaScript File
 // API Base URL Configuration - Auto-detect environment
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://127.0.0.1:8000/api' 
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:8000/api'
     : '/api';  // Use relative path for production
 console.log('App.js loaded - Production API fix version 1.4 - ' + new Date().getTime());
 console.log('API Base URL:', API_BASE_URL);
 
 // Test function to manually call crypto
-window.testCrypto = function() {
+window.testCrypto = function () {
     console.log('Manual crypto test called');
     loadCryptoData();
 };
@@ -17,17 +17,41 @@ let heroChart = null;
 let predictionChart = null;
 let currentSeries = null;
 
+// Authentication state
+let authState = {
+    isAuthenticated: false,
+    user: null,
+    token: null
+};
+
+// Initialize authentication state
+function initializeAuth() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    if (token && user.id) {
+        authState.isAuthenticated = true;
+        authState.user = user;
+        authState.token = token;
+    }
+
+    updateAuthUI();
+}
+
 // Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM loaded, checking LightweightCharts...');
-    
+
+    // Initialize authentication first
+    initializeAuth();
+
     // Check if LightweightCharts is available
     if (typeof LightweightCharts === 'undefined') {
         console.error('LightweightCharts library not loaded! Please check if the script is included.');
         // Try to load it dynamically
         const script = document.createElement('script');
         script.src = 'https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js';
-        script.onload = function() {
+        script.onload = function () {
             console.log('LightweightCharts loaded dynamically');
             initializeApp();
             initializeCharts();
@@ -37,19 +61,40 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(script);
         return;
     }
-    
+
     // Check if TradingView Pro theme is available
     if (window.tvPro) {
         console.log('TradingView Pro theme detected and will be used');
     } else {
         console.log('TradingView Pro theme not detected, loading basic charts');
     }
-    
+
+    // Load chart controls if script exists
+    if (!window.chartControlsLoaded) {
+        try {
+            const controlsScript = document.createElement('script');
+            controlsScript.src = 'js/chart-controls.js';
+            controlsScript.onload = function () {
+                console.log('Chart controls loaded successfully');
+                window.chartControlsLoaded = true;
+            };
+            document.head.appendChild(controlsScript);
+
+            // Add chart controls CSS
+            const controlsCSS = document.createElement('link');
+            controlsCSS.rel = 'stylesheet';
+            controlsCSS.href = 'css/chart-controls.css';
+            document.head.appendChild(controlsCSS);
+        } catch (e) {
+            console.error('Error loading chart controls:', e);
+        }
+    }
+
     initializeApp();
     initializeCharts();
     loadMarketData();
     startRealTimeUpdates();
-    
+
     // Add trust elements after charts are loaded
     setTimeout(addTrustElements, 500);
 });
@@ -65,7 +110,7 @@ function addTrustElements() {
         sourceBadge.className = 'data-source-indicator';
         sourceBadge.innerHTML = '<i class="fas fa-shield-check"></i> Yahoo Finance 실시간 데이터';
         container.appendChild(sourceBadge);
-        
+
         // Add security badge
         const securityBadge = document.createElement('div');
         securityBadge.className = 'security-badge';
@@ -73,7 +118,7 @@ function addTrustElements() {
         securityBadge.title = '보안 연결 - 데이터는 암호화되어 있습니다';
         container.appendChild(securityBadge);
     });
-    
+
     // Add trust bar to appropriate pages
     if (document.querySelector('.content-section') || document.querySelector('.main-content')) {
         const contentSection = document.querySelector('.content-section') || document.querySelector('.main-content');
@@ -88,14 +133,14 @@ function addTrustElements() {
                 <div class="trust-bar-message">전세계 수백만 트레이더들이 신뢰하는 동일한 차트 기술을 사용합니다.</div>
             </div>
         `;
-        
+
         if (contentSection.firstChild) {
             contentSection.insertBefore(trustBar, contentSection.firstChild.nextSibling);
         } else {
             contentSection.appendChild(trustBar);
         }
     }
-    
+
     // Add verified badges to key metrics
     const metricValues = document.querySelectorAll('.metric-value');
     metricValues.forEach(metric => {
@@ -112,22 +157,22 @@ function initializeApp() {
     if (token) {
         validateToken(token);
     }
-    
+
     // Setup mobile navigation
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-    
+
     if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
+        hamburger.addEventListener('click', function () {
             navMenu.classList.toggle('active');
         });
     }
-    
+
     // Setup navigation links
     document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             if (navMenu) navMenu.classList.remove('active');
-            
+
             const href = this.getAttribute('href');
             if (href && href.startsWith('#') && href !== '#') {
                 e.preventDefault();
@@ -136,23 +181,23 @@ function initializeApp() {
             }
         });
     });
-    
+
     // Update active navigation
     updateActiveNavigation();
     window.addEventListener('scroll', debounce(updateActiveNavigation, 100));
-    
+
     // Initialize stock selector
     initializeStockSelector();
-    
+
     // Initialize predictions display
     initMyPredictions();
-    
+
     // Load market data
     loadMarketData();
-    
+
     // Load charts for chart board
     loadCharts();
-    
+
     // Add API testing UI
     addAPITestingUI();
 }
@@ -160,43 +205,43 @@ function initializeApp() {
 // Initialize charts with professional TradingView styling
 function initializeCharts() {
     console.log('Initializing charts with professional styling...');
-    
+
     // Register chart refresh function for theme toggling
-    window.refreshCharts = function() {
+    window.refreshCharts = function () {
         if (window.heroChart) {
             const options = getTradingViewProChartOptions();
             window.heroChart.applyOptions(options);
         }
-        
+
         if (window.predictionChart) {
             const options = getTradingViewProChartOptions();
             window.predictionChart.applyOptions(options);
         }
     };
-    
+
     // Initialize hero chart
     const heroChartElement = document.getElementById('heroChart');
     console.log('Hero chart element:', heroChartElement);
-    
+
     if (heroChartElement && typeof LightweightCharts !== 'undefined') {
         console.log('Creating professional TradingView-style hero chart...');
-        
+
         try {
             // Ensure the element has proper dimensions
             if (heroChartElement.clientWidth === 0) {
                 heroChartElement.style.width = '100%';
                 heroChartElement.style.height = window.innerWidth <= 480 ? '200px' : (window.innerWidth <= 768 ? '250px' : '400px');
             }
-            
+
             const chartWidth = heroChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 800);
             const chartHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 400);
-            
+
             // Use TradingView Pro options if available
             const chartOptions = getTradingViewProChartOptions(chartWidth, chartHeight);
             window.heroChart = LightweightCharts.createChart(heroChartElement, chartOptions);
-            
+
             console.log('Professional hero chart created');
-            
+
             // Add professional loading animation
             const loadingOverlay = document.createElement('div');
             loadingOverlay.className = 'chart-loading-overlay';
@@ -205,11 +250,11 @@ function initializeCharts() {
                 <div class="chart-loading-text">Loading professional chart data...</div>
             `;
             heroChartElement.appendChild(loadingOverlay);
-            
+
             // Load chart data with enhanced styling
             if (typeof window.heroChart.addLineSeries === 'function') {
                 loadStockChart('AAPL', true); // true for professional styling
-                
+
                 // Remove loading overlay after data is loaded
                 setTimeout(() => {
                     loadingOverlay.style.opacity = '0';
@@ -228,30 +273,30 @@ function initializeCharts() {
     } else {
         console.error('Hero chart element not found or LightweightCharts not available');
     }
-    
+
     // Initialize prediction chart
     const predictionChartElement = document.getElementById('predictionChart');
     if (predictionChartElement && typeof LightweightCharts !== 'undefined') {
         console.log('Creating prediction chart...');
-        
+
         try {
             // Ensure the element has proper dimensions
             if (predictionChartElement.clientWidth === 0) {
                 predictionChartElement.style.width = '100%';
                 predictionChartElement.style.height = window.innerWidth <= 480 ? '200px' : (window.innerWidth <= 768 ? '250px' : '300px');
             }
-            
+
             const chartWidth = predictionChartElement.clientWidth || (window.innerWidth <= 768 ? window.innerWidth - 40 : 600);
             const chartHeight = window.innerWidth <= 480 ? 200 : (window.innerWidth <= 768 ? 250 : 300);
-            
+
             window.predictionChart = LightweightCharts.createChart(predictionChartElement, getMobileChartConfig(chartWidth, chartHeight));
-            
+
             console.log('Prediction chart created:', window.predictionChart);
         } catch (error) {
             console.error('Failed to create prediction chart:', error);
         }
     }
-    
+
     // Add responsive chart resize handling
     addChartResizeHandler();
 }
@@ -259,28 +304,28 @@ function initializeCharts() {
 // Load stock chart with multiple API fallback
 async function loadStockChart(symbol, useProfessionalStyle = true) {
     console.log(`Loading professional stock chart for ${symbol}...`);
-    
+
     // Verify chart object exists and has required methods
     if (!window.heroChart) {
         console.error('Hero chart not initialized');
         return;
     }
-    
+
     // Clear any existing series
     if (window.currentSeries) {
         window.heroChart.removeSeries(window.currentSeries);
     }
-    
+
     const apiSources = [
         { name: 'Primary Historical', endpoint: `historical/${symbol}/` },
         { name: 'Tiingo', endpoint: `tiingo/${symbol}/` },
         { name: 'Marketstack', endpoint: `marketstack/${symbol}/` },
         { name: 'Enhanced', endpoint: `enhanced/${symbol}/` }
     ];
-    
+
     let data = null;
     let usedSource = null;
-    
+
     for (const source of apiSources) {
         try {
             console.log(`Trying ${source.name} API...`);
@@ -298,16 +343,16 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
             console.log(`${source.name} API failed:`, error.message);
         }
     }
-    
+
     try {
         if (data && window.heroChart) {
             console.log('Adding line series to chart...');
-            
+
             // Check if heroChart has the addLineSeries method
             if (typeof window.heroChart.addLineSeries !== 'function') {
                 console.error('heroChart.addLineSeries is not a function. Chart object:', window.heroChart);
                 console.error('Available methods:', Object.getOwnPropertyNames(window.heroChart));
-                
+
                 // Try to recreate the chart
                 const heroChartElement = document.getElementById('heroChart');
                 if (heroChartElement) {
@@ -329,12 +374,12 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                     });
                     console.log('Chart recreated:', window.heroChart);
                 }
-                
+
                 if (typeof window.heroChart.addLineSeries !== 'function') {
                     throw new Error('Invalid chart object - addLineSeries method not available after recreation');
                 }
             }
-            
+
             // Remove existing series
             try {
                 if (window.currentSeries) {
@@ -343,10 +388,10 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
             } catch (e) {
                 console.log('No existing series to remove');
             }
-            
+
             // Use professional styling options if available
             let seriesOptions;
-            
+
             if (useProfessionalStyle && window.tvPro && window.tvPro.getAreaSeriesOptions) {
                 seriesOptions = window.tvPro.getAreaSeriesOptions();
             } else {
@@ -364,15 +409,15 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                     priceLineVisible: true,
                 };
             }
-            
+
             // Use area series for a more professional look
             const areaSeries = window.heroChart.addAreaSeries(seriesOptions);
-            
+
             window.currentSeries = areaSeries;
-            
+
             // Add professional legend
             addChartLegend(symbol, usedSource);
-            
+
             // Add professional trust badge
             const heroChartElement = document.getElementById('heroChart');
             if (heroChartElement) {
@@ -381,25 +426,25 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                 trustBadge.innerHTML = `<i class="fas fa-shield-check"></i> ${usedSource} 데이터`;
                 heroChartElement.appendChild(trustBadge);
             }
-            
+
             // Format data
             console.log('Raw data before formatting:', data.length, 'items');
-            
+
             const formattedData = data.map((item, index) => {
                 // More comprehensive field checking
                 const time = item.date || item.time || item.datetime || item.timestamp;
                 const value = parseFloat(
-                    item.close || item.price || item.value || item.c || 
+                    item.close || item.price || item.value || item.c ||
                     item.Close || item.Price || item.Value || item.adjusted_close
                 );
-                
+
                 if (index < 2) {
-                    console.log(`Item ${index}:`, { 
-                        extractedTime: time, 
+                    console.log(`Item ${index}:`, {
+                        extractedTime: time,
                         extractedValue: value
                     });
                 }
-                
+
                 // Convert date string to timestamp if needed
                 let processedTime = time;
                 if (typeof time === 'string') {
@@ -412,7 +457,7 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                     // If it's a millisecond timestamp, convert to seconds
                     processedTime = Math.floor(time / 1000);
                 }
-                
+
                 return { time: processedTime, value, originalIndex: index };
             }).filter((item) => {
                 const isValid = item.time && !isNaN(item.value) && item.value > 0;
@@ -421,25 +466,25 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                 }
                 return isValid;
             });
-            
+
             console.log('Formatted data for chart:', formattedData.slice(0, 5));
             console.log('Total formatted data points:', formattedData.length);
-            
+
             lineSeries.setData(formattedData);
             console.log('Chart data set successfully');
-            
+
             if (formattedData.length > 0) {
                 window.heroChart.timeScale().fitContent();
                 console.log('Chart time scale fitted');
             }
-            
+
             updateChartTitle(symbol, data[data.length - 1]);
         } else {
             console.error('No data or chart not available');
             // Use sample data as fallback
             if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
                 const sampleData = generateSampleData();
-                
+
                 try {
                     if (window.currentSeries) {
                         window.heroChart.removeSeries(window.currentSeries);
@@ -447,7 +492,7 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
                 } catch (e) {
                     console.log('No existing series to remove');
                 }
-                
+
                 const lineSeries = window.heroChart.addLineSeries({
                     color: '#ffd700',
                     lineWidth: 2,
@@ -462,7 +507,7 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
         // Fallback to sample data
         if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
             const sampleData = generateSampleData();
-            
+
             try {
                 if (window.currentSeries) {
                     window.heroChart.removeSeries(window.currentSeries);
@@ -470,7 +515,7 @@ async function loadStockChart(symbol, useProfessionalStyle = true) {
             } catch (e) {
                 console.log('No existing series to remove');
             }
-            
+
             const lineSeries = window.heroChart.addLineSeries({
                 color: '#ffd700',
                 lineWidth: 2,
@@ -488,21 +533,21 @@ function generateSampleData() {
     const startPrice = 150;
     let price = startPrice;
     const startDate = new Date('2024-01-01');
-    
+
     for (let i = 0; i < 100; i++) {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
-        
+
         price += (Math.random() - 0.5) * 5;
         price = Math.max(price, startPrice * 0.7);
         price = Math.min(price, startPrice * 1.5);
-        
+
         data.push({
             time: date.toISOString().split('T')[0],
             value: parseFloat(price.toFixed(2))
         });
     }
-    
+
     return data;
 }
 
@@ -521,10 +566,10 @@ async function loadMarketData() {
     try {
         console.log('Loading popular stocks...');
         await loadPopularStocks();
-        
+
         console.log('Loading crypto data...');
         await loadCryptoData();
-        
+
         console.log('Loading market indices...');
         await loadMarketIndices();
     } catch (error) {
@@ -539,7 +584,7 @@ async function loadPopularStocks() {
         console.log('Loading popular stocks...');
         const symbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN'];
         const stockData = [];
-        
+
         for (const symbol of symbols) {
             try {
                 const response = await fetch(`${API_BASE_URL}/market-data/quote/${symbol}/`);
@@ -555,7 +600,7 @@ async function loadPopularStocks() {
                 stockData.push({ symbol, error: true });
             }
         }
-        
+
         console.log('Stock data loaded:', stockData);
         displayPopularStocks(stockData);
     } catch (error) {
@@ -570,21 +615,21 @@ function displayPopularStocks(stockData) {
         console.error('Popular stocks container not found');
         return;
     }
-    
+
     console.log('Stock data received:', stockData);
-    
+
     const html = stockData.map(stock => {
         if (stock.error) {
             console.error('Stock error:', stock.symbol, stock.error);
             return '';
         }
-        
+
         console.log('Processing stock:', stock);
-        
+
         const price = stock.price || stock.current_price || stock.close || stock.value || 0;
         const change = stock.change || stock.change_percent || stock.percent_change || 0;
         const isPositive = change >= 0;
-        
+
         return `
             <div class="stock-item" data-symbol="${stock.symbol}">
                 <div class="stock-info">
@@ -597,7 +642,7 @@ function displayPopularStocks(stockData) {
             </div>
         `;
     }).join('');
-    
+
     console.log('Generated HTML:', html);
     container.innerHTML = html || '<p>Loading stock data...</p>';
 }
@@ -611,22 +656,22 @@ async function loadCryptoData() {
         console.error('❌ Crypto container not found!');
         return;
     }
-    
+
     console.log('✅ Crypto container found:', container);
-    
+
     // Show loading state
     container.innerHTML = '<div class="loading-message">Loading cryptocurrency data...</div>';
     console.log('📊 Loading state set');
-    
+
     try {
         const symbols = ['BTC', 'ETH', 'ADA', 'BNB'];
         const cryptoData = [];
-        
+
         for (const symbol of symbols) {
             try {
                 console.log(`Loading crypto data for ${symbol}...`);
                 const response = await fetch(`${API_BASE_URL}/market-data/crypto/${symbol}/`);
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     console.log(`Successfully loaded ${symbol}:`, data);
@@ -634,8 +679,8 @@ async function loadCryptoData() {
                 } else {
                     const errorData = await response.json().catch(() => ({}));
                     console.warn(`Failed to load ${symbol}:`, response.status, errorData);
-                    cryptoData.push({ 
-                        symbol, 
+                    cryptoData.push({
+                        symbol,
                         error: true,
                         errorMessage: errorData.error || `Failed to load ${symbol} data`,
                         status: response.status
@@ -643,15 +688,15 @@ async function loadCryptoData() {
                 }
             } catch (error) {
                 console.error(`${symbol} crypto data error:`, error);
-                cryptoData.push({ 
-                    symbol, 
+                cryptoData.push({
+                    symbol,
                     error: true,
                     errorMessage: `Network error loading ${symbol}`,
                     networkError: true
                 });
             }
         }
-        
+
         displayCryptoData(cryptoData);
         console.log('✅ displayCryptoData called with:', cryptoData.length, 'items');
     } catch (error) {
@@ -670,21 +715,21 @@ async function loadCryptoData() {
 function displayCryptoData(cryptoData) {
     console.log('🎯 displayCryptoData function called!');
     console.log('📊 Crypto data to display:', cryptoData);
-    
+
     const container = document.querySelector('.popular-cryptos');
     if (!container) {
         console.error('❌ Crypto container not found in displayCryptoData!');
         return;
     }
-    
+
     console.log('✅ Container found in display function:', container);
-    
+
     console.log('Crypto data received:', cryptoData);
-    
+
     // Check if we have any successful data
     const successfulData = cryptoData.filter(crypto => crypto.success);
     const failedData = cryptoData.filter(crypto => crypto.error);
-    
+
     if (successfulData.length === 0) {
         // All APIs failed
         container.innerHTML = `
@@ -693,15 +738,15 @@ function displayCryptoData(cryptoData) {
                 <p>All cryptocurrency APIs are currently unavailable. Please try again later.</p>
                 <button onclick="loadCryptoData()" class="retry-btn">Retry</button>
                 <div class="error-details">
-                    ${failedData.map(crypto => 
-                        `<small>${crypto.symbol}: ${crypto.errorMessage}</small>`
-                    ).join('<br>')}
+                    ${failedData.map(crypto =>
+            `<small>${crypto.symbol}: ${crypto.errorMessage}</small>`
+        ).join('<br>')}
                 </div>
             </div>
         `;
         return;
     }
-    
+
     // Mix of successful and failed data
     const html = cryptoData.map(crypto => {
         if (crypto.error) {
@@ -718,12 +763,12 @@ function displayCryptoData(cryptoData) {
                 </div>
             `;
         }
-        
+
         const price = crypto.price || crypto.current_price || 0;
         const change = crypto.change || crypto.change_percent || 0;
         const isPositive = change >= 0;
         const source = crypto.source || 'unknown';
-        
+
         return `
             <div class="crypto-item success">
                 <div class="crypto-info">
@@ -737,7 +782,7 @@ function displayCryptoData(cryptoData) {
             </div>
         `;
     }).join('');
-    
+
     container.innerHTML = html;
 }
 
@@ -758,9 +803,9 @@ async function loadMarketIndices() {
 function displayMarketIndices(indicesData) {
     const container = document.querySelector('.market-indices');
     if (!container) return;
-    
+
     console.log('Indices data received:', indicesData);
-    
+
     // Check if data is an array or needs to be converted
     let dataArray = [];
     if (Array.isArray(indicesData)) {
@@ -785,7 +830,7 @@ function displayMarketIndices(indicesData) {
             { name: 'DOW', value: '34,580.23', change: 0.45 }
         ];
     }
-    
+
     const html = dataArray.map(index => {
         const isPositive = index.change >= 0;
         return `
@@ -800,7 +845,7 @@ function displayMarketIndices(indicesData) {
             </div>
         `;
     }).join('');
-    
+
     container.innerHTML = html;
 }
 
@@ -815,7 +860,7 @@ function scrollToSection(sectionId) {
 function updateActiveNavigation() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     let current = '';
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
@@ -824,7 +869,7 @@ function updateActiveNavigation() {
             current = section.getAttribute('id');
         }
     });
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${current}`) {
@@ -838,14 +883,14 @@ function initializeStockSelector() {
     console.log('Initializing stock selector...');
     const stockSelect = document.getElementById('stockSelect');
     const currentPriceInput = document.getElementById('currentPrice');
-    
+
     console.log('Stock select element:', stockSelect);
-    
+
     if (!stockSelect) {
         console.error('Stock select element not found!');
         return;
     }
-    
+
     // Popular stocks to populate the dropdown
     const popularStocks = [
         // US Stocks
@@ -872,14 +917,14 @@ function initializeStockSelector() {
         { symbol: 'BTC-USD', name: 'Bitcoin USD' },
         { symbol: 'ETH-USD', name: 'Ethereum USD' }
     ];
-    
+
     // Clear existing options except the first one
     while (stockSelect.children.length > 1) {
         stockSelect.removeChild(stockSelect.lastChild);
     }
-    
+
     console.log('Adding stock options...');
-    
+
     // Add stock options
     popularStocks.forEach(stock => {
         const option = document.createElement('option');
@@ -887,15 +932,15 @@ function initializeStockSelector() {
         option.textContent = `${stock.symbol} - ${stock.name}`;
         stockSelect.appendChild(option);
     });
-    
+
     console.log(`Added ${popularStocks.length} stock options to dropdown`);
-    
+
     // Add event listener for stock selection
-    stockSelect.addEventListener('change', async function() {
+    stockSelect.addEventListener('change', async function () {
         const selectedSymbol = this.value;
         if (selectedSymbol) {
             console.log('Selected stock:', selectedSymbol);
-            
+
             // Load current price
             try {
                 const priceData = await fetchStockPrice(selectedSymbol);
@@ -962,7 +1007,7 @@ async function validateToken(token) {
             },
             body: JSON.stringify({ token })
         });
-        
+
         if (response.ok) {
             const userData = await response.json();
             updateUIForLoggedInUser(userData);
@@ -979,10 +1024,10 @@ function updateUIForLoggedInUser(userData) {
     // Update UI to show user is logged in
     const loginBtn = document.querySelector('.login-btn');
     const signupBtn = document.querySelector('.signup-btn');
-    
+
     if (loginBtn) loginBtn.style.display = 'none';
     if (signupBtn) signupBtn.style.display = 'none';
-    
+
     // Add user menu or profile section
     console.log('User logged in:', userData);
 }
@@ -990,15 +1035,15 @@ function updateUIForLoggedInUser(userData) {
 // Chart and ranking functions
 async function loadCharts() {
     console.log('Loading charts...');
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/charts/`);
         console.log('Charts API response status:', response.status);
-        
+
         if (response.ok) {
             const data = await response.json();
             console.log('Charts API response data:', data);
-            
+
             // Handle different response formats
             let charts = data;
             if (data && typeof data === 'object' && !Array.isArray(data)) {
@@ -1018,7 +1063,7 @@ async function loadCharts() {
                     return;
                 }
             }
-            
+
             displayCharts(charts);
         } else {
             console.log('Charts API failed with status:', response.status, 'using sample charts');
@@ -1033,26 +1078,26 @@ async function loadCharts() {
 function displayCharts(charts) {
     const chartsGrid = document.getElementById('chartsGrid');
     if (!chartsGrid) return;
-    
+
     console.log('Charts data received:', charts);
     console.log('Charts data type:', typeof charts);
     console.log('Charts is array:', Array.isArray(charts));
-    
+
     if (!Array.isArray(charts)) {
         console.error('Charts data is not an array:', charts);
         chartsGrid.innerHTML = '<div class="no-results">차트 데이터 형식 오류</div>';
         return;
     }
-    
+
     if (charts.length === 0) {
         chartsGrid.innerHTML = '<div class="no-results">표시할 차트가 없습니다</div>';
         return;
     }
-    
+
     try {
         const chartsHTML = charts.map((chart, index) => {
             console.log(`Processing chart ${index}:`, chart);
-            
+
             // Validate required fields with fallbacks
             const stockName = chart.stock_name || 'Unknown Stock';
             const stockSymbol = chart.stock_symbol || 'N/A';
@@ -1062,7 +1107,7 @@ function displayCharts(charts) {
             const status = chart.status || 'pending';
             const targetDate = chart.target_date || new Date().toISOString().split('T')[0];
             const createdAt = chart.created_at || new Date().toISOString().split('T')[0];
-            
+
             return `
                 <div class="chart-card">
                     <div class="chart-header">
@@ -1094,10 +1139,10 @@ function displayCharts(charts) {
                 </div>
             `;
         }).join('');
-        
+
         chartsGrid.innerHTML = chartsHTML;
         console.log('Charts successfully displayed');
-        
+
     } catch (error) {
         console.error('Error generating charts HTML:', error);
         chartsGrid.innerHTML = '<div class="no-results">차트 표시 중 오류 발생</div>';
@@ -1129,7 +1174,7 @@ function displaySampleCharts() {
             status: 'pending'
         }
     ];
-    
+
     displayCharts(sampleCharts);
 }
 
@@ -1210,34 +1255,34 @@ async function loadMarketstackData(symbol) {
 
 async function loadEnhancedMarketData() {
     console.log('Loading enhanced market data with multiple APIs...');
-    
+
     const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA'];
     const apiSources = [
         { name: 'Alpha Vantage', endpoint: 'quote' },
         { name: 'Tiingo', endpoint: 'tiingo' },
         { name: 'Marketstack', endpoint: 'marketstack' }
     ];
-    
+
     const container = document.querySelector('.api-comparison .api-results');
     if (!container) {
         console.log('API comparison container not found');
         return;
     }
-    
+
     let html = '<div class="api-grid">';
-    
+
     for (const symbol of symbols) {
         html += `<div class="symbol-section"><h4>${symbol}</h4>`;
-        
+
         for (const api of apiSources) {
             try {
                 const response = await fetch(`${API_BASE_URL}/market-data/${api.endpoint}/${symbol}/`);
                 const data = await response.json();
-                
+
                 if (data && !data.error) {
                     const price = data.price || data.current_price || data.close || 'N/A';
                     const change = data.change || data.change_percent || 'N/A';
-                    
+
                     html += `
                         <div class="api-result">
                             <strong>${api.name}:</strong> 
@@ -1252,17 +1297,17 @@ async function loadEnhancedMarketData() {
                 html += `<div class="api-result error"><strong>${api.name}:</strong> ${error.message}</div>`;
             }
         }
-        
+
         html += '</div>';
     }
-    
+
     html += '</div>';
     container.innerHTML = html;
 }
 
 async function testAllAPIs(symbol = 'AAPL') {
     console.log(`Testing all APIs for ${symbol}...`);
-    
+
     const apis = [
         { name: 'Alpha Vantage', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
         { name: 'Twelve Data', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
@@ -1271,9 +1316,9 @@ async function testAllAPIs(symbol = 'AAPL') {
         { name: 'Tiingo', url: `${API_BASE_URL}/market-data/tiingo/${symbol}/` },
         { name: 'Marketstack', url: `${API_BASE_URL}/market-data/marketstack/${symbol}/` }
     ];
-    
+
     const results = {};
-    
+
     for (const api of apis) {
         try {
             console.log(`Testing ${api.name}...`);
@@ -1293,14 +1338,14 @@ async function testAllAPIs(symbol = 'AAPL') {
             };
         }
     }
-    
+
     console.log('API Test Results:', results);
-    
+
     // Display results
     const container = document.querySelector('.api-comparison .api-results');
     if (container) {
         let html = `<h4>API Test Results for ${symbol}</h4><div class="test-results">`;
-        
+
         Object.entries(results).forEach(([apiName, result]) => {
             const statusClass = result.success ? 'success' : 'error';
             html += `
@@ -1311,18 +1356,18 @@ async function testAllAPIs(symbol = 'AAPL') {
                 </div>
             `;
         });
-        
+
         html += '</div>';
         container.innerHTML = html;
     }
-    
+
     return results;
 }
 
 function addAPITestingUI() {
     const marketSection = document.querySelector('#market');
     if (!marketSection) return;
-    
+
     if (!document.querySelector('.api-comparison')) {
         const apiContainer = document.createElement('div');
         apiContainer.className = 'api-comparison';
@@ -1340,7 +1385,7 @@ function addAPITestingUI() {
                 <p>Click buttons above to test different API sources for market data.</p>
             </div>
         `;
-        
+
         const marketData = document.querySelector('.market-data');
         if (marketData) {
             marketData.parentNode.insertBefore(apiContainer, marketData.nextSibling);
@@ -1349,7 +1394,7 @@ function addAPITestingUI() {
 }
 
 // Initialize everything when the page loads
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     console.log('Page fully loaded, initializing application...');
     if (typeof LightweightCharts === 'undefined') {
         console.error('LightweightCharts library not loaded!');
@@ -1359,7 +1404,7 @@ window.addEventListener('load', function() {
 // Login Modal Functions
 function showLoginModal() {
     console.log('Login modal requested');
-    
+
     // Create modal HTML using existing CSS classes
     const modalHTML = `
         <div id="loginModal" class="modal">
@@ -1392,17 +1437,17 @@ function showLoginModal() {
             </div>
         </div>
     `;
-    
+
     // Add modal to body
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Show modal
     const modal = document.getElementById('loginModal');
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    
+
     // Add event listener to close modal when clicking outside
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             closeLoginModal();
         }
@@ -1421,9 +1466,9 @@ function handleLogin(event) {
     event.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-    
+
     console.log('Login attempt:', email);
-    
+
     // TODO: Implement actual login logic with backend
     alert('로그인 기능은 현재 개발 중입니다.');
     closeLoginModal();
@@ -1431,7 +1476,7 @@ function handleLogin(event) {
 
 function showRegisterModal() {
     closeLoginModal();
-    
+
     const modalHTML = `
         <div id="registerModal" class="modal">
             <div class="modal-content">
@@ -1471,15 +1516,15 @@ function showRegisterModal() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
+
     // Show modal
     const modal = document.getElementById('registerModal');
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    
-    modal.addEventListener('click', function(e) {
+
+    modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             closeRegisterModal();
         }
@@ -1498,35 +1543,60 @@ function handleRegister(event) {
     event.preventDefault();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
-    
+
     if (password !== confirmPassword) {
         alert('비밀번호가 일치하지 않습니다.');
         return;
     }
-    
+
     // TODO: Implement actual registration logic
     alert('회원가입 기능은 현재 개발 중입니다.');
     closeRegisterModal();
 }
 
 function loginWithGoogle() {
-    // TODO: Implement Google OAuth
-    alert('Google 로그인 기능은 현재 개발 중입니다.');
-}
+    console.log('Login with Google clicked');
+    // Check if our triggerGoogleSignIn function exists
+    if (typeof window.triggerGoogleSignIn === 'function') {
+        window.triggerGoogleSignIn();
+    } else {
+        console.log('Google Sign-In function not available, initializing...');
+        showNotification('로딩 중', 'Google 로그인을 초기화하고 있습니다...', 'info');
 
-function loginWithApple() {
+        // Make sure Google auth is initialized
+        if (typeof initGoogleAuth === 'function') {
+            initGoogleAuth();
+
+            // Wait a moment for initialization then retry
+            setTimeout(() => {
+                if (typeof window.triggerGoogleSignIn === 'function') {
+                    window.triggerGoogleSignIn();
+                } else {
+                    console.log('Still no Google Sign-In function available after initialization');
+                    showNotification('오류', 'Google 로그인을 불러올 수 없습니다. 페이지를 새로고침해 주세요.', 'error');
+                }
+            }, 1000);
+        } else {
+            console.error('Google authentication module not loaded');
+            showNotification('오류', 'Google 로그인 모듈을 찾을 수 없습니다.', 'error');
+        }
+    }
+} function loginWithApple() {
     // TODO: Implement Apple OAuth  
-    alert('Apple 로그인 기능은 현재 개발 중입니다.');
+    showNotification('준비중', 'Apple 로그인 기능은 현재 개발 중입니다.', 'info');
 }
 
 function registerWithGoogle() {
-    // TODO: Implement Google OAuth for registration
-    alert('Google 회원가입 기능은 현재 개발 중입니다.');
+    // Google OAuth handles both login and registration through the same flow
+    loginWithGoogle();
+
+    // Optionally show a different notification for signup
+    showNotification('회원가입', 'Google 계정으로 가입을 진행합니다...', 'info');
 }
 
 function registerWithApple() {
     // TODO: Implement Apple OAuth for registration
-    alert('Apple 회원가입 기능은 현재 개발 중입니다.');
+    showNotification('준비중', 'Apple 회원가입 기능은 현재 개발 중입니다.', 'info');
 }
 
 // Prediction Functions
@@ -1551,11 +1621,11 @@ function validateToken(token) {
 // Add responsive chart resize handler
 function addChartResizeHandler() {
     let resizeTimeout;
-    
+
     function resizeCharts() {
         const isMobile = window.innerWidth <= 768;
         const isVerySmall = window.innerWidth <= 480;
-        
+
         // Resize hero chart
         const heroChartElement = document.getElementById('heroChart');
         if (heroChartElement && window.heroChart) {
@@ -1563,13 +1633,13 @@ function addChartResizeHandler() {
             const containerWidth = heroChartElement.parentElement.clientWidth || window.innerWidth;
             const safeWidth = Math.min(containerWidth - 20, window.innerWidth - 20);
             const safeHeight = isVerySmall ? 250 : (isMobile ? 300 : 400);
-            
+
             try {
                 window.heroChart.applyOptions({
                     width: safeWidth,
                     height: safeHeight
                 });
-                
+
                 // Update chart element dimensions
                 heroChartElement.style.width = safeWidth + 'px';
                 heroChartElement.style.height = safeHeight + 'px';
@@ -1577,7 +1647,7 @@ function addChartResizeHandler() {
                 console.error('Error resizing hero chart:', error);
             }
         }
-        
+
         // Resize prediction chart
         const predictionChartElement = document.getElementById('predictionChart');
         if (predictionChartElement && window.predictionChart) {
@@ -1585,13 +1655,13 @@ function addChartResizeHandler() {
             const containerWidth = predictionChartElement.parentElement.clientWidth || window.innerWidth;
             const safeWidth = Math.min(containerWidth - 20, window.innerWidth - 20);
             const safeHeight = isVerySmall ? 250 : (isMobile ? 280 : 300);
-            
+
             try {
                 window.predictionChart.applyOptions({
                     width: newWidth,
                     height: newHeight
                 });
-                
+
                 // Update chart element height
                 predictionChartElement.style.height = newHeight + 'px';
             } catch (error) {
@@ -1599,15 +1669,15 @@ function addChartResizeHandler() {
             }
         }
     }
-    
+
     // Add window resize event listener with debouncing
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(resizeCharts, 250);
     });
-    
+
     // Add orientation change event listener for mobile devices
-    window.addEventListener('orientationchange', function() {
+    window.addEventListener('orientationchange', function () {
         setTimeout(resizeCharts, 500); // Delay to allow orientation change to complete
     });
 }
@@ -1622,16 +1692,16 @@ function getTradingViewProChartOptions(width, height) {
         if (height) options.height = height;
         return options;
     }
-    
+
     // If tvPro is not available, use enhanced TradingView-like options
     const isDarkMode = !document.body.classList.contains('light-theme');
     const isMobile = window.innerWidth <= 768;
     const isVerySmall = window.innerWidth <= 480;
-    
+
     // Ensure chart is never wider than screen
     const safeWidth = width ? Math.min(width, window.innerWidth - 20) : 'auto';
     const safeHeight = height ? (isVerySmall ? 250 : (isMobile ? 300 : height)) : 400;
-    
+
     return {
         width: safeWidth,
         height: safeHeight,
@@ -1698,9 +1768,17 @@ function getTradingViewProChartOptions(width, height) {
 }
 
 // Prediction submission functionality
-function submitPrediction() {
+async function submitPrediction() {
     console.log('Submit prediction clicked');
-    
+
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('예측을 저장하려면 로그인이 필요합니다.');
+        showLoginModal();
+        return;
+    }
+
     // Get form values
     const stockSelect = document.getElementById('stockSelect');
     const currentPrice = document.getElementById('currentPrice');
@@ -1708,63 +1786,328 @@ function submitPrediction() {
     const targetDate = document.getElementById('targetDate');
     const duration = document.getElementById('duration');
     const sharePublicly = document.getElementById('isPublic');
-    
+    const reasoning = document.getElementById('reasoning');
+    const confidence = document.getElementById('confidence');
+
     // Validate required fields
     if (!stockSelect.value) {
         alert('종목을 선택해주세요.');
         return;
     }
-    
+
     if (!currentPrice.value || currentPrice.value === 'N/A' || currentPrice.value === 'Error') {
         alert('현재 가격이 로드되지 않았습니다. 다른 종목을 선택해보세요.');
         return;
     }
-    
+
     if (!predictedPrice.value) {
         alert('예측 가격을 입력해주세요.');
         return;
     }
-    
+
     if (!targetDate.value) {
         alert('목표 날짜를 선택해주세요.');
         return;
     }
-    
-    // Create prediction object
-    const prediction = {
-        symbol: stockSelect.value,
-        stockName: stockSelect.options[stockSelect.selectedIndex].text,
-        currentPrice: parseFloat(currentPrice.value),
-        predictedPrice: parseFloat(predictedPrice.value),
-        targetDate: targetDate.value,
-        forecastPeriod: duration.value,
-        sharePublicly: sharePublicly ? sharePublicly.checked : false,
-        createdAt: new Date().toISOString(),
-        userId: 'anonymous', // For now, since we don't have user auth
-        accuracy: null, // Will be calculated later
-        status: 'pending'
+
+    // Calculate target date
+    const now = new Date();
+    const target = new Date(targetDate.value);
+    const durationDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+
+    // Create prediction object for API
+    const predictionData = {
+        stock_symbol: stockSelect.value,
+        stock_name: stockSelect.options[stockSelect.selectedIndex].text,
+        current_price: parseFloat(currentPrice.value),
+        predicted_price: parseFloat(predictedPrice.value),
+        target_date: targetDate.value,
+        duration_days: durationDays,
+        is_public: sharePublicly ? sharePublicly.checked : true,
+        reasoning: reasoning ? reasoning.value : '',
+        confidence: confidence ? parseInt(confidence.value) : 75
     };
-    
-    // Calculate prediction change percentage
-    const changePercent = ((prediction.predictedPrice - prediction.currentPrice) / prediction.currentPrice * 100).toFixed(2);
-    prediction.changePercent = parseFloat(changePercent);
-    
-    console.log('Prediction data:', prediction);
-    
-    // Save to localStorage (since we don't have backend integration yet)
-    let predictions = JSON.parse(localStorage.getItem('stockPredictions') || '[]');
-    prediction.id = Date.now(); // Simple ID generation
-    predictions.push(prediction);
-    localStorage.setItem('stockPredictions', JSON.stringify(predictions));
-    
-    // Show success message
-    showPredictionSuccess(prediction);
-    
-    // Clear form
-    clearPredictionForm();
-    
-    // Refresh predictions display
-    refreshPredictionsDisplay();
+
+    console.log('Prediction data:', predictionData);
+
+    try {
+        // Submit to backend API
+        const response = await fetch('/api/charts/predictions/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify(predictionData)
+        });
+
+        if (response.status === 402) {
+            // Payment required
+            const data = await response.json();
+            alert('무료 접근 횟수를 모두 사용했습니다. 구독이 필요합니다.');
+            window.location.href = 'subscription.html?payment_required=true';
+            return;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || '예측 저장에 실패했습니다.');
+        }
+
+        const data = await response.json();
+        console.log('Prediction saved:', data);
+
+        // Show success message
+        showNotification('예측이 성공적으로 저장되었습니다! 공개 차트 보드에서 확인할 수 있습니다.', 'success');
+
+        // Reset form
+        resetPredictionForm();
+
+        // Redirect to my predictions page
+        setTimeout(() => {
+            window.location.href = 'my-predictions.html';
+        }, 2000);
+
+    } catch (error) {
+        console.error('Error submitting prediction:', error);
+        alert('예측 저장 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// Helper function to get CSRF token
+function getCsrfToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue || '';
+}
+
+// Helper function to reset prediction form
+function resetPredictionForm() {
+    const form = document.querySelector('.prediction-form');
+    if (form) {
+        // Reset all form inputs
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (input.type === 'checkbox') {
+                input.checked = input.id === 'isPublic'; // Keep isPublic checked by default
+            } else {
+                input.value = '';
+            }
+        });
+
+        // Reset to first step
+        const steps = form.querySelectorAll('.form-step');
+        steps.forEach((step, index) => {
+            step.style.display = index === 0 ? 'block' : 'none';
+        });
+
+        // Reset progress bar
+        const progressFill = form.querySelector('.progress-fill');
+        if (progressFill) {
+            progressFill.style.width = '25%';
+        }
+
+        // Reset step indicators
+        const stepIndicators = form.querySelectorAll('.progress-step');
+        stepIndicators.forEach((indicator, index) => {
+            indicator.className = index === 0 ? 'progress-step active' : 'progress-step';
+        });
+    }
+}
+
+// Enhanced authentication functions
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email || !password) {
+        alert('이메일과 비밀번호를 모두 입력해주세요.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/auth/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            showNotification('로그인 성공!', 'success');
+            hideLoginModal();
+            updateAuthUI();
+
+            // Redirect to where they were trying to go
+            const redirectUrl = localStorage.getItem('redirectAfterLogin') || 'index.html';
+            localStorage.removeItem('redirectAfterLogin');
+            window.location.href = redirectUrl;
+        } else {
+            alert(data.message || '로그인에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+    }
+}
+
+async function handleRegister(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('signupUsername').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+    const referralCode = document.getElementById('referralCode').value;
+
+    if (password !== confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+    }
+
+    try {
+        const requestData = {
+            username,
+            email,
+            password
+        };
+
+        if (referralCode) {
+            requestData.referred_by = referralCode;
+        }
+
+        const response = await fetch('/api/auth/signup/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showNotification('회원가입 완료! 로그인해주세요.', 'success');
+            hideSignupModal();
+            showLoginModal();
+        } else {
+            alert(data.message || '회원가입에 실패했습니다.');
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        alert('회원가입 중 오류가 발생했습니다.');
+    }
+}
+
+// Update auth UI based on login status
+function updateAuthUI() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // Update navigation buttons
+    const loginBtns = document.querySelectorAll('.btn-login, .login-btn');
+    const registerBtns = document.querySelectorAll('.btn-register, .register-btn');
+    const userInfo = document.querySelectorAll('.user-info');
+    const logoutBtns = document.querySelectorAll('.logout-btn');
+
+    if (token && user.id) {
+        // User is logged in
+        loginBtns.forEach(btn => btn.style.display = 'none');
+        registerBtns.forEach(btn => btn.style.display = 'none');
+        logoutBtns.forEach(btn => btn.style.display = 'inline-block');
+
+        userInfo.forEach(info => {
+            info.style.display = 'block';
+            info.innerHTML = `
+                <span class="user-welcome">환영합니다, ${user.username}님!</span>
+                <span class="user-type ${user.user_type}">${user.user_type === 'free' ? '무료' : user.user_type === 'paid' ? '프리미엄' : '관리자'}</span>
+                ${user.user_type === 'free' ? `<span class="access-count">${user.free_access_count}/3</span>` : ''}
+            `;
+        });
+
+        // Update premium access indicators
+        const premiumButtons = document.querySelectorAll('.premium-feature');
+        premiumButtons.forEach(btn => {
+            if (user.user_type === 'paid' || user.user_type === 'admin') {
+                btn.classList.remove('locked');
+                btn.removeAttribute('disabled');
+            } else {
+                btn.classList.add('locked');
+                if (user.free_access_count >= 3) {
+                    btn.setAttribute('disabled', 'true');
+                }
+            }
+        });
+
+    } else {
+        // User is not logged in
+        loginBtns.forEach(btn => btn.style.display = 'inline-block');
+        registerBtns.forEach(btn => btn.style.display = 'inline-block');
+        logoutBtns.forEach(btn => btn.style.display = 'none');
+        userInfo.forEach(info => info.style.display = 'none');
+    }
+}
+
+// Notification system
+function showNotification(message, type = 'info', duration = 5000) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+    `;
+
+    // Add to page
+    let container = document.querySelector('.notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+    }
+
+    container.appendChild(notification);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, duration);
+
+    return notification;
+}
+
+// Logout function
+function handleLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('freeAccessCount');
+    updateAuthUI();
+    window.location.href = 'index.html';
 }
 
 function showPredictionSuccess(prediction) {
@@ -1779,7 +2122,7 @@ function showPredictionSuccess(prediction) {
         
         ${prediction.sharePublicly ? '🌐 공개 예측으로 저장되었습니다.' : '🔒 비공개 예측으로 저장되었습니다.'}
     `;
-    
+
     alert(message);
 }
 
@@ -1807,10 +2150,10 @@ function showLoginModal() {
 // Load and display saved predictions
 function loadMyPredictions() {
     const predictions = JSON.parse(localStorage.getItem('stockPredictions') || '[]');
-    
+
     // Update statistics
     updatePredictionStats(predictions);
-    
+
     // Display predictions list
     displayPredictionsList(predictions);
 }
@@ -1819,12 +2162,12 @@ function updatePredictionStats(predictions) {
     const totalElement = document.getElementById('totalPredictions');
     const publicElement = document.getElementById('publicPredictions');
     const avgReturnElement = document.getElementById('avgReturn');
-    
+
     if (!totalElement || !publicElement || !avgReturnElement) return;
-    
+
     const total = predictions.length;
     const publicCount = predictions.filter(p => p.sharePublicly).length;
-    
+
     // Calculate average expected return
     let avgReturn = 0;
     if (total > 0) {
@@ -1836,7 +2179,7 @@ function updatePredictionStats(predictions) {
         }, 0);
         avgReturn = totalReturn / total;
     }
-    
+
     totalElement.textContent = total;
     publicElement.textContent = publicCount;
     avgReturnElement.textContent = avgReturn.toFixed(1) + '%';
@@ -1845,31 +2188,31 @@ function updatePredictionStats(predictions) {
 function displayPredictionsList(predictions) {
     const listElement = document.getElementById('predictionsList');
     const noDataElement = document.getElementById('noPredictions');
-    
+
     if (!listElement || !noDataElement) return;
-    
+
     if (predictions.length === 0) {
         listElement.style.display = 'none';
         noDataElement.style.display = 'block';
         return;
     }
-    
+
     listElement.style.display = 'block';
     noDataElement.style.display = 'none';
-    
+
     // Sort predictions by date (newest first)
     const sortedPredictions = [...predictions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    
+
     listElement.innerHTML = sortedPredictions.map(prediction => {
         const currentPrice = parseFloat(prediction.currentPrice);
         const predictedPrice = parseFloat(prediction.predictedPrice);
         const changePercent = ((predictedPrice - currentPrice) / currentPrice) * 100;
         const changeClass = changePercent >= 0 ? 'positive' : 'negative';
         const changeSymbol = changePercent >= 0 ? '+' : '';
-        
+
         const createdDate = new Date(prediction.timestamp).toLocaleDateString('ko-KR');
         const targetDate = new Date(prediction.targetDate).toLocaleDateString('ko-KR');
-        
+
         return `
             <div class="prediction-card">
                 <div class="prediction-header">

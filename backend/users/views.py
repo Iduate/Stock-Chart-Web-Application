@@ -1,13 +1,18 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
 from django.utils.translation import gettext_lazy as _
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import User, UserProfile, Subscription
 from .serializers import UserSerializer, UserProfileSerializer, SubscriptionSerializer
+from .oauth_utils import verify_google_token, get_or_create_google_user
 import uuid
+import json
 
 class UserViewSet(viewsets.ModelViewSet):
     """사용자 관리 ViewSet"""
@@ -40,13 +45,33 @@ class LoginView(APIView):
                 'message': '이메일과 비밀번호를 입력해주세요.'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        user = authenticate(username=email, password=password)
-        if user:
-            # OAuth2 토큰 생성 (간단한 구현)
+        # Django uses username field for authentication, but our users login with email
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            user = None
+            
+        if user and user.is_active:
+            # Generate session token (simplified - in production use proper JWT)
             token = str(uuid.uuid4())
+            
+            # Store token in session or cache (simplified approach)
+            request.session['auth_token'] = token
+            request.session['user_id'] = user.id
+            
             return Response({
                 'access_token': token,
-                'user': UserSerializer(user).data,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'user_type': user.user_type,
+                    'subscription_status': user.subscription_status,
+                    'free_access_count': user.free_access_count,
+                    'prediction_accuracy': float(user.prediction_accuracy),
+                    'total_profit': float(user.total_profit)
+                },
                 'message': '로그인에 성공했습니다.'
             })
         else:
@@ -59,25 +84,69 @@ class SignupView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            # 추천인 코드 생성
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        referred_by = request.data.get('referred_by')
+        
+        if not all([username, email, password]):
+            return Response({
+                'message': '모든 필수 정보를 입력해주세요.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if user already exists
+        if User.objects.filter(email=email).exists():
+            return Response({
+                'message': '이미 사용 중인 이메일입니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+        if User.objects.filter(username=username).exists():
+            return Response({
+                'message': '이미 사용 중인 사용자명입니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Create user
+            user = User.objects.create(
+                username=username,
+                email=email,
+                password=make_password(password),  # Hash the password
+                user_type='free',  # Default to free user
+                subscription_status='inactive'
+            )
+            
+            # Generate referral code
             user.referral_code = f"REF{user.id:06d}"
+            
+            # Handle referral
+            if referred_by:
+                try:
+                    referrer = User.objects.get(referral_code=referred_by)
+                    user.referred_by = referrer
+                except User.DoesNotExist:
+                    pass  # Invalid referral code, ignore
+            
             user.save()
             
-            # 프로필 생성
+            # Create profile
             UserProfile.objects.create(user=user)
             
             return Response({
                 'message': '회원가입이 완료되었습니다.',
-                'user': UserSerializer(user).data
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'user_type': user.user_type,
+                    'referral_code': user.referral_code
+                }
             }, status=status.HTTP_201_CREATED)
-        
-        return Response({
-            'message': '회원가입에 실패했습니다.',
-            'errors': serializer.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            return Response({
+                'message': '회원가입 중 오류가 발생했습니다.',
+                'error': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class LogoutView(APIView):
     """로그아웃 API"""
@@ -101,10 +170,37 @@ class GoogleOAuthView(APIView):
     permission_classes = [AllowAny]
     
     def post(self, request):
-        # Google OAuth 구현 예정
+        token = request.data.get('id_token')
+        if not token:
+            return Response({
+                'message': 'ID 토큰이 필요합니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verify the token
+        user_info = verify_google_token(token)
+        if not user_info:
+            return Response({
+                'message': '유효하지 않은 Google 토큰입니다.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get or create the user
+        user, created = get_or_create_google_user(user_info)
+        if not user:
+            return Response({
+                'message': '사용자 생성에 실패했습니다.'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Generate a token for the user
+        import uuid
+        token = str(uuid.uuid4())
+        
+        # Return user data and token
         return Response({
-            'message': 'Google 로그인 기능을 준비중입니다.'
-        }, status=status.HTTP_501_NOT_IMPLEMENTED)
+            'access_token': token,
+            'user': UserSerializer(user).data,
+            'message': '구글 로그인에 성공했습니다.',
+            'is_new_user': created
+        })
 
 class AppleOAuthView(APIView):
     """Apple OAuth 로그인"""

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockChart - 주식차트 예측 플랫폼</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         // Redirect to home page
@@ -21,9 +23,11 @@
             background: #131722;
             color: white;
         }
+
         .loader {
             text-align: center;
         }
+
         .loader h1 {
             margin-bottom: 20px;
             font-size: 2rem;
@@ -31,10 +35,12 @@
             align-items: center;
             justify-content: center;
         }
+
         .loader h1 i {
             margin-right: 12px;
             color: #2962ff;
         }
+
         .spinner {
             border: 4px solid rgba(41, 98, 255, 0.2);
             border-radius: 50%;
@@ -44,15 +50,23 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .loading-message {
             margin-top: 16px;
             color: #787b86;
             font-size: 14px;
         }
+
         .manual-link {
             display: inline-block;
             margin-top: 16px;
@@ -61,12 +75,14 @@
             font-size: 14px;
             transition: color 0.2s;
         }
+
         .manual-link:hover {
             color: #5b8eff;
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
     <div class="loader">
         <h1><i class="fas fa-chart-line"></i> StockChart</h1>
@@ -76,7 +92,9 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
+
 </html>
+
 <body>
     <!-- 네비게이션 바 -->
     <nav class="navbar">
@@ -124,7 +142,7 @@
             <div class="hero-content">
                 <h1>미래의 주식 가격을 예측하고 공유하세요</h1>
                 <p>암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고<br>
-                   다른 사용자들과 예측 결과를 공유할 수 있는 플랫폼입니다.</p>
+                    다른 사용자들과 예측 결과를 공유할 수 있는 플랫폼입니다.</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="startPrediction()">무료로 시작하기</button>
                     <button class="btn btn-secondary" onclick="scrollToSection('charts')">차트 보기</button>
@@ -171,7 +189,7 @@
         <div class="container">
             <h2>실시간 차트 보드</h2>
             <p>사용자들의 예측과 실제 결과를 확인해보세요</p>
-            
+
             <div class="chart-filters">
                 <select id="marketFilter" class="filter-select">
                     <option value="">전체 시장</option>
@@ -507,6 +525,10 @@
         </div>
     </div>
 
+    <script src="js/notification.js?v=1.0"></script>
+    <script src="js/stock-chart-app.js?v=1.0"></script>
     <script src="js/app.js?v=1.5"></script>
+    <script src="js/access-limit.js?v=1.0"></script>
 </body>
+
 </html>

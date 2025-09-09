@@ -1,27 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>홈 - StockChart</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <link rel="stylesheet" href="css/tradingview-modern.css">
     <link rel="stylesheet" href="css/trustworthy-design.css">
     <link rel="stylesheet" href="css/tradingview-pro-effects.css">
+    <link rel="stylesheet" href="css/chart-controls.css">
+    <link rel="stylesheet" href="css/stock-symbols.css">
     <link rel="stylesheet" href="css/mobile-fixes.css">
+    <link rel="stylesheet" href="css/auth-notifications.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="js/tradingview-theme.js"></script>
     <script src="js/tradingview-pro.js"></script>
     <script src="js/chart-legend.js"></script>
+    <script src="js/chart-controls.js"></script>
+    <script src="js/stock-symbols.js"></script>
 </head>
+
 <body>
     <!-- 네비게이션 바 -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
                 <a href="home.html">
-                    <i class="fas fa-chart-line"></i> 
+                    <i class="fas fa-chart-line"></i>
                     <span class="logo-text">StockChart</span>
                 </a>
             </div>
@@ -99,7 +107,7 @@
                     </div>
                 </div>
                 <h1 class="hero-title">
-                    전세계 금융 전문가와 함께 
+                    전세계 금융 전문가와 함께
                     <span class="gradient-text">미래 시장을 예측하세요</span>
                 </h1>
                 <p class="hero-description">
@@ -179,26 +187,37 @@
             <div class="featured-chart-container" id="featuredChart">
                 <!-- This is where the large chart will be rendered -->
             </div>
-            <div class="chart-controls">
+            <div class="chart-control-row">
                 <div class="chart-timeframes">
-                    <button class="btn btn-timeframe active">1D</button>
-                    <button class="btn btn-timeframe">1W</button>
-                    <button class="btn btn-timeframe">1M</button>
-                    <button class="btn btn-timeframe">3M</button>
-                    <button class="btn btn-timeframe">1Y</button>
-                    <button class="btn btn-timeframe">ALL</button>
+                    <button class="btn btn-timeframe active" data-timeframe="1D">1D</button>
+                    <button class="btn btn-timeframe" data-timeframe="1W">1W</button>
+                    <button class="btn btn-timeframe" data-timeframe="1M">1M</button>
+                    <button class="btn btn-timeframe" data-timeframe="3M">3M</button>
+                    <button class="btn btn-timeframe" data-timeframe="1Y">1Y</button>
+                    <button class="btn btn-timeframe" data-timeframe="ALL">ALL</button>
                 </div>
-                <div class="chart-indicators">
-                    <button class="btn btn-indicator">
+                <div class="feature-buttons">
+                    <button class="feature-button" data-feature="characteristic">
                         <i class="fas fa-chart-line"></i>
-                        <span>지표</span>
+                        특성
                     </button>
-                    <button class="btn btn-indicator">
-                        <i class="fas fa-shapes"></i>
-                        <span>도구</span>
+                    <button class="feature-button" data-feature="equipment">
+                        <i class="fas fa-tools"></i>
+                        장비
                     </button>
                 </div>
             </div>
+            <div class="chart-indicators">
+                <button class="btn btn-indicator">
+                    <i class="fas fa-chart-line"></i>
+                    <span>지표</span>
+                </button>
+                <button class="btn btn-indicator">
+                    <i class="fas fa-shapes"></i>
+                    <span>도구</span>
+                </button>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -263,14 +282,14 @@
                 <h2 class="section-title">실시간 시장 현황</h2>
                 <p class="section-description">전 세계 주요 시장의 실시간 데이터를 한눈에 확인하세요</p>
             </div>
-            
+
             <div class="market-tabs">
                 <div class="market-tab active" data-tab="stocks">주식</div>
                 <div class="market-tab" data-tab="crypto">암호화폐</div>
                 <div class="market-tab" data-tab="forex">외환</div>
                 <div class="market-tab" data-tab="indices">지수</div>
             </div>
-            
+
             <div class="market-content active" id="stocks-content">
                 <div class="market-grid">
                     <div class="market-card">
@@ -287,7 +306,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-005930"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -302,7 +321,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-000660"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -317,7 +336,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-AAPL"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -334,7 +353,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="market-content" id="crypto-content">
                 <div class="market-grid">
                     <div class="market-card">
@@ -351,7 +370,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-BTC"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -366,7 +385,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-ETH"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -381,7 +400,7 @@
                         </div>
                         <div class="market-mini-chart" id="chart-SOL"></div>
                     </div>
-                    
+
                     <div class="market-card">
                         <div class="market-symbol">
                             <div class="symbol-icon">
@@ -398,90 +417,90 @@
                     </div>
                 </div>
             </div>
-                            <span class="indicator-change positive">+1.2%</span>
-                        </div>
-                        <div class="indicator-value">2,547.23</div>
-                        <div class="indicator-trend">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>24시간 최고점</span>
-                        </div>
-                    </div>
-                    <div class="indicator-card">
-                        <div class="indicator-header">
-                            <h4>나스닥</h4>
-                            <span class="indicator-change negative">-0.8%</span>
-                        </div>
-                        <div class="indicator-value">15,432.67</div>
-                        <div class="indicator-trend">
-                            <i class="fas fa-arrow-down"></i>
-                            <span>조정 구간</span>
-                        </div>
-                    </div>
-                    <div class="indicator-card">
-                        <div class="indicator-header">
-                            <h4>비트코인</h4>
-                            <span class="indicator-change positive">+3.5%</span>
-                        </div>
-                        <div class="indicator-value">$43,250</div>
-                        <div class="indicator-trend">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>강세 지속</span>
-                        </div>
-                    </div>
-                    <div class="indicator-card">
-                        <div class="indicator-header">
-                            <h4>금 (Gold)</h4>
-                            <span class="indicator-change positive">+0.6%</span>
-                        </div>
-                        <div class="indicator-value">$1,985.40</div>
-                        <div class="indicator-trend">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>안전자산 선호</span>
-                        </div>
+            <span class="indicator-change positive">+1.2%</span>
+        </div>
+        <div class="indicator-value">2,547.23</div>
+        <div class="indicator-trend">
+            <i class="fas fa-arrow-up"></i>
+            <span>24시간 최고점</span>
+        </div>
+        </div>
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <h4>나스닥</h4>
+                <span class="indicator-change negative">-0.8%</span>
+            </div>
+            <div class="indicator-value">15,432.67</div>
+            <div class="indicator-trend">
+                <i class="fas fa-arrow-down"></i>
+                <span>조정 구간</span>
+            </div>
+        </div>
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <h4>비트코인</h4>
+                <span class="indicator-change positive">+3.5%</span>
+            </div>
+            <div class="indicator-value">$43,250</div>
+            <div class="indicator-trend">
+                <i class="fas fa-arrow-up"></i>
+                <span>강세 지속</span>
+            </div>
+        </div>
+        <div class="indicator-card">
+            <div class="indicator-header">
+                <h4>금 (Gold)</h4>
+                <span class="indicator-change positive">+0.6%</span>
+            </div>
+            <div class="indicator-value">$1,985.40</div>
+            <div class="indicator-trend">
+                <i class="fas fa-arrow-up"></i>
+                <span>안전자산 선호</span>
+            </div>
+        </div>
+        </div>
+        </div>
+        <div class="market-data-grid">
+            <div class="market-card">
+                <div class="market-card-header">
+                    <h3>🔥 인기 주식</h3>
+                    <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="popular-stocks">
+                    <!-- 실시간 주식 데이터가 여기에 표시됩니다 -->
+                    <div class="loading-modern">
+                        <div class="loading-spinner"></div>
+                        <span>데이터 로딩 중...</span>
                     </div>
                 </div>
             </div>
-            <div class="market-data-grid">
-                <div class="market-card">
-                    <div class="market-card-header">
-                        <h3>🔥 인기 주식</h3>
-                        <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="popular-stocks">
-                        <!-- 실시간 주식 데이터가 여기에 표시됩니다 -->
-                        <div class="loading-modern">
-                            <div class="loading-spinner"></div>
-                            <span>데이터 로딩 중...</span>
-                        </div>
-                    </div>
+            <div class="market-card">
+                <div class="market-card-header">
+                    <h3>₿ 암호화폐</h3>
+                    <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
                 </div>
-                <div class="market-card">
-                    <div class="market-card-header">
-                        <h3>₿ 암호화폐</h3>
-                        <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="popular-cryptos">
-                        <!-- 실시간 암호화폐 데이터가 여기에 표시됩니다 -->
-                        <div class="loading-modern">
-                            <div class="loading-spinner"></div>
-                            <span>데이터 로딩 중...</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="market-card">
-                    <div class="market-card-header">
-                        <h3>📊 시장 지수</h3>
-                        <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                    <div class="market-indices">
-                        <!-- 시장 지수 데이터가 여기에 표시됩니다 -->
-                        <div class="loading-modern">
-                            <div class="loading-spinner"></div>
-                            <span>데이터 로딩 중...</span>
-                        </div>
+                <div class="popular-cryptos">
+                    <!-- 실시간 암호화폐 데이터가 여기에 표시됩니다 -->
+                    <div class="loading-modern">
+                        <div class="loading-spinner"></div>
+                        <span>데이터 로딩 중...</span>
                     </div>
                 </div>
             </div>
+            <div class="market-card">
+                <div class="market-card-header">
+                    <h3>📊 시장 지수</h3>
+                    <a href="charts.html" class="view-all-link">전체보기 <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="market-indices">
+                    <!-- 시장 지수 데이터가 여기에 표시됩니다 -->
+                    <div class="loading-modern">
+                        <div class="loading-spinner"></div>
+                        <span>데이터 로딩 중...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -492,7 +511,7 @@
                 <h2 class="section-title">온 세상 사람들과 함께 마켓 탐구</h2>
                 <p class="section-description">실시간 주식 차트와 다른 트레이더들의 아이디어를 확인하세요</p>
             </div>
-            
+
             <div class="chart-container">
                 <div class="chart-header">
                     <div class="chart-title">SAMSUNG ELECTRONICS (삼성전자)</div>
@@ -507,23 +526,31 @@
                 </div>
                 <div class="chart-body" id="mainChart"></div>
             </div>
-            
+
             <div class="section-header">
                 <h3>커뮤니티 트렌드</h3>
             </div>
-            
+
             <div class="community-insights">
                 <div class="insight-cards">
                     <div class="insight-card">
                         <div class="insight-header">
                             <div class="insight-author">
-                                <img src="https://via.placeholder.com/40" alt="User avatar" class="author-avatar">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%234A6EE0'/%3E%3Ctext x='20' y='25' font-size='14' font-family='Arial' fill='white' text-anchor='middle'%3E투%3C/text%3E%3C/svg%3E"
+                                    alt="투자고수 아바타" class="author-avatar">
                                 <div class="author-info">
                                     <div class="author-name">투자고수</div>
-                                    <div class="post-time">2 시간 전</div>
+                                    <div class="post-time">
+                                        <i class="fas fa-clock"></i> 2 시간 전
+                                    </div>
                                 </div>
                             </div>
-                            <div class="insight-symbol">KRX:005930</div>
+                            <div class="insight-symbol">
+                                <div class="stock-symbol-container">
+                                    <div class="stock-symbol-icon"><i class="fas fa-won-sign"></i></div>
+                                    <span class="stock-symbol-text">KRX:005930</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="insight-title">삼성전자, 상승 추세 속 단기 조정… 다음 전략은?</div>
                         <div class="insight-excerpt">
@@ -538,21 +565,29 @@
                             <div class="insight-tag long">롱</div>
                         </div>
                     </div>
-                    
+
                     <div class="insight-card">
                         <div class="insight-header">
                             <div class="insight-author">
-                                <img src="https://via.placeholder.com/40" alt="User avatar" class="author-avatar">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%236366F1'/%3E%3Ctext x='20' y='25' font-size='14' font-family='Arial' fill='white' text-anchor='middle'%3E차%3C/text%3E%3C/svg%3E"
+                                    alt="차트분석가 아바타" class="author-avatar">
                                 <div class="author-info">
                                     <div class="author-name">차트분석가</div>
-                                    <div class="post-time">어제</div>
+                                    <div class="post-time">
+                                        <i class="fas fa-clock"></i> 어제
+                                    </div>
                                 </div>
                             </div>
-                            <div class="insight-symbol">KRX:000660</div>
+                            <div class="insight-symbol">
+                                <div class="stock-symbol-container">
+                                    <div class="stock-symbol-icon"><i class="fas fa-won-sign"></i></div>
+                                    <span class="stock-symbol-text">KRX:000660</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="insight-title">SK하이닉스 메모리 슈퍼사이클 시작될까?</div>
                         <div class="insight-excerpt">
-                            AI 수요 증가로 메모리 반도체 가격이 상승 중입니다. SK하이닉스는 HBM 시장에서 
+                            AI 수요 증가로 메모리 반도체 가격이 상승 중입니다. SK하이닉스는 HBM 시장에서
                             주도적인 역할을 하고 있으며, 다음 분기부터는 본격적인 실적 개선이...
                         </div>
                         <div class="insight-footer">
@@ -564,18 +599,18 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="community-cta">
                     <button class="btn btn-primary" onclick="window.location.href='charts.html'">
                         모든 아이디어 보기 <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
-                            <span>실시간 성과 차트</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <span>실시간 성과 차트</span>
+        </div>
+        </div>
+        </div>
+        </div>
         </div>
     </section>
 
@@ -681,6 +716,8 @@
                 <button class="btn btn-apple" onclick="loginWithApple()">
                     <i class="fab fa-apple"></i> Apple로 로그인
                 </button>
+                <!-- Hidden container for Google Sign-In API -->
+                <div id="google-signin-button" style="display: none;"></div>
             </div>
             <p class="modal-footer">
                 계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
@@ -732,48 +769,51 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=1.5"></script>
+    <script src="js/notification.js?v=1.1"></script>
+    <script src="js/google-auth.js?v=1.1"></script>
+    <script src="js/auth-loader.js?v=1.0"></script>
+    <script src="js/app.js?v=1.6"></script>
     <script>
         // Initialize TradingView-style theme after app.js loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof initThemeToggle === 'function') {
                 initThemeToggle();
             }
-            
+
             if (typeof createMarketTickers === 'function') {
                 createMarketTickers();
             }
-            
+
             if (typeof createHeroChartIfNeeded === 'function') {
                 createHeroChartIfNeeded();
             }
-            
+
             // Handle market tabs
             document.querySelectorAll('.market-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     // Remove active class from all tabs
                     document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
-                    
+
                     // Add active class to clicked tab
                     this.classList.add('active');
-                    
+
                     // Hide all content
                     document.querySelectorAll('.market-content').forEach(c => c.classList.remove('active'));
-                    
+
                     // Show selected content
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId + '-content')?.classList.add('active');
                 });
             });
-            
+
             // Create mini charts for market data
             createMiniCharts();
         });
-        
+
         // Create mini charts for market cards
         function createMiniCharts() {
             const isDarkTheme = !document.body.classList.contains('light-theme');
-            
+
             document.querySelectorAll('.market-mini-chart').forEach(container => {
                 const chart = LightweightCharts.createChart(container, {
                     width: container.clientWidth,
@@ -803,52 +843,52 @@
                     handleScroll: false,
                     handleScale: false,
                 });
-                
+
                 // Create series
                 const change = container.previousElementSibling;
                 const isPositive = change.classList.contains('positive');
                 const seriesColor = isPositive ? '#26a69a' : '#ef5350';
-                
+
                 const areaSeries = chart.addAreaSeries({
                     topColor: isPositive ? 'rgba(38, 166, 154, 0.28)' : 'rgba(239, 83, 80, 0.28)',
                     bottomColor: isPositive ? 'rgba(38, 166, 154, 0.05)' : 'rgba(239, 83, 80, 0.05)',
                     lineColor: seriesColor,
                     lineWidth: 2,
                 });
-                
+
                 // Generate random data based on positive/negative trend
                 const data = generateRandomChartData(isPositive);
                 areaSeries.setData(data);
             });
         }
-        
+
         // Generate random chart data for mini charts
         function generateRandomChartData(isPositive) {
             const data = [];
             let value = 100;
             const direction = isPositive ? 1 : -1;
-            
+
             for (let i = 0; i < 30; i++) {
                 // Random change with trend bias
                 const change = (Math.random() * 2 - 0.8 + direction * 0.3) / 100;
                 value = value * (1 + change);
-                
+
                 data.push({
                     time: Math.floor(Date.now() / 1000) - (30 - i) * 3600,
                     value: value
                 });
             }
-            
+
             return data;
         }
-        
+
         // Initialize main chart with candlestick data
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const mainChartElement = document.getElementById('mainChart');
             if (!mainChartElement) return;
-            
+
             const isDarkTheme = !document.body.classList.contains('light-theme');
-            
+
             // Create chart with TradingView styling
             const chart = LightweightCharts.createChart(mainChartElement, {
                 width: mainChartElement.clientWidth,
@@ -892,10 +932,10 @@
                     borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
                 },
             });
-            
+
             // Generate candlestick data
             const candleData = generateCandlestickData();
-            
+
             // Add candlestick series
             const candlestickSeries = chart.addCandlestickSeries({
                 upColor: '#26a69a',
@@ -904,9 +944,9 @@
                 wickUpColor: '#26a69a',
                 wickDownColor: '#ef5350',
             });
-            
+
             candlestickSeries.setData(candleData);
-            
+
             // Add volume series
             const volumeSeries = chart.addHistogramSeries({
                 color: '#26a69a',
@@ -919,16 +959,16 @@
                     bottom: 0,
                 },
             });
-            
+
             // Generate volume data from candlestick data
             const volumeData = candleData.map(candle => ({
                 time: candle.time,
                 value: candle.volume,
                 color: candle.close >= candle.open ? '#26a69a' : '#ef5350'
             }));
-            
+
             volumeSeries.setData(volumeData);
-            
+
             // Make chart responsive
             window.addEventListener('resize', () => {
                 chart.applyOptions({
@@ -936,23 +976,23 @@
                     height: mainChartElement.clientHeight,
                 });
             });
-            
+
             // Set chart control buttons functionality
             document.querySelectorAll('.chart-control').forEach((button, index) => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     // Remove active class from all buttons
                     document.querySelectorAll('.chart-control').forEach(btn => {
                         btn.classList.remove('active');
                     });
-                    
+
                     // Add active class to clicked button
                     this.classList.add('active');
-                    
+
                     // Update chart timeframe based on button index
                     const from = new Date();
                     let to = new Date();
-                    
-                    switch(index) {
+
+                    switch (index) {
                         case 0: // 1D
                             from.setDate(from.getDate() - 1);
                             break;
@@ -972,27 +1012,27 @@
                             chart.timeScale().fitContent();
                             return;
                     }
-                    
+
                     chart.timeScale().setVisibleRange({
                         from: Math.floor(from.getTime() / 1000),
                         to: Math.floor(to.getTime() / 1000)
                     });
                 });
             });
-            
+
             // Activate default timeframe (3M)
             document.querySelectorAll('.chart-control')[3].classList.add('active');
         });
-        
+
         // Generate realistic candlestick data
         function generateCandlestickData() {
             const data = [];
             const startDate = new Date();
             startDate.setFullYear(startDate.getFullYear() - 1);
-            
+
             let price = 72000; // Starting price for Samsung Electronics
             let volatility = 0.02;
-            
+
             const trends = [
                 { direction: 1, days: 30, volatility: 0.015 },
                 { direction: -1, days: 15, volatility: 0.02 },
@@ -1005,46 +1045,46 @@
                 { direction: -1, days: 25, volatility: 0.02 },
                 { direction: 1, days: 30, volatility: 0.02 }
             ];
-            
+
             let trendIndex = 0;
             let daysInTrend = 0;
-            
+
             for (let i = 0; i < 365; i++) {
                 if (daysInTrend >= trends[trendIndex].days) {
                     trendIndex = (trendIndex + 1) % trends.length;
                     daysInTrend = 0;
                 }
-                
+
                 const currentDate = new Date(startDate);
                 currentDate.setDate(startDate.getDate() + i);
-                
+
                 // Skip weekends
                 if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
                     continue;
                 }
-                
+
                 const trend = trends[trendIndex];
                 volatility = trend.volatility;
-                
+
                 // Base daily change with trend bias
                 let baseChange = (Math.random() * volatility * 2 - volatility) + (trend.direction * volatility / 2);
-                
+
                 // Day's range
                 let open = price;
                 let close = price * (1 + baseChange);
-                
+
                 // Calculate high and low with some randomness
                 let high = Math.max(open, close) * (1 + Math.random() * volatility * 0.5);
                 let low = Math.min(open, close) * (1 - Math.random() * volatility * 0.5);
-                
+
                 // Generate volume
                 let volume = Math.round(100000 + Math.random() * 500000);
-                
+
                 // If big price movement, increase volume
                 if (Math.abs(close - open) / open > volatility) {
                     volume = volume * (1 + Math.random());
                 }
-                
+
                 // Add candle
                 data.push({
                     time: Math.floor(currentDate.getTime() / 1000),
@@ -1054,15 +1094,16 @@
                     close: close,
                     volume: volume
                 });
-                
+
                 // Set next day's open price
                 price = close;
-                
+
                 daysInTrend++;
             }
-            
+
             return data;
         }
     </script>
 </body>
+
 </html>

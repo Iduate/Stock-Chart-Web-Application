@@ -28,6 +28,7 @@ class User(AbstractUser):
     social_id = models.CharField('소셜 ID', max_length=100, blank=True)
     phone_number = models.CharField('전화번호', max_length=20, blank=True)
     language_preference = models.CharField('언어 설정', max_length=10, default='ko')
+    subscription_expiry = models.DateTimeField('구독 만료일', null=True, blank=True)
     created_at = models.DateTimeField('가입일', auto_now_add=True)
     updated_at = models.DateTimeField('수정일', auto_now=True)
     

@@ -1,0 +1,61 @@
+/* Custom CSS for free access limit alert */
+.free-access-alert {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #ffeeba;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.free-access-alert h3 {
+    font-size: 1.2rem;
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.free-access-alert p {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.free-access-alert .btn {
+    margin-top: 10px;
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.access-counter {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #dc3545;
+}
+
+.limit-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-left: 5px;
+}

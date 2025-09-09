@@ -6,8 +6,21 @@
 """
 
 from pathlib import Path
-from decouple import config
 import os
+
+# Handle decouple import with fallback
+try:
+    from decouple import config
+except ImportError:
+    # If python-decouple isn't installed, create a simple config function
+    import os
+    def config(key, default=None, cast=None):
+        value = os.environ.get(key, default)
+        if cast and value is not None:
+            if cast == bool:
+                return str(value).lower() in ('true', 'yes', '1')
+            return cast(value)
+        return value
 
 # Try to import dj_database_url for production deployments
 try:
@@ -15,6 +28,9 @@ try:
     HAS_DJ_DATABASE_URL = True
 except ImportError:
     HAS_DJ_DATABASE_URL = False
+    # Define a minimal fallback if needed
+    def parse(url):
+        return {}
 
 # 프로젝트 기본 경로
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,6 +68,7 @@ INSTALLED_APPS = [
     'users',
     'charts',
     'payment_system',
+    'payments',
     'market_data',
 ]
 
@@ -64,8 +81,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'users.auth_middleware.TokenAuthenticationMiddleware',  # Our custom token auth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.VisitTrackerMiddleware',  # Our custom middleware for tracking visits
 ]
 
 ROOT_URLCONF = 'stockchart.urls'

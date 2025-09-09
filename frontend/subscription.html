@@ -1,14 +1,439 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>구독 - StockChart</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    <link rel="stylesheet" href="css/tradingview-modern.css">
+    <link rel="stylesheet" href="css/trustworthy-design.css">
+    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
     <link rel="stylesheet" href="css/mobile-fixes.css">
+    <link rel="stylesheet" href="css/access-limit.css">
+    <link rel="stylesheet" href="css/auth-notifications.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* TradingView-inspired subscription page styling */
+        .subscription-section {
+            padding: 120px 0 80px;
+            background: var(--tv-bg-primary);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .subscription-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+                    var(--tv-bg-primary) 0%,
+                    var(--tv-bg-secondary) 50%,
+                    var(--tv-bg-primary) 100%);
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        .subscription-section>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header {
+            margin-bottom: 60px;
+            color: var(--tv-text-primary);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--tv-text-primary);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, var(--tv-bright-blue) 0%, var(--tv-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            color: var(--tv-text-secondary);
+        }
+
+        .header-highlight {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .highlight-badge {
+            background: var(--tv-bg-card);
+            padding: 8px 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--tv-border-light);
+            font-weight: 600;
+            color: var(--tv-text-primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .highlight-text {
+            color: var(--tv-text-secondary);
+            font-size: 0.9rem;
+            align-self: center;
+        }
+
+        .free-access-alert {
+            background: var(--tv-bg-card);
+            border: 1px solid var(--tv-red);
+            color: var(--tv-text-primary);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(239, 83, 80, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .free-access-alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--tv-red), var(--tv-bright-blue));
+        }
+
+        .free-access-alert h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: var(--tv-red);
+        }
+
+        .access-counter {
+            font-weight: bold;
+            background: var(--tv-bright-blue);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .limit-badge {
+            background: var(--tv-bg-hover);
+            color: var(--tv-text-primary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 0 5px;
+            border: 1px solid var(--tv-border-light);
+        }
+
+        .btn-upgrade {
+            background: var(--tv-bright-blue) !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            margin-top: 15px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3) !important;
+        }
+
+        .btn-upgrade:hover {
+            background: var(--tv-blue-hover) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4) !important;
+        }
+
+        .pricing-comparison {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .comparison-toggle {
+            display: inline-flex;
+            background: var(--tv-bg-card);
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid var(--tv-border-light);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--tv-text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background: var(--tv-bright-blue);
+            color: white;
+            box-shadow: 0 2px 8px rgba(41, 98, 255, 0.3);
+        }
+
+        .discount {
+            background: var(--tv-green);
+            color: white;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: 600;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--tv-bg-card);
+            border: 1px solid var(--tv-border-light);
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            border-color: var(--tv-bright-blue);
+        }
+
+        .pricing-card.premium {
+            border: 2px solid var(--tv-bright-blue);
+            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--tv-bg-card) 0%, rgba(41, 98, 255, 0.05) 100%);
+        }
+
+        .pricing-card.premium::before {
+            content: "가장 인기";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--tv-bright-blue);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.4);
+        }
+
+        .plan-header {
+            margin-bottom: 30px;
+        }
+
+        .plan-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .plan-header h3 {
+            font-size: 1.8rem;
+            color: var(--tv-text-primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .plan-header p {
+            color: var(--tv-text-secondary);
+            font-size: 1rem;
+        }
+
+        .plan-pricing {
+            margin-bottom: 30px;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--tv-text-primary);
+            background: linear-gradient(135deg, var(--tv-bright-blue), var(--tv-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .period {
+            color: var(--tv-text-secondary);
+            font-size: 1rem;
+        }
+
+        .plan-features {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 8px 0;
+        }
+
+        .feature i {
+            width: 20px;
+            margin-right: 15px;
+            color: var(--tv-green);
+            font-weight: bold;
+        }
+
+        .feature.not-included i {
+            color: var(--tv-red);
+        }
+
+        .feature.not-included span {
+            color: var(--tv-text-disabled);
+            text-decoration: line-through;
+        }
+
+        .feature span {
+            color: var(--tv-text-primary);
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            background: var(--tv-bright-blue);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--tv-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--tv-bright-blue);
+            color: var(--tv-bright-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--tv-bright-blue);
+            color: white;
+        }
+
+        .paypal-button-container {
+            margin-top: 15px;
+            min-height: 45px;
+        }
+
+        /* Error message styling */
+        .payment-error {
+            background: var(--tv-bg-card);
+            color: var(--tv-red);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid var(--tv-red);
+            display: none;
+            box-shadow: 0 4px 12px rgba(239, 83, 80, 0.2);
+        }
+
+        .payment-error.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modal improvements */
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .pricing-card.premium {
+                transform: none;
+            }
+
+            .header-highlight {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <!-- 네비게이션 바 -->
     <nav class="navbar">
@@ -62,6 +487,15 @@
                 </div>
             </div>
 
+            <!-- Free access limit alert -->
+            <div id="freeAccessAlert" class="free-access-alert pulse" style="display:none;">
+                <h3>⚠️ 무료 접근 횟수 제한에 도달했습니다</h3>
+                <p>무료 사용자는 프리미엄 콘텐츠에 <span class="access-counter">3</span>번의 접근만 가능합니다.</p>
+                <p>접근 횟수: <span id="accessCount" class="limit-badge">3/3</span></p>
+                <p>무제한 접근과 추가 기능을 사용하시려면 프리미엄 또는 프로 요금제를 구독하세요.</p>
+                <button class="btn btn-upgrade pulse">지금 업그레이드</button>
+            </div>
+
             <div class="pricing-comparison">
                 <div class="comparison-toggle">
                     <button class="toggle-btn active" data-period="monthly">월간</button>
@@ -111,8 +545,7 @@
                 </div>
 
                 <!-- Pro Plan -->
-                <div class="pricing-card pro popular">
-                    <div class="popular-badge">🔥 가장 인기</div>
+                <div class="pricing-card pro premium">
                     <div class="plan-header">
                         <div class="plan-icon">🚀</div>
                         <h3>프로 플랜</h3>
@@ -144,12 +577,17 @@
                             <i class="fas fa-check"></i>
                             <span>우선 고객 지원</span>
                         </div>
-                        <div class="feature limited">
+                        <div class="feature not-included">
                             <i class="fas fa-times"></i>
                             <span>API 접근</span>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-lg">7일 무료 체험</button>
+                    <div class="payment-error" id="paymentError">
+                        결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.
+                    </div>
+                    <button class="btn btn-primary btn-lg" onclick="startFreeTrial('pro')">7일 무료 체험</button>
+                    <div class="paypal-button-container" data-plan-id="2" data-plan-price="29900" data-currency="KRW">
+                    </div>
                 </div>
 
                 <!-- Enterprise Plan -->
@@ -199,7 +637,8 @@
                 <div class="showcase-grid">
                     <div class="showcase-item">
                         <div class="showcase-image">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad1)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E📊%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E고급 분석%3C/text%3E%3C/svg%3E" alt="Advanced Analytics">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%236366f1;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad1)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E📊%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E고급 분석%3C/text%3E%3C/svg%3E"
+                                alt="Advanced Analytics">
                         </div>
                         <div class="showcase-content">
                             <h4>🔍 고급 기술적 분석</h4>
@@ -214,7 +653,8 @@
 
                     <div class="showcase-item">
                         <div class="showcase-image">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306d6a0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad2)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E🔔%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E실시간 알림%3C/text%3E%3C/svg%3E" alt="Real-time Alerts">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2310b981;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306d6a0;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad2)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E🔔%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E실시간 알림%3C/text%3E%3C/svg%3E"
+                                alt="Real-time Alerts">
                         </div>
                         <div class="showcase-content">
                             <h4>⚡ 실시간 알림 시스템</h4>
@@ -229,7 +669,8 @@
 
                     <div class="showcase-item">
                         <div class="showcase-image">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad3)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E📈%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E포트폴리오%3C/text%3E%3C/svg%3E" alt="Portfolio Tracking">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f59e0b;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23f97316;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='200' fill='url(%23grad3)'/%3E%3Ctext x='150' y='100' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E📈%3C/text%3E%3Ctext x='150' y='130' text-anchor='middle' fill='white' font-size='14'%3E포트폴리오%3C/text%3E%3C/svg%3E"
+                                alt="Portfolio Tracking">
                         </div>
                         <div class="showcase-content">
                             <h4>📊 포트폴리오 추적</h4>
@@ -252,7 +693,8 @@
                             <p>"프리미엄 기능 덕분에 예측 정확도가 30% 향상되었습니다. 특히 실시간 알림이 매우 유용해요!"</p>
                         </div>
                         <div class="testimonial-author">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%236366f1'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EK%3C/text%3E%3C/svg%3E" alt="User">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%236366f1'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EK%3C/text%3E%3C/svg%3E"
+                                alt="User">
                             <div class="author-info">
                                 <h4>김트레이더</h4>
                                 <p>프로 플랜 사용자</p>
@@ -268,7 +710,8 @@
                             <p>"API 접근으로 자동 트레이딩 시스템을 구축했습니다. 엔터프라이즈 플랜의 지원도 훌륭해요."</p>
                         </div>
                         <div class="testimonial-author">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%2310b981'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EL%3C/text%3E%3C/svg%3E" alt="User">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%2310b981'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EL%3C/text%3E%3C/svg%3E"
+                                alt="User">
                             <div class="author-info">
                                 <h4>이투자</h4>
                                 <p>엔터프라이즈 사용자</p>
@@ -284,7 +727,8 @@
                             <p>"7일 무료 체험으로 시작했는데, 첫 주만에 효과를 느꼈습니다. 바로 구독했어요!"</p>
                         </div>
                         <div class="testimonial-author">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f59e0b'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EP%3C/text%3E%3C/svg%3E" alt="User">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f59e0b'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EP%3C/text%3E%3C/svg%3E"
+                                alt="User">
                             <div class="author-info">
                                 <h4>박초보</h4>
                                 <p>프로 플랜 사용자</p>
@@ -475,6 +919,148 @@
         </div>
     </div>
 
+    <script src="js/notification.js?v=1.0"></script>
+    <script src="js/stock-chart-app.js?v=1.0"></script>
     <script src="js/app.js?v=1.5"></script>
+    <script src="js/access-limit.js?v=1.0"></script>
+    <script src="js/google-auth.js?v=1.0"></script>
+    <script src="js/paypal-payment.js?v=1.0"></script>
+
+    <script>
+        // Subscription page specific functionality
+        class SubscriptionManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.checkAccessLimit();
+                this.setupPricing();
+                this.setupPaymentErrorHandling();
+            }
+
+            checkAccessLimit() {
+                // Check URL parameters for payment required flag
+                const urlParams = new URLSearchParams(window.location.search);
+                const paymentRequired = urlParams.get('payment_required') === 'true';
+                const visitCount = urlParams.get('visit_count') || localStorage.getItem('freeAccessCount') || '0';
+
+                if (paymentRequired || parseInt(visitCount) >= 3) {
+                    this.showAccessLimitAlert(visitCount);
+                }
+            }
+
+            showAccessLimitAlert(visitCount) {
+                const alert = document.getElementById('freeAccessAlert');
+                if (alert) {
+                    alert.style.display = 'block';
+
+                    const accessCount = document.getElementById('accessCount');
+                    if (accessCount) {
+                        accessCount.textContent = `${visitCount}/3`;
+                    }
+
+                    // Add click handler for upgrade button
+                    const upgradeBtn = alert.querySelector('.btn-upgrade');
+                    if (upgradeBtn) {
+                        upgradeBtn.onclick = () => {
+                            document.querySelector('.pricing-card.premium').scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        };
+                    }
+                }
+            }
+
+            setupPricing() {
+                // Setup monthly/yearly toggle
+                const toggleBtns = document.querySelectorAll('.toggle-btn');
+                toggleBtns.forEach(btn => {
+                    btn.onclick = () => this.togglePricing(btn.dataset.period);
+                });
+            }
+
+            togglePricing(period) {
+                // Update toggle buttons
+                document.querySelectorAll('.toggle-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.period === period);
+                });
+
+                // Update prices
+                const monthlyPrices = document.querySelectorAll('.monthly-price');
+                const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+                if (period === 'monthly') {
+                    monthlyPrices.forEach(el => el.classList.remove('hidden'));
+                    yearlyPrices.forEach(el => el.classList.add('hidden'));
+                } else {
+                    monthlyPrices.forEach(el => el.classList.add('hidden'));
+                    yearlyPrices.forEach(el => el.classList.remove('hidden'));
+                }
+            }
+
+            setupPaymentErrorHandling() {
+                // Handle payment errors
+                window.addEventListener('paypal_error', (event) => {
+                    this.showPaymentError(event.detail.message);
+                });
+
+                window.addEventListener('paypal_success', (event) => {
+                    this.showPaymentSuccess();
+                });
+            }
+
+            showPaymentError(message) {
+                const errorDiv = document.getElementById('paymentError');
+                if (errorDiv) {
+                    errorDiv.textContent = message || '결제 처리 중 오류가 발생했습니다.';
+                    errorDiv.classList.add('show');
+
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        errorDiv.classList.remove('show');
+                    }, 5000);
+                }
+
+                // Also show notification
+                if (window.showNotification) {
+                    showNotification(message || '결제 중 오류가 발생했습니다.', 'error');
+                }
+            }
+
+            showPaymentSuccess() {
+                if (window.showNotification) {
+                    showNotification('결제가 성공적으로 완료되었습니다!', 'success');
+                }
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = 'home.html?upgraded=true';
+                }, 2000);
+            }
+        }
+
+        // Global functions for backward compatibility
+        window.startFreeTrial = function (planType) {
+            if (window.stockChartApp && !window.stockChartApp.isAuthenticated()) {
+                localStorage.setItem('loginRedirect', window.location.href);
+                showNotification('구독하려면 먼저 로그인해주세요.', 'info');
+                window.stockChartApp.showModal('loginModal');
+                return;
+            }
+
+            // Handle free trial start
+            showNotification('7일 무료 체험이 시작됩니다!', 'success');
+
+            // You can add PayPal integration here
+            console.log(`Starting free trial for ${planType} plan`);
+        };
+
+        // Initialize subscription manager
+        document.addEventListener('DOMContentLoaded', () => {
+            window.subscriptionManager = new SubscriptionManager();
+        });
+    </script>
 </body>
+
 </html>
