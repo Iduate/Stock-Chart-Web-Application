@@ -1,0 +1,40 @@
+[phases.setup]
+nixPkgs = [
+    "python3", 
+    "postgresql_16", 
+    "gcc", 
+    "zlib", 
+    "zlib.dev",
+    "libjpeg", 
+    "libjpeg.dev",
+    "libwebp", 
+    "libwebp.dev",
+    "libtiff", 
+    "libtiff.dev",
+    "freetype", 
+    "freetype.dev",
+    "lcms2", 
+    "lcms2.dev",
+    "openjpeg", 
+    "openjpeg.dev",
+    "pkg-config",
+    "libffi",
+    "libffi.dev",
+    "openssl",
+    "openssl.dev"
+]
+
+[phases.install]
+cmds = [
+    "python -m venv --copies /opt/venv",
+    ". /opt/venv/bin/activate && pip install --upgrade pip setuptools wheel",
+    ". /opt/venv/bin/activate && pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = [
+    ". /opt/venv/bin/activate && pip install -r requirements.txt"
+]
+
+[start]
+cmd = "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py create_superuser_auto && gunicorn --bind 0.0.0.0:$PORT stockchart.wsgi:application"
