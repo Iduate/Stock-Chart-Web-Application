@@ -38,6 +38,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
+# Change to backend directory as working directory
+WORKDIR /app/backend
+
 # Create a non-root user
 RUN adduser --disabled-password --gecos '' appuser
 RUN chown -R appuser:appuser /app
@@ -46,5 +49,5 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["sh", "-c", "cd backend && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py create_superuser_auto && gunicorn --bind 0.0.0.0:$PORT stockchart.wsgi:application"]
+# Run the application - no need for cd since we're already in backend directory
+CMD ["bash", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && python manage.py create_superuser_auto && gunicorn --bind 0.0.0.0:$PORT stockchart.wsgi:application"]
