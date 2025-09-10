@@ -11,21 +11,25 @@
 }
 
 /* Fix mobile body and html overflow */
-html, body {
+html,
+body {
     overflow-x: hidden;
     width: 100%;
     position: relative;
 }
 
 /* Chart container fixes for mobile */
-.chart-container, 
-.chart-container-hero, 
+.chart-container,
+.chart-container-hero,
 .chart-container-prediction,
 .featured-chart-container {
     width: 100% !important;
     max-width: 100% !important;
     overflow: hidden !important;
     margin: 0 auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Make sure charts fit within their containers */
@@ -35,6 +39,23 @@ html, body {
 .featured-chart-container canvas {
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Fix for the main featured chart container */
+.featured-chart-container {
+    height: 400px !important;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    background: #ffffff;
+    position: relative;
+}
+
+/* Ensure chart renders correctly inside container */
+#featuredChart {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative;
 }
 
 /* Adjust grid for mobile views */
@@ -47,14 +68,14 @@ html, body {
     .chart-card {
         padding: var(--space-md);
     }
-    
+
     /* Ensure proper padding for content */
     .container {
         padding: 0 var(--space-md);
         width: 100%;
         overflow-x: hidden;
     }
-    
+
     /* Fix table overflow issues */
     table {
         display: block;
@@ -65,30 +86,49 @@ html, body {
 
 /* Very small screens adjustments */
 @media (max-width: 480px) {
+
     /* Adjust padding and margins for small devices */
     .chart-card {
         padding: var(--space-sm);
     }
-    
+
     /* Make sure fonts are smaller on mobile */
     body {
         font-size: 14px;
     }
-    
-    h1 { font-size: 1.75rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
+
     /* Simplify navigation for very small screens */
     .nav-menu .nav-item {
         padding: 0.5rem 0;
     }
-    
+
     /* Ensure chart heights are appropriate for small screens */
     .chart-container,
     .chart-container-hero,
     .chart-container-prediction,
     .featured-chart-container {
+        height: 250px !important;
+        min-height: 250px !important;
+    }
+
+    /* Fix viewport width on small screens */
+    #featuredChart,
+    #heroChart,
+    #predictionChart {
+        width: calc(100vw - 32px) !important;
+        max-width: calc(100vw - 32px) !important;
         height: 250px !important;
     }
 }
