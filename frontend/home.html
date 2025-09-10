@@ -1418,8 +1418,8 @@
 
     <!-- 로그인 모달 -->
     <div id="loginModal"
-        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0 my-8"
             id="loginModalContent">
             <!-- Header -->
             <div class="px-8 pt-8 pb-6">
@@ -1440,6 +1440,20 @@
 
             <!-- Form -->
             <div class="px-8 pb-8">
+                <!-- Quick Signup Reminder at Top -->
+                <div class="bg-tv-blue bg-opacity-10 border border-tv-blue border-opacity-20 rounded-xl p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-user-plus text-tv-blue"></i>
+                            <span class="text-sm text-tv-text-primary font-medium">계정이 없으신가요?</span>
+                        </div>
+                        <button onclick="showSignupModal()"
+                            class="bg-tv-blue hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                            가입하기
+                        </button>
+                    </div>
+                </div>
+
                 <form id="loginForm" class="space-y-6">
                     <div class="space-y-4">
                         <div class="relative">
@@ -1516,15 +1530,14 @@
                     </button>
                 </div>
 
-                <!-- Footer -->
-                <div class="mt-6 text-center">
-                    <p class="text-tv-text-secondary">
-                        계정이 없으신가요?
-                        <button onclick="showSignupModal()"
-                            class="text-tv-blue hover:text-blue-400 font-medium transition-colors">
-                            회원가입
-                        </button>
-                    </p>
+                <!-- Footer - More prominent signup option -->
+                <div class="mt-8 text-center bg-tv-bg-primary rounded-xl p-4">
+                    <p class="text-tv-text-secondary mb-3">StockChart가 처음이신가요?</p>
+                    <button onclick="showSignupModal()"
+                        class="w-full bg-gradient-to-r from-tv-green to-emerald-500 hover:from-emerald-500 hover:to-tv-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>무료 회원가입
+                    </button>
+                    <p class="text-xs text-tv-text-tertiary mt-2">가입하고 무료로 예측을 시작하세요!</p>
                 </div>
             </div>
         </div>
@@ -1532,8 +1545,8 @@
 
     <!-- 회원가입 모달 -->
     <div id="signupModal"
-        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0 my-8"
             id="signupModalContent">
             <!-- Header -->
             <div class="px-8 pt-8 pb-6">

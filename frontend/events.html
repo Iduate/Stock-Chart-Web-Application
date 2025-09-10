@@ -176,7 +176,7 @@
                                 <div class="text-tv-red font-bold">7일 12시간</div>
                             </div>
 
-                            <button
+                            <button onclick="joinEvent('monthly-challenge')"
                                 class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
                                 참가하기
                             </button>
@@ -218,7 +218,7 @@
                                 <div class="text-tv-red font-bold">2일 8시간</div>
                             </div>
 
-                            <button
+                            <button onclick="joinEvent('weekly-competition')"
                                 class="w-full bg-tv-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors">
                                 참가하기
                             </button>
@@ -352,7 +352,8 @@
                     </div>
 
                     <div class="p-4 border-t border-tv-border text-center">
-                        <button class="text-tv-blue hover:text-blue-400 font-semibold">전체 순위 보기</button>
+                        <button onclick="viewFullRankings()"
+                            class="text-tv-blue hover:text-blue-400 font-semibold transition-colors">전체 순위 보기</button>
                     </div>
                 </div>
             </div>
@@ -397,6 +398,13 @@
                             </li>
                         </ul>
                     </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button onclick="showEventRulesModal()"
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                        자세한 규칙 보기
+                    </button>
                 </div>
             </div>
         </div>
@@ -822,79 +830,1044 @@
     </footer>
 
     <!-- 로그인 모달 -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideLoginModal()">&times;</span>
-            <h2>로그인</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="이메일" required>
+    <div id="loginModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-tv-card rounded-2xl shadow-2xl w-full max-w-md border border-tv-border overflow-hidden transform transition-all duration-300 scale-95 opacity-0 my-8"
+            id="loginModalContent">
+            <!-- Header -->
+            <div class="px-8 pt-8 pb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-tv-blue rounded-xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
+                    </div>
+                    <button onclick="hideLoginModal()"
+                        class="text-tv-text-secondary hover:text-tv-text transition-colors p-2 hover:bg-tv-light rounded-lg">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="비밀번호" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">로그인</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 로그인</p>
-                <button class="btn btn-google" onclick="loginWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 로그인
-                </button>
-                <button class="btn btn-apple" onclick="loginWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 로그인
-                </button>
+                <p class="text-tv-text-secondary">계정에 로그인하여 이벤트에 참여하세요</p>
             </div>
-            <p class="modal-footer">
-                계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
-            </p>
+
+            <!-- Form -->
+            <div class="px-8 pb-8">
+                <!-- Quick Signup Reminder at Top -->
+                <div class="bg-tv-blue bg-opacity-10 border border-tv-blue border-opacity-20 rounded-xl p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-user-plus text-tv-blue"></i>
+                            <span class="text-sm text-tv-text font-medium">계정이 없으신가요?</span>
+                        </div>
+                        <button onclick="showSignupModal()"
+                            class="bg-tv-blue hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                            가입하기
+                        </button>
+                    </div>
+                </div>
+
+                <form id="loginForm" class="space-y-6">
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">이메일</label>
+                            <div class="relative">
+                                <input type="email" id="loginEmail"
+                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                    placeholder="이메일을 입력하세요" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <i class="fas fa-envelope text-tv-text-secondary"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">비밀번호</label>
+                            <div class="relative">
+                                <input type="password" id="loginPassword"
+                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                    placeholder="비밀번호를 입력하세요" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" onclick="togglePasswordVisibility('loginPassword')"
+                                        class="text-tv-text-secondary hover:text-tv-text">
+                                        <i class="fas fa-eye" id="loginPasswordEye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox"
+                                class="w-4 h-4 text-tv-blue bg-tv-darker border-tv-border rounded focus:ring-tv-blue focus:ring-2 focus:ring-opacity-20">
+                            <span class="text-sm text-tv-text-secondary">로그인 상태 유지</span>
+                        </label>
+                        <a href="#" class="text-sm text-tv-blue hover:text-blue-400 transition-colors">비밀번호 찾기</a>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-tv-blue focus:ring-opacity-50">
+                        <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="flex items-center my-6">
+                    <div class="flex-1 border-t border-tv-border"></div>
+                    <span class="px-4 text-tv-text-secondary text-sm">또는</span>
+                    <div class="flex-1 border-t border-tv-border"></div>
+                </div>
+
+                <!-- Social Login -->
+                <div class="space-y-3">
+                    <button onclick="loginWithGoogle()"
+                        class="w-full flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Google로 로그인
+                    </button>
+
+                    <button onclick="loginWithApple()"
+                        class="w-full flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-900 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                        <i class="fab fa-apple text-xl mr-3"></i>
+                        Apple로 로그인
+                    </button>
+                </div>
+
+                <!-- Footer - More prominent signup option -->
+                <div class="mt-8 text-center bg-tv-darker rounded-xl p-4">
+                    <p class="text-tv-text-secondary mb-3">이벤트 참여가 처음이신가요?</p>
+                    <button onclick="showSignupModal()"
+                        class="w-full bg-gradient-to-r from-tv-green to-emerald-500 hover:from-emerald-500 hover:to-tv-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>무료 회원가입
+                    </button>
+                    <p class="text-xs text-tv-text-secondary mt-2">가입하고 이벤트에 참여하세요!</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- 회원가입 모달 -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideSignupModal()">&times;</span>
-            <h2>회원가입</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <input type="text" id="signupUsername" placeholder="사용자명" required>
+    <div id="signupModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-tv-card rounded-2xl shadow-2xl w-full max-w-md border border-tv-border overflow-hidden transform transition-all duration-300 scale-95 opacity-0 my-8"
+            id="signupModalContent">
+            <!-- Header -->
+            <div class="px-8 pt-8 pb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-10 h-10 bg-gradient-to-r from-tv-green to-emerald-500 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-user-plus text-white text-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-tv-text">회원가입</h2>
+                    </div>
+                    <button onclick="hideSignupModal()"
+                        class="text-tv-text-secondary hover:text-tv-text transition-colors p-2 hover:bg-tv-light rounded-lg">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <input type="email" id="signupEmail" placeholder="이메일" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPassword" placeholder="비밀번호" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" required>
-                        이용약관 및 개인정보처리방침에 동의합니다.
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">회원가입</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 가입</p>
-                <button class="btn btn-google" onclick="signupWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 가입
-                </button>
-                <button class="btn btn-apple" onclick="signupWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 가입
-                </button>
+                <p class="text-tv-text-secondary">StockChart에 가입하고 이벤트에 참여하세요</p>
             </div>
-            <p class="modal-footer">
-                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
-            </p>
+
+            <!-- Form -->
+            <div class="px-8 pb-8">
+                <!-- Social Signup First -->
+                <div class="space-y-3 mb-6">
+                    <button onclick="signupWithGoogle()"
+                        class="w-full flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                        <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                            <path fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Google로 가입
+                    </button>
+
+                    <button onclick="signupWithApple()"
+                        class="w-full flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-900 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                        <i class="fab fa-apple text-xl mr-3"></i>
+                        Apple로 가입
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="flex items-center my-6">
+                    <div class="flex-1 border-t border-tv-border"></div>
+                    <span class="px-4 text-tv-text-secondary text-sm">또는 이메일로</span>
+                    <div class="flex-1 border-t border-tv-border"></div>
+                </div>
+
+                <form id="signupForm" class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">사용자명</label>
+                            <input type="text" id="signupUsername"
+                                class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                placeholder="사용자명을 입력하세요" required>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">이메일</label>
+                            <input type="email" id="signupEmail"
+                                class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                placeholder="이메일을 입력하세요" required>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">비밀번호</label>
+                            <div class="relative">
+                                <input type="password" id="signupPassword"
+                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                    placeholder="비밀번호를 입력하세요" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" onclick="togglePasswordVisibility('signupPassword')"
+                                        class="text-tv-text-secondary hover:text-tv-text">
+                                        <i class="fas fa-eye" id="signupPasswordEye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">비밀번호 확인</label>
+                            <div class="relative">
+                                <input type="password" id="signupPasswordConfirm"
+                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                    placeholder="비밀번호를 다시 입력하세요" required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button type="button" onclick="togglePasswordVisibility('signupPasswordConfirm')"
+                                        class="text-tv-text-secondary hover:text-tv-text">
+                                        <i class="fas fa-eye" id="signupPasswordConfirmEye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-sm font-medium text-tv-text mb-2">추천인 코드 (선택)</label>
+                            <input type="text" id="referralCode"
+                                class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                placeholder="추천인 코드가 있다면 입력하세요">
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 pt-2">
+                        <input type="checkbox" id="agreeTerms" required
+                            class="w-5 h-5 text-tv-blue bg-tv-darker border-tv-border rounded focus:ring-tv-blue focus:ring-2 focus:ring-opacity-20 mt-0.5">
+                        <div class="text-sm">
+                            <label for="agreeTerms" class="text-tv-text-secondary cursor-pointer">
+                                <a href="#" class="text-tv-blue hover:text-blue-400">이용약관</a> 및
+                                <a href="#" class="text-tv-blue hover:text-blue-400">개인정보처리방침</a>에 동의합니다.
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-tv-green to-emerald-500 hover:from-emerald-500 hover:to-tv-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-tv-green focus:ring-opacity-50">
+                        <i class="fas fa-user-plus mr-2"></i>회원가입
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="mt-6 text-center">
+                    <p class="text-tv-text-secondary">
+                        이미 계정이 있으신가요?
+                        <button onclick="showLoginModal()"
+                            class="text-tv-blue hover:text-blue-400 font-medium transition-colors">
+                            로그인
+                        </button>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script src="js/app.js?v=1.5"></script>
+    <!-- Event Rules Modal -->
+    <div id="eventRulesModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-tv-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-out scale-95 opacity-0"
+                id="eventRulesModalContent">
+
+                <div class="flex items-center justify-between p-6 border-b border-tv-border">
+                    <h2 class="text-2xl font-bold text-tv-text">이벤트 참가 규칙 및 정책</h2>
+                    <button onclick="hideEventRulesModal()"
+                        class="text-tv-text-secondary hover:text-tv-text transition-colors p-2">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="p-8 space-y-8">
+                    <!-- 기본 참가 자격 -->
+                    <div class="bg-tv-darker rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-tv-text mb-4 flex items-center">
+                            <i class="fas fa-user-check text-tv-blue mr-3"></i>
+                            기본 참가 자격
+                        </h3>
+                        <ul class="space-y-3 text-tv-text-secondary">
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check text-tv-green mt-1"></i>
+                                <div>
+                                    <strong class="text-tv-text">StockChart 회원가입:</strong>
+                                    <p>무료 회원가입 후 이메일 인증 완료 필수</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check text-tv-green mt-1"></i>
+                                <div>
+                                    <strong class="text-tv-text">나이 제한:</strong>
+                                    <p>만 18세 이상 (미성년자는 부모 동의서 필요)</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-check text-tv-green mt-1"></i>
+                                <div>
+                                    <strong class="text-tv-text">거주지:</strong>
+                                    <p>대한민국 거주자 (해외 거주자는 별도 문의)</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 이벤트 참가 방법 -->
+                    <div class="bg-tv-darker rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-tv-text mb-4 flex items-center">
+                            <i class="fas fa-play-circle text-tv-green mr-3"></i>
+                            참가 방법
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-tv-text-secondary">
+                            <div class="text-center p-4 bg-tv-card rounded-lg">
+                                <i class="fas fa-user-plus text-tv-blue text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-tv-text mb-2">1. 회원가입</h4>
+                                <p class="text-sm">간편하게 계정을 생성하세요</p>
+                            </div>
+                            <div class="text-center p-4 bg-tv-card rounded-lg">
+                                <i class="fas fa-chart-line text-tv-green text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-tv-text mb-2">2. 예측 제출</h4>
+                                <p class="text-sm">주식 가격 예측을 제출하세요</p>
+                            </div>
+                            <div class="text-center p-4 bg-tv-card rounded-lg">
+                                <i class="fas fa-trophy text-tv-blue text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-tv-text mb-2">3. 결과 확인</h4>
+                                <p class="text-sm">정확도에 따라 순위가 결정됩니다</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 상금 및 보상 -->
+                    <div class="bg-tv-darker rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-tv-text mb-4 flex items-center">
+                            <i class="fas fa-medal text-tv-blue mr-3"></i>
+                            상금 및 보상
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b border-tv-border">
+                                        <th class="py-3 text-tv-text">순위</th>
+                                        <th class="py-3 text-tv-text">월간 대회</th>
+                                        <th class="py-3 text-tv-text">주간 대회</th>
+                                        <th class="py-3 text-tv-text">추가 혜택</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-tv-text-secondary">
+                                    <tr class="border-b border-tv-border">
+                                        <td class="py-3 font-semibold text-tv-blue">1위</td>
+                                        <td class="py-3">1,000,000원</td>
+                                        <td class="py-3">100,000원</td>
+                                        <td class="py-3">골드 배지 + 프리미엄 1개월</td>
+                                    </tr>
+                                    <tr class="border-b border-tv-border">
+                                        <td class="py-3 font-semibold text-tv-green">2위</td>
+                                        <td class="py-3">500,000원</td>
+                                        <td class="py-3">50,000원</td>
+                                        <td class="py-3">실버 배지 + 프리미엄 2주</td>
+                                    </tr>
+                                    <tr class="border-b border-tv-border">
+                                        <td class="py-3 font-semibold text-orange-400">3위</td>
+                                        <td class="py-3">200,000원</td>
+                                        <td class="py-3">20,000원</td>
+                                        <td class="py-3">브론즈 배지 + 프리미엄 1주</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-3">4-10위</td>
+                                        <td class="py-3">50,000원</td>
+                                        <td class="py-3">10,000원</td>
+                                        <td class="py-3">참가 배지</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 중요 규칙 -->
+                    <div class="bg-tv-darker rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-tv-text mb-4 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-tv-red mr-3"></i>
+                            중요 규칙
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-tv-text-secondary">
+                            <div>
+                                <h4 class="font-semibold text-tv-text mb-3">예측 제출</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-blue mt-1"></i>
+                                        <span>대회당 1회만 예측 제출 가능</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-blue mt-1"></i>
+                                        <span>마감 시간 후 수정 불가</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-blue mt-1"></i>
+                                        <span>허위 정보 제출 시 계정 정지</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-tv-text mb-3">상금 지급</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-green mt-1"></i>
+                                        <span>대회 종료 후 7일 내 지급</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-green mt-1"></i>
+                                        <span>본인 명의 계좌로만 입금</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <i class="fas fa-dot-circle text-tv-green mt-1"></i>
+                                        <span>제세공과금 22% 별도 공제</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 금지사항 -->
+                    <div class="bg-tv-red bg-opacity-10 border border-tv-red border-opacity-30 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-tv-red mb-4 flex items-center">
+                            <i class="fas fa-ban mr-3"></i>
+                            금지사항
+                        </h3>
+                        <ul class="space-y-3 text-tv-text-secondary">
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-times text-tv-red mt-1"></i>
+                                <span><strong class="text-tv-text">다중 계정 생성:</strong> 한 사람당 하나의 계정만 허용</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-times text-tv-red mt-1"></i>
+                                <span><strong class="text-tv-text">부정행위:</strong> 조작된 데이터나 허위 정보 제출 금지</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-times text-tv-red mt-1"></i>
+                                <span><strong class="text-tv-text">시장 조작:</strong> 의도적인 주가 조작 시도 금지</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-times text-tv-red mt-1"></i>
+                                <span><strong class="text-tv-text">스팸 및 어뷰징:</strong> 시스템을 악용한 반복적 행위 금지</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-tv-border bg-tv-darker">
+                    <div class="flex items-center justify-between">
+                        <p class="text-tv-text-secondary text-sm">
+                            규칙은 사전 공지 후 변경될 수 있습니다. 최종 업데이트: 2025년 9월
+                        </p>
+                        <button onclick="hideEventRulesModal()"
+                            class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            확인
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/notification.js?v=1.1"></script>
+    <script src="js/google-auth.js?v=1.1"></script>
+    <script src="js/auth-loader.js?v=1.0"></script>
+    <script>
+        // Professional Modal Functions for Events Page
+        function showLoginModal() {
+            console.log('Professional showLoginModal called');
+            // First, close any old modals that might exist
+            const oldModal = document.querySelector('#loginModal:not([class*="fixed"])');
+            if (oldModal) {
+                oldModal.remove();
+            }
+
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('loginModalContent');
+
+            if (!modal || !content) {
+                console.error('Professional login modal elements not found');
+                return;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            hideSignupModal(); // Hide signup modal if open
+        }
+
+        function hideLoginModal() {
+            console.log('Professional hideLoginModal called');
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('loginModalContent');
+
+            if (!modal || !content) {
+                console.error('Professional login modal elements not found');
+                return;
+            }
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function showSignupModal() {
+            console.log('Professional showSignupModal called');
+            // First, close any old modals that might exist
+            const oldModal = document.querySelector('#signupModal:not([class*="fixed"])');
+            if (oldModal) {
+                oldModal.remove();
+            }
+
+            const modal = document.getElementById('signupModal');
+            const content = document.getElementById('signupModalContent');
+
+            if (!modal || !content) {
+                console.error('Professional signup modal elements not found');
+                return;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            hideLoginModal(); // Hide login modal if open
+        }
+
+        function hideSignupModal() {
+            console.log('Professional hideSignupModal called');
+            const modal = document.getElementById('signupModal');
+            const content = document.getElementById('signupModalContent');
+
+            if (!modal || !content) {
+                console.error('Professional signup modal elements not found');
+                return;
+            }
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Password visibility toggle
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const eyeIcon = document.getElementById(inputId + 'Eye');
+
+            if (!input || !eyeIcon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu) {
+                mobileMenu.classList.toggle('hidden');
+            }
+        }
+
+        // Enhanced social login functions
+        async function loginWithGoogle() {
+            try {
+                // Add loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Google로 로그인 중...';
+                button.disabled = true;
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Set login status for demo
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loginMethod', 'google');
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+                // Show notification
+                if (window.showNotification) {
+                    showNotification('Google 로그인 완료! 이벤트에 참여할 수 있습니다.', 'success');
+                } else {
+                    alert('Google 로그인이 완료되었습니다!');
+                }
+
+                hideLoginModal();
+            } catch (error) {
+                console.error('Google 로그인 오류:', error);
+                if (window.showNotification) {
+                    showNotification('Google 로그인 중 오류가 발생했습니다.', 'error');
+                } else {
+                    alert('Google 로그인 중 오류가 발생했습니다.');
+                }
+            }
+        }
+
+        async function loginWithApple() {
+            try {
+                // Add loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Apple로 로그인 중...';
+                button.disabled = true;
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Set login status for demo
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('loginMethod', 'apple');
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+                // Show notification
+                if (window.showNotification) {
+                    showNotification('Apple 로그인 완료! 이벤트에 참여할 수 있습니다.', 'success');
+                } else {
+                    alert('Apple 로그인이 완료되었습니다!');
+                }
+
+                hideLoginModal();
+            } catch (error) {
+                console.error('Apple 로그인 오류:', error);
+                if (window.showNotification) {
+                    showNotification('Apple 로그인 중 오류가 발생했습니다.', 'error');
+                } else {
+                    alert('Apple 로그인 중 오류가 발생했습니다.');
+                }
+            }
+        }
+
+        async function signupWithGoogle() {
+            try {
+                // Add loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Google로 가입 중...';
+                button.disabled = true;
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+                // Show notification
+                if (window.showNotification) {
+                    showNotification('Google 회원가입 완료!', 'success');
+                } else {
+                    alert('Google 회원가입이 완료되었습니다!');
+                }
+
+                hideSignupModal();
+            } catch (error) {
+                console.error('Google 회원가입 오류:', error);
+                if (window.showNotification) {
+                    showNotification('Google 회원가입 중 오류가 발생했습니다.', 'error');
+                } else {
+                    alert('Google 회원가입 중 오류가 발생했습니다.');
+                }
+            }
+        }
+
+        async function signupWithApple() {
+            try {
+                // Add loading state
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Apple로 가입 중...';
+                button.disabled = true;
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+
+                // Show notification
+                if (window.showNotification) {
+                    showNotification('Apple 회원가입 완료!', 'success');
+                } else {
+                    alert('Apple 회원가입이 완료되었습니다!');
+                }
+
+                hideSignupModal();
+            } catch (error) {
+                console.error('Apple 회원가입 오류:', error);
+                if (window.showNotification) {
+                    showNotification('Apple 회원가입 중 오류가 발생했습니다.', 'error');
+                } else {
+                    alert('Apple 회원가입 중 오류가 발생했습니다.');
+                }
+            }
+        }
+
+        // Form submission handlers
+        document.addEventListener('DOMContentLoaded', function () {
+            // Login form handling
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+
+                    if (!email || !password) {
+                        if (window.showNotification) {
+                            showNotification('모든 필드를 입력해주세요.', 'error');
+                        } else {
+                            alert('모든 필드를 입력해주세요.');
+                        }
+                        return;
+                    }
+
+                    // Add loading state to button
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>로그인 중...';
+                    submitBtn.disabled = true;
+
+                    // Simulate login process
+                    setTimeout(() => {
+                        // Set login status for demo
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+
+                        if (window.showNotification) {
+                            showNotification('로그인 성공! 이제 이벤트에 참여할 수 있습니다.', 'success');
+                        } else {
+                            alert('로그인 성공!');
+                        }
+
+                        hideLoginModal();
+                    }, 1500);
+                });
+            }
+
+            // Signup form handling
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const username = document.getElementById('signupUsername').value;
+                    const email = document.getElementById('signupEmail').value;
+                    const password = document.getElementById('signupPassword').value;
+                    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+                    const agreeTerms = document.getElementById('agreeTerms').checked;
+
+                    if (!username || !email || !password || !passwordConfirm) {
+                        if (window.showNotification) {
+                            showNotification('모든 필수 필드를 입력해주세요.', 'error');
+                        } else {
+                            alert('모든 필수 필드를 입력해주세요.');
+                        }
+                        return;
+                    }
+
+                    if (password !== passwordConfirm) {
+                        if (window.showNotification) {
+                            showNotification('비밀번호가 일치하지 않습니다.', 'error');
+                        } else {
+                            alert('비밀번호가 일치하지 않습니다.');
+                        }
+                        return;
+                    }
+
+                    if (!agreeTerms) {
+                        if (window.showNotification) {
+                            showNotification('이용약관에 동의해주세요.', 'error');
+                        } else {
+                            alert('이용약관에 동의해주세요.');
+                        }
+                        return;
+                    }
+
+                    // Password strength validation
+                    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                    if (!passwordRegex.test(password)) {
+                        if (window.showNotification) {
+                            showNotification('비밀번호는 최소 8자, 영문, 숫자, 특수문자를 포함해야 합니다.', 'error');
+                        } else {
+                            alert('비밀번호는 최소 8자, 영문, 숫자, 특수문자를 포함해야 합니다.');
+                        }
+                        return;
+                    }
+
+                    // Add loading state to button
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>가입 중...';
+                    submitBtn.disabled = true;
+
+                    // Simulate signup process
+                    setTimeout(() => {
+                        // Set login status for demo after successful signup
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+
+                        if (window.showNotification) {
+                            showNotification('회원가입 성공! 이제 이벤트에 참여할 수 있습니다.', 'success');
+                        } else {
+                            alert('회원가입 성공!');
+                        }
+
+                        hideSignupModal();
+
+                        // Show welcome message instead of login modal
+                        setTimeout(() => {
+                            if (window.showNotification) {
+                                showNotification('환영합니다! 이벤트에 참여해보세요.', 'success');
+                            }
+                        }, 1000);
+                    }, 2000);
+                });
+            }
+
+            // Close modal when clicking outside
+            const modals = ['loginModal', 'signupModal', 'eventRulesModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) {
+                            if (modalId === 'loginModal') {
+                                hideLoginModal();
+                            } else if (modalId === 'signupModal') {
+                                hideSignupModal();
+                            } else if (modalId === 'eventRulesModal') {
+                                hideEventRulesModal();
+                            }
+                        }
+                    });
+                }
+            });
+
+            // ESC key to close modals
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    hideLoginModal();
+                    hideSignupModal();
+                    hideEventRulesModal();
+                }
+            });
+
+            console.log('Professional Events authentication system initialized');
+        });
+
+        // Event-specific functions - Make them globally accessible immediately
+        window.viewFullRankings = function viewFullRankings() {
+            console.log('✅ viewFullRankings function called');
+
+            if (window.showNotification) {
+                showNotification('전체 순위 페이지로 이동합니다...', 'info');
+            } else {
+                alert('전체 순위 페이지로 이동합니다...');
+            }
+
+            // Navigate to rankings page
+            setTimeout(() => {
+                window.location.href = 'ranking.html';
+            }, 500);
+        }
+
+        window.joinEvent = function joinEvent(eventType) {
+            console.log('✅ joinEvent function called with eventType:', eventType);
+
+            // Check if user is logged in (simplified check)
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            console.log('User login status:', isLoggedIn);
+
+            if (!isLoggedIn) {
+                console.log('User not logged in, showing login prompt');
+                if (window.showNotification) {
+                    showNotification('이벤트 참가를 위해 로그인이 필요합니다.', 'error');
+                } else {
+                    alert('이벤트 참가를 위해 로그인이 필요합니다.');
+                }
+
+                // Show login modal
+                setTimeout(() => {
+                    if (typeof showLoginModal === 'function') {
+                        showLoginModal();
+                    } else {
+                        console.error('showLoginModal function not available');
+                    }
+                }, 500);
+                return;
+            }
+
+            // User is logged in, show participation confirmation
+            const eventNames = {
+                'monthly-challenge': '월간 예측 챌린지',
+                'weekly-competition': '주간 경쟁전'
+            };
+
+            const eventName = eventNames[eventType] || '이벤트';
+            console.log('Showing confirmation for event:', eventName);
+
+            if (confirm(`${eventName}에 참가하시겠습니까?\n\n참가 후에는 예측을 수정할 수 없습니다.`)) {
+                console.log('User confirmed participation');
+
+                // Add loading state to button
+                const button = event.target;
+                if (!button) {
+                    console.error('Button element not found in event.target');
+                    return;
+                }
+
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>참가 중...';
+                button.disabled = true;
+
+                // Simulate API call
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-check mr-2"></i>참가 완료';
+                    button.classList.remove('bg-tv-blue', 'hover:bg-blue-600', 'bg-tv-green', 'hover:bg-green-600');
+                    button.classList.add('bg-tv-green', 'cursor-not-allowed');
+                    button.disabled = true;
+
+                    if (window.showNotification) {
+                        showNotification(`${eventName} 참가가 완료되었습니다! 예측을 제출해주세요.`, 'success');
+                    } else {
+                        alert(`${eventName} 참가가 완료되었습니다!`);
+                    }
+
+                    // Reset button after 3 seconds (for demo purposes)
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.classList.remove('bg-tv-green', 'cursor-not-allowed');
+                        if (eventType === 'monthly-challenge') {
+                            button.classList.add('bg-tv-blue', 'hover:bg-blue-600');
+                        } else {
+                            button.classList.add('bg-tv-green', 'hover:bg-green-600');
+                        }
+                        button.disabled = false;
+                    }, 3000);
+                }, 1500);
+            } else {
+                console.log('User cancelled participation');
+            }
+        }
+
+        window.showEventRulesModal = function showEventRulesModal() {
+            console.log('Showing event rules modal');
+
+            const modal = document.getElementById('eventRulesModal');
+            const content = document.getElementById('eventRulesModalContent');
+
+            if (!modal || !content) {
+                console.error('Event rules modal elements not found');
+                return;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Disable body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.hideEventRulesModal = function hideEventRulesModal() {
+            console.log('Hiding event rules modal');
+
+            const modal = document.getElementById('eventRulesModal');
+            const content = document.getElementById('eventRulesModalContent');
+
+            if (!modal || !content) {
+                console.error('Event rules modal elements not found');
+                return;
+            }
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Re-enable body scroll when modal is closed
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Confirm functions are loaded
+        console.log('✅ Event functions loaded:');
+        console.log('- viewFullRankings:', typeof window.viewFullRankings);
+        console.log('- joinEvent:', typeof window.joinEvent);
+        console.log('- showEventRulesModal:', typeof window.showEventRulesModal);
+        console.log('- hideEventRulesModal:', typeof window.hideEventRulesModal);
+
+        // Override any conflicting functions from app.js after page load
+        window.addEventListener('load', function () {
+            // Force override modal functions to ensure professional ones are used
+            window.showLoginModal = showLoginModal;
+            window.hideLoginModal = hideLoginModal;
+            window.showSignupModal = showSignupModal;
+            window.hideSignupModal = hideSignupModal;
+
+            console.log('Professional events modal functions have been set as global overrides');
+        });
+    </script>
 </body>
 
 </html>
