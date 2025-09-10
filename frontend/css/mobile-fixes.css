@@ -18,6 +18,55 @@ body {
     position: relative;
 }
 
+/* Improved Hero Section Mobile Alignment */
+@media (max-width: 992px) {
+    .hero-container {
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+        gap: 2rem !important;
+        padding: 2rem 1rem !important;
+    }
+
+    .hero-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .hero-image {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .hero-badge {
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .hero-stats {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 1.5rem !important;
+    }
+
+    .hero-buttons {
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .hero-features {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+    }
+}
+
 /* Chart container fixes for mobile */
 .chart-container,
 .chart-container-hero,
@@ -30,6 +79,7 @@ body {
     min-height: 300px;
     display: flex;
     flex-direction: column;
+    position: relative !important;
 }
 
 /* Make sure charts fit within their containers */
