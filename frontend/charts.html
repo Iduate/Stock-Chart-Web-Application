@@ -815,13 +815,40 @@
 
                 <!-- Chart Initialization Script -->
                 <script>
+                    console.log('🚀 Charts page script loaded!');
+
                     // Initialize charts when page loads
                     document.addEventListener('DOMContentLoaded', function () {
-                        console.log('Charts page loaded, initializing charts...');
-                        initializeChartsPageCharts();
+                        console.log('📊 Charts page DOM loaded, waiting for LightweightCharts...');
+
+                        // Wait for LightweightCharts to be available
+                        function waitForLightweightCharts() {
+                            if (typeof LightweightCharts !== 'undefined') {
+                                console.log('✅ LightweightCharts is available, initializing charts...');
+                                initializeChartsPageCharts();
+                            } else {
+                                console.log('⏳ Waiting for LightweightCharts...');
+                                setTimeout(waitForLightweightCharts, 100);
+                            }
+                        }
+
+                        waitForLightweightCharts();
                     });
 
                     function initializeChartsPageCharts() {
+                        console.log('📈 Starting chart initialization...');
+
+                        // Check if chart containers exist
+                        const chart1 = document.getElementById('chart-1');
+                        const chart2 = document.getElementById('chart-2');
+                        const chart3 = document.getElementById('chart-3');
+
+                        console.log('Chart containers found:', {
+                            'chart-1': chart1 ? 'YES' : 'NO',
+                            'chart-2': chart2 ? 'YES' : 'NO',
+                            'chart-3': chart3 ? 'YES' : 'NO'
+                        });
+
                         // Sample data for demonstration
                         const sampleData = [
                             {
@@ -851,21 +878,37 @@
                         ];
 
                         // Initialize each chart
+                        console.log('📊 About to initialize', sampleData.length, 'charts');
                         sampleData.forEach((stockData, index) => {
                             const chartId = `chart-${index + 1}`;
                             const chartContainer = document.getElementById(chartId);
 
+                            console.log(`🔍 Looking for chart container: ${chartId}`, chartContainer);
+
                             if (chartContainer && typeof LightweightCharts !== 'undefined') {
-                                console.log(`Initializing chart: ${chartId}`);
+                                console.log(`✅ Initializing chart: ${chartId}`);
                                 createStockChart(chartContainer, stockData);
                             } else {
-                                console.warn(`Chart container ${chartId} not found or LightweightCharts not loaded`);
+                                console.warn(`❌ Chart container ${chartId} not found or LightweightCharts not loaded`);
+                                console.warn('Container:', chartContainer);
+                                console.warn('LightweightCharts available:', typeof LightweightCharts !== 'undefined');
                             }
                         });
                     }
 
                     function createStockChart(container, stockData) {
+                        console.log(`🎯 Creating chart for ${stockData.symbol} in container:`, container);
+
                         try {
+                            // Ensure container has dimensions
+                            if (container.clientWidth === 0 || container.clientHeight === 0) {
+                                console.warn(`⚠️ Container has no dimensions: ${container.clientWidth}x${container.clientHeight}`);
+                                container.style.width = '100%';
+                                container.style.height = '256px';
+                            }
+
+                            console.log(`📏 Container dimensions: ${container.clientWidth}x${container.clientHeight}`);
+
                             // Chart configuration
                             const chartOptions = {
                                 width: container.clientWidth,
@@ -891,7 +934,9 @@
                             };
 
                             // Create chart
+                            console.log(`🔧 Creating LightweightCharts instance with options:`, chartOptions);
                             const chart = LightweightCharts.createChart(container, chartOptions);
+                            console.log(`✅ Chart instance created:`, chart);
 
                             // Add candlestick series
                             const candlestickSeries = chart.addCandlestickSeries({
