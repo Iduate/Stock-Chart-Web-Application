@@ -9,18 +9,20 @@
     --tv-darker-blue: #0c0e15;
     --tv-light-blue: #2a2e39;
     --tv-bright-blue: #2962FF;
+    --tv-pro-bright-blue: #2962FF;
+    --tv-pro-trust-indicator: #2962FF;
     --tv-green: #26a69a;
     --tv-red: #ef5350;
     --tv-orange: #ff9800;
     --tv-yellow: #f7cb4d;
     --tv-purple: #7b1fa2;
-    
+
     /* Text Colors */
     --tv-text-primary: #d1d4dc;
     --tv-text-secondary: #787b86;
     --tv-text-tertiary: #5d606b;
     --tv-text-inverse: #131722;
-    
+
     /* Background Colors */
     --tv-bg-primary: #131722;
     --tv-bg-secondary: #1e222d;
@@ -29,24 +31,24 @@
     --tv-bg-card: #1e222d;
     --tv-bg-card-hover: #2a2e39;
     --tv-bg-input: #2a2e39;
-    
+
     /* Border Colors */
     --tv-border-primary: #2a2e39;
     --tv-border-light: #363a45;
-    
+
     /* Chart Colors */
     --tv-chart-bg: #131722;
     --tv-chart-grid: #2a2e39;
-    
+
     /* Shadows */
     --tv-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.24);
     --tv-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.36);
     --tv-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.48);
-    
+
     /* Typography */
     --tv-font-family: 'Inter', 'Noto Sans KR', sans-serif;
     --tv-font-mono: 'IBM Plex Mono', monospace;
-    
+
     /* Spacing */
     --tv-space-1: 4px;
     --tv-space-2: 8px;
@@ -56,12 +58,12 @@
     --tv-space-6: 32px;
     --tv-space-7: 48px;
     --tv-space-8: 64px;
-    
+
     /* Transitions */
     --tv-transition-fast: 150ms ease;
     --tv-transition-normal: 250ms ease;
     --tv-transition-slow: 350ms ease;
-    
+
     /* Border Radius */
     --tv-radius-sm: 4px;
     --tv-radius-md: 8px;
@@ -90,7 +92,9 @@
 }
 
 /* Base Styles */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -120,7 +124,12 @@ a:hover {
     color: #5b8eff;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 700;
     line-height: 1.2;
     margin-bottom: var(--tv-space-4);
@@ -874,7 +883,8 @@ p {
 
 .featured-chart-container {
     width: 100%;
-    height: 600px; /* Make the chart much bigger */
+    height: 600px;
+    /* Make the chart much bigger */
     margin: var(--tv-space-4) 0;
     border-radius: var(--tv-radius-lg);
     overflow: hidden;
@@ -1267,16 +1277,18 @@ p {
     .hero-container {
         flex-direction: column;
     }
-    
+
     .hero-content {
         max-width: 100%;
         text-align: center;
     }
-    
-    .hero-stats, .hero-buttons, .hero-features {
+
+    .hero-stats,
+    .hero-buttons,
+    .hero-features {
         justify-content: center;
     }
-    
+
     .hero-image {
         max-width: 100%;
     }
@@ -1286,7 +1298,7 @@ p {
     .hamburger {
         display: flex;
     }
-    
+
     .nav-menu {
         position: fixed;
         top: 60px;
@@ -1301,36 +1313,36 @@ p {
         align-items: stretch;
         z-index: 900;
     }
-    
+
     .nav-menu.active {
         left: 0;
     }
-    
+
     .nav-item {
         margin: 0;
     }
-    
+
     .nav-link {
         padding: var(--tv-space-3) 0;
         justify-content: center;
         border-radius: 0;
     }
-    
-    .features-grid, 
+
+    .features-grid,
     .market-grid,
     .events-grid,
     .plans-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .hero-title {
         font-size: 2.2rem;
     }
-    
+
     .hero-buttons {
         flex-direction: column;
     }
-    
+
     .btn-hero {
         width: 100%;
     }
@@ -1341,12 +1353,12 @@ p {
         flex-direction: column;
         gap: var(--tv-space-3);
     }
-    
+
     .stat-item {
         border-bottom: 1px solid var(--tv-border-primary);
         padding-bottom: var(--tv-space-3);
     }
-    
+
     .hero-features {
         flex-direction: column;
         gap: var(--tv-space-2);
@@ -1359,6 +1371,7 @@ p {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -1374,6 +1387,7 @@ p {
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -1427,6 +1441,7 @@ p {
     0% {
         transform: translateX(0);
     }
+
     100% {
         transform: translateX(-100%);
     }

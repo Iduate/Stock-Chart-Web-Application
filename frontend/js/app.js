@@ -3,7 +3,7 @@
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://127.0.0.1:8000/api'
     : '/api';  // Use relative path for production
-console.log('App.js loaded - Production API fix version 1.4 - ' + new Date().getTime());
+console.log('App.js loaded - Real Data Only Version 2.0 - ' + new Date().getTime());
 console.log('API Base URL:', API_BASE_URL);
 
 // Test function to manually call crypto
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('TradingView Pro theme not detected, loading basic charts');
     }
 
-    // Load chart controls if script exists
-    if (!window.chartControlsLoaded) {
+    // Load chart controls if script exists and not already loaded
+    if (!window.chartControlsLoaded && !window.chartControlsInitialized) {
         try {
             const controlsScript = document.createElement('script');
             controlsScript.src = 'js/chart-controls.js';
@@ -220,6 +220,47 @@ function initializeCharts() {
             const options = getTradingViewProChartOptions();
             window.predictionChart.applyOptions(options);
         }
+    };
+
+    // Global chart recreation function (can be called from console or UI)
+    window.forceRecreateChart = function () {
+        console.log('🔄 Force recreating chart...');
+        const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+
+        if (!heroChartElement) {
+            console.error('Cannot find chart element to recreate');
+            return;
+        }
+
+        // Remove any existing overlays
+        const overlays = heroChartElement.querySelectorAll('.chart-error-message, .loading-overlay, .chart-loading-overlay');
+        overlays.forEach(overlay => overlay.remove());
+
+        // Remove existing chart
+        try {
+            if (window.heroChart && window.heroChart.remove) {
+                window.heroChart.remove();
+            }
+        } catch (e) {
+            console.log('Could not remove existing chart:', e);
+        }
+
+        // Make sure chart element is ready
+        heroChartElement.style.position = 'relative';
+        heroChartElement.style.width = '100%';
+        heroChartElement.style.height = window.innerWidth <= 480 ? '280px' : '400px';
+        heroChartElement.style.display = 'block';
+
+        // Create new chart
+        const chartOptions = getTradingViewProChartOptions();
+        window.heroChart = LightweightCharts.createChart(heroChartElement, chartOptions);
+
+        // Load data
+        setTimeout(() => {
+            loadStockChart('BTC', true, true);
+        }, 100);
+
+        return window.heroChart;
     };
 
     // Initialize hero chart
@@ -749,12 +790,54 @@ setTimeout(validateChartDisplay, 2000);
 
 // Load stock chart with multiple API fallback and dual-line support
 async function loadStockChart(symbol, useProfessionalStyle = true, showPredictions = true) {
-    console.log(`Loading professional stock chart for ${symbol}...`);
+    console.log(`🚀 LOADING PROFESSIONAL CHART FOR ${symbol}...`);
 
     // Verify chart object exists and has required methods
     if (!window.heroChart) {
-        console.error('Hero chart not initialized');
+        console.error('❌ Hero chart not initialized');
         return;
+    }
+
+    // Show loading state in a non-destructive way
+    const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+    let loadingOverlay = null;
+
+    if (heroChartElement) {
+        // Create overlay instead of replacing innerHTML
+        loadingOverlay = document.createElement('div');
+        loadingOverlay.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(248, 249, 250, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            border-radius: 8px;
+        `;
+        loadingOverlay.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <div style="width: 40px; height: 40px; border: 4px solid #e3e3e3; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+                <div style="color: #495057; font-weight: 500;">Loading ${symbol} Chart Data...</div>
+                <div style="color: #6c757d; font-size: 0.9rem; margin-top: 0.5rem;">Fetching real-time market data</div>
+            </div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+
+        // Ensure parent has relative positioning
+        if (heroChartElement.style.position !== 'relative') {
+            heroChartElement.style.position = 'relative';
+        }
+
+        heroChartElement.appendChild(loadingOverlay);
     }
 
     // Clear any existing series
@@ -765,12 +848,19 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
         window.heroChart.removeSeries(window.predictionSeries);
     }
 
+    // Clean up any existing overlays
+    if (heroChartElement) {
+        const existingOverlays = heroChartElement.querySelectorAll('.chart-error-message, .loading-overlay');
+        existingOverlays.forEach(overlay => overlay.remove());
+    }
+
     const cryptoSymbols = ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK', 'UNI', 'ATOM',
         'btc', 'eth', 'ada', 'bnb', 'dot', 'matic', 'sol', 'ltc', 'xrp', 'doge', 'avax', 'link', 'uni', 'atom'];
 
     const isCrypto = cryptoSymbols.includes(symbol);
     const marketParam = isCrypto ? '?market=crypto' : '';
 
+    // Define all available API sources
     const apiSources = [
         { name: 'CoinGecko', endpoint: `coingecko/${symbol}/` },
         { name: 'Primary Historical', endpoint: `historical/${symbol}/${marketParam}` },
@@ -778,28 +868,104 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
         { name: 'Tiingo', endpoint: `tiingo/${symbol}/` },
         { name: 'Marketstack', endpoint: `marketstack/${symbol}/` },
         { name: 'Enhanced', endpoint: `enhanced/${symbol}/` }
-    ]; let data = null;
+    ];
+
+    // Add global function to manually try specific API source
+    window.trySpecificApi = async function (symbol, apiName) {
+        const sources = {
+            'coingecko': `coingecko/${symbol}/`,
+            'crypto': `crypto/${symbol}/`,
+            'historical': `historical/${symbol}/`,
+            'tiingo': `tiingo/${symbol}/`,
+            'marketstack': `marketstack/${symbol}/`,
+            'enhanced': `enhanced/${symbol}/`
+        };
+
+        if (!sources[apiName]) {
+            console.error(`Unknown API: ${apiName}. Available: ${Object.keys(sources).join(', ')}`);
+            return null;
+        }
+
+        try {
+            console.log(`Manually trying ${apiName} API for ${symbol}...`);
+            const response = await fetch(`${API_BASE_URL}/market-data/${sources[apiName]}`);
+            console.log(`${apiName} response status:`, response.status);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`${apiName} data:`, data);
+                return data;
+            } else {
+                console.error(`${apiName} failed with status ${response.status}`);
+                return null;
+            }
+        } catch (error) {
+            console.error(`Error with ${apiName}:`, error);
+            return null;
+        }
+    };
+
+    let data = null;
     let usedSource = null;
+
+    // Add a debug function to examine data formats
+    window.debugApiFormat = function (apiName, data) {
+        console.log(`🔍 DEBUG: ${apiName} API Format Analysis`);
+        if (!data) return console.log('No data provided');
+
+        const sample = Array.isArray(data) ? data.slice(0, 3) :
+            (data.data && Array.isArray(data.data)) ? data.data.slice(0, 3) : data;
+
+        console.log(`Sample data:`, sample);
+
+        if (Array.isArray(sample)) {
+            console.log(`First item keys: ${Object.keys(sample[0]).join(', ')}`);
+
+            // Check for common fields needed for chart
+            const hasTime = sample[0].time || sample[0].date || sample[0].timestamp || sample[0].datetime;
+            const hasPrice = sample[0].close || sample[0].price || sample[0].value ||
+                sample[0].c || sample[0].Close || sample[0].Price;
+
+            console.log(`Has time field: ${!!hasTime}, Has price field: ${!!hasPrice}`);
+            console.log(`Time field sample: ${hasTime}, Price field sample: ${hasPrice}`);
+        }
+    };
 
     for (const source of apiSources) {
         try {
             console.log(`Trying ${source.name} API...`);
             const response = await fetch(`${API_BASE_URL}/market-data/${source.endpoint}`);
+            console.log(`${source.name} response status:`, response.status);
+
             if (response.ok) {
                 const apiData = await response.json();
+
+                // For debugging, expose data globally
+                if (source.name === 'CoinGecko') {
+                    window.coinGeckoData = apiData;
+                    console.log('CoinGecko data accessible via window.coinGeckoData');
+                    // Analyze format
+                    window.debugApiFormat('CoinGecko', apiData);
+                }
+
                 if (apiData && (Array.isArray(apiData) || apiData.data)) {
                     data = Array.isArray(apiData) ? apiData : apiData.data;
                     usedSource = source.name;
-                    console.log(`Successfully loaded data from ${source.name}:`, data);
+                    console.log(`Successfully loaded data from ${source.name}:`, {
+                        dataType: Array.isArray(data) ? 'array' : typeof data,
+                        length: Array.isArray(data) ? data.length : 'not array',
+                        firstItem: Array.isArray(data) && data.length > 0 ?
+                            Object.keys(data[0]).join(', ') : 'no first item'
+                    });
                     break;
                 }
+            } else {
+                console.log(`${source.name} failed with status:`, response.status);
             }
         } catch (error) {
             console.log(`${source.name} API failed:`, error.message);
         }
-    }
-
-    try {
+    } try {
         if (data && window.heroChart) {
             console.log('Adding line series to chart...');
 
@@ -808,10 +974,26 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
                 console.error('heroChart.addLineSeries is not a function. Chart object:', window.heroChart);
                 console.error('Available methods:', Object.getOwnPropertyNames(window.heroChart));
 
-                // Try to recreate the chart
+                // Remove loading overlay first
+                if (loadingOverlay && loadingOverlay.parentNode) {
+                    loadingOverlay.remove();
+                }
+
+                // Recreate the chart without clearing innerHTML
                 const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
-                if (heroChartElement) {
-                    console.log('Attempting to recreate chart...');
+                if (heroChartElement && window.heroChart) {
+                    console.log('Recreating chart due to invalid chart object...');
+
+                    // Try to remove the existing chart
+                    try {
+                        if (window.heroChart.remove) {
+                            window.heroChart.remove();
+                        }
+                    } catch (e) {
+                        console.log('Could not remove existing chart:', e);
+                    }
+
+                    // Create new chart
                     window.heroChart = LightweightCharts.createChart(heroChartElement, {
                         width: heroChartElement.clientWidth || 800,
                         height: 400,
@@ -827,15 +1009,13 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
                         rightPriceScale: { borderColor: '#cccccc' },
                         timeScale: { borderColor: '#cccccc' },
                     });
-                    console.log('Chart recreated:', window.heroChart);
+                    console.log('✅ Chart recreated successfully:', window.heroChart);
                 }
 
-                if (typeof window.heroChart.addLineSeries !== 'function') {
+                if (!window.heroChart || typeof window.heroChart.addLineSeries !== 'function') {
                     throw new Error('Invalid chart object - addLineSeries method not available after recreation');
                 }
-            }
-
-            // Remove existing series
+            }            // Remove existing series
             try {
                 if (window.currentSeries) {
                     window.heroChart.removeSeries(window.currentSeries);
@@ -906,136 +1086,198 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
                 heroChartElement.appendChild(trustBadge);
             }
 
-            // Format data
-            console.log('Raw data before formatting:', data.length, 'items');
+            // Format and validate data
+            console.log('Processing chart data from', usedSource);
+            const formattedData = validateAndFormatChartData(data);
 
-            const formattedData = data.map((item, index) => {
-                // More comprehensive field checking
-                const time = item.date || item.time || item.datetime || item.timestamp;
-                const value = parseFloat(
-                    item.close || item.price || item.value || item.c ||
-                    item.Close || item.Price || item.Value || item.adjusted_close
-                );
+            if (formattedData.length === 0) {
+                throw new Error(`No valid data points after formatting from ${usedSource}`);
+            }
 
-                if (index < 2) {
-                    console.log(`Item ${index}:`, {
-                        extractedTime: time,
-                        extractedValue: value
-                    });
-                }
-
-                // Convert date string to timestamp if needed
-                let processedTime = time;
-                if (typeof time === 'string') {
-                    // Try to parse as date
-                    const parsed = new Date(time);
-                    if (!isNaN(parsed.getTime())) {
-                        processedTime = Math.floor(parsed.getTime() / 1000); // Convert to seconds
-                    }
-                } else if (typeof time === 'number' && time > 1000000000000) {
-                    // If it's a millisecond timestamp, convert to seconds
-                    processedTime = Math.floor(time / 1000);
-                }
-
-                return { time: processedTime, value, originalIndex: index };
-            }).filter((item) => {
-                const isValid = item.time && !isNaN(item.value) && item.value > 0;
-                if (!isValid && item.originalIndex < 3) {
-                    console.log(`Filtered out item ${item.originalIndex}:`, item);
-                }
-                return isValid;
-            });
-
-            console.log('Formatted data for chart:', formattedData.slice(0, 5));
-            console.log('Total formatted data points:', formattedData.length);
+            console.log('Final formatted data for chart:', formattedData.slice(0, 3));
+            console.log('Total data points for chart:', formattedData.length);
 
             // Set actual data to the area series
+            console.log('About to set data to areaSeries:', {
+                seriesType: typeof areaSeries,
+                dataLength: formattedData.length,
+                sampleData: formattedData.slice(0, 2)
+            });
+
             areaSeries.setData(formattedData);
-            console.log('Chart data set successfully');
+            console.log('Chart data set successfully - areaSeries.setData() completed');
 
             // Generate and set prediction data if enabled
             if (showPredictions && window.predictionSeries) {
+                console.log('Generating prediction data...');
                 const predictionData = await generatePredictionData(formattedData, symbol);
-                window.predictionSeries.setData(predictionData);
-                console.log('Prediction data set successfully');
+                if (predictionData && predictionData.length > 0) {
+                    window.predictionSeries.setData(predictionData);
+                    console.log('Prediction data set successfully');
+                } else {
+                    console.log('No prediction data generated');
+                }
             }
 
             if (formattedData.length > 0) {
+                console.log('Fitting chart time scale...');
                 window.heroChart.timeScale().fitContent();
-                console.log('Chart time scale fitted');
+                console.log('Chart time scale fitted successfully');
+
+                // Force chart resize to ensure visibility
+                setTimeout(() => {
+                    if (window.heroChart && window.heroChart.resize) {
+                        const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+                        if (heroChartElement) {
+                            const width = heroChartElement.clientWidth || 800;
+                            const height = heroChartElement.clientHeight || 400;
+                            console.log(`Forcing chart resize to ${width}x${height}`);
+                            window.heroChart.resize(width, height);
+                        }
+                    }
+                }, 100);
             }
 
             updateChartTitle(symbol, data[data.length - 1]);
+
+            // Remove loading overlay
+            if (loadingOverlay && loadingOverlay.parentNode) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (loadingOverlay.parentNode) {
+                        loadingOverlay.remove();
+                    }
+                }, 300);
+            }
+
         } else {
             console.error('No data or chart not available');
-            // Use sample data as fallback
-            if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
-                const sampleData = generateSampleData();
 
-                try {
-                    if (window.currentSeries) {
-                        window.heroChart.removeSeries(window.currentSeries);
-                    }
-                } catch (e) {
-                    console.log('No existing series to remove');
-                }
+            // Remove loading overlay
+            if (loadingOverlay && loadingOverlay.parentNode) {
+                loadingOverlay.remove();
+            }
 
-                const lineSeries = window.heroChart.addLineSeries({
-                    color: '#ffd700',
-                    lineWidth: 2,
-                });
-                window.currentSeries = lineSeries;
-                lineSeries.setData(sampleData);
-                console.log('Sample data loaded as fallback');
+            // Show error message instead of sample data
+            const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+            if (heroChartElement) {
+                const errorOverlay = document.createElement('div');
+                errorOverlay.className = 'chart-error-message';
+                errorOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border: 2px dashed #dee2e6;
+                    border-radius: 12px;
+                    z-index: 999;
+                `;
+                errorOverlay.innerHTML = `
+                    <div class="error-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Market Data Unavailable</h3>
+                        <p>Unable to load market data for ${symbol}. Please try again later.</p>
+                        <button onclick="loadStockChart('${symbol}', true, true)" class="retry-button">Retry</button>
+                    </div>
+                `;
+                heroChartElement.appendChild(errorOverlay);
             }
         }
     } catch (error) {
         console.error('Stock chart load error:', error);
-        // Fallback to sample data
-        if (window.heroChart && typeof window.heroChart.addLineSeries === 'function') {
-            const sampleData = generateSampleData();
 
-            try {
-                if (window.currentSeries) {
-                    window.heroChart.removeSeries(window.currentSeries);
-                }
-            } catch (e) {
-                console.log('No existing series to remove');
-            }
+        // Remove loading overlay
+        if (loadingOverlay && loadingOverlay.parentNode) {
+            loadingOverlay.remove();
+        }
 
-            const lineSeries = window.heroChart.addLineSeries({
-                color: '#ffd700',
-                lineWidth: 2,
-            });
-            window.currentSeries = lineSeries;
-            lineSeries.setData(sampleData);
-            console.log('Sample data loaded as error fallback');
+        // Show error message instead of sample data fallback
+        const heroChartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+        if (heroChartElement) {
+            const errorOverlay = document.createElement('div');
+            errorOverlay.className = 'chart-error-message';
+            errorOverlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border: 2px dashed #dee2e6;
+                border-radius: 12px;
+                z-index: 999;
+            `;
+            errorOverlay.innerHTML = `
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Chart Loading Error</h3>
+                    <p>An error occurred while loading the chart for ${symbol}: ${error.message}</p>
+                    <button onclick="loadStockChart('${symbol}', true, true)" class="retry-button">Retry</button>
+                </div>
+            `;
+            heroChartElement.appendChild(errorOverlay);
         }
     }
 }
 
-// Generate sample data for fallback
-function generateSampleData() {
-    const data = [];
-    const startPrice = 150;
-    let price = startPrice;
-    const startDate = new Date('2024-01-01');
-
-    for (let i = 0; i < 100; i++) {
-        const date = new Date(startDate);
-        date.setDate(date.getDate() + i);
-
-        price += (Math.random() - 0.5) * 5;
-        price = Math.max(price, startPrice * 0.7);
-        price = Math.min(price, startPrice * 1.5);
-
-        data.push({
-            time: date.toISOString().split('T')[0],
-            value: parseFloat(price.toFixed(2))
-        });
+// Enhanced data format validation and conversion
+function validateAndFormatChartData(rawData) {
+    if (!Array.isArray(rawData)) {
+        console.error('Chart data is not an array:', rawData);
+        return [];
     }
 
-    return data;
+    console.log('Validating chart data:', rawData.length, 'items');
+
+    const formattedData = rawData.map((item, index) => {
+        // More comprehensive field checking for different API formats
+        const time = item.date || item.time || item.datetime || item.timestamp;
+        const value = parseFloat(
+            item.close || item.price || item.value || item.c ||
+            item.Close || item.Price || item.Value || item.adjusted_close ||
+            item.current_price // CoinGecko format
+        );
+
+        if (index < 2) {
+            console.log(`Data item ${index}:`, {
+                original: item,
+                extractedTime: time,
+                extractedValue: value
+            });
+        }
+
+        // Convert date string to timestamp if needed
+        let processedTime = time;
+        if (typeof time === 'string') {
+            const parsed = new Date(time);
+            if (!isNaN(parsed.getTime())) {
+                processedTime = Math.floor(parsed.getTime() / 1000);
+            }
+        } else if (typeof time === 'number' && time > 1000000000000) {
+            processedTime = Math.floor(time / 1000);
+        } else if (typeof time === 'number' && time > 1000000000) {
+            processedTime = time; // Already in seconds
+        }
+
+        return { time: processedTime, value, originalIndex: index };
+    }).filter((item) => {
+        const isValid = item.time && !isNaN(item.value) && item.value > 0;
+        if (!isValid && item.originalIndex < 5) {
+            console.log(`Filtered out invalid item ${item.originalIndex}:`, item);
+        }
+        return isValid;
+    });
+
+    console.log(`Formatted ${formattedData.length} valid data points from ${rawData.length} raw items`);
+    return formattedData;
 }
 
 // Generate prediction data based on actual data
@@ -1468,7 +1710,7 @@ function initializeStockSelector() {
     console.log('Stock select element:', stockSelect);
 
     if (!stockSelect) {
-        console.error('Stock select element not found!');
+        console.log('Stock select element not found - this is normal for pages without prediction form.');
         return;
     }
 

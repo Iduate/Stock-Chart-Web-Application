@@ -195,10 +195,24 @@ function handleGoogleCredentialResponse(response) {
 // Initialize Google auth when page loads
 document.addEventListener('DOMContentLoaded', () => {
     initGoogleAuth();
-
-    // Add a custom button for Google authentication
-    google.accounts.id.renderButton(
-        document.getElementById('google-signin-button') || document.createElement('div'),
-        { theme: 'outline', size: 'large' }
-    );
 });
+
+// Wait for Google API to be available before rendering button
+function waitForGoogleAPI() {
+    if (typeof google !== 'undefined' && google.accounts) {
+        // Add a custom button for Google authentication if element exists
+        const buttonElement = document.getElementById('google-signin-button');
+        if (buttonElement) {
+            google.accounts.id.renderButton(
+                buttonElement,
+                { theme: 'outline', size: 'large' }
+            );
+        }
+    } else {
+        // Wait and try again
+        setTimeout(waitForGoogleAPI, 100);
+    }
+}
+
+// Call the waiting function when DOM is loaded
+document.addEventListener('DOMContentLoaded', waitForGoogleAPI);

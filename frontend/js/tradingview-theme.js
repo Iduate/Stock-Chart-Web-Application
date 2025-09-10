@@ -1,11 +1,11 @@
 // TradingView-inspired Theme & Chart Enhancements
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Theme toggle functionality
     initThemeToggle();
-    
+
     // Initialize TradingView-styled charts
     enhanceCharts();
-    
+
     // Make the page elements fade in
     animatePageElements();
 });
@@ -18,20 +18,20 @@ function initThemeToggle() {
     themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
     themeToggle.setAttribute('aria-label', 'Toggle dark/light mode');
     document.body.appendChild(themeToggle);
-    
+
     // Check for saved theme preference or respect OS preference
     const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const savedTheme = localStorage.getItem('theme');
-    
+
     if (savedTheme === 'light' || (!savedTheme && !prefersDarkScheme)) {
         document.body.classList.add('light-theme');
         themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     }
-    
+
     // Toggle theme on button click
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
-        
+
         if (document.body.classList.contains('light-theme')) {
             localStorage.setItem('theme', 'light');
             themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -39,10 +39,10 @@ function initThemeToggle() {
             localStorage.setItem('theme', 'dark');
             themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         }
-        
+
         // Refresh charts to apply theme
         enhanceCharts();
-        
+
         // Add transition effect
         document.body.classList.add('dark-mode-transition');
         setTimeout(() => {
@@ -53,23 +53,25 @@ function initThemeToggle() {
 
 // Enhance charts with TradingView styling
 function enhanceCharts() {
-    // Check if hero chart exists
-    if (window.heroChart) {
+    // Check if hero chart exists and is a proper chart instance
+    if (window.heroChart && typeof window.heroChart.applyOptions === 'function') {
         applyTradingViewChartStyle(window.heroChart);
     }
-    
-    // Check if prediction chart exists
-    if (window.predictionChart) {
+
+    // Check if prediction chart exists and is a proper chart instance
+    if (window.predictionChart && typeof window.predictionChart.applyOptions === 'function') {
         applyTradingViewChartStyle(window.predictionChart);
     }
-    
+
     // Apply style to all chart instances
     if (window.chartInstances && Array.isArray(window.chartInstances)) {
         window.chartInstances.forEach(chart => {
-            applyTradingViewChartStyle(chart);
+            if (chart && typeof chart.applyOptions === 'function') {
+                applyTradingViewChartStyle(chart);
+            }
         });
     }
-    
+
     // Create featured chart (large main chart after hero section)
     createFeaturedChart();
 }
@@ -77,64 +79,74 @@ function enhanceCharts() {
 // Apply TradingView styling to charts
 function applyTradingViewChartStyle(chart) {
     if (!chart) return;
-    
+
+    // Check if the chart has the applyOptions method
+    if (typeof chart.applyOptions !== 'function') {
+        console.warn('Chart object does not have applyOptions method:', chart);
+        return;
+    }
+
     const isDarkTheme = !document.body.classList.contains('light-theme');
-    
-    // TradingView-inspired chart options
-    chart.applyOptions({
-        layout: {
-            background: {
-                type: 'solid',
-                color: isDarkTheme ? '#131722' : '#ffffff'
+
+    try {
+        // TradingView-inspired chart options
+        chart.applyOptions({
+            layout: {
+                background: {
+                    type: 'solid',
+                    color: isDarkTheme ? '#131722' : '#ffffff'
+                },
+                textColor: isDarkTheme ? '#d1d4dc' : '#131722',
+                fontSize: 12,
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
             },
-            textColor: isDarkTheme ? '#d1d4dc' : '#131722',
-            fontSize: 12,
-            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
-        },
-        grid: {
-            vertLines: {
-                color: isDarkTheme ? '#2a2e39' : '#f0f3fa',
+            grid: {
+                vertLines: {
+                    color: isDarkTheme ? '#2a2e39' : '#f0f3fa',
+                },
+                horzLines: {
+                    color: isDarkTheme ? '#2a2e39' : '#f0f3fa',
+                },
             },
-            horzLines: {
-                color: isDarkTheme ? '#2a2e39' : '#f0f3fa',
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+                vertLine: {
+                    width: 1,
+                    color: isDarkTheme ? '#758696' : '#9db2bd',
+                    style: LightweightCharts.LineStyle.Dashed,
+                },
+                horzLine: {
+                    width: 1,
+                    color: isDarkTheme ? '#758696' : '#9db2bd',
+                    style: LightweightCharts.LineStyle.Dashed,
+                },
             },
-        },
-        crosshair: {
-            mode: LightweightCharts.CrosshairMode.Normal,
-            vertLine: {
-                width: 1,
-                color: isDarkTheme ? '#758696' : '#9db2bd',
-                style: LightweightCharts.LineStyle.Dashed,
+            timeScale: {
+                borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
+                timeVisible: true,
+                secondsVisible: false,
             },
-            horzLine: {
-                width: 1,
-                color: isDarkTheme ? '#758696' : '#9db2bd',
-                style: LightweightCharts.LineStyle.Dashed,
+            rightPriceScale: {
+                borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
             },
-        },
-        timeScale: {
-            borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
-            timeVisible: true,
-            secondsVisible: false,
-        },
-        rightPriceScale: {
-            borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
-        },
-    });
-    
-    // Update series colors if they exist
-    const series = chart.series ? chart.series : chart.getSeries ? chart.getSeries() : null;
-    if (series && Array.isArray(series)) {
-        series.forEach(s => updateSeriesStyle(s, isDarkTheme));
-    } else if (series) {
-        updateSeriesStyle(series, isDarkTheme);
+        });
+
+        // Update series colors if they exist
+        const series = chart.series ? chart.series : chart.getSeries ? chart.getSeries() : null;
+        if (series && Array.isArray(series)) {
+            series.forEach(s => updateSeriesStyle(s, isDarkTheme));
+        } else if (series) {
+            updateSeriesStyle(series, isDarkTheme);
+        }
+    } catch (error) {
+        console.error('Error applying chart options:', error);
     }
 }
 
 // Update individual series styling
 function updateSeriesStyle(series, isDarkTheme) {
     if (!series) return;
-    
+
     if (series.applyOptions) {
         // Check the series type and apply appropriate styling
         if (series.seriesType === 'candlestick' || series.options?.type === 'candlestick') {
@@ -177,7 +189,7 @@ function updateSeriesStyle(series, isDarkTheme) {
 // Animate page elements on load
 function animatePageElements() {
     const elements = document.querySelectorAll('.hero-content > *, .feature-card, .market-card, .section-header, .chart-container, .featured-chart-container, .chart-controls, .event-card, .plan-card');
-    
+
     let delay = 0;
     elements.forEach(el => {
         el.style.opacity = '0';
@@ -196,22 +208,22 @@ function createMarketTickers() {
         { symbol: 'MSFT', name: 'Microsoft', price: 415.75, change: 1.5, color: '#00a4ef' },
         { symbol: '005930', name: '삼성전자', price: 72000, change: 2.1, color: '#1428a0' }
     ];
-    
+
     const tickerContainer = document.createElement('div');
     tickerContainer.className = 'market-ticker';
-    
+
     const tickerTrack = document.createElement('div');
     tickerTrack.className = 'ticker-track';
-    
+
     marketData.forEach(item => {
         const tickerItem = document.createElement('div');
         tickerItem.className = 'ticker-item';
-        
+
         const symbolEl = document.createElement('span');
         symbolEl.className = 'ticker-symbol';
         symbolEl.style.color = item.color;
         symbolEl.textContent = item.symbol;
-        
+
         const priceEl = document.createElement('span');
         priceEl.className = 'ticker-price';
         priceEl.textContent = new Intl.NumberFormat('en-US', {
@@ -220,19 +232,19 @@ function createMarketTickers() {
             minimumFractionDigits: 0,
             maximumFractionDigits: item.price < 100 ? 2 : 0
         }).format(item.price);
-        
+
         const changeEl = document.createElement('span');
         changeEl.className = `ticker-change ${item.change >= 0 ? 'positive' : 'negative'}`;
         changeEl.textContent = `${item.change >= 0 ? '+' : ''}${item.change}%`;
-        
+
         tickerItem.appendChild(symbolEl);
         tickerItem.appendChild(priceEl);
         tickerItem.appendChild(changeEl);
         tickerTrack.appendChild(tickerItem);
     });
-    
+
     tickerContainer.appendChild(tickerTrack);
-    
+
     // Add to the page just below the navbar
     const navbar = document.querySelector('.navbar');
     if (navbar) {
@@ -251,9 +263,9 @@ function createHeroChartIfNeeded() {
 function initializeHeroChart() {
     const chartElement = document.getElementById('heroChart');
     if (!chartElement) return;
-    
+
     const isDarkTheme = !document.body.classList.contains('light-theme');
-    
+
     // Create chart with TradingView styling
     const chart = LightweightCharts.createChart(chartElement, {
         width: chartElement.clientWidth,
@@ -297,11 +309,11 @@ function initializeHeroChart() {
             borderColor: isDarkTheme ? '#2a2e39' : '#e0e3eb',
         },
     });
-    
+
     // Sample data for an attractive chart
     // This would normally come from your API
     const sampleData = generateSampleChartData();
-    
+
     // Create area series
     const areaSeries = chart.addAreaSeries({
         topColor: isDarkTheme ? 'rgba(41, 98, 255, 0.28)' : 'rgba(41, 98, 255, 0.2)',
@@ -309,9 +321,9 @@ function initializeHeroChart() {
         lineColor: '#2962ff',
         lineWidth: 2,
     });
-    
+
     areaSeries.setData(sampleData);
-    
+
     // Make chart responsive
     window.addEventListener('resize', () => {
         chart.applyOptions({
@@ -319,7 +331,7 @@ function initializeHeroChart() {
             height: chartElement.clientHeight,
         });
     });
-    
+
     // Store chart reference
     window.heroChart = chart;
     chart.series = areaSeries;
@@ -330,7 +342,7 @@ function generateSampleChartData() {
     const data = [];
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 3);
-    
+
     let price = 100;
     const trend = [
         { direction: 1, days: 15 },
@@ -339,33 +351,33 @@ function generateSampleChartData() {
         { direction: -1, days: 5 },
         { direction: 1, days: 45 }
     ];
-    
+
     let currentTrendIndex = 0;
     let daysInCurrentTrend = 0;
-    
+
     for (let i = 0; i < 90; i++) {
         const currentDate = new Date(startDate);
         currentDate.setDate(startDate.getDate() + i);
-        
+
         // Check if we need to switch trend
         if (daysInCurrentTrend >= trend[currentTrendIndex].days) {
             currentTrendIndex = (currentTrendIndex + 1) % trend.length;
             daysInCurrentTrend = 0;
         }
-        
+
         // Apply the trend with some randomness
         const trendDirection = trend[currentTrendIndex].direction;
         const changePercent = (Math.random() * 2 - 0.5 + (trendDirection * 0.5)) / 100;
         price = price * (1 + changePercent);
-        
+
         data.push({
             time: Math.floor(currentDate.getTime() / 1000),
             value: price
         });
-        
+
         daysInCurrentTrend++;
     }
-    
+
     return data;
 }
 
@@ -373,12 +385,12 @@ function generateSampleChartData() {
 function createFeaturedChart() {
     const chartElement = document.getElementById('featuredChart');
     if (!chartElement) return;
-    
+
     // Clear any existing chart
     chartElement.innerHTML = '';
-    
+
     const isDarkTheme = !document.body.classList.contains('light-theme');
-    
+
     // Create chart with TradingView styling
     const chart = LightweightCharts.createChart(chartElement, {
         layout: {
@@ -469,7 +481,7 @@ function createFeaturedChart() {
 
     // Set the data
     lineSeries.setData(data);
-    
+
     // Add price line label at current price
     const lastValue = data[data.length - 1].value;
     lineSeries.createPriceLine({
@@ -480,22 +492,22 @@ function createFeaturedChart() {
         axisLabelVisible: true,
         title: lastValue.toFixed(2),
     });
-    
+
     // Store chart instance for theme switching
     window.featuredChart = chart;
-    
+
     // Make chart responsive
     const resizeObserver = new ResizeObserver(entries => {
         if (entries.length === 0 || entries[0].target !== chartElement) {
             return;
         }
-        
+
         const newRect = entries[0].contentRect;
         chart.applyOptions({ width: newRect.width, height: newRect.height });
     });
-    
+
     resizeObserver.observe(chartElement);
-    
+
     // Set up timeframe buttons
     const timeframeButtons = document.querySelectorAll('.btn-timeframe');
     if (timeframeButtons.length > 0) {
@@ -503,22 +515,22 @@ function createFeaturedChart() {
             button.addEventListener('click', () => {
                 // Remove active class from all buttons
                 timeframeButtons.forEach(btn => btn.classList.remove('active'));
-                
+
                 // Add active class to clicked button
                 button.classList.add('active');
-                
+
                 // In a real app, you would fetch data for the selected timeframe
                 // For now, we'll just simulate a chart update
                 chart.timeScale().fitContent();
             });
         });
     }
-    
+
     return chart;
 }
 
 // Update all TradingView-styled elements when page loads
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     createMarketTickers();
     createHeroChartIfNeeded();
 });
