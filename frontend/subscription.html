@@ -7,431 +7,791 @@
     <title>구독 - StockChart</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <link rel="stylesheet" href="css/tradingview-modern.css">
-    <link rel="stylesheet" href="css/trustworthy-design.css">
-    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
-    <link rel="stylesheet" href="css/mobile-fixes.css">
-    <link rel="stylesheet" href="css/access-limit.css">
-    <link rel="stylesheet" href="css/auth-notifications.css">
+
+    <!-- Tailwind CSS with TradingView Color Scheme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tv': {
+                            'darker': '#0d1421',
+                            'dark': '#131722',
+                            'card': '#1e222d',
+                            'light': '#2a2e39',
+                            'border': '#363a45',
+                            'blue': '#2962ff',
+                            'green': '#26a69a',
+                            'red': '#ef5350',
+                            'text': '#d1d4dc',
+                            'text-secondary': '#868993'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
 
-    <style>
-        /* TradingView-inspired subscription page styling */
-        .subscription-section {
-            padding: 120px 0 80px;
-            background: var(--tv-bg-primary);
-            min-height: 100vh;
-            position: relative;
+<body class="bg-tv-darker text-tv-text font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="home.html"
+                        class="flex items-center space-x-2 text-tv-text hover:text-tv-blue transition-colors">
+                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold">StockChart</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="home.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                    <a href="charts.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
+                        보드</a>
+                    <a href="prediction.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                    <a href="my-predictions.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">내
+                        예측</a>
+                    <a href="ranking.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                    <a href="events.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                    <a href="subscription.html"
+                        class="px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">구독</a>
+                    <button onclick="showLoginModal()"
+                        class="ml-4 bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-tv-text hover:text-tv-blue p-2">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="lg:hidden hidden bg-tv-card border-t border-tv-border">
+            <div class="px-4 py-2 space-y-1">
+                <a href="home.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                <a href="charts.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
+                    보드</a>
+                <a href="prediction.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                <a href="my-predictions.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">내
+                    예측</a>
+                <a href="ranking.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                <a href="events.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                <a href="subscription.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">구독</a>
+                <button onclick="showLoginModal()"
+                    class="block w-full text-left px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors mt-2">로그인</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Subscription Section -->
+    <section class="py-16 bg-tv-darker min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Page Header -->
+            <div class="text-center mb-16">
+                <div class="flex items-center justify-center space-x-3 mb-6">
+                    <i class="fas fa-crown text-tv-blue text-4xl"></i>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-tv-text">프리미엄 구독</h1>
+                </div>
+                <p class="text-xl text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
+                    전문가 수준의 분석 도구와 고급 기능으로 투자 성과를 극대화하세요
+                </p>
+            </div>
+
+            <!-- Pricing Plans -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Basic Plan -->
+                <div class="bg-tv-card border border-tv-border rounded-xl p-8 relative">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-tv-text mb-2">베이직</h3>
+                        <p class="text-tv-text-secondary mb-6">시작하는 투자자를 위한</p>
+                        <div class="mb-8">
+                            <span class="text-4xl font-bold text-tv-text">무료</span>
+                            <span class="text-tv-text-secondary">/월</span>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text-secondary">월 10개 예측</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text-secondary">기본 차트 분석</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text-secondary">커뮤니티 액세스</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-times text-tv-red"></i>
+                            <span class="text-tv-text-secondary">AI 분석 도구</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-times text-tv-red"></i>
+                            <span class="text-tv-text-secondary">실시간 알림</span>
+                        </li>
+                    </ul>
+
+                    <button
+                        class="w-full bg-tv-light hover:bg-tv-border text-tv-text py-3 rounded-lg font-semibold transition-colors">
+                        현재 플랜
+                    </button>
+                </div>
+
+                <!-- Pro Plan (Most Popular) -->
+                <div class="bg-tv-card border-2 border-tv-blue rounded-xl p-8 relative transform scale-105">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-tv-blue text-white px-6 py-2 rounded-full text-sm font-semibold">가장 인기</span>
+                    </div>
+
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-tv-text mb-2">프로</h3>
+                        <p class="text-tv-text-secondary mb-6">진지한 투자자를 위한</p>
+                        <div class="mb-8">
+                            <span class="text-4xl font-bold text-tv-blue">₩29,000</span>
+                            <span class="text-tv-text-secondary">/월</span>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">무제한 예측</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">고급 차트 분석</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">AI 분석 도구</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">실시간 알림</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">우선 고객 지원</span>
+                        </li>
+                    </ul>
+
+                    <button
+                        class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                        프로 시작하기
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-tv-card border border-tv-border rounded-xl p-8 relative">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-tv-text mb-2">엔터프라이즈</h3>
+                        <p class="text-tv-text-secondary mb-6">기관 투자자를 위한</p>
+                        <div class="mb-8">
+                            <span class="text-4xl font-bold text-tv-text">₩99,000</span>
+                            <span class="text-tv-text-secondary">/월</span>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">프로의 모든 기능</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">API 액세스</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">맞춤형 대시보드</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">전담 계정 매니저</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check text-tv-green"></i>
+                            <span class="text-tv-text">24/7 프리미엄 지원</span>
+                        </li>
+                    </ul>
+
+                    <button
+                        class="w-full bg-tv-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                        문의하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Comparison -->
+            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16">
+                <div class="p-6 border-b border-tv-border">
+                    <h3 class="text-2xl font-bold text-tv-text text-center">기능 비교</h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-tv-light">
+                            <tr>
+                                <th class="text-left p-4 text-tv-text font-semibold">기능</th>
+                                <th class="text-center p-4 text-tv-text font-semibold">베이직</th>
+                                <th class="text-center p-4 text-tv-blue font-semibold">프로</th>
+                                <th class="text-center p-4 text-tv-green font-semibold">엔터프라이즈</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-tv-border">
+                            <tr>
+                                <td class="p-4 text-tv-text">월간 예측 수</td>
+                                <td class="p-4 text-center text-tv-text-secondary">10개</td>
+                                <td class="p-4 text-center text-tv-blue">무제한</td>
+                                <td class="p-4 text-center text-tv-green">무제한</td>
+                            </tr>
+                            <tr class="bg-tv-light bg-opacity-50">
+                                <td class="p-4 text-tv-text">AI 분석 도구</td>
+                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 text-tv-text">실시간 알림</td>
+                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
+                            </tr>
+                            <tr class="bg-tv-light bg-opacity-50">
+                                <td class="p-4 text-tv-text">API 액세스</td>
+                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 text-tv-text">고객 지원</td>
+                                <td class="p-4 text-center text-tv-text-secondary">이메일</td>
+                                <td class="p-4 text-center text-tv-blue">우선 지원</td>
+                                <td class="p-4 text-center text-tv-green">24/7 전담</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-3xl font-bold text-tv-text text-center mb-12">자주 묻는 질문</h3>
+
+                <div class="space-y-4">
+                    <div class="bg-tv-card border border-tv-border rounded-xl">
+                        <button
+                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
+                            onclick="toggleFAQ(1)">
+                            <span class="text-lg font-semibold text-tv-text">언제든지 취소할 수 있나요?</span>
+                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-1"></i>
+                        </button>
+                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-1">
+                            <p class="text-tv-text-secondary">네, 언제든지 구독을 취소할 수 있습니다. 취소 시 현재 결제 기간이 끝날 때까지 서비스를 이용할 수
+                                있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-tv-card border border-tv-border rounded-xl">
+                        <button
+                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
+                            onclick="toggleFAQ(2)">
+                            <span class="text-lg font-semibold text-tv-text">무료 체험 기간이 있나요?</span>
+                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-2"></i>
+                        </button>
+                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-2">
+                            <p class="text-tv-text-secondary">프로 플랜은 14일 무료 체험을 제공합니다. 체험 기간 동안 모든 기능을 제한 없이 사용하실 수
+                                있습니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-tv-card border border-tv-border rounded-xl">
+                        <button
+                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
+                            onclick="toggleFAQ(3)">
+                            <span class="text-lg font-semibold text-tv-text">결제 방법은 무엇인가요?</span>
+                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-3"></i>
+                        </button>
+                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-3">
+                            <p class="text-tv-text-secondary">신용카드, 체크카드, PayPal, 그리고 암호화폐 결제를 지원합니다. 모든 결제는 안전하게
+                                암호화됩니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-tv-darker border-t border-tv-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
+                    </div>
+                    <p class="text-tv-text-secondary mb-6 leading-relaxed">미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
+                    <ul class="space-y-3">
+                        <li><a href="charts.html" class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
+                                보드</a></li>
+                        <li><a href="prediction.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a></li>
+                        <li><a href="my-predictions.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">내 예측</a></li>
+                        <li><a href="ranking.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
+                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
         }
 
-        .subscription-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg,
-                    var(--tv-bg-primary) 0%,
-                    var(--tv-bg-secondary) 50%,
-                    var(--tv-bg-primary) 100%);
-            opacity: 0.8;
-            z-index: 1;
+        function toggleFAQ(id) {
+            const content = document.getElementById(`faq-content-${id}`);
+            const icon = document.getElementById(`faq-icon-${id}`);
+
+            content.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
         }
+    </script>
+</body>
 
-        .subscription-section>* {
-            position: relative;
-            z-index: 2;
-        }
+</html>
+}
 
-        .page-header {
-            margin-bottom: 60px;
-            color: var(--tv-text-primary);
-            text-align: center;
-        }
+.page-header h1 {
+font-size: 3.5rem;
+margin-bottom: 20px;
+color: var(--tv-text-primary);
+text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+background: linear-gradient(135deg, var(--tv-bright-blue) 0%, var(--tv-green) 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
 
-        .page-header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: var(--tv-text-primary);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(135deg, var(--tv-bright-blue) 0%, var(--tv-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+.page-header p {
+font-size: 1.3rem;
+opacity: 0.8;
+margin-bottom: 30px;
+color: var(--tv-text-secondary);
+}
 
-        .page-header p {
-            font-size: 1.3rem;
-            opacity: 0.8;
-            margin-bottom: 30px;
-            color: var(--tv-text-secondary);
-        }
+.header-highlight {
+display: flex;
+justify-content: center;
+gap: 20px;
+flex-wrap: wrap;
+}
 
-        .header-highlight {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
+.highlight-badge {
+background: var(--tv-bg-card);
+padding: 8px 16px;
+border-radius: 12px;
+backdrop-filter: blur(10px);
+border: 1px solid var(--tv-border-light);
+font-weight: 600;
+color: var(--tv-text-primary);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
-        .highlight-badge {
-            background: var(--tv-bg-card);
-            padding: 8px 16px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--tv-border-light);
-            font-weight: 600;
-            color: var(--tv-text-primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
+.highlight-text {
+color: var(--tv-text-secondary);
+font-size: 0.9rem;
+align-self: center;
+}
 
-        .highlight-text {
-            color: var(--tv-text-secondary);
-            font-size: 0.9rem;
-            align-self: center;
-        }
+.free-access-alert {
+background: var(--tv-bg-card);
+border: 1px solid var(--tv-red);
+color: var(--tv-text-primary);
+padding: 25px;
+border-radius: 12px;
+margin-bottom: 40px;
+text-align: center;
+box-shadow: 0 8px 24px rgba(239, 83, 80, 0.2);
+position: relative;
+overflow: hidden;
+}
 
-        .free-access-alert {
-            background: var(--tv-bg-card);
-            border: 1px solid var(--tv-red);
-            color: var(--tv-text-primary);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(239, 83, 80, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
+.free-access-alert::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(--tv-red), var(--tv-bright-blue));
+}
 
-        .free-access-alert::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--tv-red), var(--tv-bright-blue));
-        }
+.free-access-alert h3 {
+margin-bottom: 15px;
+font-size: 1.5rem;
+color: var(--tv-red);
+}
 
-        .free-access-alert h3 {
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            color: var(--tv-red);
-        }
+.access-counter {
+font-weight: bold;
+background: var(--tv-bright-blue);
+color: white;
+padding: 4px 12px;
+border-radius: 8px;
+font-size: 0.9rem;
+}
 
-        .access-counter {
-            font-weight: bold;
-            background: var(--tv-bright-blue);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
+.limit-badge {
+background: var(--tv-bg-hover);
+color: var(--tv-text-primary);
+padding: 4px 12px;
+border-radius: 8px;
+font-weight: bold;
+margin: 0 5px;
+border: 1px solid var(--tv-border-light);
+}
 
-        .limit-badge {
-            background: var(--tv-bg-hover);
-            color: var(--tv-text-primary);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            margin: 0 5px;
-            border: 1px solid var(--tv-border-light);
-        }
+.btn-upgrade {
+background: var(--tv-bright-blue) !important;
+color: white !important;
+border: none !important;
+padding: 12px 24px !important;
+border-radius: 8px !important;
+font-weight: 600 !important;
+margin-top: 15px !important;
+transition: all 0.3s ease !important;
+box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3) !important;
+}
 
-        .btn-upgrade {
-            background: var(--tv-bright-blue) !important;
-            color: white !important;
-            border: none !important;
-            padding: 12px 24px !important;
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            margin-top: 15px !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3) !important;
-        }
+.btn-upgrade:hover {
+background: var(--tv-blue-hover) !important;
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4) !important;
+}
 
-        .btn-upgrade:hover {
-            background: var(--tv-blue-hover) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4) !important;
-        }
+.pricing-comparison {
+text-align: center;
+margin-bottom: 50px;
+}
 
-        .pricing-comparison {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+.comparison-toggle {
+display: inline-flex;
+background: var(--tv-bg-card);
+border-radius: 8px;
+padding: 4px;
+border: 1px solid var(--tv-border-light);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
-        .comparison-toggle {
-            display: inline-flex;
-            background: var(--tv-bg-card);
-            border-radius: 8px;
-            padding: 4px;
-            border: 1px solid var(--tv-border-light);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+.toggle-btn {
+padding: 10px 20px;
+border: none;
+background: transparent;
+color: var(--tv-text-secondary);
+cursor: pointer;
+border-radius: 6px;
+transition: all 0.3s ease;
+font-weight: 500;
+}
 
-        .toggle-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            color: var(--tv-text-secondary);
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
+.toggle-btn.active {
+background: var(--tv-bright-blue);
+color: white;
+box-shadow: 0 2px 8px rgba(41, 98, 255, 0.3);
+}
 
-        .toggle-btn.active {
-            background: var(--tv-bright-blue);
-            color: white;
-            box-shadow: 0 2px 8px rgba(41, 98, 255, 0.3);
-        }
+.discount {
+background: var(--tv-green);
+color: white;
+font-size: 0.8rem;
+padding: 2px 6px;
+border-radius: 4px;
+margin-left: 5px;
+font-weight: 600;
+}
 
-        .discount {
-            background: var(--tv-green);
-            color: white;
-            font-size: 0.8rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 5px;
-            font-weight: 600;
-        }
+.pricing-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 30px;
+max-width: 1200px;
+margin: 0 auto;
+}
 
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+.pricing-card {
+background: var(--tv-bg-card);
+border: 1px solid var(--tv-border-light);
+border-radius: 12px;
+padding: 40px 30px;
+text-align: center;
+position: relative;
+transition: all 0.3s ease;
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
 
-        .pricing-card {
-            background: var(--tv-bg-card);
-            border: 1px solid var(--tv-border-light);
-            border-radius: 12px;
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
+.pricing-card:hover {
+transform: translateY(-8px);
+box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+border-color: var(--tv-bright-blue);
+}
 
-        .pricing-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
-            border-color: var(--tv-bright-blue);
-        }
+.pricing-card.premium {
+border: 2px solid var(--tv-bright-blue);
+transform: scale(1.05);
+background: linear-gradient(135deg, var(--tv-bg-card) 0%, rgba(41, 98, 255, 0.05) 100%);
+}
 
-        .pricing-card.premium {
-            border: 2px solid var(--tv-bright-blue);
-            transform: scale(1.05);
-            background: linear-gradient(135deg, var(--tv-bg-card) 0%, rgba(41, 98, 255, 0.05) 100%);
-        }
+.pricing-card.premium::before {
+content: "가장 인기";
+position: absolute;
+top: -12px;
+left: 50%;
+transform: translateX(-50%);
+background: var(--tv-bright-blue);
+color: white;
+padding: 6px 16px;
+border-radius: 16px;
+font-size: 0.85rem;
+font-weight: 600;
+box-shadow: 0 4px 12px rgba(41, 98, 255, 0.4);
+}
 
-        .pricing-card.premium::before {
-            content: "가장 인기";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--tv-bright-blue);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 16px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.4);
-        }
+.plan-header {
+margin-bottom: 30px;
+}
 
-        .plan-header {
-            margin-bottom: 30px;
-        }
+.plan-icon {
+font-size: 3rem;
+margin-bottom: 20px;
+}
 
-        .plan-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-        }
+.plan-header h3 {
+font-size: 1.8rem;
+color: var(--tv-text-primary);
+margin-bottom: 10px;
+font-weight: 600;
+}
 
-        .plan-header h3 {
-            font-size: 1.8rem;
-            color: var(--tv-text-primary);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
+.plan-header p {
+color: var(--tv-text-secondary);
+font-size: 1rem;
+}
 
-        .plan-header p {
-            color: var(--tv-text-secondary);
-            font-size: 1rem;
-        }
+.plan-pricing {
+margin-bottom: 30px;
+}
 
-        .plan-pricing {
-            margin-bottom: 30px;
-        }
+.price {
+font-size: 3rem;
+font-weight: 700;
+color: var(--tv-text-primary);
+background: linear-gradient(135deg, var(--tv-bright-blue), var(--tv-green));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
 
-        .price {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--tv-text-primary);
-            background: linear-gradient(135deg, var(--tv-bright-blue), var(--tv-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+.period {
+color: var(--tv-text-secondary);
+font-size: 1rem;
+}
 
-        .period {
-            color: var(--tv-text-secondary);
-            font-size: 1rem;
-        }
+.plan-features {
+margin-bottom: 30px;
+text-align: left;
+}
 
-        .plan-features {
-            margin-bottom: 30px;
-            text-align: left;
-        }
+.feature {
+display: flex;
+align-items: center;
+margin-bottom: 15px;
+padding: 8px 0;
+}
 
-        .feature {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 8px 0;
-        }
+.feature i {
+width: 20px;
+margin-right: 15px;
+color: var(--tv-green);
+font-weight: bold;
+}
 
-        .feature i {
-            width: 20px;
-            margin-right: 15px;
-            color: var(--tv-green);
-            font-weight: bold;
-        }
+.feature.not-included i {
+color: var(--tv-red);
+}
 
-        .feature.not-included i {
-            color: var(--tv-red);
-        }
+.feature.not-included span {
+color: var(--tv-text-disabled);
+text-decoration: line-through;
+}
 
-        .feature.not-included span {
-            color: var(--tv-text-disabled);
-            text-decoration: line-through;
-        }
+.feature span {
+color: var(--tv-text-primary);
+font-size: 0.95rem;
+}
 
-        .feature span {
-            color: var(--tv-text-primary);
-            font-size: 0.95rem;
-        }
+.btn-primary {
+width: 100%;
+padding: 15px;
+font-size: 1.1rem;
+font-weight: 600;
+border-radius: 8px;
+background: var(--tv-bright-blue);
+border: none;
+color: white;
+transition: all 0.3s ease;
+cursor: pointer;
+margin-bottom: 15px;
+box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3);
+}
 
-        .btn-primary {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            background: var(--tv-bright-blue);
-            border: none;
-            color: white;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3);
-        }
+.btn-primary:hover {
+background: var(--tv-blue-hover);
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4);
+}
 
-        .btn-primary:hover {
-            background: var(--tv-blue-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(41, 98, 255, 0.4);
-        }
+.btn-outline {
+background: transparent;
+border: 2px solid var(--tv-bright-blue);
+color: var(--tv-bright-blue);
+}
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--tv-bright-blue);
-            color: var(--tv-bright-blue);
-        }
+.btn-outline:hover {
+background: var(--tv-bright-blue);
+color: white;
+}
 
-        .btn-outline:hover {
-            background: var(--tv-bright-blue);
-            color: white;
-        }
+.paypal-button-container {
+margin-top: 15px;
+min-height: 45px;
+}
 
-        .paypal-button-container {
-            margin-top: 15px;
-            min-height: 45px;
-        }
+/* Error message styling */
+.payment-error {
+background: var(--tv-bg-card);
+color: var(--tv-red);
+padding: 15px;
+border-radius: 8px;
+margin: 20px 0;
+border: 1px solid var(--tv-red);
+display: none;
+box-shadow: 0 4px 12px rgba(239, 83, 80, 0.2);
+}
 
-        /* Error message styling */
-        .payment-error {
-            background: var(--tv-bg-card);
-            color: var(--tv-red);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 1px solid var(--tv-red);
-            display: none;
-            box-shadow: 0 4px 12px rgba(239, 83, 80, 0.2);
-        }
+.payment-error.show {
+display: block;
+animation: slideIn 0.3s ease;
+}
 
-        .payment-error.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
+@keyframes slideIn {
+from {
+opacity: 0;
+transform: translateY(-10px);
+}
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+@keyframes pulse {
+0% {
+transform: scale(1);
+}
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
+50% {
+transform: scale(1.02);
+}
 
-            50% {
-                transform: scale(1.02);
-            }
+100% {
+transform: scale(1);
+}
+}
 
-            100% {
-                transform: scale(1);
-            }
-        }
+.hidden {
+display: none !important;
+}
 
-        .hidden {
-            display: none !important;
-        }
+/* Modal improvements */
+.modal {
+backdrop-filter: blur(10px);
+}
 
-        /* Modal improvements */
-        .modal {
-            backdrop-filter: blur(10px);
-        }
+.modal-content {
+border-radius: 15px;
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
 
-        .modal-content {
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
+@media (max-width: 768px) {
+.page-header h1 {
+font-size: 2.5rem;
+}
 
-        @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 2.5rem;
-            }
+.pricing-grid {
+grid-template-columns: 1fr;
+gap: 20px;
+}
 
-            .pricing-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
+.pricing-card.premium {
+transform: none;
+}
 
-            .pricing-card.premium {
-                transform: none;
-            }
-
-            .header-highlight {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
+.header-highlight {
+flex-direction: column;
+gap: 10px;
+}
+}
+</style>
 </head>
 
 <body>

@@ -7,446 +7,788 @@
     <title>내 예측 - StockChart</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <link rel="stylesheet" href="css/tradingview-modern.css">
-    <link rel="stylesheet" href="css/trustworthy-design.css">
-    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
-    <link rel="stylesheet" href="css/mobile-fixes.css">
-    <link rel="stylesheet" href="css/dual-line-chart.css">
+
+    <!-- Tailwind CSS with TradingView Color Scheme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tv': {
+                            'darker': '#0d1421',
+                            'dark': '#131722',
+                            'card': '#1e222d',
+                            'light': '#2a2e39',
+                            'border': '#363a45',
+                            'blue': '#2962ff',
+                            'green': '#26a69a',
+                            'red': '#ef5350',
+                            'text': '#d1d4dc',
+                            'text-secondary': '#868993'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
-<body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="home.html" class="nav-link">홈</a>
-                </li>
-                <li class="nav-item">
-                    <a href="charts.html" class="nav-link">차트 보드</a>
-                </li>
-                <li class="nav-item">
-                    <a href="prediction.html" class="nav-link">예측하기</a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-predictions.html" class="nav-link active">내 예측</a>
-                </li>
-                <li class="nav-item">
-                    <a href="ranking.html" class="nav-link">랭킹</a>
-                </li>
-                <li class="nav-item">
-                    <a href="events.html" class="nav-link">이벤트</a>
-                </li>
-                <li class="nav-item">
-                    <a href="subscription.html" class="nav-link">구독</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link login-btn" onclick="showLoginModal()">로그인</a>
-                </li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 내 예측 섹션 -->
-    <section id="my-predictions" class="section my-predictions-section">
-        <div class="container">
-            <div class="page-header">
-                <h1>📈 내 예측 현황</h1>
-                <p>저장된 예측들을 확인하고 성과를 추적해보세요</p>
-            </div>
-
-            <div class="predictions-dashboard">
-                <div class="dashboard-header">
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%236366f1'/%3E%3Ctext x='30' y='38' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3EU%3C/text%3E%3C/svg%3E"
-                                alt="User Avatar">
+<body class="bg-tv-darker text-tv-text font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="home.html"
+                        class="flex items-center space-x-2 text-tv-text hover:text-tv-blue transition-colors">
+                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
                         </div>
-                        <div class="user-info">
-                            <h3>환영합니다, TradeMaster님! 👋</h3>
-                            <p>레벨 5 • 예측 전문가</p>
-                            <div class="user-badges">
-                                <span class="badge success">🏆 Top Trader</span>
-                                <span class="badge primary">🎯 정확도 킹</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="quick-actions">
-                        <button class="btn btn-primary" onclick="window.location.href='prediction.html'">
-                            <i class="fas fa-plus"></i>
-                            새 예측 만들기
-                        </button>
-                        <button class="btn btn-outline">
-                            <i class="fas fa-share"></i>
-                            프로필 공유
-                        </button>
-                    </div>
+                        <span class="text-xl font-bold">StockChart</span>
+                    </a>
                 </div>
 
-                <div class="predictions-stats-enhanced">
-                    <div class="stats-row">
-                        <div class="stat-card large">
-                            <div class="stat-header">
-                                <h4>총 예측 수</h4>
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="stat-main">
-                                <span class="stat-number" id="totalPredictions">247</span>
-                                <span class="stat-change positive">+12 이번 달</span>
-                            </div>
-                            <div class="stat-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 78%"></div>
-                                </div>
-                                <span class="progress-label">월 목표 78% 달성</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card large">
-                            <div class="stat-header">
-                                <h4>정확도</h4>
-                                <i class="fas fa-bullseye"></i>
-                            </div>
-                            <div class="stat-main">
-                                <span class="stat-number accuracy" id="accuracyRate">89.5%</span>
-                                <span class="stat-change positive">+2.3% 지난 주</span>
-                            </div>
-                            <div class="accuracy-chart">
-                                <canvas id="accuracyChart" width="100" height="50"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="stat-card large">
-                            <div class="stat-header">
-                                <h4>총 수익률</h4>
-                                <i class="fas fa-coins"></i>
-                            </div>
-                            <div class="stat-main">
-                                <span class="stat-number profit" id="totalReturn">+245.8%</span>
-                                <span class="stat-change positive">+15.2% 이번 달</span>
-                            </div>
-                            <div class="profit-breakdown">
-                                <div class="breakdown-item">
-                                    <span class="label">실현 수익</span>
-                                    <span class="value positive">+$12,450</span>
-                                </div>
-                                <div class="breakdown-item">
-                                    <span class="label">미실현 수익</span>
-                                    <span class="value positive">+$3,240</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="stat-card large">
-                            <div class="stat-header">
-                                <h4>랭킹</h4>
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div class="stat-main">
-                                <span class="stat-number ranking">#23</span>
-                                <span class="stat-change positive">↑5 순위 상승</span>
-                            </div>
-                            <div class="ranking-info">
-                                <span class="ranking-tier">🥇 플래티넘 티어</span>
-                                <button class="btn btn-sm btn-outline" onclick="window.location.href='ranking.html'">
-                                    전체 랭킹 보기
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="home.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                    <a href="charts.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
+                        보드</a>
+                    <a href="prediction.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                    <a href="my-predictions.html"
+                        class="px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">내
+                        예측</a>
+                    <a href="ranking.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                    <a href="events.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                    <a href="subscription.html"
+                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
+                    <button onclick="showLoginModal()"
+                        class="ml-4 bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
                 </div>
 
-                <div class="predictions-filters">
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" data-filter="all">
-                            전체 <span class="count">247</span>
-                        </button>
-                        <button class="filter-tab" data-filter="active">
-                            진행중 <span class="count">45</span>
-                        </button>
-                        <button class="filter-tab" data-filter="completed">
-                            완료 <span class="count">202</span>
-                        </button>
-                        <button class="filter-tab" data-filter="winning">
-                            수익 <span class="count success">156</span>
-                        </button>
-                    </div>
-                    <div class="filter-controls">
-                        <select class="filter-select modern-select">
-                            <option value="recent">최신순</option>
-                            <option value="profit">수익률순</option>
-                            <option value="accuracy">정확도순</option>
-                        </select>
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="cards">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="view-btn" data-view="table">
-                                <i class="fas fa-table"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="predictions-list enhanced" id="predictionsList">
-                    <!-- Sample prediction cards -->
-                    <div class="prediction-card">
-                        <div class="prediction-header">
-                            <div class="prediction-symbol">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23000'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='10' font-weight='bold'%3EAAPL%3C/text%3E%3C/svg%3E"
-                                    alt="AAPL">
-                                <div class="symbol-info">
-                                    <h4>Apple Inc.</h4>
-                                    <span class="symbol-code">AAPL</span>
-                                </div>
-                            </div>
-                            <div class="prediction-status">
-                                <span class="status-badge active">진행중</span>
-                                <span class="time-remaining">3일 남음</span>
-                            </div>
-                        </div>
-                        <div class="prediction-content">
-                            <div class="price-info">
-                                <div class="price-item">
-                                    <label>시작 가격</label>
-                                    <span class="price">$175.43</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>예측 가격</label>
-                                    <span class="price target">$185.00</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>현재 가격</label>
-                                    <span class="price current">$182.15</span>
-                                </div>
-                            </div>
-                            <div class="prediction-chart-mini">
-                                <canvas width="200" height="80"></canvas>
-                            </div>
-                        </div>
-                        <div class="prediction-footer">
-                            <div class="prediction-metrics">
-                                <div class="metric">
-                                    <label>현재 수익률</label>
-                                    <span class="value positive">+3.8%</span>
-                                </div>
-                                <div class="metric">
-                                    <label>신뢰도</label>
-                                    <span class="value">85%</span>
-                                </div>
-                            </div>
-                            <div class="prediction-actions">
-                                <button class="btn btn-sm btn-outline">상세보기</button>
-                                <button class="btn btn-sm btn-danger">종료하기</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="prediction-card completed">
-                        <div class="prediction-header">
-                            <div class="prediction-symbol">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f59e0b'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='8' font-weight='bold'%3EBTC%3C/text%3E%3C/svg%3E"
-                                    alt="BTC">
-                                <div class="symbol-info">
-                                    <h4>Bitcoin</h4>
-                                    <span class="symbol-code">BTC</span>
-                                </div>
-                            </div>
-                            <div class="prediction-status">
-                                <span class="status-badge completed">완료</span>
-                                <span class="completion-result success">성공 🎉</span>
-                            </div>
-                        </div>
-                        <div class="prediction-content">
-                            <div class="price-info">
-                                <div class="price-item">
-                                    <label>시작 가격</label>
-                                    <span class="price">$41,250</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>예측 가격</label>
-                                    <span class="price target">$45,000</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>최종 가격</label>
-                                    <span class="price final">$46,120</span>
-                                </div>
-                            </div>
-                            <div class="prediction-chart-mini">
-                                <canvas width="200" height="80"></canvas>
-                            </div>
-                        </div>
-                        <div class="prediction-footer">
-                            <div class="prediction-metrics">
-                                <div class="metric">
-                                    <label>실제 수익률</label>
-                                    <span class="value positive">+11.8%</span>
-                                </div>
-                                <div class="metric">
-                                    <label>정확도</label>
-                                    <span class="value">97.5%</span>
-                                </div>
-                            </div>
-                            <div class="prediction-actions">
-                                <button class="btn btn-sm btn-outline">분석 보기</button>
-                                <button class="btn btn-sm btn-primary">재예측</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="no-predictions" id="noPredictions" style="display: none;">
-                    <div class="empty-state">
-                        <div class="empty-icon">📊</div>
-                        <h3>아직 저장된 예측이 없습니다</h3>
-                        <p>첫 번째 예측을 만들어 여정을 시작해보세요!</p>
-                        <button class="btn btn-primary btn-lg" onclick="window.location.href='prediction.html'">
-                            <i class="fas fa-plus"></i>
-                            첫 예측 만들기
-                        </button>
-                    </div>
-                </div>
-
-                <div class="load-more-container">
-                    <button class="btn btn-outline btn-lg load-more-btn">
-                        <i class="fas fa-arrow-down"></i>
-                        더 많은 예측 보기
+                <!-- Mobile menu button -->
+                <div class="lg:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-tv-text hover:text-tv-blue p-2">
+                        <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- 푸터 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>StockChart</h4>
-                    <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="lg:hidden hidden bg-tv-card border-t border-tv-border">
+            <div class="px-4 py-2 space-y-1">
+                <a href="home.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                <a href="charts.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
+                    보드</a>
+                <a href="prediction.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                <a href="my-predictions.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">내
+                    예측</a>
+                <a href="ranking.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                <a href="events.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                <a href="subscription.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
+                <button onclick="showLoginModal()"
+                    class="block w-full text-left px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors mt-2">로그인</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- My Predictions Section -->
+    <section class="py-8 bg-tv-darker min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-4">
+                    <i class="fas fa-user-chart text-tv-blue text-3xl"></i>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-tv-text">내 예측</h1>
+                </div>
+                <p class="text-lg text-tv-text-secondary max-w-2xl">나의 예측 현황과 성과를 확인하고 분석해보세요</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-chart-line text-tv-blue text-2xl"></i>
+                        <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">+5.2%</span>
                     </div>
+                    <div class="text-2xl font-bold text-tv-text mb-1">42</div>
+                    <div class="text-sm text-tv-text-secondary">총 예측 수</div>
                 </div>
-                <div class="footer-section">
-                    <h4>서비스</h4>
-                    <ul>
-                        <li><a href="charts.html">차트 보드</a></li>
-                        <li><a href="prediction.html">예측하기</a></li>
-                        <li><a href="my-predictions.html">내 예측</a></li>
-                        <li><a href="ranking.html">랭킹</a></li>
-                        <li><a href="events.html">이벤트</a></li>
-                    </ul>
+
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-target text-tv-green text-2xl"></i>
+                        <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">↑</span>
+                    </div>
+                    <div class="text-2xl font-bold text-tv-text mb-1">87.3%</div>
+                    <div class="text-sm text-tv-text-secondary">정확도</div>
                 </div>
-                <div class="footer-section">
-                    <h4>고객지원</h4>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">문의하기</a></li>
-                        <li><a href="#">이용약관</a></li>
-                        <li><a href="#">개인정보처리방침</a></li>
-                    </ul>
+
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-trophy text-tv-blue text-2xl"></i>
+                        <span class="text-sm text-tv-text-secondary">#23</span>
+                    </div>
+                    <div class="text-2xl font-bold text-tv-text mb-1">8</div>
+                    <div class="text-sm text-tv-text-secondary">연속 성공</div>
                 </div>
-                <div class="footer-section">
-                    <h4>연락처</h4>
-                    <p>이메일: support@stockchart.kr</p>
-                    <p>전화: 02-1234-5678</p>
-                    <p>주소: 서울시 강남구 테헤란로 123</p>
+
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="fas fa-coins text-tv-green text-2xl"></i>
+                        <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">+24%</span>
+                    </div>
+                    <div class="text-2xl font-bold text-tv-text mb-1">+189%</div>
+                    <div class="text-sm text-tv-text-secondary">총 수익률</div>
                 </div>
             </div>
-            <div class="footer-bottom">
+
+            <!-- Filters and Controls -->
+            <div class="bg-tv-card border border-tv-border rounded-xl p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                    <div class="flex flex-wrap gap-4">
+                        <select
+                            class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                            <option>전체 상태</option>
+                            <option>진행중</option>
+                            <option>성공</option>
+                            <option>실패</option>
+                        </select>
+                        <select
+                            class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                            <option>전체 기간</option>
+                            <option>이번 주</option>
+                            <option>이번 달</option>
+                            <option>최근 3개월</option>
+                        </select>
+                    </div>
+                    <button
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-plus mr-2"></i>새 예측 추가
+                    </button>
+                </div>
+            </div>
+
+            <!-- Prediction Cards -->
+            <div class="space-y-6">
+                <!-- Active Prediction -->
+                <div
+                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-12 h-12 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-tv-blue"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-tv-text">Bitcoin (BTC)</h3>
+                                    <p class="text-sm text-tv-text-secondary">2024년 1월 15일 예측</p>
+                                </div>
+                            </div>
+                            <span
+                                class="bg-tv-blue bg-opacity-20 text-tv-blue px-3 py-1 rounded-full text-sm font-medium">진행중</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">예측 가격</div>
+                                <div class="text-xl font-bold text-tv-text">$125,000</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">현재 가격</div>
+                                <div class="text-xl font-bold text-tv-green">$112,380</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">목표일</div>
+                                <div class="text-xl font-bold text-tv-text">2024년 3월 15일</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-sm text-tv-text-secondary">신뢰도: <span
+                                        class="text-tv-text font-medium">85%</span></div>
+                                <div class="text-sm text-tv-text-secondary">남은 기간: <span
+                                        class="text-tv-text font-medium">32일</span></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button
+                                    class="bg-tv-light hover:bg-tv-border text-tv-text px-4 py-2 rounded-lg text-sm font-medium transition-colors">수정</button>
+                                <button
+                                    class="bg-tv-red hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Successful Prediction -->
+                <div class="bg-tv-card border border-tv-green border-opacity-30 rounded-xl overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-12 h-12 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microchip text-tv-green"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-tv-text">삼성전자 (005930)</h3>
+                                    <p class="text-sm text-tv-text-secondary">2024년 1월 5일 예측</p>
+                                </div>
+                            </div>
+                            <span
+                                class="bg-tv-green bg-opacity-20 text-tv-green px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                                <i class="fas fa-check mr-1"></i>성공
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">예측 가격</div>
+                                <div class="text-xl font-bold text-tv-text">₩75,000</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">실제 가격</div>
+                                <div class="text-xl font-bold text-tv-green">₩74,200</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">정확도</div>
+                                <div class="text-xl font-bold text-tv-green">98.9%</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">수익률</div>
+                                <div class="text-xl font-bold text-tv-green">+12.4%</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-tv-green bg-opacity-10 border border-tv-green border-opacity-30 rounded-lg p-3">
+                            <p class="text-sm text-tv-text"><strong>예측 근거:</strong> 반도체 시장 회복과 AI 수요 증가로 인한 긍정적 전망</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Failed Prediction -->
+                <div class="bg-tv-card border border-tv-red border-opacity-30 rounded-xl overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-12 h-12 bg-tv-red bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fab fa-ethereum text-tv-red"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-tv-text">Ethereum (ETH)</h3>
+                                    <p class="text-sm text-tv-text-secondary">2023년 12월 20일 예측</p>
+                                </div>
+                            </div>
+                            <span
+                                class="bg-tv-red bg-opacity-20 text-tv-red px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                                <i class="fas fa-times mr-1"></i>실패
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">예측 가격</div>
+                                <div class="text-xl font-bold text-tv-text">$5,000</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">실제 가격</div>
+                                <div class="text-xl font-bold text-tv-red">$4,320</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">정확도</div>
+                                <div class="text-xl font-bold text-tv-red">86.4%</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-tv-text-secondary mb-1">손실률</div>
+                                <div class="text-xl font-bold text-tv-red">-13.6%</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-tv-red bg-opacity-10 border border-tv-red border-opacity-30 rounded-lg p-3">
+                            <p class="text-sm text-tv-text"><strong>분석:</strong> 시장의 불확실성과 규제 우려로 인한 예상보다 큰 하락</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="text-center mt-8">
+                <button
+                    class="bg-tv-light hover:bg-tv-border text-tv-text px-8 py-3 rounded-lg font-semibold transition-colors">
+                    더 많은 예측 보기
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Standard Footer and Modals (same as other pages) -->
+    <footer class="bg-tv-darker border-t border-tv-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
+                    </div>
+                    <p class="text-tv-text-secondary mb-6 leading-relaxed">미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
+                    <ul class="space-y-3">
+                        <li><a href="charts.html" class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
+                                보드</a></li>
+                        <li><a href="prediction.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a></li>
+                        <li><a href="my-predictions.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">내 예측</a></li>
+                        <li><a href="ranking.html"
+                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
                 <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
             </div>
         </div>
     </footer>
 
-    <!-- 로그인 모달 -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideLoginModal()">&times;</span>
-            <h2>로그인</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="이메일" required>
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+</body>
+
+</html>
+</ul>
+<div class="hamburger">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+</div>
+</div>
+</nav>
+
+<!-- 내 예측 섹션 -->
+<section id="my-predictions" class="section my-predictions-section">
+    <div class="container">
+        <div class="page-header">
+            <h1>📈 내 예측 현황</h1>
+            <p>저장된 예측들을 확인하고 성과를 추적해보세요</p>
+        </div>
+
+        <div class="predictions-dashboard">
+            <div class="dashboard-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Ccircle cx='30' cy='30' r='30' fill='%236366f1'/%3E%3Ctext x='30' y='38' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3EU%3C/text%3E%3C/svg%3E"
+                            alt="User Avatar">
+                    </div>
+                    <div class="user-info">
+                        <h3>환영합니다, TradeMaster님! 👋</h3>
+                        <p>레벨 5 • 예측 전문가</p>
+                        <div class="user-badges">
+                            <span class="badge success">🏆 Top Trader</span>
+                            <span class="badge primary">🎯 정확도 킹</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="window.location.href='prediction.html'">
+                        <i class="fas fa-plus"></i>
+                        새 예측 만들기
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-share"></i>
+                        프로필 공유
+                    </button>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">로그인</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 로그인</p>
-                <button class="btn btn-google" onclick="loginWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 로그인
-                </button>
-                <button class="btn btn-apple" onclick="loginWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 로그인
+            </div>
+
+            <div class="predictions-stats-enhanced">
+                <div class="stats-row">
+                    <div class="stat-card large">
+                        <div class="stat-header">
+                            <h4>총 예측 수</h4>
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="stat-main">
+                            <span class="stat-number" id="totalPredictions">247</span>
+                            <span class="stat-change positive">+12 이번 달</span>
+                        </div>
+                        <div class="stat-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                            <span class="progress-label">월 목표 78% 달성</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card large">
+                        <div class="stat-header">
+                            <h4>정확도</h4>
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="stat-main">
+                            <span class="stat-number accuracy" id="accuracyRate">89.5%</span>
+                            <span class="stat-change positive">+2.3% 지난 주</span>
+                        </div>
+                        <div class="accuracy-chart">
+                            <canvas id="accuracyChart" width="100" height="50"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="stat-card large">
+                        <div class="stat-header">
+                            <h4>총 수익률</h4>
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-main">
+                            <span class="stat-number profit" id="totalReturn">+245.8%</span>
+                            <span class="stat-change positive">+15.2% 이번 달</span>
+                        </div>
+                        <div class="profit-breakdown">
+                            <div class="breakdown-item">
+                                <span class="label">실현 수익</span>
+                                <span class="value positive">+$12,450</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="label">미실현 수익</span>
+                                <span class="value positive">+$3,240</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card large">
+                        <div class="stat-header">
+                            <h4>랭킹</h4>
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-main">
+                            <span class="stat-number ranking">#23</span>
+                            <span class="stat-change positive">↑5 순위 상승</span>
+                        </div>
+                        <div class="ranking-info">
+                            <span class="ranking-tier">🥇 플래티넘 티어</span>
+                            <button class="btn btn-sm btn-outline" onclick="window.location.href='ranking.html'">
+                                전체 랭킹 보기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="predictions-filters">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        전체 <span class="count">247</span>
+                    </button>
+                    <button class="filter-tab" data-filter="active">
+                        진행중 <span class="count">45</span>
+                    </button>
+                    <button class="filter-tab" data-filter="completed">
+                        완료 <span class="count">202</span>
+                    </button>
+                    <button class="filter-tab" data-filter="winning">
+                        수익 <span class="count success">156</span>
+                    </button>
+                </div>
+                <div class="filter-controls">
+                    <select class="filter-select modern-select">
+                        <option value="recent">최신순</option>
+                        <option value="profit">수익률순</option>
+                        <option value="accuracy">정확도순</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="cards">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="table">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="predictions-list enhanced" id="predictionsList">
+                <!-- Sample prediction cards -->
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <div class="prediction-symbol">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23000'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='10' font-weight='bold'%3EAAPL%3C/text%3E%3C/svg%3E"
+                                alt="AAPL">
+                            <div class="symbol-info">
+                                <h4>Apple Inc.</h4>
+                                <span class="symbol-code">AAPL</span>
+                            </div>
+                        </div>
+                        <div class="prediction-status">
+                            <span class="status-badge active">진행중</span>
+                            <span class="time-remaining">3일 남음</span>
+                        </div>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="price-info">
+                            <div class="price-item">
+                                <label>시작 가격</label>
+                                <span class="price">$175.43</span>
+                            </div>
+                            <div class="price-item">
+                                <label>예측 가격</label>
+                                <span class="price target">$185.00</span>
+                            </div>
+                            <div class="price-item">
+                                <label>현재 가격</label>
+                                <span class="price current">$182.15</span>
+                            </div>
+                        </div>
+                        <div class="prediction-chart-mini">
+                            <canvas width="200" height="80"></canvas>
+                        </div>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="prediction-metrics">
+                            <div class="metric">
+                                <label>현재 수익률</label>
+                                <span class="value positive">+3.8%</span>
+                            </div>
+                            <div class="metric">
+                                <label>신뢰도</label>
+                                <span class="value">85%</span>
+                            </div>
+                        </div>
+                        <div class="prediction-actions">
+                            <button class="btn btn-sm btn-outline">상세보기</button>
+                            <button class="btn btn-sm btn-danger">종료하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prediction-card completed">
+                    <div class="prediction-header">
+                        <div class="prediction-symbol">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23f59e0b'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='8' font-weight='bold'%3EBTC%3C/text%3E%3C/svg%3E"
+                                alt="BTC">
+                            <div class="symbol-info">
+                                <h4>Bitcoin</h4>
+                                <span class="symbol-code">BTC</span>
+                            </div>
+                        </div>
+                        <div class="prediction-status">
+                            <span class="status-badge completed">완료</span>
+                            <span class="completion-result success">성공 🎉</span>
+                        </div>
+                    </div>
+                    <div class="prediction-content">
+                        <div class="price-info">
+                            <div class="price-item">
+                                <label>시작 가격</label>
+                                <span class="price">$41,250</span>
+                            </div>
+                            <div class="price-item">
+                                <label>예측 가격</label>
+                                <span class="price target">$45,000</span>
+                            </div>
+                            <div class="price-item">
+                                <label>최종 가격</label>
+                                <span class="price final">$46,120</span>
+                            </div>
+                        </div>
+                        <div class="prediction-chart-mini">
+                            <canvas width="200" height="80"></canvas>
+                        </div>
+                    </div>
+                    <div class="prediction-footer">
+                        <div class="prediction-metrics">
+                            <div class="metric">
+                                <label>실제 수익률</label>
+                                <span class="value positive">+11.8%</span>
+                            </div>
+                            <div class="metric">
+                                <label>정확도</label>
+                                <span class="value">97.5%</span>
+                            </div>
+                        </div>
+                        <div class="prediction-actions">
+                            <button class="btn btn-sm btn-outline">분석 보기</button>
+                            <button class="btn btn-sm btn-primary">재예측</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-predictions" id="noPredictions" style="display: none;">
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <h3>아직 저장된 예측이 없습니다</h3>
+                    <p>첫 번째 예측을 만들어 여정을 시작해보세요!</p>
+                    <button class="btn btn-primary btn-lg" onclick="window.location.href='prediction.html'">
+                        <i class="fas fa-plus"></i>
+                        첫 예측 만들기
+                    </button>
+                </div>
+            </div>
+
+            <div class="load-more-container">
+                <button class="btn btn-outline btn-lg load-more-btn">
+                    <i class="fas fa-arrow-down"></i>
+                    더 많은 예측 보기
                 </button>
             </div>
-            <p class="modal-footer">
-                계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
-            </p>
         </div>
     </div>
+</section>
 
-    <!-- 회원가입 모달 -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideSignupModal()">&times;</span>
-            <h2>회원가입</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <input type="text" id="signupUsername" placeholder="사용자명" required>
+<!-- 푸터 -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>StockChart</h4>
+                <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
                 </div>
-                <div class="form-group">
-                    <input type="email" id="signupEmail" placeholder="이메일" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPassword" placeholder="비밀번호" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" required>
-                        이용약관 및 개인정보처리방침에 동의합니다.
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">회원가입</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 가입</p>
-                <button class="btn btn-google" onclick="signupWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 가입
-                </button>
-                <button class="btn btn-apple" onclick="signupWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 가입
-                </button>
             </div>
-            <p class="modal-footer">
-                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
-            </p>
+            <div class="footer-section">
+                <h4>서비스</h4>
+                <ul>
+                    <li><a href="charts.html">차트 보드</a></li>
+                    <li><a href="prediction.html">예측하기</a></li>
+                    <li><a href="my-predictions.html">내 예측</a></li>
+                    <li><a href="ranking.html">랭킹</a></li>
+                    <li><a href="events.html">이벤트</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>고객지원</h4>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">문의하기</a></li>
+                    <li><a href="#">이용약관</a></li>
+                    <li><a href="#">개인정보처리방침</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>연락처</h4>
+                <p>이메일: support@stockchart.kr</p>
+                <p>전화: 02-1234-5678</p>
+                <p>주소: 서울시 강남구 테헤란로 123</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
         </div>
     </div>
+</footer>
 
-    <script src="js/app.js?v=1.5"></script>
+<!-- 로그인 모달 -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="hideLoginModal()">&times;</span>
+        <h2>로그인</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="이메일" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="비밀번호" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">로그인</button>
+        </form>
+        <div class="social-login">
+            <p>또는 소셜 계정으로 로그인</p>
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <i class="fab fa-google"></i> Google로 로그인
+            </button>
+            <button class="btn btn-apple" onclick="loginWithApple()">
+                <i class="fab fa-apple"></i> Apple로 로그인
+            </button>
+        </div>
+        <p class="modal-footer">
+            계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
+        </p>
+    </div>
+</div>
+
+<!-- 회원가입 모달 -->
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="hideSignupModal()">&times;</span>
+        <h2>회원가입</h2>
+        <form id="signupForm">
+            <div class="form-group">
+                <input type="text" id="signupUsername" placeholder="사용자명" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="signupEmail" placeholder="이메일" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPassword" placeholder="비밀번호" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="agreeTerms" required>
+                    이용약관 및 개인정보처리방침에 동의합니다.
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">회원가입</button>
+        </form>
+        <div class="social-login">
+            <p>또는 소셜 계정으로 가입</p>
+            <button class="btn btn-google" onclick="signupWithGoogle()">
+                <i class="fab fa-google"></i> Google로 가입
+            </button>
+            <button class="btn btn-apple" onclick="signupWithApple()">
+                <i class="fab fa-apple"></i> Apple로 가입
+            </button>
+        </div>
+        <p class="modal-footer">
+            이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
+        </p>
+    </div>
+</div>
+
+<script src="js/app.js?v=1.5"></script>
 </body>
 
 </html>

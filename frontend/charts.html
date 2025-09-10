@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -7,348 +7,664 @@
     <title>차트 보드 - StockChart</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <link rel="stylesheet" href="css/tradingview-modern.css">
-    <link rel="stylesheet" href="css/trustworthy-design.css">
-    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
-    <link rel="stylesheet" href="css/chart-controls.css">
-    <link rel="stylesheet" href="css/mobile-fixes.css">
-    <link rel="stylesheet" href="css/mobile-chart-fixes.css">
-    <link rel="stylesheet" href="css/dual-line-chart.css">
-    <link rel="stylesheet" href="css/view-toggle.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Lightweight Charts -->
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'tv-dark': '#131722',
+                        'tv-darker': '#0c0e15',
+                        'tv-light': '#2a2e39',
+                        'tv-blue': '#2962FF',
+                        'tv-green': '#26a69a',
+                        'tv-red': '#ef5350',
+                        'tv-yellow': '#f7cb4d',
+                        'tv-purple': '#7b1fa2',
+                        'tv-text': '#d1d4dc',
+                        'tv-text-secondary': '#787b86',
+                        'tv-text-tertiary': '#5d606b',
+                        'tv-border': '#2a2e39',
+                        'tv-card': '#1e222d',
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'ui-sans-serif', 'system-ui'],
+                        'noto': ['Noto Sans KR', 'ui-sans-serif', 'system-ui'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- JavaScript files -->
     <script src="js/tradingview-pro.js"></script>
     <script src="js/chart-legend.js"></script>
     <script src="js/chart-controls.js"></script>
     <script src="js/view-toggle.js"></script>
 </head>
 
-<body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="home.html"><i class="fas fa-chart-line"></i> StockChart</a>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="home.html" class="nav-link">홈</a>
-                </li>
-                <li class="nav-item">
-                    <a href="charts.html" class="nav-link active">차트 보드</a>
-                </li>
-                <li class="nav-item">
-                    <a href="prediction.html" class="nav-link">예측하기</a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-predictions.html" class="nav-link">내 예측</a>
-                </li>
-                <li class="nav-item">
-                    <a href="ranking.html" class="nav-link">랭킹</a>
-                </li>
-                <li class="nav-item">
-                    <a href="events.html" class="nav-link">이벤트</a>
-                </li>
-                <li class="nav-item">
-                    <a href="subscription.html" class="nav-link">구독</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link login-btn" onclick="showLoginModal()">로그인</a>
-                </li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+<body class="bg-tv-dark text-tv-text font-inter overflow-x-hidden">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="home.html"
+                        class="flex items-center space-x-2 text-tv-text hover:text-white transition-colors">
+                        <i class="fas fa-chart-line text-tv-blue text-xl"></i>
+                        <span class="text-xl font-bold">StockChart</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-1">
+                        <a href="home.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>홈</span>
+                        </a>
+                        <a href="charts.html"
+                            class="bg-tv-blue text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1">
+                            <i class="fas fa-chart-line"></i>
+                            <span>차트 보드</span>
+                        </a>
+                        <a href="prediction.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>예측</span>
+                        </a>
+                        <a href="my-predictions.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-user-chart"></i>
+                            <span>나의 예측</span>
+                        </a>
+                        <a href="ranking.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-trophy"></i>
+                            <span>랭킹</span>
+                        </a>
+                        <a href="events.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-calendar"></i>
+                            <span>이벤트</span>
+                        </a>
+                        <a href="subscription.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-crown"></i>
+                            <span>구독</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="hidden md:block">
+                    <button onclick="showLoginModal()"
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-all duration-200 transform hover:scale-105">
+                        <i class="fas fa-rocket"></i>
+                        <span>지금 시작</span>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="text-tv-text-secondary hover:text-white p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- 차트 보드 섹션 -->
-    <section id="charts" class="charts-section">
-        <div class="container">
-            <div class="page-header">
-                <h1>📊 실시간 차트 보드</h1>
-                <p>전 세계 사용자들의 예측과 실제 결과를 실시간으로 확인해보세요</p>
+    <!-- Charts Board Section -->
+    <section class="py-8 bg-tv-darker min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-3 mb-4">
+                    <i class="fas fa-chart-line text-tv-blue text-3xl"></i>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-tv-text">실시간 차트 보드</h1>
+                </div>
+                <p class="text-lg text-tv-text-secondary max-w-2xl">전 세계 사용자들의 예측과 실제 결과를 실시간으로 확인해보세요</p>
             </div>
 
-            <div class="charts-controls">
-                <div class="chart-filters">
-                    <div class="filter-group">
-                        <label for="marketFilter">시장 선택</label>
-                        <select id="marketFilter" class="filter-select modern-select">
-                            <option value="">🌍 전체 시장</option>
-                            <option value="crypto">₿ 암호화폐</option>
-                            <option value="kr_stock">🇰🇷 한국 주식</option>
-                            <option value="us_stock">🇺🇸 미국 주식</option>
-                            <option value="jp_stock">🇯🇵 일본 주식</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="statusFilter">상태 필터</label>
-                        <select id="statusFilter" class="filter-select modern-select">
-                            <option value="">📈 전체 상태</option>
-                            <option value="pending">⏳ 예측 중</option>
-                            <option value="completed">✅ 완료됨</option>
-                        </select>
-                    </div>
-                    <div class="filter-group search-group">
-                        <label for="searchInput">검색</label>
-                        <div class="search-container">
-                            <input type="text" id="searchInput" class="search-input modern-input"
-                                placeholder="종목명 또는 사용자명 검색...">
-                            <i class="fas fa-search search-icon"></i>
+            <!-- Chart Controls -->
+            <div class="bg-tv-card rounded-xl border border-tv-border p-6 mb-8">
+                <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-sm font-medium text-tv-text-secondary">마켓 선택</label>
+                            <select
+                                class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                <option>전체</option>
+                                <option>한국 주식</option>
+                                <option>미국 주식</option>
+                                <option>암호화폐</option>
+                                <option>일본 주식</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-sm font-medium text-tv-text-secondary">시간 프레임</label>
+                            <select
+                                class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                <option>1시간</option>
+                                <option>4시간</option>
+                                <option>1일</option>
+                                <option>1주</option>
+                                <option>1개월</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-sm font-medium text-tv-text-secondary">정렬 기준</label>
+                            <select
+                                class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                <option>최신순</option>
+                                <option>인기순</option>
+                                <option>정확도순</option>
+                                <option>수익률순</option>
+                            </select>
                         </div>
                     </div>
-                </div>
 
-                <div class="chart-view-options">
-                    <button class="view-btn active" data-view="grid">
-                        <i class="fas fa-th"></i>
-                        <span>그리드</span>
-                    </button>
-                    <button class="view-btn" data-view="list">
-                        <i class="fas fa-list"></i>
-                        <span>리스트</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="charts-stats">
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-content">
-                        <div class="stat-number">1,247</div>
-                        <div class="stat-label">활성 예측</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🎯</div>
-                    <div class="stat-content">
-                        <div class="stat-number">89.5%</div>
-                        <div class="stat-label">평균 정확도</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-content">
-                        <div class="stat-number">3,421</div>
-                        <div class="stat-label">참여 사용자</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">💰</div>
-                    <div class="stat-content">
-                        <div class="stat-number">+245%</div>
-                        <div class="stat-label">평균 수익률</div>
+                    <!-- View Toggle -->
+                    <div class="flex items-center space-x-2 bg-tv-light rounded-lg p-1">
+                        <button class="bg-tv-blue text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                            id="grid-view">
+                            <i class="fas fa-th-large mr-2"></i>그리드
+                        </button>
+                        <button
+                            class="text-tv-text-secondary hover:text-tv-text px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                            id="list-view">
+                            <i class="fas fa-list mr-2"></i>리스트
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Chart Controls for individual charts -->
-            <div class="chart-control-row">
-                <div class="chart-timeframes">
-                    <button class="btn btn-timeframe active" data-timeframe="1D">1D</button>
-                    <button class="btn btn-timeframe" data-timeframe="1W">1W</button>
-                    <button class="btn btn-timeframe" data-timeframe="1M">1M</button>
-                    <button class="btn btn-timeframe" data-timeframe="3M">3M</button>
-                    <button class="btn btn-timeframe" data-timeframe="1Y">1Y</button>
-                    <button class="btn btn-timeframe" data-timeframe="ALL">ALL</button>
-                </div>
-                <div class="feature-buttons">
-                    <button class="feature-button" data-feature="characteristic">
-                        <i class="fas fa-chart-line"></i>
-                        특성
-                    </button>
-                    <button class="feature-button" data-feature="equipment">
-                        <i class="fas fa-tools"></i>
-                        장비
-                    </button>
-                </div>
-            </div>
-
-            <div class="charts-grid modern-grid grid-view" id="chartsGrid">
-                <!-- 차트 카드들이 동적으로 추가됨 -->
-                <div class="chart-card sample">
-                    <div class="chart-header">
-                        <div class="chart-info">
-                            <h3>AAPL</h3>
-                            <span class="chart-status pending">예측 중</span>
-                        </div>
-                        <div class="chart-price">
-                            <span class="current-price">$175.43</span>
-                            <span class="price-change positive">+2.5%</span>
-                        </div>
-                    </div>
-                    <div class="chart-preview-area">
-                        <div class="mini-chart">
-                            <!-- 미니 차트가 여기에 렌더링됩니다 -->
-                            <canvas width="300" height="150"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-details">
-                        <div class="prediction-info">
-                            <div class="predictor">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%236366f1'/%3E%3Ctext x='20' y='26' text-anchor='middle' fill='white' font-size='14' font-weight='bold'%3EU%3C/text%3E%3C/svg%3E"
-                                    alt="User" class="predictor-avatar">
-                                <span class="predictor-name">TradeMaster</span>
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" id="charts-container">
+                <!-- Chart Card 1 -->
+                <div
+                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200 group">
+                    <!-- Chart Header -->
+                    <div class="p-4 border-b border-tv-border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-tv-blue"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-tv-text">Bitcoin (BTC)</h3>
+                                    <p class="text-sm text-tv-text-secondary">예측자: TradingPro</p>
+                                </div>
                             </div>
-                            <div class="prediction-target">
-                                <span class="target-price">$185.00</span>
-                                <span class="target-date">7일 후</span>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-tv-text">$112,380</div>
+                                <div class="flex items-center space-x-1 text-tv-green">
+                                    <i class="fas fa-caret-up"></i>
+                                    <span class="text-sm font-medium">+2.5%</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="chart-actions">
-                            <button class="btn btn-sm btn-primary">자세히 보기</button>
-                            <button class="btn btn-sm btn-outline">팔로우</button>
+                    </div>
+
+                    <!-- Chart Body -->
+                    <div class="relative h-64 bg-tv-dark">
+                        <div class="chart-placeholder w-full h-full" id="chart-1"></div>
+
+                        <!-- Chart Overlay -->
+                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
+                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
+                            <div class="text-sm font-semibold text-tv-green">$120,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Footer -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-eye text-tv-text-secondary text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">1.2K</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-thumbs-up text-tv-green text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">89%</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-tv-text-secondary">2시간 전</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button
+                                class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-up mr-1"></i>상승 동조
+                            </button>
+                            <button
+                                class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-down mr-1"></i>하락 동조
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="pagination modern-pagination">
-                <button class="btn btn-outline pagination-btn" id="prevPage">
-                    <i class="fas fa-chevron-left"></i>
-                    이전
-                </button>
-                <div class="page-numbers">
-                    <span class="page-number active">1</span>
-                    <span class="page-number">2</span>
-                    <span class="page-number">3</span>
-                    <span class="page-dots">...</span>
-                    <span class="page-number">10</span>
-                </div>
-                <button class="btn btn-outline pagination-btn" id="nextPage">
-                    다음
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
-    </section>
+                <!-- Chart Card 2 -->
+                <div
+                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200 group">
+                    <!-- Chart Header -->
+                    <div class="p-4 border-b border-tv-border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microchip text-tv-green"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-tv-text">삼성전자 (005930)</h3>
+                                    <p class="text-sm text-tv-text-secondary">예측자: KoreaTrader</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-tv-text">₩72,600</div>
+                                <div class="flex items-center space-x-1 text-tv-green">
+                                    <i class="fas fa-caret-up"></i>
+                                    <span class="text-sm font-medium">+1.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- 푸터 -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>StockChart</h4>
-                    <p>미래의 주식 가격을 예측하고 공유하는 플랫폼</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    <!-- Chart Body -->
+                    <div class="relative h-64 bg-tv-dark">
+                        <div class="chart-placeholder w-full h-full" id="chart-2"></div>
+
+                        <!-- Chart Overlay -->
+                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
+                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
+                            <div class="text-sm font-semibold text-tv-green">₩80,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Footer -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-eye text-tv-text-secondary text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">856</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-thumbs-up text-tv-green text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">76%</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-tv-text-secondary">4시간 전</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button
+                                class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-up mr-1"></i>상승 동조
+                            </button>
+                            <button
+                                class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-down mr-1"></i>하락 동조
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="footer-section">
-                    <h4>서비스</h4>
-                    <ul>
-                        <li><a href="charts.html">차트 보드</a></li>
-                        <li><a href="prediction.html">예측하기</a></li>
-                        <li><a href="my-predictions.html">내 예측</a></li>
-                        <li><a href="ranking.html">랭킹</a></li>
-                        <li><a href="events.html">이벤트</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>고객지원</h4>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">문의하기</a></li>
-                        <li><a href="#">이용약관</a></li>
-                        <li><a href="#">개인정보처리방침</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>연락처</h4>
-                    <p>이메일: support@stockchart.kr</p>
-                    <p>전화: 02-1234-5678</p>
-                    <p>주소: 서울시 강남구 테헤란로 123</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- 로그인 모달 -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideLoginModal()">&times;</span>
-            <h2>로그인</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <input type="email" id="loginEmail" placeholder="이메일" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="loginPassword" placeholder="비밀번호" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">로그인</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 로그인</p>
-                <button class="btn btn-google" onclick="loginWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 로그인
-                </button>
-                <button class="btn btn-apple" onclick="loginWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 로그인
-                </button>
-            </div>
-            <p class="modal-footer">
-                계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
-            </p>
-        </div>
-    </div>
+                <!-- Chart Card 3 -->
+                <div
+                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200 group">
+                    <!-- Chart Header -->
+                    <div class="p-4 border-b border-tv-border">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                    <i class="fab fa-ethereum text-blue-500"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-tv-text">Ethereum (ETH)</h3>
+                                    <p class="text-sm text-tv-text-secondary">예측자: CryptoExpert</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-tv-text">$4,320</div>
+                                <div class="flex items-center space-x-1 text-tv-red">
+                                    <i class="fas fa-caret-down"></i>
+                                    <span class="text-sm font-medium">-1.2%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- 회원가입 모달 -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="hideSignupModal()">&times;</span>
-            <h2>회원가입</h2>
-            <form id="signupForm">
-                <div class="form-group">
-                    <input type="text" id="signupUsername" placeholder="사용자명" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" id="signupEmail" placeholder="이메일" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPassword" placeholder="비밀번호" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" required>
-                        이용약관 및 개인정보처리방침에 동의합니다.
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary btn-full">회원가입</button>
-            </form>
-            <div class="social-login">
-                <p>또는 소셜 계정으로 가입</p>
-                <button class="btn btn-google" onclick="signupWithGoogle()">
-                    <i class="fab fa-google"></i> Google로 가입
-                </button>
-                <button class="btn btn-apple" onclick="signupWithApple()">
-                    <i class="fab fa-apple"></i> Apple로 가입
-                </button>
-            </div>
-            <p class="modal-footer">
-                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
-            </p>
-        </div>
-    </div>
+                    <!-- Chart Body -->
+                    <div class="relative h-64 bg-tv-dark">
+                        <div class="chart-placeholder w-full h-full" id="chart-3"></div>
 
-    <script src="js/notification.js?v=1.0"></script>
-    <script src="js/stock-chart-app.js?v=1.0"></script>
-    <script src="js/app.js?v=1.5"></script>
-    <script src="js/access-limit.js?v=1.0"></script>
+                        <!-- Chart Overlay -->
+                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
+                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
+                            <div class="text-sm font-semibold text-tv-red">$3,800</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Footer -->
+                    <div class="p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-eye text-tv-text-secondary text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">643</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-thumbs-down text-tv-red text-sm"></i>
+                                    <span class="text-sm text-tv-text-secondary">45%</span>
+                                </div>
+                            </div>
+                            <div class="text-sm text-tv-text-secondary">1시간 전</div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button
+                                class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-up mr-1"></i>상승 동조
+                            </button>
+                            <button
+                                class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-down mr-1"></i>하락 동조
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Section -->
+                <section class="py-8 bg-tv-card border-t border-tv-border">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
+                                <div class="text-3xl mb-3">📊</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-tv-text mb-2">1,247</div>
+                                <div class="text-sm text-tv-text-secondary">활성 예측</div>
+                            </div>
+                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
+                                <div class="text-3xl mb-3">🎯</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-tv-green mb-2">89.5%</div>
+                                <div class="text-sm text-tv-text-secondary">평균 정확도</div>
+                            </div>
+                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
+                                <div class="text-3xl mb-3">👥</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-tv-text mb-2">3,421</div>
+                                <div class="text-sm text-tv-text-secondary">참여 사용자</div>
+                            </div>
+                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
+                                <div class="text-3xl mb-3">💰</div>
+                                <div class="text-2xl lg:text-3xl font-bold text-tv-green mb-2">+245%</div>
+                                <div class="text-sm text-tv-text-secondary">평균 수익률</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="bg-tv-darker border-t border-tv-border">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <!-- Company Section -->
+                            <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                                <div class="flex items-center space-x-2 mb-4">
+                                    <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-white text-sm"></i>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
+                                </div>
+                                <p class="text-tv-text-secondary mb-6 leading-relaxed">
+                                    미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼
+                                </p>
+                                <div class="flex space-x-4">
+                                    <a href="#"
+                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
+                                        <i class="fab fa-facebook"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
+                                        <i class="fab fa-youtube"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Services Section -->
+                            <div>
+                                <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
+                                <ul class="space-y-3">
+                                    <li><a href="charts.html"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
+                                            보드</a></li>
+                                    <li><a href="prediction.html"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a>
+                                    </li>
+                                    <li><a href="my-predictions.html"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">내 예측</a>
+                                    </li>
+                                    <li><a href="ranking.html"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a>
+                                    </li>
+                                    <li><a href="events.html"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">이벤트</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Support Section -->
+                            <div>
+                                <h4 class="font-semibold text-tv-text mb-4">고객지원</h4>
+                                <ul class="space-y-3">
+                                    <li><a href="#"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">FAQ</a>
+                                    </li>
+                                    <li><a href="#"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">문의하기</a>
+                                    </li>
+                                    <li><a href="#"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">이용약관</a>
+                                    </li>
+                                    <li><a href="#"
+                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">개인정보처리방침</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Contact Section -->
+                            <div>
+                                <h4 class="font-semibold text-tv-text mb-4">연락처</h4>
+                                <div class="space-y-3 text-tv-text-secondary">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-envelope text-tv-blue"></i>
+                                        <span>support@stockchart.kr</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-phone text-tv-blue"></i>
+                                        <span>02-1234-5678</span>
+                                    </div>
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-map-marker-alt text-tv-blue mt-1"></i>
+                                        <span>서울시 강남구 테헤란로 123</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Bottom -->
+                        <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
+                            <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+                        </div>
+                    </div>
+                </footer>
+
+                <!-- Login Modal -->
+                <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
+                            <button onclick="hideLoginModal()"
+                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+
+                            <div class="text-center mb-8">
+                                <div
+                                    class="w-16 h-16 bg-tv-blue bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-user text-tv-blue text-2xl"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
+                                <p class="text-tv-text-secondary mt-2">계정에 로그인하여 서비스를 이용하세요</p>
+                            </div>
+
+                            <form id="loginForm" class="space-y-4">
+                                <div>
+                                    <input type="email" id="loginEmail" placeholder="이메일" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div>
+                                    <input type="password" id="loginPassword" placeholder="비밀번호" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <button type="submit"
+                                    class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                                    로그인
+                                </button>
+                            </form>
+
+                            <div class="mt-6">
+                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 로그인</div>
+                                <div class="space-y-3">
+                                    <button onclick="loginWithGoogle()"
+                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
+                                        <i class="fab fa-google text-red-500"></i>
+                                        <span>Google로 로그인</span>
+                                    </button>
+                                    <button onclick="loginWithApple()"
+                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
+                                        <i class="fab fa-apple"></i>
+                                        <span>Apple로 로그인</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-6 text-tv-text-secondary">
+                                계정이 없으신가요? <a href="#" onclick="showSignupModal()"
+                                    class="text-tv-blue hover:underline">회원가입</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signup Modal -->
+                <div id="signupModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
+                            <button onclick="hideSignupModal()"
+                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+
+                            <div class="text-center mb-8">
+                                <div
+                                    class="w-16 h-16 bg-tv-green bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-user-plus text-tv-green text-2xl"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-tv-text">회원가입</h2>
+                                <p class="text-tv-text-secondary mt-2">새 계정을 만들어 시작하세요</p>
+                            </div>
+
+                            <form id="signupForm" class="space-y-4">
+                                <div>
+                                    <input type="text" id="signupUsername" placeholder="사용자명" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div>
+                                    <input type="email" id="signupEmail" placeholder="이메일" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div>
+                                    <input type="password" id="signupPassword" placeholder="비밀번호" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div>
+                                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div>
+                                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)"
+                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <input type="checkbox" id="agreeTerms" required
+                                        class="mt-1 rounded border-tv-border bg-tv-light">
+                                    <label class="text-sm text-tv-text-secondary leading-relaxed">
+                                        이용약관 및 개인정보처리방침에 동의합니다.
+                                    </label>
+                                </div>
+                                <button type="submit"
+                                    class="w-full bg-tv-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                                    회원가입
+                                </button>
+                            </form>
+
+                            <div class="mt-6">
+                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 가입</div>
+                                <div class="space-y-3">
+                                    <button onclick="signupWithGoogle()"
+                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
+                                        <i class="fab fa-google text-red-500"></i>
+                                        <span>Google로 가입</span>
+                                    </button>
+                                    <button onclick="signupWithApple()"
+                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
+                                        <i class="fab fa-apple"></i>
+                                        <span>Apple로 가입</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-6 text-tv-text-secondary">
+                                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()"
+                                    class="text-tv-blue hover:underline">로그인</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="js/notification.js?v=1.0"></script>
+                <script src="js/stock-chart-app.js?v=1.0"></script>
+                <script src="js/app.js?v=1.5"></script>
+                <script src="js/access-limit.js?v=1.0"></script>
 </body>
 
 </html>

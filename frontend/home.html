@@ -7,19 +7,41 @@
     <title>홈 - StockChart</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <link rel="stylesheet" href="css/tradingview-modern.css">
-    <link rel="stylesheet" href="css/trustworthy-design.css">
-    <link rel="stylesheet" href="css/tradingview-pro-effects.css">
-    <link rel="stylesheet" href="css/chart-controls.css">
-    <link rel="stylesheet" href="css/stock-symbols.css">
-    <link rel="stylesheet" href="css/mobile-fixes.css">
-    <link rel="stylesheet" href="css/mobile-chart-fixes.css">
-    <link rel="stylesheet" href="css/mobile-content-fix.css">
-    <link rel="stylesheet" href="css/dual-line-chart.css">
-    <link rel="stylesheet" href="css/auth-notifications.css">
-    <link rel="stylesheet" href="css/chart-error.css">
-    <link rel="stylesheet" href="css/alignment-fixes.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tv-dark': '#131722',
+                        'tv-darker': '#0c0e15',
+                        'tv-light': '#2a2e39',
+                        'tv-blue': '#2962FF',
+                        'tv-green': '#26a69a',
+                        'tv-red': '#ef5350',
+                        'tv-text-primary': '#d1d4dc',
+                        'tv-text-secondary': '#787b86',
+                        'tv-text-tertiary': '#5d606b',
+                        'tv-bg-primary': '#131722',
+                        'tv-bg-secondary': '#1e222d',
+                        'tv-bg-tertiary': '#2a2e39',
+                        'tv-border': '#2a2e39',
+                        'tv-border-light': '#363a45'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                        'noto': ['Noto Sans KR', 'sans-serif']
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
     <script src="js/tradingview-theme.js"></script>
     <script src="js/tradingview-pro.js"></script>
@@ -29,162 +51,486 @@
     <script src="js/chart-reload.js"></script>
 </head>
 
-<body>
-    <!-- 네비게이션 바 -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="home.html">
-                    <i class="fas fa-chart-line"></i>
-                    <span class="logo-text">StockChart</span>
-                </a>
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="home.html" class="nav-link active">
-                        <i class="fas fa-home"></i>
-                        <span>홈</span>
+<body class="bg-tv-dark text-tv-text-primary font-inter overflow-x-hidden">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="home.html"
+                        class="flex items-center space-x-2 text-tv-text-primary hover:text-white transition-colors">
+                        <i class="fas fa-chart-line text-tv-blue text-xl"></i>
+                        <span class="text-xl font-bold">StockChart</span>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="charts.html" class="nav-link">
-                        <i class="fas fa-chart-line"></i>
-                        <span>차트 보드</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="prediction.html" class="nav-link">
-                        <i class="fas fa-lightbulb"></i>
-                        <span>예측</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="my-predictions.html" class="nav-link">
-                        <i class="fas fa-user-chart"></i>
-                        <span>나의 예측</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="ranking.html" class="nav-link">
-                        <i class="fas fa-trophy"></i>
-                        <span>랭킹</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="events.html" class="nav-link">
-                        <i class="fas fa-calendar"></i>
-                        <span>이벤트</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="subscription.html" class="nav-link">
-                        <i class="fas fa-crown"></i>
-                        <span>구독</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link start-now-btn" onclick="showLoginModal()">
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-1">
+                        <a href="home.html"
+                            class="bg-tv-blue text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1">
+                            <i class="fas fa-home"></i>
+                            <span>홈</span>
+                        </a>
+                        <a href="charts.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>차트 보드</span>
+                        </a>
+                        <a href="prediction.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>예측</span>
+                        </a>
+                        <a href="my-predictions.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-user-chart"></i>
+                            <span>나의 예측</span>
+                        </a>
+                        <a href="ranking.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-trophy"></i>
+                            <span>랭킹</span>
+                        </a>
+                        <a href="events.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-calendar"></i>
+                            <span>이벤트</span>
+                        </a>
+                        <a href="subscription.html"
+                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            <i class="fas fa-crown"></i>
+                            <span>구독</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="hidden md:block">
+                    <button onclick="showLoginModal()"
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-all duration-200 transform hover:scale-105">
                         <i class="fas fa-rocket"></i>
                         <span>지금 시작</span>
-                    </a>
-                </li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="text-tv-text-secondary hover:text-white p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- 메인 섹션 - TradingView-style Professional Design -->
-    <section id="home" class="hero">
-        <div class="hero-background">
-            <div class="hero-gradient"></div>
-            <div class="hero-particles"></div>
-        </div>
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="badge-icon"><i class="fas fa-shield-check"></i></span>
-                    <span>신뢰할 수 있는 AI 기반 예측 플랫폼</span>
-                    <div class="verified-badge">
-                        <i class="fas fa-check"></i> 검증됨
-                    </div>
-                </div>
-                <h1 class="hero-title">
-                    전세계 금융 전문가와 함께
-                    <span class="gradient-text">미래 시장을 예측하세요</span>
-                </h1>
-                <p class="hero-description">
-                    <i class="fas fa-chart-line trust-icon"></i>
-                    <span>암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
-                        다른 사용자들과 예측 결과를 공유할 수 있는 전문 금융 플랫폼입니다.</span>
-                </p>
-                <div class="trust-indicator">
-                    <i class="fas fa-lock"></i>
-                    <span>엔터프라이즈급 보안 | 실시간 데이터 | 전문가 신뢰 분석</span>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">10K+</div>
-                        <div class="stat-label">활성 사용자</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">95%</div>
-                        <div class="stat-label">예측 정확도</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">지원 종목</div>
-                    </div>
-                </div>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary btn-hero" onclick="window.location.href='prediction.html'">
-                        <span>무료로 시작하기</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <button class="btn btn-secondary btn-hero" onclick="window.location.href='charts.html'">
-                        <i class="fas fa-chart-line"></i>
-                        <span>라이브 차트 보기</span>
-                    </button>
-                </div>
-                <div class="hero-features">
-                    <div class="feature-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>안전한 거래</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-bolt"></i>
-                        <span>실시간 데이터</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-users"></i>
-                        <span>커뮤니티 인사이트</span>
-                    </div>
-                </div>
+    <!-- Hero Section -->
+    <section class="relative min-h-screen bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div
+                class="absolute top-0 right-0 w-96 h-96 bg-tv-blue opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2">
             </div>
-            <div class="hero-image">
-                <div class="chart-container-hero">
-                    <div class="chart-preview" id="heroChart"></div>
-                    <div class="chart-overlay">
-                        <div class="chart-stats">
-                            <div class="chart-stat positive">
-                                <span class="label">수익률</span>
-                                <span class="value">+12.5%</span>
+            <div
+                class="absolute bottom-0 left-0 w-96 h-96 bg-tv-purple opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2">
+            </div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Content -->
+                <div class="text-center lg:text-left animate-fade-in">
+                    <!-- Trust Badge -->
+                    <div
+                        class="inline-flex items-center bg-tv-light border border-tv-border rounded-full px-4 py-2 mb-6">
+                        <i class="fas fa-shield-check text-tv-green mr-2"></i>
+                        <span class="text-sm font-medium text-tv-text-secondary">신뢰할 수 있는 AI 기반 예측 플랫폼</span>
+                        <span
+                            class="ml-3 bg-tv-green text-white text-xs px-2 py-1 rounded-full font-semibold">검증됨</span>
+                    </div>
+
+                    <!-- Main Heading -->
+                    <h1 class="text-4xl lg:text-6xl font-bold leading-tight mb-6">
+                        전세계 금융 전문가와 함께<br>
+                        <span class="bg-gradient-to-r from-tv-blue to-tv-purple bg-clip-text text-transparent">미래 시장을
+                            예측하세요</span>
+                    </h1>
+
+                    <!-- Description -->
+                    <div class="flex items-start space-x-3 mb-6">
+                        <i class="fas fa-chart-line text-tv-green text-lg mt-1 flex-shrink-0"></i>
+                        <p class="text-lg text-tv-text-secondary leading-relaxed">
+                            암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
+                            다른 사용자들과 예측 결과를 공유할 수 있는 전문 금융 플랫폼입니다.
+                        </p>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div
+                        class="flex items-center justify-center lg:justify-start space-x-6 py-4 border-t border-b border-tv-border mb-8">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-lock text-tv-green"></i>
+                            <span class="text-sm text-tv-text-secondary">엔터프라이즈급 보안</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-bolt text-tv-yellow"></i>
+                            <span class="text-sm text-tv-text-secondary">실시간 데이터</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-users text-tv-blue"></i>
+                            <span class="text-sm text-tv-text-secondary">전문가 신뢰 분석</span>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="flex justify-center lg:justify-start space-x-8 mb-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-tv-blue mb-1">10K+</div>
+                            <div class="text-sm text-tv-text-secondary">활성 사용자</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-tv-green mb-1">95%</div>
+                            <div class="text-sm text-tv-text-secondary">예측 정확도</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-tv-yellow mb-1">500+</div>
+                            <div class="text-sm text-tv-text-secondary">지원 종목</div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+                        <button onclick="window.location.href='prediction.html'"
+                            class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
+                            <span>무료로 시작하기</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button onclick="window.location.href='charts.html'"
+                            class="bg-tv-light hover:bg-tv-border text-tv-text-primary border border-tv-border px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-chart-line"></i>
+                            <span>라이브 차트 보기</span>
+                        </button>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm text-tv-text-secondary">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-shield-alt text-tv-green"></i>
+                            <span>안전한 거래</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-bolt text-tv-yellow"></i>
+                            <span>실시간 데이터</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-users text-tv-blue"></i>
+                            <span>커뮤니티 인사이트</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Content - Chart -->
+                <div class="flex justify-center animate-slide-up">
+                    <div class="relative w-full max-w-2xl">
+                        <div class="bg-tv-darker border border-tv-border rounded-2xl overflow-hidden shadow-2xl">
+                            <!-- Chart Header -->
+                            <div class="bg-tv-light px-6 py-4 border-b border-tv-border">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-3 h-3 bg-tv-red rounded-full"></div>
+                                        <div class="w-3 h-3 bg-tv-yellow rounded-full"></div>
+                                        <div class="w-3 h-3 bg-tv-green rounded-full"></div>
+                                    </div>
+                                    <div class="text-sm text-tv-text-secondary">실시간 차트</div>
+                                </div>
                             </div>
-                            <div class="chart-stat">
-                                <span class="label">활성 예측</span>
-                                <span class="value">247</span>
+
+                            <!-- Chart Content -->
+                            <div class="relative h-96 bg-tv-darker">
+                                <div id="heroChart" class="w-full h-full"></div>
+
+                                <!-- Chart Overlay Stats -->
+                                <div
+                                    class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm border border-tv-border rounded-lg p-4">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs text-tv-text-secondary">수익률</span>
+                                            <span class="text-sm font-semibold text-tv-green">+12.5%</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs text-tv-text-secondary">활성 예측</span>
+                                            <span class="text-sm font-semibold text-tv-text-primary">247</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+    </section>
+
+    <!-- Main Chart Section -->
+    <section class="py-20 bg-tv-darker">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">실시간 시장 분석</h2>
+                <p class="text-lg text-tv-text-secondary max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="bg-tv-dark border border-tv-border rounded-2xl overflow-hidden shadow-xl">
+                <!-- Chart Header with Controls -->
+                <div class="bg-tv-light px-6 py-4 border-b border-tv-border">
+                    <div
+                        class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                        <!-- Timeframe Buttons -->
+                        <div class="flex flex-wrap gap-2">
+                            <button class="bg-tv-blue text-white px-4 py-2 rounded-lg text-sm font-medium">1D</button>
+                            <button
+                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1W</button>
+                            <button
+                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1M</button>
+                            <button
+                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">3M</button>
+                            <button
+                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1Y</button>
+                            <button
+                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">ALL</button>
+                        </div>
+
+                        <!-- Chart Tools -->
+                        <div class="flex gap-2">
+                            <button
+                                class="flex items-center space-x-2 bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-chart-line"></i>
+                                <span>지표</span>
+                            </button>
+                            <button
+                                class="flex items-center space-x-2 bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-shapes"></i>
+                                <span>도구</span>
+                            </button>
+                            <button
+                                class="flex items-center space-x-2 bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>새로고침</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Chart -->
+                <div class="relative h-96 lg:h-[500px] bg-tv-dark">
+                    <div id="featuredChart" class="w-full h-full"></div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- 메인 차트 섹션 -->
+    <!-- Market Data Section -->
+    <section class="py-20 bg-tv-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">실시간 시장 현황</h2>
+                <p class="text-lg text-tv-text-secondary max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
+            </div>
+
+            <!-- Market Tabs -->
+            <div class="flex justify-center mb-8">
+                <div class="bg-tv-light rounded-xl p-1 inline-flex">
+                    <button class="bg-tv-blue text-white px-6 py-3 rounded-lg font-medium transition-all"
+                        id="stock-tab">한국 주식</button>
+                    <button
+                        class="text-tv-text-secondary hover:text-tv-text-primary px-6 py-3 rounded-lg font-medium transition-all"
+                        id="crypto-tab">암호화폐</button>
+                    <button
+                        class="text-tv-text-secondary hover:text-tv-text-primary px-6 py-3 rounded-lg font-medium transition-all"
+                        id="global-tab">글로벌</button>
+                </div>
+            </div>
+
+            <!-- Stock Market Cards -->
+            <div id="stock-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Samsung Electronics -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-microchip text-tv-blue"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">삼성전자</h3>
+                                <p class="text-sm text-tv-text-secondary">005930</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">₩72,600</div>
+                            <div class="flex items-center space-x-1 text-tv-green">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+2.1%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+
+                <!-- SK Hynix -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-10 h-10 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-memory text-tv-green"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">SK하이닉스</h3>
+                                <p class="text-sm text-tv-text-secondary">000660</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">₩154,500</div>
+                            <div class="flex items-center space-x-1 text-tv-green">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+1.8%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Apple -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-10 h-10 bg-gray-400 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-apple text-gray-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">Apple Inc</h3>
+                                <p class="text-sm text-tv-text-secondary">AAPL</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">$207.50</div>
+                            <div class="flex items-center space-x-1 text-tv-green">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+0.8%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Tesla -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-tv-red bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-tesla text-tv-red"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">Tesla Inc</h3>
+                                <p class="text-sm text-tv-text-secondary">TSLA</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">$185.75</div>
+                            <div class="flex items-center space-x-1 text-tv-red">
+                                <i class="fas fa-caret-down"></i>
+                                <span class="text-sm font-medium">-1.2%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crypto Market Cards (Hidden by default) -->
+            <div id="crypto-content" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Bitcoin -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-10 h-10 bg-orange-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-bitcoin text-orange-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">Bitcoin</h3>
+                                <p class="text-sm text-tv-text-secondary">BTC</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">$112,380</div>
+                            <div class="flex items-center space-x-1 text-tv-green">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+2.5%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Ethereum -->
+                <div
+                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-ethereum text-blue-500"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-tv-text-primary">Ethereum</h3>
+                                <p class="text-sm text-tv-text-secondary">ETH</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-tv-text-primary">$4,320</div>
+                            <div class="flex items-center space-x-1 text-tv-red">
+                                <i class="fas fa-caret-down"></i>
+                                <span class="text-sm font-medium">-1.2%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Add more crypto cards here -->
+            </div>
+        </div>
+    </section>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section> <!-- 메인 차트 섹션 -->
     <section class="main-chart-section">
         <div class="container">
             <div class="section-header">
@@ -1110,9 +1456,171 @@
 
             return data;
         }
+
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const stockTab = document.getElementById('stock-tab');
+            const cryptoTab = document.getElementById('crypto-tab');
+            const globalTab = document.getElementById('global-tab');
+            const stockContent = document.getElementById('stock-content');
+            const cryptoContent = document.getElementById('crypto-content');
+
+            function switchTab(activeTab, activeContent, inactiveTabs, inactiveContents) {
+                // Update active tab
+                activeTab.classList.add('bg-tv-blue', 'text-white');
+                activeTab.classList.remove('text-tv-text-secondary');
+
+                // Update inactive tabs
+                inactiveTabs.forEach(tab => {
+                    tab.classList.remove('bg-tv-blue', 'text-white');
+                    tab.classList.add('text-tv-text-secondary');
+                });
+
+                // Show active content
+                activeContent.classList.remove('hidden');
+
+                // Hide inactive contents
+                inactiveContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+            }
+
+            stockTab.addEventListener('click', () => {
+                switchTab(stockTab, stockContent, [cryptoTab, globalTab], [cryptoContent]);
+            });
+
+            cryptoTab.addEventListener('click', () => {
+                switchTab(cryptoTab, cryptoContent, [stockTab, globalTab], [stockContent]);
+            });
+
+            // Initialize charts when page loads
+            initializeHeroChart();
+            initializeFeaturedChart();
+        });
+
+        // Initialize hero chart
+        function initializeHeroChart() {
+            const chartContainer = document.getElementById('heroChart');
+            if (!chartContainer) return;
+
+            const chart = LightweightCharts.createChart(chartContainer, {
+                width: chartContainer.clientWidth,
+                height: chartContainer.clientHeight,
+                layout: {
+                    background: { color: '#131722' },
+                    textColor: '#d1d4dc',
+                },
+                grid: {
+                    vertLines: { color: '#2a2e39' },
+                    horzLines: { color: '#2a2e39' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: '#2a2e39',
+                },
+                timeScale: {
+                    borderColor: '#2a2e39',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            const candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#26a69a',
+                downColor: '#ef5350',
+                borderDownColor: '#ef5350',
+                borderUpColor: '#26a69a',
+                wickDownColor: '#ef5350',
+                wickUpColor: '#26a69a',
+            });
+
+            // Generate sample data
+            const data = generateSampleCandleData();
+            candlestickSeries.setData(data);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                chart.applyOptions({
+                    width: chartContainer.clientWidth,
+                    height: chartContainer.clientHeight,
+                });
+            });
+        }
+
+        // Initialize featured chart
+        function initializeFeaturedChart() {
+            const chartContainer = document.getElementById('featuredChart');
+            if (!chartContainer) return;
+
+            const chart = LightweightCharts.createChart(chartContainer, {
+                width: chartContainer.clientWidth,
+                height: chartContainer.clientHeight,
+                layout: {
+                    background: { color: '#131722' },
+                    textColor: '#d1d4dc',
+                },
+                grid: {
+                    vertLines: { color: '#2a2e39' },
+                    horzLines: { color: '#2a2e39' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: '#2a2e39',
+                },
+                timeScale: {
+                    borderColor: '#2a2e39',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            const lineSeries = chart.addLineSeries({
+                color: '#2962FF',
+                lineWidth: 3,
+            });
+
+            // Generate sample line data
+            const data = generateSampleLineData();
+            lineSeries.setData(data);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                chart.applyOptions({
+                    width: chartContainer.clientWidth,
+                    height: chartContainer.clientHeight,
+                });
+            });
+        }
+
+        // Generate sample line data
+        function generateSampleLineData() {
+            const data = [];
+            let price = 100;
+            const now = Math.floor(Date.now() / 1000);
+
+            for (let i = 0; i < 200; i++) {
+                const time = now - (200 - i) * 3600; // hourly data
+                const change = (Math.random() - 0.5) * 0.03;
+                price = price * (1 + change);
+
+                data.push({
+                    time: time,
+                    value: price
+                });
+            }
+
+            return data;
+        }
+
+        // Login modal function (placeholder)
+        function showLoginModal() {
+            alert('로그인 모달이 여기에 표시됩니다.');
+        }
     </script>
-    <script src="js/mobile-content-fix.js"></script>
-    <script src="js/mobile-desktop-parity.js"></script>
 </body>
 
 </html>

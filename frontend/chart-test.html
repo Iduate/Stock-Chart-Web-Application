@@ -4,170 +4,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chart Test</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+    <title>Chart Test - StockChart</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-        #testChart {
-            width: 800px;
-            height: 400px;
-            border: 1px solid #ccc;
-            margin: 20px 0;
+    <!-- Tailwind CSS with TradingView Color Scheme -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tv': {
+                            'darker': '#0d1421',
+                            'dark': '#131722',
+                            'card': '#1e222d',
+                            'light': '#2a2e39',
+                            'border': '#363a45',
+                            'blue': '#2962ff',
+                            'green': '#26a69a',
+                            'red': '#ef5350',
+                            'text': '#d1d4dc',
+                            'text-secondary': '#868993'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'Consolas', 'monospace']
+                    }
+                }
+            }
         }
+    </script>
 
-        .log {
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px 0;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: monospace;
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 
-<body>
-    <h1>Chart Test</h1>
-    <div id="testChart"></div>
-    <div class="log" id="log"></div>
+<body class="bg-tv-darker text-tv-text font-sans">
+    <!-- Navigation Bar -->
+    <nav class="bg-tv-dark border-b border-tv-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="home.html"
+                        class="flex items-center space-x-2 text-tv-text hover:text-tv-blue transition-colors">
+                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold">StockChart</span>
+                    </a>
+                </div>
+
+                <!-- Test Mode Indicator -->
+                <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-2 bg-tv-card border border-tv-green px-3 py-1 rounded-full">
+                        <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse"></div>
+                        <span class="text-tv-green text-sm font-semibold">TEST MODE</span>
+                    </div>
+                    <a href="home.html"
+                        class="text-tv-text-secondary hover:text-tv-blue px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>홈으로
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center space-x-3 mb-4">
+                <i class="fas fa-flask text-tv-green text-2xl"></i>
+                <h1 class="text-3xl font-bold text-tv-text">Chart Test</h1>
+            </div>
+            <p class="text-tv-text-secondary">실시간 차트 기능을 테스트하고 검증합니다</p>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Chart Section -->
+            <div class="lg:col-span-3">
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-tv-text">테스트 차트</h2>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="runTest()"
+                                class="bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-play mr-2"></i>테스트 실행
+                            </button>
+                            <button onclick="clearChart()"
+                                class="bg-tv-red hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-trash mr-2"></i>초기화
+                            </button>
+                        </div>
+                    </div>
+                    <div id="testChart" class="w-full h-96 bg-tv-dark border border-tv-border rounded-lg"></div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="space-y-6">
+                <!-- Chart Settings -->
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-tv-text mb-4">차트 설정</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-tv-text-secondary mb-2">차트 타입</label>
+                            <select id="chartType"
+                                class="w-full bg-tv-dark border border-tv-border rounded-lg px-3 py-2 text-tv-text">
+                                <option value="candlestick">캔들스틱</option>
+                                <option value="line">라인</option>
+                                <option value="area">영역</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-tv-text-secondary mb-2">데이터 포인트</label>
+                            <input type="range" id="dataPoints" min="10" max="1000" value="100" class="w-full">
+                            <div class="text-center text-tv-text-secondary text-sm mt-1" id="dataPointsValue">100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Status -->
+                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-tv-text mb-4">테스트 상태</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-tv-text-secondary">차트 초기화</span>
+                            <div class="w-3 h-3 bg-tv-green rounded-full" id="status-init"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-tv-text-secondary">데이터 로드</span>
+                            <div class="w-3 h-3 bg-tv-border rounded-full" id="status-data"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-tv-text-secondary">렌더링</span>
+                            <div class="w-3 h-3 bg-tv-border rounded-full" id="status-render"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-tv-text-secondary">인터랙션</span>
+                            <div class="w-3 h-3 bg-tv-border rounded-full" id="status-interaction"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log Section -->
+        <div class="mt-8">
+            <div class="bg-tv-card border border-tv-border rounded-xl">
+                <div class="flex items-center justify-between p-6 border-b border-tv-border">
+                    <h2 class="text-xl font-semibold text-tv-text">테스트 로그</h2>
+                    <button onclick="clearLog()" class="text-tv-text-secondary hover:text-tv-red transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div id="log"
+                    class="p-6 max-h-80 overflow-y-auto font-mono text-sm bg-tv-darker rounded-b-xl text-tv-text-secondary">
+                    <div class="text-tv-green">시스템 준비 완료</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        let chart = null;
+        let series = null;
 
-        function log(message) {
+        // Update data points slider value
+        document.getElementById('dataPoints').addEventListener('input', function (e) {
+            document.getElementById('dataPointsValue').textContent = e.target.value;
+        });
+
+        function log(message, type = 'info') {
             console.log(message);
             const logDiv = document.getElementById('log');
-            logDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '<br>';
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': 'text-tv-text-secondary',
+                'success': 'text-tv-green',
+                'error': 'text-tv-red',
+                'warning': 'text-yellow-500'
+            };
+            logDiv.innerHTML += `<div class="${colors[type] || colors.info}">[${timestamp}] ${message}</div>`;
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        async function testChart() {
-            try {
-                log('Starting chart test...');
+        function clearLog() {
+            document.getElementById('log').innerHTML = '<div class="text-tv-green">시스템 준비 완료</div>';
+        }
 
-                const chartElement = document.getElementById('testChart');
+        function updateStatus(statusId, success) {
+            const element = document.getElementById(statusId);
+            element.className = `w-3 h-3 rounded-full ${success ? 'bg-tv-green' : 'bg-tv-red'}`;
+        }
 
-                // Create chart
-                const chart = LightweightCharts.createChart(chartElement, {
-                    width: 800,
-                    height: 400,
-                    layout: {
-                        backgroundColor: '#ffffff',
-                        textColor: '#333',
-                    },
-                    grid: {
-                        vertLines: { color: '#f0f0f0' },
-                        horzLines: { color: '#f0f0f0' },
-                    },
-                    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-                    rightPriceScale: { borderColor: '#cccccc' },
-                    timeScale: { borderColor: '#cccccc' },
+        function clearChart() {
+            if (chart) {
+                chart.remove();
+                chart = null;
+                series = null;
+                log('차트가 초기화되었습니다', 'info');
+
+                // Reset status
+                ['status-init', 'status-data', 'status-render', 'status-interaction'].forEach(id => {
+                    document.getElementById(id).className = 'w-3 h-3 bg-tv-border rounded-full';
                 });
-
-                log('Chart created successfully');
-
-                // Test API endpoints
-                const apiSources = [
-                    { name: 'Bitcoin Historical', url: `${API_BASE_URL}/market-data/historical/bitcoin/?market=crypto` },
-                    { name: 'CoinGecko Historical', url: `${API_BASE_URL}/market-data/coingecko/bitcoin/` },
-                    { name: 'Bitcoin Crypto API', url: `${API_BASE_URL}/market-data/crypto/bitcoin/` }
-                ];
-
-                let data = null;
-                let usedSource = null;
-
-                for (const source of apiSources) {
-                    try {
-                        log(`Testing ${source.name}...`);
-                        const response = await fetch(source.url);
-                        log(`${source.name} response status: ${response.status}`);
-
-                        if (response.ok) {
-                            const apiData = await response.json();
-                            log(`${source.name} response data: ${JSON.stringify(apiData).substring(0, 200)}...`);
-
-                            if (apiData && (Array.isArray(apiData) || apiData.data)) {
-                                data = Array.isArray(apiData) ? apiData : apiData.data;
-                                usedSource = source.name;
-                                log(`Successfully loaded data from ${source.name}, data points: ${data.length}`);
-                                break;
-                            }
-                        } else {
-                            const errorText = await response.text();
-                            log(`${source.name} error: ${errorText}`);
-                        }
-                    } catch (error) {
-                        log(`${source.name} failed: ${error.message}`);
-                    }
-                }
-
-                if (!data) {
-                    log('ERROR: No data loaded from any API');
-                    return;
-                }
-
-                // Format data for chart
-                log('Formatting data for chart...');
-                const formattedData = data.map((item, index) => {
-                    const time = item.date || item.time || item.datetime || item.timestamp;
-                    const value = parseFloat(
-                        item.close || item.price || item.value || item.c ||
-                        item.Close || item.Price || item.Value || item.adjusted_close
-                    );
-
-                    let processedTime = time;
-                    if (typeof time === 'string') {
-                        const parsed = new Date(time);
-                        if (!isNaN(parsed.getTime())) {
-                            processedTime = Math.floor(parsed.getTime() / 1000);
-                        }
-                    } else if (typeof time === 'number' && time > 1000000000000) {
-                        processedTime = Math.floor(time / 1000);
-                    }
-
-                    if (index < 3) {
-                        log(`Data point ${index}: time=${processedTime}, value=${value}`);
-                    }
-
-                    return { time: processedTime, value };
-                }).filter((item) => {
-                    const isValid = item.time && !isNaN(item.value) && item.value > 0;
-                    return isValid;
-                });
-
-                log(`Formatted ${formattedData.length} data points`);
-
-                if (formattedData.length === 0) {
-                    log('ERROR: No valid data points after formatting');
-                    return;
-                }
-
-                // Add to chart
-                log('Adding line series to chart...');
-                const lineSeries = chart.addLineSeries({
-                    color: '#2962FF',
-                    lineWidth: 2,
-                });
-
-                lineSeries.setData(formattedData);
-                chart.timeScale().fitContent();
-
-                log(`Chart loaded successfully with ${formattedData.length} data points from ${usedSource}`);
-
-            } catch (error) {
-                log(`ERROR: ${error.message}`);
-                log(`Stack: ${error.stack}`);
             }
         }
 
-        // Start test when page loads
-        window.addEventListener('load', testChart);
+        function generateTestData() {
+            const dataPoints = parseInt(document.getElementById('dataPoints').value);
+            const data = [];
+            let basePrice = 100;
+            const startTime = new Date().getTime() / 1000 - (dataPoints * 86400);
+
+            for (let i = 0; i < dataPoints; i++) {
+                const time = startTime + (i * 86400);
+                const change = (Math.random() - 0.5) * 5;
+                basePrice = Math.max(50, basePrice + change);
+
+                data.push({
+                    time: time,
+                    open: basePrice,
+                    high: basePrice + Math.random() * 3,
+                    low: basePrice - Math.random() * 3,
+                    close: basePrice + change,
+                    value: basePrice + change
+                });
+            }
+
+            return data;
+        }
+
+        async function runTest() {
+            try {
+                log('테스트 시작...', 'info');
+
+                // Initialize Chart
+                log('차트 초기화 중...', 'info');
+                const chartContainer = document.getElementById('testChart');
+                chartContainer.innerHTML = '';
+
+                chart = LightweightCharts.createChart(chartContainer, {
+                    width: chartContainer.clientWidth,
+                    height: 384,
+                    layout: {
+                        background: { color: '#131722' },
+                        textColor: '#d1d4dc',
+                    },
+                    grid: {
+                        vertLines: { color: '#363a45' },
+                        horzLines: { color: '#363a45' },
+                    },
+                    crosshair: {
+                        mode: LightweightCharts.CrosshairMode.Normal,
+                    },
+                    rightPriceScale: {
+                        borderColor: '#363a45',
+                    },
+                    timeScale: {
+                        borderColor: '#363a45',
+                    },
+                });
+
+                updateStatus('status-init', true);
+                log('차트 초기화 완료', 'success');
+
+                // Generate test data
+                log('테스트 데이터 생성 중...', 'info');
+                const data = generateTestData();
+                updateStatus('status-data', true);
+                log(`${data.length}개의 데이터 포인트 생성 완료`, 'success');
+
+                // Create series based on chart type
+                const chartType = document.getElementById('chartType').value;
+                log(`${chartType} 차트 생성 중...`, 'info');
+
+                switch (chartType) {
+                    case 'candlestick':
+                        series = chart.addCandlestickSeries({
+                            upColor: '#26a69a',
+                            downColor: '#ef5350',
+                            borderUpColor: '#26a69a',
+                            borderDownColor: '#ef5350',
+                            wickUpColor: '#26a69a',
+                            wickDownColor: '#ef5350',
+                        });
+                        series.setData(data);
+                        break;
+                    case 'line':
+                        series = chart.addLineSeries({
+                            color: '#2962ff',
+                            lineWidth: 2,
+                        });
+                        series.setData(data.map(d => ({ time: d.time, value: d.close })));
+                        break;
+                    case 'area':
+                        series = chart.addAreaSeries({
+                            lineColor: '#2962ff',
+                            topColor: '#2962ff',
+                            bottomColor: 'rgba(41, 98, 255, 0.1)',
+                        });
+                        series.setData(data.map(d => ({ time: d.time, value: d.close })));
+                        break;
+                }
+
+                updateStatus('status-render', true);
+                log('차트 렌더링 완료', 'success');
+
+                // Test interactions
+                chart.subscribeCrosshairMove((param) => {
+                    if (!updateStatus['interaction-tested']) {
+                        updateStatus('status-interaction', true);
+                        log('사용자 인터랙션 테스트 완료', 'success');
+                        updateStatus['interaction-tested'] = true;
+                    }
+                });
+
+                chart.timeScale().fitContent();
+                log('모든 테스트 완료!', 'success');
+
+            } catch (error) {
+                log(`테스트 실패: ${error.message}`, 'error');
+                console.error('Chart test failed:', error);
+            }
+        }
+
+        // Auto-resize chart
+        window.addEventListener('resize', () => {
+            if (chart) {
+                const chartContainer = document.getElementById('testChart');
+                chart.applyOptions({ width: chartContainer.clientWidth });
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            log('Chart Test 시스템이 준비되었습니다', 'success');
+        });
     </script>
 </body>
 
 </html>
+log('Starting chart test...');
+
+const chartElement = document.getElementById('testChart');
+
+// Create chart
+const chart = LightweightCharts.createChart(chartElement, {
+width: 800,
+height: 400,
+layout: {
+backgroundColor: '#ffffff',
+textColor: '#333',
+},
+grid: {
+vertLines: { color: '#f0f0f0' },
+horzLines: { color: '#f0f0f0' },
+},
+crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+rightPriceScale: { borderColor: '#cccccc' },
+timeScale: { borderColor: '#cccccc' },
+});
+
+log('Chart created successfully');
+
+// Test API endpoints
+const apiSources = [
+{ name: 'Bitcoin Historical', url: `${API_BASE_URL}/market-data/historical/bitcoin/?market=crypto` },
+{ name: 'CoinGecko Historical', url: `${API_BASE_URL}/market-data/coingecko/bitcoin/` },
+{ name: 'Bitcoin Crypto API', url: `${API_BASE_URL}/market-data/crypto/bitcoin/` }
+];
+
+let data = null;
+let usedSource = null;
+
+for (const source of apiSources) {
+try {
+log(`Testing ${source.name}...`);
+const response = await fetch(source.url);
+log(`${source.name} response status: ${response.status}`);
+
+if (response.ok) {
+const apiData = await response.json();
+log(`${source.name} response data: ${JSON.stringify(apiData).substring(0, 200)}...`);
+
+if (apiData && (Array.isArray(apiData) || apiData.data)) {
+data = Array.isArray(apiData) ? apiData : apiData.data;
+usedSource = source.name;
+log(`Successfully loaded data from ${source.name}, data points: ${data.length}`);
+break;
+}
+} else {
+const errorText = await response.text();
+log(`${source.name} error: ${errorText}`);
+}
+} catch (error) {
+log(`${source.name} failed: ${error.message}`);
+}
+}
+
+if (!data) {
+log('ERROR: No data loaded from any API');
+return;
+}
+
+// Format data for chart
+log('Formatting data for chart...');
+const formattedData = data.map((item, index) => {
+const time = item.date || item.time || item.datetime || item.timestamp;
+const value = parseFloat(
+item.close || item.price || item.value || item.c ||
+item.Close || item.Price || item.Value || item.adjusted_close
+);
+
+let processedTime = time;
+if (typeof time === 'string') {
+const parsed = new Date(time);
+if (!isNaN(parsed.getTime())) {
+processedTime = Math.floor(parsed.getTime() / 1000);
+}
+} else if (typeof time === 'number' && time > 1000000000000) {
+processedTime = Math.floor(time / 1000);
+}
+
+if (index < 3) { log(`Data point ${index}: time=${processedTime}, value=${value}`); } return { time: processedTime,
+    value }; }).filter((item)=> {
+    const isValid = item.time && !isNaN(item.value) && item.value > 0;
+    return isValid;
+    });
+
+    log(`Formatted ${formattedData.length} data points`);
+
+    if (formattedData.length === 0) {
+    log('ERROR: No valid data points after formatting');
+    return;
+    }
+
+    // Add to chart
+    log('Adding line series to chart...');
+    const lineSeries = chart.addLineSeries({
+    color: '#2962FF',
+    lineWidth: 2,
+    });
+
+    lineSeries.setData(formattedData);
+    chart.timeScale().fitContent();
+
+    log(`Chart loaded successfully with ${formattedData.length} data points from ${usedSource}`);
+
+    } catch (error) {
+    log(`ERROR: ${error.message}`);
+    log(`Stack: ${error.stack}`);
+    }
+    }
+
+    // Start test when page loads
+    window.addEventListener('load', testChart);
+    </script>
+    </body>
+
+    </html>
