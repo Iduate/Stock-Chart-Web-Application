@@ -1,5 +1,5 @@
 /* Mobile Content Display Fix */
-/* This file fixes issues where content sections don't show on mobile */
+/* This file ensures mobile version maintains the same design as desktop with responsive adjustments */
 
 @media (max-width: 768px) {
 
@@ -7,49 +7,339 @@
     html {
         overflow-x: hidden;
         overflow-y: auto;
-        min-height: 100vh;
     }
 
     body {
         overflow-x: hidden;
         overflow-y: auto;
-        min-height: 100vh;
         position: relative;
     }
 
-    /* Fix hero section height on mobile to not take full viewport */
+    /* Hero section should maintain desktop design but with mobile proportions */
     .hero {
-        min-height: 70vh !important;
-        /* Reduce from 100vh to 70vh */
-        max-height: 80vh;
-        padding: 100px 0 60px !important;
+        min-height: 100vh;
+        padding: 80px 0 60px;
+        position: relative;
+        background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Maintain hero container layout but stack vertically on mobile */
+    .hero-container {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+        align-items: center !important;
+        text-align: center !important;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Hero content should maintain desktop styling */
+    .hero-content {
+        order: 1;
+        max-width: 100%;
+    }
+
+    .hero-badge {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .verified-badge {
+        background: var(--tv-green, #26a69a) !important;
+        color: white !important;
+        padding: 4px 8px !important;
+        border-radius: 12px !important;
+        font-size: 0.7rem !important;
+        margin-left: 8px !important;
+    }
+
+    .hero-title {
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+        margin-bottom: 20px !important;
+        text-align: center !important;
+    }
+
+    .gradient-text {
+        background: linear-gradient(45deg, #60a5fa, #34d399) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+
+    .hero-description {
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 24px !important;
+        opacity: 0.9 !important;
+        text-align: center !important;
+    }
+
+    .trust-indicator {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        font-size: 0.85rem !important;
+        opacity: 0.8 !important;
+        margin-bottom: 32px !important;
+    }
+
+    /* Hero stats should maintain grid layout */
+    .hero-stats {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 24px !important;
+        margin-bottom: 32px !important;
+    }
+
+    .stat-item {
+        text-align: center !important;
+    }
+
+    .stat-number {
+        font-size: 1.75rem !important;
+        font-weight: 800 !important;
+        color: var(--tv-bright-blue, #2962FF) !important;
+        margin-bottom: 4px !important;
+    }
+
+    .stat-label {
+        font-size: 0.85rem !important;
+        opacity: 0.8 !important;
+    }
+
+    /* Hero buttons should maintain desktop styling */
+    .hero-buttons {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: center !important;
+        margin-bottom: 32px !important;
+    }
+
+    .btn-hero {
+        width: 100% !important;
+        max-width: 280px !important;
+        padding: 16px 32px !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-primary {
+        background: var(--tv-bright-blue, #2962FF) !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+
+    /* Hero features should maintain desktop layout */
+    .hero-features {
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 24px !important;
+    }
+
+    .feature-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 0.85rem !important;
+        opacity: 0.9 !important;
+    }
+
+    /* Hero image/chart should maintain desktop positioning */
+    .hero-image {
+        order: 2;
+        width: 100%;
+        max-width: 100%;
         position: relative;
     }
 
-    /* Ensure content sections after hero are visible */
-    .main-chart-section,
-    .features-section,
-    .market-data,
-    .cta-section {
+    .chart-container-hero {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 300px !important;
+        position: relative !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    #heroChart,
+    .chart-preview {
+        width: 100% !important;
+        height: 100% !important;
+        position: relative !important;
+    }
+
+    .chart-overlay {
+        position: absolute !important;
+        top: 16px !important;
+        right: 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .chart-stats {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    .chart-stat {
+        background: rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(10px) !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        font-size: 0.75rem !important;
+    }
+
+    .chart-stat.positive {
+        color: var(--tv-green, #26a69a) !important;
+    }
+
+    /* Main chart section should maintain desktop design */
+    .main-chart-section {
         display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
-        position: relative !important;
-        z-index: 1 !important;
-        clear: both;
-        padding: 40px 0 !important;
+        background: var(--tv-bg-secondary, #1e222d) !important;
+        padding: 60px 0 !important;
     }
 
-    /* Fix potential z-index issues */
-    .hero-background,
-    .hero-gradient,
-    .hero-particles {
-        z-index: -1 !important;
+    .section-header {
+        text-align: center !important;
+        margin-bottom: 40px !important;
+        color: var(--tv-text-primary, white) !important;
     }
 
-    .hero-container {
-        position: relative;
-        z-index: 2;
+    .section-header h2 {
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 12px !important;
+        color: var(--tv-text-primary, white) !important;
+    }
+
+    .section-header p {
+        font-size: 1rem !important;
+        opacity: 0.8 !important;
+        color: var(--tv-text-secondary, #999) !important;
+    }
+
+    .featured-chart-container {
+        width: 100% !important;
+        height: 400px !important;
+        background: var(--tv-bg-tertiary, #2a2e39) !important;
+        border-radius: 16px !important;
+        margin-bottom: 24px !important;
+        overflow: hidden !important;
+    }
+
+    /* Chart controls should maintain desktop layout but stack on mobile */
+    .chart-control-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: center !important;
+        margin-bottom: 24px !important;
+    }
+
+    .chart-timeframes {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center !important;
+    }
+
+    .btn-timeframe {
+        padding: 8px 16px !important;
+        background: var(--tv-bg-tertiary, #2a2e39) !important;
+        color: var(--tv-text-primary, white) !important;
+        border: 1px solid var(--tv-border-primary, #363a45) !important;
+        border-radius: 8px !important;
+        font-size: 0.85rem !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-timeframe.active {
+        background: var(--tv-bright-blue, #2962FF) !important;
+        border-color: var(--tv-bright-blue, #2962FF) !important;
+    }
+
+    .feature-buttons {
+        display: flex !important;
+        gap: 12px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    .feature-button {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 16px !important;
+        background: var(--tv-bg-tertiary, #2a2e39) !important;
+        color: var(--tv-text-primary, white) !important;
+        border: 1px solid var(--tv-border-primary, #363a45) !important;
+        border-radius: 8px !important;
+        font-size: 0.85rem !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .chart-indicators {
+        display: flex !important;
+        gap: 12px !important;
+        justify-content: center !important;
+    }
+
+    .btn-indicator {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 16px !important;
+        background: var(--tv-bg-tertiary, #2a2e39) !important;
+        color: var(--tv-text-primary, white) !important;
+        border: 1px solid var(--tv-border-primary, #363a45) !important;
+        border-radius: 8px !important;
+        font-size: 0.85rem !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
     }
 
     /* Ensure sections are properly spaced on mobile */
