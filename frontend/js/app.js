@@ -332,7 +332,7 @@ function initializeCharts() {
             const loadDelay = isMobile ? 300 : 0;
             setTimeout(() => {
                 if (typeof window.heroChart.addLineSeries === 'function') {
-                    loadStockChart('AAPL', true, true); // professional styling + dual-line predictions
+                    loadStockChart('BTC', true, true); // Use BTC instead of bitcoin for better API compatibility
 
                     // Remove loading overlay after data is loaded
                     setTimeout(() => {
@@ -348,7 +348,7 @@ function initializeCharts() {
                 } else {
                     console.error('Chart created but addLineSeries method is missing');
                     setTimeout(() => {
-                        loadStockChart('AAPL', true, true);
+                        loadStockChart('BTC', true, true);
                         if (loadingOverlay.parentNode) {
                             loadingOverlay.remove();
                         }
@@ -765,16 +765,20 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
         window.heroChart.removeSeries(window.predictionSeries);
     }
 
+    const cryptoSymbols = ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK', 'UNI', 'ATOM',
+        'btc', 'eth', 'ada', 'bnb', 'dot', 'matic', 'sol', 'ltc', 'xrp', 'doge', 'avax', 'link', 'uni', 'atom'];
+
+    const isCrypto = cryptoSymbols.includes(symbol);
+    const marketParam = isCrypto ? '?market=crypto' : '';
+
     const apiSources = [
         { name: 'CoinGecko', endpoint: `coingecko/${symbol}/` },
-        { name: 'Primary Historical', endpoint: `historical/${symbol}/` },
+        { name: 'Primary Historical', endpoint: `historical/${symbol}/${marketParam}` },
         { name: 'Crypto API', endpoint: `crypto/${symbol}/` },
         { name: 'Tiingo', endpoint: `tiingo/${symbol}/` },
         { name: 'Marketstack', endpoint: `marketstack/${symbol}/` },
         { name: 'Enhanced', endpoint: `enhanced/${symbol}/` }
-    ];
-
-    let data = null;
+    ]; let data = null;
     let usedSource = null;
 
     for (const source of apiSources) {

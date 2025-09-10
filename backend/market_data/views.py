@@ -141,16 +141,18 @@ def get_historical_data(request, symbol):
         if data:
             return Response({'data': data}, status=status.HTTP_200_OK)
         else:
-            # Generate fallback sample data when APIs fail
-            logger.info(f"APIs failed for {symbol}, generating sample data")
-            sample_data = generate_sample_historical_data(symbol)
-            return Response({'data': sample_data, 'source': 'sample'}, status=status.HTTP_200_OK)
+            logger.error(f"No data available for {symbol} from any API")
+            return Response(
+                {'error': f'No data available for {symbol}'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
             
     except Exception as e:
         logger.error(f"과거 데이터 조회 오류: {e}")
-        # Even on error, provide sample data so charts don't break
-        sample_data = generate_sample_historical_data(symbol)
-        return Response({'data': sample_data, 'source': 'sample'}, status=status.HTTP_200_OK)
+        return Response(
+            {'error': '데이터 조회 중 오류가 발생했습니다'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @api_view(['GET'])

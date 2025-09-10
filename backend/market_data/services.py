@@ -204,6 +204,46 @@ class MarketDataService:
             return cached_data
         
         try:
+            # Check if this is a cryptocurrency symbol
+            crypto_symbols = ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK', 'UNI', 'ATOM',
+                            'btc', 'eth', 'ada', 'bnb', 'dot', 'matic', 'sol', 'ltc', 'xrp', 'doge', 'avax', 'link', 'uni', 'atom']
+            
+            if symbol in crypto_symbols or market == 'crypto':
+                # Use multiple APIs for cryptocurrency data, not just CoinGecko
+                logger.info(f"Detected crypto symbol {symbol}, trying crypto-compatible APIs")
+                
+                # Convert period to days for CoinGecko
+                period_days = '30'  # default
+                if '1month' in period or '30' in period:
+                    period_days = '30'
+                elif '7day' in period or '1week' in period:
+                    period_days = '7'
+                elif '1year' in period or '365' in period:
+                    period_days = '365'
+                elif '90' in period or '3month' in period:
+                    period_days = '90'
+                
+                # Try Twelve Data first for crypto (supports BTC/USD format)
+                if symbol.upper() in ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK']:
+                    crypto_symbol = f"{symbol.upper()}/USD"
+                    data = self._get_twelve_data_historical(crypto_symbol, period, interval)
+                    if data:
+                        cache.set(cache_key, data, timeout=1800)
+                        return data
+                
+                # Try Alpha Vantage for crypto (supports DIGITAL_CURRENCY_DAILY)
+                data = self._get_alpha_vantage_crypto_historical(symbol.upper(), period)
+                if data:
+                    cache.set(cache_key, data, timeout=1800)
+                    return data
+                
+                # Try CoinGecko as fallback
+                data = self.get_coingecko_historical_data(symbol, period_days)
+                if data:
+                    cache.set(cache_key, data, timeout=1800)  # 30분 캐시
+                    return data
+            
+            # For stock symbols, use traditional APIs
             # 1순위: Alpha Vantage
             data = self._get_alpha_vantage_historical(symbol, period, interval)
             if data:
@@ -271,25 +311,41 @@ class MarketDataService:
     def _get_coingecko_crypto(self, symbol: str, vs_currency: str = 'USD') -> Optional[Dict[str, Any]]:
         """CoinGecko API로 암호화폐 데이터 조회 (무료, API 키 불필요)"""
         try:
-            # CoinGecko ID 매핑
+            # CoinGecko ID 매핑 - support both symbol and full name
             crypto_id_mapping = {
                 'BTC': 'bitcoin',
+                'bitcoin': 'bitcoin',
                 'ETH': 'ethereum', 
+                'ethereum': 'ethereum',
                 'ADA': 'cardano',
+                'cardano': 'cardano',
                 'BNB': 'binancecoin',
+                'binancecoin': 'binancecoin',
                 'DOT': 'polkadot',
+                'polkadot': 'polkadot',
                 'MATIC': 'matic-network',
+                'matic': 'matic-network',
+                'matic-network': 'matic-network',
                 'SOL': 'solana',
+                'solana': 'solana',
                 'LTC': 'litecoin',
+                'litecoin': 'litecoin',
                 'XRP': 'ripple',
+                'ripple': 'ripple',
                 'DOGE': 'dogecoin',
+                'dogecoin': 'dogecoin',
                 'AVAX': 'avalanche-2',
+                'avalanche-2': 'avalanche-2',
                 'LINK': 'chainlink',
+                'chainlink': 'chainlink',
                 'UNI': 'uniswap',
-                'ATOM': 'cosmos'
+                'uniswap': 'uniswap',
+                'ATOM': 'cosmos',
+                'cosmos': 'cosmos'
             }
             
-            coin_id = crypto_id_mapping.get(symbol.upper())
+            # Try both uppercase and lowercase
+            coin_id = crypto_id_mapping.get(symbol) or crypto_id_mapping.get(symbol.upper()) or crypto_id_mapping.get(symbol.lower())
             if not coin_id:
                 logger.warning(f"CoinGecko: No mapping found for {symbol}")
                 return None
@@ -302,6 +358,10 @@ class MarketDataService:
                 'include_24hr_vol': 'true',
                 'include_last_updated_at': 'true'
             }
+            
+            # Add delay to prevent rate limiting
+            import time
+            time.sleep(0.1)  # 100ms delay
             
             response = requests.get(url, params=params, timeout=15)
             response.raise_for_status()
@@ -1409,33 +1469,85 @@ class MarketDataService:
             logger.error(f"Marketstack 히스토리컬 데이터 오류 {symbol}: {e}")
             return None
 
+    def _get_alpha_vantage_crypto_historical(self, symbol: str, period: str) -> Optional[List[Dict]]:
+        """Alpha Vantage 암호화폐 과거 데이터"""
+        try:
+            url = self.alpha_vantage_base
+            params = {
+                'function': 'DIGITAL_CURRENCY_DAILY',
+                'symbol': symbol,
+                'market': 'USD',
+                'apikey': self.alpha_vantage_key
+            }
+            
+            response = requests.get(url, params=params, timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            
+            if 'Time Series (Digital Currency Daily)' not in data:
+                logger.error(f"Alpha Vantage crypto 데이터 오류: {data}")
+                return None
+            
+            time_series = data['Time Series (Digital Currency Daily)']
+            results = []
+            
+            for date_str, daily_data in time_series.items():
+                results.append({
+                    'date': date_str,
+                    'timestamp': date_str,
+                    'open': float(daily_data['1a. open (USD)']),
+                    'high': float(daily_data['2a. high (USD)']),
+                    'low': float(daily_data['3a. low (USD)']),
+                    'close': float(daily_data['4a. close (USD)']),
+                    'volume': float(daily_data.get('5. volume', 0))
+                })
+            
+            # Sort by date (newest first, then reverse for oldest first)
+            results.sort(key=lambda x: x['date'])
+            return results
+            
+        except Exception as e:
+            logger.error(f"Alpha Vantage crypto 과거 데이터 오류 {symbol}: {e}")
+            return None
+
     def get_coingecko_historical_data(self, symbol: str, period: str = '30', vs_currency: str = 'usd') -> Optional[List[Dict[str, Any]]]:
         """CoinGecko API로 암호화폐 히스토리컬 데이터 조회 (무료, API 키 불필요)"""
         try:
-            # CoinGecko ID 매핑
+            # CoinGecko ID 매핑 - support both symbol and full name
             crypto_id_mapping = {
                 'BTC': 'bitcoin',
+                'bitcoin': 'bitcoin',
                 'ETH': 'ethereum', 
+                'ethereum': 'ethereum',
                 'ADA': 'cardano',
+                'cardano': 'cardano',
                 'BNB': 'binancecoin',
+                'binancecoin': 'binancecoin',
                 'DOT': 'polkadot',
+                'polkadot': 'polkadot',
                 'MATIC': 'matic-network',
+                'matic': 'matic-network',
+                'matic-network': 'matic-network',
                 'SOL': 'solana',
+                'solana': 'solana',
                 'LTC': 'litecoin',
+                'litecoin': 'litecoin',
                 'XRP': 'ripple',
+                'ripple': 'ripple',
                 'DOGE': 'dogecoin',
+                'dogecoin': 'dogecoin',
                 'AVAX': 'avalanche-2',
+                'avalanche-2': 'avalanche-2',
                 'LINK': 'chainlink',
+                'chainlink': 'chainlink',
                 'UNI': 'uniswap',
+                'uniswap': 'uniswap',
                 'ATOM': 'cosmos',
-                'AAPL': 'apple',  # Some stocks are available on CoinGecko
-                'TSLA': 'tesla',
-                'MSFT': 'microsoft',
-                'GOOGL': 'alphabet',
-                'AMZN': 'amazon'
+                'cosmos': 'cosmos'
             }
             
-            coin_id = crypto_id_mapping.get(symbol.upper())
+            # Try both uppercase and lowercase
+            coin_id = crypto_id_mapping.get(symbol) or crypto_id_mapping.get(symbol.upper()) or crypto_id_mapping.get(symbol.lower())
             if not coin_id:
                 logger.warning(f"CoinGecko: No mapping found for {symbol}")
                 return None
