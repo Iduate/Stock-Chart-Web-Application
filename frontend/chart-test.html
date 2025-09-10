@@ -348,6 +348,12 @@
             }
         });
 
+        // Mobile menu toggle function
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
         // Initialize on load
         window.addEventListener('load', () => {
             log('Chart Test 시스템이 준비되었습니다', 'success');

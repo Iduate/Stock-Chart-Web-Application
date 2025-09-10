@@ -126,10 +126,34 @@
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button class="text-tv-text-secondary hover:text-white p-2">
+                    <button onclick="toggleMobileMenu()" class="text-tv-text-secondary hover:text-white p-2">
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="md:hidden hidden bg-tv-card border-t border-tv-border">
+            <div class="px-4 py-2 space-y-1">
+                <a href="home.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                <a href="charts.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">차트
+                    보드</a>
+                <a href="prediction.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                <a href="my-predictions.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">내
+                    예측</a>
+                <a href="ranking.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                <a href="events.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                <a href="subscription.html"
+                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
+                <button onclick="showLoginModal()"
+                    class="block w-full text-left px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors mt-2">로그인</button>
             </div>
         </div>
     </nav>
@@ -529,133 +553,256 @@
                 </footer>
 
                 <!-- Login Modal -->
-                <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
-                    <div class="flex items-center justify-center min-h-screen px-4">
-                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
-                            <button onclick="hideLoginModal()"
-                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-                                <i class="fas fa-times text-xl"></i>
-                            </button>
-
-                            <div class="text-center mb-8">
-                                <div
-                                    class="w-16 h-16 bg-tv-blue bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-user text-tv-blue text-2xl"></i>
+                <div id="loginModal"
+                    class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+                    <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0"
+                        id="loginModalContent">
+                        <!-- Header -->
+                        <div class="px-8 pt-8 pb-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-tv-blue rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-white text-lg"></i>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-tv-text-primary">로그인</h2>
                                 </div>
-                                <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
-                                <p class="text-tv-text-secondary mt-2">계정에 로그인하여 서비스를 이용하세요</p>
+                                <button onclick="hideLoginModal()"
+                                    class="text-tv-text-secondary hover:text-tv-text-primary transition-colors p-2 hover:bg-tv-bg-tertiary rounded-lg">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
                             </div>
+                            <p class="text-tv-text-secondary">계정에 로그인하여 모든 기능을 이용하세요</p>
+                        </div>
 
-                            <form id="loginForm" class="space-y-4">
-                                <div>
-                                    <input type="email" id="loginEmail" placeholder="이메일" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                        <!-- Form -->
+                        <div class="px-8 pb-8">
+                            <form id="loginForm" class="space-y-6">
+                                <div class="space-y-4">
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">이메일</label>
+                                        <div class="relative">
+                                            <input type="email" id="loginEmail"
+                                                class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                                placeholder="이메일을 입력하세요" required>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <i class="fas fa-envelope text-tv-text-tertiary"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">비밀번호</label>
+                                        <div class="relative">
+                                            <input type="password" id="loginPassword"
+                                                class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                                placeholder="비밀번호를 입력하세요" required>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <button type="button"
+                                                    onclick="togglePasswordVisibility('loginPassword')"
+                                                    class="text-tv-text-tertiary hover:text-tv-text-secondary">
+                                                    <i class="fas fa-eye" id="loginPasswordEye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <input type="password" id="loginPassword" placeholder="비밀번호" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox"
+                                            class="w-4 h-4 text-tv-blue bg-tv-bg-primary border-tv-border rounded focus:ring-tv-blue focus:ring-2 focus:ring-opacity-20">
+                                        <span class="text-sm text-tv-text-secondary">로그인 상태 유지</span>
+                                    </label>
+                                    <a href="#" class="text-sm text-tv-blue hover:text-blue-400 transition-colors">비밀번호
+                                        찾기</a>
                                 </div>
+
                                 <button type="submit"
-                                    class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
-                                    로그인
+                                    class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-tv-blue focus:ring-opacity-50">
+                                    <i class="fas fa-sign-in-alt mr-2"></i>로그인
                                 </button>
                             </form>
 
-                            <div class="mt-6">
-                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 로그인</div>
-                                <div class="space-y-3">
-                                    <button onclick="loginWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
-                                        <i class="fab fa-google text-red-500"></i>
-                                        <span>Google로 로그인</span>
-                                    </button>
-                                    <button onclick="loginWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
-                                        <i class="fab fa-apple"></i>
-                                        <span>Apple로 로그인</span>
-                                    </button>
-                                </div>
+                            <!-- Divider -->
+                            <div class="flex items-center my-6">
+                                <div class="flex-1 border-t border-tv-border"></div>
+                                <span class="px-4 text-tv-text-tertiary text-sm">또는</span>
+                                <div class="flex-1 border-t border-tv-border"></div>
                             </div>
 
-                            <div class="text-center mt-6 text-tv-text-secondary">
-                                계정이 없으신가요? <a href="#" onclick="showSignupModal()"
-                                    class="text-tv-blue hover:underline">회원가입</a>
+                            <!-- Social Login -->
+                            <div class="space-y-3">
+                                <button onclick="loginWithGoogle()"
+                                    class="w-full flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                                    <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                                        <path fill="#4285F4"
+                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                        <path fill="#34A853"
+                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                        <path fill="#FBBC05"
+                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                        <path fill="#EA4335"
+                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                    </svg>
+                                    Google로 로그인
+                                </button>
+
+                                <button onclick="loginWithApple()"
+                                    class="w-full flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-900 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                                    <i class="fab fa-apple text-xl mr-3"></i>
+                                    Apple로 로그인
+                                </button>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="mt-6 text-center">
+                                <p class="text-tv-text-secondary">
+                                    계정이 없으신가요?
+                                    <button onclick="showSignupModal()"
+                                        class="text-tv-blue hover:text-blue-400 font-medium transition-colors">
+                                        회원가입
+                                    </button>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Signup Modal -->
-                <div id="signupModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
-                    <div class="flex items-center justify-center min-h-screen px-4">
-                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
-                            <button onclick="hideSignupModal()"
-                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-                                <i class="fas fa-times text-xl"></i>
-                            </button>
-
-                            <div class="text-center mb-8">
-                                <div
-                                    class="w-16 h-16 bg-tv-green bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-user-plus text-tv-green text-2xl"></i>
+                <div id="signupModal"
+                    class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+                    <div class="bg-tv-bg-secondary rounded-2xl shadow-2xl w-full max-w-md border border-tv-border-light overflow-hidden transform transition-all duration-300 scale-95 opacity-0"
+                        id="signupModalContent">
+                        <!-- Header -->
+                        <div class="px-8 pt-8 pb-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="w-10 h-10 bg-gradient-to-r from-tv-green to-emerald-500 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-user-plus text-white text-lg"></i>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-tv-text-primary">회원가입</h2>
                                 </div>
-                                <h2 class="text-2xl font-bold text-tv-text">회원가입</h2>
-                                <p class="text-tv-text-secondary mt-2">새 계정을 만들어 시작하세요</p>
+                                <button onclick="hideSignupModal()"
+                                    class="text-tv-text-secondary hover:text-tv-text-primary transition-colors p-2 hover:bg-tv-bg-tertiary rounded-lg">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            <p class="text-tv-text-secondary">StockChart에 가입하고 예측을 시작하세요</p>
+                        </div>
+
+                        <!-- Form -->
+                        <div class="px-8 pb-8">
+                            <!-- Social Signup First -->
+                            <div class="space-y-3 mb-6">
+                                <button onclick="signupWithGoogle()"
+                                    class="w-full flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                                    <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                                        <path fill="#4285F4"
+                                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                        <path fill="#34A853"
+                                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                        <path fill="#FBBC05"
+                                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                        <path fill="#EA4335"
+                                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                    </svg>
+                                    Google로 가입
+                                </button>
+
+                                <button onclick="signupWithApple()"
+                                    class="w-full flex items-center justify-center px-6 py-3 bg-black hover:bg-gray-900 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md">
+                                    <i class="fab fa-apple text-xl mr-3"></i>
+                                    Apple로 가입
+                                </button>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="flex items-center my-6">
+                                <div class="flex-1 border-t border-tv-border"></div>
+                                <span class="px-4 text-tv-text-tertiary text-sm">또는 이메일로</span>
+                                <div class="flex-1 border-t border-tv-border"></div>
                             </div>
 
                             <form id="signupForm" class="space-y-4">
-                                <div>
-                                    <input type="text" id="signupUsername" placeholder="사용자명" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">사용자명</label>
+                                        <input type="text" id="signupUsername"
+                                            class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                            placeholder="사용자명을 입력하세요" required>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">이메일</label>
+                                        <input type="email" id="signupEmail"
+                                            class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                            placeholder="이메일을 입력하세요" required>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">비밀번호</label>
+                                        <div class="relative">
+                                            <input type="password" id="signupPassword"
+                                                class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                                placeholder="비밀번호를 입력하세요" required>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <button type="button"
+                                                    onclick="togglePasswordVisibility('signupPassword')"
+                                                    class="text-tv-text-tertiary hover:text-tv-text-secondary">
+                                                    <i class="fas fa-eye" id="signupPasswordEye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mt-1 text-xs text-tv-text-tertiary">
+                                            최소 8자, 영문, 숫자, 특수문자 포함
+                                        </div>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-primary mb-2">비밀번호
+                                            확인</label>
+                                        <input type="password" id="signupPasswordConfirm"
+                                            class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                            placeholder="비밀번호를 다시 입력하세요" required>
+                                    </div>
+
+                                    <div class="relative">
+                                        <label class="block text-sm font-medium text-tv-text-secondary mb-2">추천인 코드
+                                            (선택사항)</label>
+                                        <input type="text" id="referralCode"
+                                            class="w-full px-4 py-3 bg-tv-bg-primary border border-tv-border rounded-xl text-tv-text-primary placeholder-tv-text-tertiary focus:border-tv-blue focus:ring-2 focus:ring-tv-blue focus:ring-opacity-20 focus:outline-none transition-all duration-200"
+                                            placeholder="추천인 코드 입력 (선택사항)">
+                                    </div>
                                 </div>
-                                <div>
-                                    <input type="email" id="signupEmail" placeholder="이메일" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="password" id="signupPassword" placeholder="비밀번호" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)"
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div class="flex items-start space-x-3">
-                                    <input type="checkbox" id="agreeTerms" required
-                                        class="mt-1 rounded border-tv-border bg-tv-light">
-                                    <label class="text-sm text-tv-text-secondary leading-relaxed">
-                                        이용약관 및 개인정보처리방침에 동의합니다.
+
+                                <div class="space-y-3 pt-2">
+                                    <label class="flex items-start space-x-3 cursor-pointer group">
+                                        <input type="checkbox" id="agreeTerms" required
+                                            class="w-4 h-4 text-tv-blue bg-tv-bg-primary border-tv-border rounded focus:ring-tv-blue focus:ring-2 focus:ring-opacity-20 mt-0.5">
+                                        <span
+                                            class="text-sm text-tv-text-secondary group-hover:text-tv-text-primary transition-colors">
+                                            <a href="#" class="text-tv-blue hover:text-blue-400">이용약관</a> 및
+                                            <a href="#" class="text-tv-blue hover:text-blue-400">개인정보처리방침</a>에 동의합니다.
+                                        </span>
                                     </label>
                                 </div>
+
                                 <button type="submit"
-                                    class="w-full bg-tv-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors">
-                                    회원가입
+                                    class="w-full bg-gradient-to-r from-tv-green to-emerald-500 hover:from-emerald-500 hover:to-tv-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-tv-green focus:ring-opacity-50">
+                                    <i class="fas fa-user-plus mr-2"></i>회원가입
                                 </button>
                             </form>
 
-                            <div class="mt-6">
-                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 가입</div>
-                                <div class="space-y-3">
-                                    <button onclick="signupWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
-                                        <i class="fab fa-google text-red-500"></i>
-                                        <span>Google로 가입</span>
+                            <!-- Footer -->
+                            <div class="mt-6 text-center">
+                                <p class="text-tv-text-secondary">
+                                    이미 계정이 있으신가요?
+                                    <button onclick="showLoginModal()"
+                                        class="text-tv-blue hover:text-blue-400 font-medium transition-colors">
+                                        로그인
                                     </button>
-                                    <button onclick="signupWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
-                                        <i class="fab fa-apple"></i>
-                                        <span>Apple로 가입</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="text-center mt-6 text-tv-text-secondary">
-                                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()"
-                                    class="text-tv-blue hover:underline">로그인</a>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -665,6 +812,366 @@
                 <script src="js/stock-chart-app.js?v=1.0"></script>
                 <script src="js/app.js?v=1.5"></script>
                 <script src="js/access-limit.js?v=1.0"></script>
+
+                <script>
+                    // Mobile menu toggle function
+                    function toggleMobileMenu() {
+                        const mobileMenu = document.getElementById('mobileMenu');
+                        mobileMenu.classList.toggle('hidden');
+                    }
+
+                    // Enhanced Modal Functions
+                    function showLoginModal() {
+                        const modal = document.getElementById('loginModal');
+                        const content = document.getElementById('loginModalContent');
+
+                        modal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+
+                        // Animation
+                        setTimeout(() => {
+                            content.classList.remove('scale-95', 'opacity-0');
+                            content.classList.add('scale-100', 'opacity-100');
+                        }, 10);
+                    }
+
+                    function hideLoginModal() {
+                        const modal = document.getElementById('loginModal');
+                        const content = document.getElementById('loginModalContent');
+
+                        content.classList.add('scale-95', 'opacity-0');
+                        content.classList.remove('scale-100', 'opacity-100');
+
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                            document.body.style.overflow = '';
+                        }, 300);
+                    }
+
+                    function showSignupModal() {
+                        hideLoginModal();
+
+                        const modal = document.getElementById('signupModal');
+                        const content = document.getElementById('signupModalContent');
+
+                        modal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+
+                        // Animation
+                        setTimeout(() => {
+                            content.classList.remove('scale-95', 'opacity-0');
+                            content.classList.add('scale-100', 'opacity-100');
+                        }, 10);
+                    }
+
+                    function hideSignupModal() {
+                        const modal = document.getElementById('signupModal');
+                        const content = document.getElementById('signupModalContent');
+
+                        content.classList.add('scale-95', 'opacity-0');
+                        content.classList.remove('scale-100', 'opacity-100');
+
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                            document.body.style.overflow = '';
+                        }, 300);
+                    }
+
+                    // Password visibility toggle
+                    function togglePasswordVisibility(inputId) {
+                        const input = document.getElementById(inputId);
+                        const eyeIcon = document.getElementById(inputId + 'Eye');
+
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            eyeIcon.className = 'fas fa-eye-slash';
+                        } else {
+                            input.type = 'password';
+                            eyeIcon.className = 'fas fa-eye';
+                        }
+                    }
+
+                    // Enhanced Social Auth Functions with Loading States
+                    async function loginWithGoogle() {
+                        const button = event.target;
+                        const originalContent = button.innerHTML;
+
+                        // Show loading state
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Google로 연결 중...';
+                        button.disabled = true;
+
+                        try {
+                            // Simulate API call - replace with actual Google OAuth implementation
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Success handling
+                            console.log('Google login successful');
+                            hideLoginModal();
+
+                            // Show success message
+                            showNotification('Google 계정으로 로그인되었습니다!', 'success');
+
+                        } catch (error) {
+                            console.error('Google login error:', error);
+                            showNotification('Google 로그인에 실패했습니다. 다시 시도해주세요.', 'error');
+                        } finally {
+                            // Reset button
+                            button.innerHTML = originalContent;
+                            button.disabled = false;
+                        }
+                    }
+
+                    async function loginWithApple() {
+                        const button = event.target;
+                        const originalContent = button.innerHTML;
+
+                        // Show loading state
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Apple로 연결 중...';
+                        button.disabled = true;
+
+                        try {
+                            // Simulate API call - replace with actual Apple Sign-In implementation
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Success handling
+                            console.log('Apple login successful');
+                            hideLoginModal();
+
+                            // Show success message
+                            showNotification('Apple 계정으로 로그인되었습니다!', 'success');
+
+                        } catch (error) {
+                            console.error('Apple login error:', error);
+                            showNotification('Apple 로그인에 실패했습니다. 다시 시도해주세요.', 'error');
+                        } finally {
+                            // Reset button
+                            button.innerHTML = originalContent;
+                            button.disabled = false;
+                        }
+                    }
+
+                    async function signupWithGoogle() {
+                        const button = event.target;
+                        const originalContent = button.innerHTML;
+
+                        // Show loading state
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Google로 연결 중...';
+                        button.disabled = true;
+
+                        try {
+                            // Simulate API call - replace with actual Google OAuth implementation
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Success handling
+                            console.log('Google signup successful');
+                            hideSignupModal();
+
+                            // Show success message
+                            showNotification('Google 계정으로 가입이 완료되었습니다!', 'success');
+
+                        } catch (error) {
+                            console.error('Google signup error:', error);
+                            showNotification('Google 회원가입에 실패했습니다. 다시 시도해주세요.', 'error');
+                        } finally {
+                            // Reset button
+                            button.innerHTML = originalContent;
+                            button.disabled = false;
+                        }
+                    }
+
+                    async function signupWithApple() {
+                        const button = event.target;
+                        const originalContent = button.innerHTML;
+
+                        // Show loading state
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Apple로 연결 중...';
+                        button.disabled = true;
+
+                        try {
+                            // Simulate API call - replace with actual Apple Sign-In implementation
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+
+                            // Success handling
+                            console.log('Apple signup successful');
+                            hideSignupModal();
+
+                            // Show success message
+                            showNotification('Apple 계정으로 가입이 완료되었습니다!', 'success');
+
+                        } catch (error) {
+                            console.error('Apple signup error:', error);
+                            showNotification('Apple 회원가입에 실패했습니다. 다시 시도해주세요.', 'error');
+                        } finally {
+                            // Reset button
+                            button.innerHTML = originalContent;
+                            button.disabled = false;
+                        }
+                    }
+
+                    // Enhanced Form Validation and Submission
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Login form handling
+                        const loginForm = document.getElementById('loginForm');
+                        if (loginForm) {
+                            loginForm.addEventListener('submit', async function (e) {
+                                e.preventDefault();
+
+                                const email = document.getElementById('loginEmail').value;
+                                const password = document.getElementById('loginPassword').value;
+                                const submitBtn = this.querySelector('button[type="submit"]');
+                                const originalContent = submitBtn.innerHTML;
+
+                                // Validation
+                                if (!email || !password) {
+                                    showNotification('모든 필드를 입력해주세요.', 'error');
+                                    return;
+                                }
+
+                                // Email validation
+                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                if (!emailRegex.test(email)) {
+                                    showNotification('올바른 이메일 주소를 입력해주세요.', 'error');
+                                    return;
+                                }
+
+                                // Show loading
+                                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>로그인 중...';
+                                submitBtn.disabled = true;
+
+                                try {
+                                    // Simulate API call - replace with actual authentication
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                                    // Success
+                                    console.log('Login successful');
+                                    hideLoginModal();
+                                    showNotification('로그인 성공!', 'success');
+
+                                } catch (error) {
+                                    console.error('Login error:', error);
+                                    showNotification('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.', 'error');
+                                } finally {
+                                    submitBtn.innerHTML = originalContent;
+                                    submitBtn.disabled = false;
+                                }
+                            });
+                        }
+
+                        // Signup form handling
+                        const signupForm = document.getElementById('signupForm');
+                        if (signupForm) {
+                            signupForm.addEventListener('submit', async function (e) {
+                                e.preventDefault();
+
+                                const username = document.getElementById('signupUsername').value;
+                                const email = document.getElementById('signupEmail').value;
+                                const password = document.getElementById('signupPassword').value;
+                                const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+                                const agreeTerms = document.getElementById('agreeTerms').checked;
+                                const submitBtn = this.querySelector('button[type="submit"]');
+                                const originalContent = submitBtn.innerHTML;
+
+                                // Validation
+                                if (!username || !email || !password || !passwordConfirm) {
+                                    showNotification('모든 필수 필드를 입력해주세요.', 'error');
+                                    return;
+                                }
+
+                                if (!agreeTerms) {
+                                    showNotification('이용약관에 동의해주세요.', 'error');
+                                    return;
+                                }
+
+                                // Email validation
+                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                if (!emailRegex.test(email)) {
+                                    showNotification('올바른 이메일 주소를 입력해주세요.', 'error');
+                                    return;
+                                }
+
+                                // Password validation
+                                const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                                if (!passwordRegex.test(password)) {
+                                    showNotification('비밀번호는 최소 8자, 영문, 숫자, 특수문자를 포함해야 합니다.', 'error');
+                                    return;
+                                }
+
+                                // Password confirmation
+                                if (password !== passwordConfirm) {
+                                    showNotification('비밀번호가 일치하지 않습니다.', 'error');
+                                    return;
+                                }
+
+                                // Show loading
+                                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>가입 중...';
+                                submitBtn.disabled = true;
+
+                                try {
+                                    // Simulate API call - replace with actual registration
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                                    // Success
+                                    console.log('Signup successful');
+                                    hideSignupModal();
+                                    showNotification('회원가입이 완료되었습니다! 이메일을 확인해주세요.', 'success');
+
+                                } catch (error) {
+                                    console.error('Signup error:', error);
+                                    showNotification('회원가입에 실패했습니다. 다시 시도해주세요.', 'error');
+                                } finally {
+                                    submitBtn.innerHTML = originalContent;
+                                    submitBtn.disabled = false;
+                                }
+                            });
+                        }
+
+                        // Modal backdrop click to close
+                        document.getElementById('loginModal')?.addEventListener('click', function (e) {
+                            if (e.target === this) hideLoginModal();
+                        });
+
+                        document.getElementById('signupModal')?.addEventListener('click', function (e) {
+                            if (e.target === this) hideSignupModal();
+                        });
+
+                        // ESC key to close modals
+                        document.addEventListener('keydown', function (e) {
+                            if (e.key === 'Escape') {
+                                hideLoginModal();
+                                hideSignupModal();
+                            }
+                        });
+                    });
+
+                    // Notification system
+                    function showNotification(message, type = 'info') {
+                        const notification = document.createElement('div');
+                        notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 ${type === 'success' ? 'bg-tv-green text-white' :
+                                type === 'error' ? 'bg-tv-red text-white' :
+                                    'bg-tv-blue text-white'
+                            }`;
+                        notification.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                                type === 'error' ? 'fa-exclamation-circle' :
+                                    'fa-info-circle'
+                            }"></i>
+                                <span>${message}</span>
+                            </div>
+                        `;
+
+                        document.body.appendChild(notification);
+
+                        // Show
+                        setTimeout(() => notification.classList.remove('translate-x-full'), 100);
+
+                        // Hide after 5 seconds
+                        setTimeout(() => {
+                            notification.classList.add('translate-x-full');
+                            setTimeout(() => notification.remove(), 300);
+                        }, 5000);
+                    }
+                </script>
 </body>
 
 </html>
