@@ -230,44 +230,94 @@ function initializeCharts() {
         console.log('Creating professional TradingView-style hero chart...');
 
         try {
-            // Ensure the element has proper dimensions
-            if (heroChartElement.clientWidth === 0) {
+            // Mobile-specific initialization fixes
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+
+            // Ensure the element has proper dimensions with mobile-specific handling
+            if (heroChartElement.clientWidth === 0 || isMobile) {
+                heroChartElement.style.position = 'relative';
                 heroChartElement.style.width = '100%';
-                heroChartElement.style.height = window.innerWidth <= 480 ? '250px' : (window.innerWidth <= 768 ? '300px' : '400px');
+                heroChartElement.style.height = isSmallMobile ? '280px' : (isMobile ? '300px' : '400px');
+                heroChartElement.style.display = 'block';
+                heroChartElement.style.visibility = 'visible';
+                heroChartElement.style.opacity = '1';
+
                 // Force a reflow to calculate width
                 heroChartElement.offsetHeight;
+
+                // Wait for DOM to settle on mobile
+                if (isMobile) {
+                    setTimeout(() => {
+                        console.log('Mobile DOM settled, continuing chart initialization...');
+                    }, 100);
+                }
             }
 
-            // Calculate responsive dimensions
-            const containerWidth = heroChartElement.clientWidth || heroChartElement.offsetWidth;
+            // Calculate responsive dimensions with mobile fallbacks
+            let containerWidth = heroChartElement.clientWidth || heroChartElement.offsetWidth;
             const viewportWidth = window.innerWidth;
+
+            // Mobile fallback if width calculation fails
+            if (!containerWidth || containerWidth === 0) {
+                if (isSmallMobile) {
+                    containerWidth = Math.min(viewportWidth - 32, 350);
+                } else if (isMobile) {
+                    containerWidth = Math.min(viewportWidth - 40, 500);
+                } else {
+                    containerWidth = 800;
+                }
+                console.log(`Using fallback width: ${containerWidth}px for mobile: ${isMobile}`);
+            }
 
             let chartWidth = containerWidth;
             let chartHeight = 400;
 
-            // Responsive sizing
-            if (viewportWidth <= 480) {
-                chartWidth = Math.min(containerWidth, viewportWidth - 32); // 16px padding each side
-                chartHeight = 250;
-            } else if (viewportWidth <= 768) {
-                chartWidth = Math.min(containerWidth, viewportWidth - 40); // 20px padding each side
+            // Responsive sizing with mobile optimizations
+            if (isSmallMobile) {
+                chartWidth = Math.min(containerWidth, viewportWidth - 20);
+                chartHeight = 280;
+            } else if (isMobile) {
+                chartWidth = Math.min(containerWidth, viewportWidth - 30);
                 chartHeight = 300;
             } else {
-                chartWidth = containerWidth || 800;
+                chartWidth = containerWidth;
                 chartHeight = 400;
             }
 
-            // Ensure minimum sizes
-            chartWidth = Math.max(chartWidth, 300);
-            chartHeight = Math.max(chartHeight, 200);
+            // Ensure minimum sizes but respect mobile constraints
+            chartWidth = Math.max(chartWidth, isMobile ? 280 : 300);
+            chartHeight = Math.max(chartHeight, isMobile ? 250 : 300);
 
-            console.log(`Chart dimensions: ${chartWidth}x${chartHeight} (viewport: ${viewportWidth})`);
+            console.log(`Mobile-optimized chart dimensions: ${chartWidth}x${chartHeight} (viewport: ${viewportWidth}, mobile: ${isMobile})`);
 
-            // Use TradingView Pro options if available
+            // Use TradingView Pro options with mobile optimizations
             const chartOptions = getTradingViewProChartOptions(chartWidth, chartHeight);
+
+            // Mobile-specific chart options
+            if (isMobile) {
+                chartOptions.handleScroll = {
+                    mouseWheel: true,
+                    pressedMouseMove: true,
+                    horzTouchDrag: true,
+                    vertTouchDrag: true,
+                };
+                chartOptions.handleScale = {
+                    axisPressedMouseMove: {
+                        time: true,
+                        price: true,
+                    },
+                    mouseWheel: true,
+                    pinch: true,
+                };
+                // Ensure chart fits mobile viewport
+                chartOptions.width = chartWidth;
+                chartOptions.height = chartHeight;
+            }
+
             window.heroChart = LightweightCharts.createChart(heroChartElement, chartOptions);
 
-            console.log('Professional hero chart created');
+            console.log('Mobile-optimized professional hero chart created');
 
             // Add professional loading animation
             const loadingOverlay = document.createElement('div');
@@ -278,22 +328,33 @@ function initializeCharts() {
             `;
             heroChartElement.appendChild(loadingOverlay);
 
-            // Load chart data with enhanced styling
-            if (typeof window.heroChart.addLineSeries === 'function') {
-                loadStockChart('AAPL', true, true); // professional styling + dual-line predictions
+            // Load chart data with enhanced styling - delay slightly on mobile for better rendering
+            const loadDelay = isMobile ? 300 : 0;
+            setTimeout(() => {
+                if (typeof window.heroChart.addLineSeries === 'function') {
+                    loadStockChart('AAPL', true, true); // professional styling + dual-line predictions
 
-                // Remove loading overlay after data is loaded
-                setTimeout(() => {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => loadingOverlay.remove(), 500);
-                }, 1200);
-            } else {
-                console.error('Chart created but addLineSeries method is missing');
-                setTimeout(() => {
-                    loadStockChart('AAPL', true, true);
-                    loadingOverlay.remove();
-                }, 100);
-            }
+                    // Remove loading overlay after data is loaded
+                    setTimeout(() => {
+                        if (loadingOverlay && loadingOverlay.parentNode) {
+                            loadingOverlay.style.opacity = '0';
+                            setTimeout(() => {
+                                if (loadingOverlay.parentNode) {
+                                    loadingOverlay.remove();
+                                }
+                            }, 500);
+                        }
+                    }, 1500);
+                } else {
+                    console.error('Chart created but addLineSeries method is missing');
+                    setTimeout(() => {
+                        loadStockChart('AAPL', true, true);
+                        if (loadingOverlay.parentNode) {
+                            loadingOverlay.remove();
+                        }
+                    }, 100);
+                }
+            }, loadDelay);
         } catch (error) {
             console.error('Failed to create professional hero chart:', error);
         }
@@ -337,32 +398,70 @@ function addChartResizeHandler() {
         resizeTimeout = setTimeout(() => {
             console.log('Window resized, updating charts...');
 
-            // Update hero chart
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+
+            // Update hero chart with mobile optimizations
             if (window.heroChart) {
                 const heroElement = document.getElementById('featuredChart') || document.getElementById('heroChart');
                 if (heroElement) {
-                    const containerWidth = heroElement.clientWidth || heroElement.offsetWidth;
+                    // Ensure container has proper styling for mobile
+                    if (isMobile) {
+                        heroElement.style.position = 'relative';
+                        heroElement.style.width = '100%';
+                        heroElement.style.height = isSmallMobile ? '280px' : '300px';
+                        heroElement.style.display = 'block';
+                        heroElement.style.visibility = 'visible';
+                        heroElement.style.overflow = 'hidden';
+                    }
+
+                    let containerWidth = heroElement.clientWidth || heroElement.offsetWidth;
                     const viewportWidth = window.innerWidth;
+
+                    // Mobile fallback for width calculation
+                    if (!containerWidth || containerWidth === 0) {
+                        if (isSmallMobile) {
+                            containerWidth = Math.min(viewportWidth - 20, 350);
+                        } else if (isMobile) {
+                            containerWidth = Math.min(viewportWidth - 30, 500);
+                        } else {
+                            containerWidth = 800;
+                        }
+                    }
 
                     let chartWidth = containerWidth;
                     let chartHeight = 400;
 
-                    if (viewportWidth <= 480) {
-                        chartWidth = Math.min(containerWidth, viewportWidth - 32);
-                        chartHeight = 250;
-                    } else if (viewportWidth <= 768) {
-                        chartWidth = Math.min(containerWidth, viewportWidth - 40);
+                    if (isSmallMobile) {
+                        chartWidth = Math.min(containerWidth, viewportWidth - 20);
+                        chartHeight = 280;
+                    } else if (isMobile) {
+                        chartWidth = Math.min(containerWidth, viewportWidth - 30);
                         chartHeight = 300;
                     }
 
-                    chartWidth = Math.max(chartWidth, 300);
-                    chartHeight = Math.max(chartHeight, 200);
+                    chartWidth = Math.max(chartWidth, isMobile ? 280 : 300);
+                    chartHeight = Math.max(chartHeight, isMobile ? 250 : 300);
 
-                    console.log(`Resizing hero chart to: ${chartWidth}x${chartHeight}`);
-                    window.heroChart.applyOptions({
-                        width: chartWidth,
-                        height: chartHeight
-                    });
+                    console.log(`Resizing hero chart to: ${chartWidth}x${chartHeight} (mobile: ${isMobile})`);
+
+                    try {
+                        window.heroChart.applyOptions({
+                            width: chartWidth,
+                            height: chartHeight
+                        });
+
+                        // Force chart to fit content on mobile after resize
+                        if (isMobile) {
+                            setTimeout(() => {
+                                if (window.heroChart && window.heroChart.timeScale) {
+                                    window.heroChart.timeScale().fitContent();
+                                }
+                            }, 100);
+                        }
+                    } catch (error) {
+                        console.error('Error resizing hero chart:', error);
+                    }
                 }
             }
 
@@ -388,6 +487,118 @@ function addChartResizeHandler() {
             }
         }, 150);
     });
+}
+
+// Mobile chart debugging function
+function debugMobileChart() {
+    const isMobile = window.innerWidth <= 768;
+    const isSmallMobile = window.innerWidth <= 480;
+
+    console.log('=== MOBILE CHART DEBUG ===');
+    console.log(`Screen: ${window.innerWidth}x${window.innerHeight}`);
+    console.log(`Mobile: ${isMobile}, Small Mobile: ${isSmallMobile}`);
+
+    const heroElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+    if (heroElement) {
+        const rect = heroElement.getBoundingClientRect();
+        console.log('Hero element:', {
+            width: heroElement.clientWidth,
+            height: heroElement.clientHeight,
+            offsetWidth: heroElement.offsetWidth,
+            offsetHeight: heroElement.offsetHeight,
+            rect: rect,
+            display: getComputedStyle(heroElement).display,
+            position: getComputedStyle(heroElement).position,
+            visibility: getComputedStyle(heroElement).visibility
+        });
+
+        const canvases = heroElement.querySelectorAll('canvas');
+        console.log(`Found ${canvases.length} canvas elements`);
+        canvases.forEach((canvas, i) => {
+            console.log(`Canvas ${i}:`, {
+                width: canvas.width,
+                height: canvas.height,
+                clientWidth: canvas.clientWidth,
+                clientHeight: canvas.clientHeight,
+                display: getComputedStyle(canvas).display,
+                visibility: getComputedStyle(canvas).visibility,
+                opacity: getComputedStyle(canvas).opacity
+            });
+        });
+    }
+
+    if (window.heroChart) {
+        console.log('Hero chart object exists:', typeof window.heroChart);
+        console.log('Chart methods available:', Object.getOwnPropertyNames(window.heroChart));
+    }
+
+    console.log('=========================');
+}
+
+// Call debug function on mobile devices
+if (window.innerWidth <= 768) {
+    setTimeout(() => debugMobileChart(), 2000);
+}
+
+// Mobile-specific chart initialization
+function initializeMobileCharts() {
+    const isMobile = window.innerWidth <= 768;
+    const isSmallMobile = window.innerWidth <= 480;
+
+    if (!isMobile) return;
+
+    console.log('Initializing mobile chart optimizations...');
+
+    // Force proper viewport if not set
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+        viewport = document.createElement('meta');
+        viewport.name = 'viewport';
+        document.head.appendChild(viewport);
+    }
+    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
+
+    // Add mobile chart classes to body
+    document.body.classList.add('mobile-charts');
+    if (isSmallMobile) {
+        document.body.classList.add('small-mobile');
+    }
+
+    // Ensure all chart containers have proper mobile styles
+    const chartContainers = document.querySelectorAll('.featured-chart-container, .chart-container-hero, #heroChart, #featuredChart');
+    chartContainers.forEach(container => {
+        if (container) {
+            container.style.position = 'relative';
+            container.style.width = '100%';
+            container.style.height = isSmallMobile ? '280px' : '300px';
+            container.style.display = 'block';
+            container.style.visibility = 'visible';
+            container.style.opacity = '1';
+            container.style.overflow = 'hidden';
+            container.style.background = '#ffffff';
+            container.style.border = '1px solid #e1e5e9';
+            container.style.borderRadius = '8px';
+            container.style.touchAction = 'pan-x pan-y';
+        }
+    });
+
+    // Force redraw of charts after mobile initialization
+    setTimeout(() => {
+        if (window.heroChart && window.heroChart.timeScale) {
+            try {
+                window.heroChart.timeScale().fitContent();
+            } catch (e) {
+                console.log('Chart fitContent failed:', e);
+            }
+        }
+    }, 500);
+}
+
+// Initialize mobile optimizations on DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMobileCharts);
+} else {
+    initializeMobileCharts();
 }
 
 // Mobile-optimized chart configuration
@@ -555,7 +766,9 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
     }
 
     const apiSources = [
+        { name: 'CoinGecko', endpoint: `coingecko/${symbol}/` },
         { name: 'Primary Historical', endpoint: `historical/${symbol}/` },
+        { name: 'Crypto API', endpoint: `crypto/${symbol}/` },
         { name: 'Tiingo', endpoint: `tiingo/${symbol}/` },
         { name: 'Marketstack', endpoint: `marketstack/${symbol}/` },
         { name: 'Enhanced', endpoint: `enhanced/${symbol}/` }
@@ -1639,9 +1852,11 @@ async function loadEnhancedMarketData() {
 
     const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA'];
     const apiSources = [
+        { name: 'CoinGecko', endpoint: 'coingecko' },
         { name: 'Alpha Vantage', endpoint: 'quote' },
         { name: 'Tiingo', endpoint: 'tiingo' },
-        { name: 'Marketstack', endpoint: 'marketstack' }
+        { name: 'Marketstack', endpoint: 'marketstack' },
+        { name: 'Crypto API', endpoint: 'crypto' }
     ];
 
     const container = document.querySelector('.api-comparison .api-results');

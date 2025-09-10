@@ -119,16 +119,53 @@ body {
     .chart-container-hero,
     .chart-container-prediction,
     .featured-chart-container {
-        height: 250px !important;
-        min-height: 250px !important;
+        height: 280px !important;
+        min-height: 280px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        background: #ffffff !important;
+        border: 1px solid #e1e5e9 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        display: block !important;
+        margin: 0 auto !important;
     }
 
     /* Fix viewport width on small screens */
     #featuredChart,
     #heroChart,
     #predictionChart {
-        width: calc(100vw - 32px) !important;
-        max-width: calc(100vw - 32px) !important;
-        height: 250px !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Critical fix for chart canvas elements on mobile */
+    #featuredChart canvas,
+    #heroChart canvas,
+    #predictionChart canvas,
+    .chart-container canvas,
+    .chart-container-hero canvas,
+    .featured-chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+        background: transparent !important;
+        pointer-events: auto !important;
     }
 }

@@ -11,6 +11,7 @@ urlpatterns = [
     
     # 암호화폐 & 외환
     path('crypto/<str:symbol>/', views.get_crypto_data, name='crypto_data'),
+    path('coingecko/<str:symbol>/', views.get_coingecko_data, name='coingecko_data'),
     path('forex/<str:from_symbol>/<str:to_symbol>/', views.get_forex_data, name='forex_data'),
     
     # 시장 정보

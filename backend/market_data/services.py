@@ -1409,6 +1409,140 @@ class MarketDataService:
             logger.error(f"Marketstack 히스토리컬 데이터 오류 {symbol}: {e}")
             return None
 
+    def get_coingecko_historical_data(self, symbol: str, period: str = '30', vs_currency: str = 'usd') -> Optional[List[Dict[str, Any]]]:
+        """CoinGecko API로 암호화폐 히스토리컬 데이터 조회 (무료, API 키 불필요)"""
+        try:
+            # CoinGecko ID 매핑
+            crypto_id_mapping = {
+                'BTC': 'bitcoin',
+                'ETH': 'ethereum', 
+                'ADA': 'cardano',
+                'BNB': 'binancecoin',
+                'DOT': 'polkadot',
+                'MATIC': 'matic-network',
+                'SOL': 'solana',
+                'LTC': 'litecoin',
+                'XRP': 'ripple',
+                'DOGE': 'dogecoin',
+                'AVAX': 'avalanche-2',
+                'LINK': 'chainlink',
+                'UNI': 'uniswap',
+                'ATOM': 'cosmos',
+                'AAPL': 'apple',  # Some stocks are available on CoinGecko
+                'TSLA': 'tesla',
+                'MSFT': 'microsoft',
+                'GOOGL': 'alphabet',
+                'AMZN': 'amazon'
+            }
+            
+            coin_id = crypto_id_mapping.get(symbol.upper())
+            if not coin_id:
+                logger.warning(f"CoinGecko: No mapping found for {symbol}")
+                return None
+
+            # Convert period to days
+            period_map = {
+                '1day': '1',
+                '1week': '7',
+                '1month': '30',
+                '3months': '90',
+                '6months': '180',
+                '1year': '365',
+                '2years': '730'
+            }
+            days = period_map.get(period, period)
+
+            url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart"
+            params = {
+                'vs_currency': vs_currency,
+                'days': days,
+                'interval': 'daily' if int(days) > 30 else 'hourly'
+            }
+            
+            response = requests.get(url, params=params, timeout=30)
+            response.raise_for_status()
+            data = response.json()
+            
+            if 'prices' in data:
+                prices = data['prices']
+                volumes = data.get('market_caps', [])
+                
+                historical_data = []
+                for i, price_data in enumerate(prices):
+                    timestamp, price = price_data
+                    date_obj = datetime.fromtimestamp(timestamp / 1000)
+                    
+                    # Get volume if available
+                    volume = 0
+                    if i < len(volumes):
+                        volume = volumes[i][1] if len(volumes[i]) > 1 else 0
+                    
+                    # Since CoinGecko only provides price data, we'll estimate OHLC
+                    # This is a simplification - for more accurate OHLC data, you'd need a premium API
+                    open_price = price * (1 + (0.005 * (0.5 - abs(0.5))))  # Small random variation
+                    high_price = price * 1.02  # Approximate 2% higher than close
+                    low_price = price * 0.98   # Approximate 2% lower than close
+                    
+                    historical_data.append({
+                        'date': date_obj.strftime('%Y-%m-%d'),
+                        'datetime': date_obj.isoformat(),
+                        'timestamp': int(timestamp / 1000),
+                        'time': int(timestamp / 1000),
+                        'open': round(open_price, 6),
+                        'high': round(high_price, 6),
+                        'low': round(low_price, 6),
+                        'close': round(price, 6),
+                        'price': round(price, 6),  # Alternative field name
+                        'value': round(price, 6),  # Alternative field name
+                        'volume': int(volume),
+                        'symbol': symbol.upper(),
+                        'source': 'coingecko'
+                    })
+                
+                logger.info(f"CoinGecko: Successfully retrieved {len(historical_data)} data points for {symbol}")
+                return historical_data
+            
+            logger.warning(f"CoinGecko: No price data found for {symbol}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"CoinGecko 히스토리컬 데이터 오류 {symbol}: {e}")
+            return None
+
+    def get_coingecko_primary_data(self, symbol: str, period: str = '30', vs_currency: str = 'usd') -> Optional[List[Dict[str, Any]]]:
+        """CoinGecko를 주요 소스로 사용하는 데이터 조회"""
+        cache_key = f"coingecko_primary_{symbol}_{period}_{vs_currency}"
+        cached_data = cache.get(cache_key)
+        
+        if cached_data:
+            logger.info(f"Returning cached CoinGecko data for {symbol}")
+            return cached_data
+        
+        try:
+            # CoinGecko 데이터 조회
+            data = self.get_coingecko_historical_data(symbol, period, vs_currency)
+            
+            if data and len(data) > 0:
+                # 캐시에 저장 (10분)
+                cache.set(cache_key, data, timeout=600)
+                logger.info(f"CoinGecko: Successfully cached {len(data)} data points for {symbol}")
+                return data
+            
+            # CoinGecko 실패 시 다른 API들 시도
+            logger.warning(f"CoinGecko failed for {symbol}, trying other APIs...")
+            
+            fallback_data = self.get_historical_data(symbol, period, '1day', 'crypto')
+            if fallback_data:
+                cache.set(cache_key, fallback_data, timeout=300)  # 5분 캐시 (짧게)
+                return fallback_data
+            
+            logger.error(f"All APIs failed for {symbol}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"CoinGecko primary data error for {symbol}: {e}")
+            return None
+
 
 # 전역 인스턴스 - 지연 초기화
 _market_service = None

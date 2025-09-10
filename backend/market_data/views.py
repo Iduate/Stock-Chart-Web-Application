@@ -56,6 +56,55 @@ def get_crypto_data(request, symbol):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
+def get_coingecko_data(request, symbol):
+    """CoinGecko API를 우선 사용하는 데이터 조회"""
+    try:
+        period = request.GET.get('period', '30')
+        vs_currency = request.GET.get('vs_currency', 'usd')
+        
+        logger.info(f"CoinGecko data requested for {symbol} (period: {period}, currency: {vs_currency})")
+        
+        # CoinGecko를 주요 소스로 사용
+        data = get_market_service().get_coingecko_primary_data(symbol, period, vs_currency)
+        
+        if data and len(data) > 0:
+            logger.info(f"Successfully retrieved {len(data)} CoinGecko data points for {symbol}")
+            return Response({
+                'data': data,
+                'source': 'coingecko',
+                'symbol': symbol.upper(),
+                'period': period,
+                'vs_currency': vs_currency,
+                'count': len(data)
+            }, status=status.HTTP_200_OK)
+        
+        # CoinGecko 실패 시 에러 메시지
+        logger.warning(f"CoinGecko data not available for {symbol}")
+        return Response(
+            {
+                'error': f'CoinGecko 데이터를 찾을 수 없습니다: {symbol}',
+                'message': 'Symbol not supported by CoinGecko or API temporarily unavailable',
+                'symbol': symbol,
+                'supported_crypto': ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE'],
+                'supported_stocks': ['AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN']
+            }, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+        
+    except Exception as e:
+        logger.error(f"CoinGecko 데이터 조회 오류 {symbol}: {e}")
+        return Response(
+            {
+                'error': 'CoinGecko 데이터 조회 중 오류가 발생했습니다',
+                'message': str(e),
+                'symbol': symbol
+            }, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
 @permission_classes([AllowAny])  # 인증 없이 접근 허용
 def get_real_time_quote(request, symbol):
     """실시간 시세 조회 API"""
