@@ -14,8 +14,25 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- Lightweight Charts -->
-    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    <!-- Lightweight Charts - Multiple CDN fallbacks -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"
+        onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js'"></script>
+    <script>
+        // Ensure LightweightCharts is loaded before proceeding
+        window.chartLibraryReady = false;
+        function checkLightweightCharts() {
+            if (typeof LightweightCharts !== 'undefined') {
+                console.log('✅ LightweightCharts loaded successfully');
+                window.chartLibraryReady = true;
+                window.dispatchEvent(new Event('lightweightChartsReady'));
+            } else {
+                console.log('❌ LightweightCharts not loaded, retrying...');
+                setTimeout(checkLightweightCharts, 100);
+            }
+        }
+        // Start checking after a brief delay
+        setTimeout(checkLightweightCharts, 50);
+    </script>
 
     <!-- Custom Tailwind Config -->
     <script>
@@ -817,23 +834,38 @@
                 <script>
                     console.log('🚀 Charts page script loaded!');
 
-                    // Initialize charts when page loads
-                    document.addEventListener('DOMContentLoaded', function () {
-                        console.log('📊 Charts page DOM loaded, waiting for LightweightCharts...');
+                    // Initialize charts when both DOM and LightweightCharts are ready
+                    let domReady = false;
+                    let chartsLibReady = false;
 
-                        // Wait for LightweightCharts to be available
-                        function waitForLightweightCharts() {
-                            if (typeof LightweightCharts !== 'undefined') {
-                                console.log('✅ LightweightCharts is available, initializing charts...');
-                                initializeChartsPageCharts();
-                            } else {
-                                console.log('⏳ Waiting for LightweightCharts...');
-                                setTimeout(waitForLightweightCharts, 100);
-                            }
+                    function tryInitializeCharts() {
+                        if (domReady && (chartsLibReady || window.chartLibraryReady)) {
+                            console.log('✅ Both DOM and LightweightCharts ready, initializing charts...');
+                            initializeChartsPageCharts();
                         }
+                    }
 
-                        waitForLightweightCharts();
+                    document.addEventListener('DOMContentLoaded', function () {
+                        console.log('📊 Charts page DOM loaded');
+                        domReady = true;
+                        tryInitializeCharts();
                     });
+
+                    window.addEventListener('lightweightChartsReady', function () {
+                        console.log('📈 LightweightCharts ready event received');
+                        chartsLibReady = true;
+                        tryInitializeCharts();
+                    });
+
+                    // Fallback: try after 2 seconds regardless
+                    setTimeout(() => {
+                        if (!domReady || !chartsLibReady) {
+                            console.log('⏰ Fallback initialization after timeout');
+                            domReady = true;
+                            chartsLibReady = true;
+                            tryInitializeCharts();
+                        }
+                    }, 2000);
 
                     function initializeChartsPageCharts() {
                         console.log('📈 Starting chart initialization...');
@@ -905,82 +937,93 @@
                                 console.warn(`⚠️ Container has no dimensions: ${container.clientWidth}x${container.clientHeight}`);
                                 container.style.width = '100%';
                                 container.style.height = '256px';
+                                container.style.position = 'relative';
+
+                                // Force layout recalculation
+                                container.offsetHeight;
                             }
 
-                            console.log(`📏 Container dimensions: ${container.clientWidth}x${container.clientHeight}`);
+                            // Wait for layout to stabilize
+                            setTimeout(() => {
+                                const finalWidth = container.clientWidth || 600;
+                                const finalHeight = 256;
 
-                            // Chart configuration
-                            const chartOptions = {
-                                width: container.clientWidth,
-                                height: 256,
-                                layout: {
-                                    background: { color: '#131722' },
-                                    textColor: '#d1d4dc',
-                                },
-                                grid: {
-                                    vertLines: { color: '#2a2e39' },
-                                    horzLines: { color: '#2a2e39' },
-                                },
-                                rightPriceScale: {
-                                    borderColor: '#2a2e39',
-                                },
-                                timeScale: {
-                                    borderColor: '#2a2e39',
-                                    timeVisible: true,
-                                },
-                                crosshair: {
-                                    mode: LightweightCharts.CrosshairMode.Normal,
-                                },
-                            };
+                                console.log(`📏 Final container dimensions: ${finalWidth}x${finalHeight}`);
 
-                            // Create chart
-                            console.log(`🔧 Creating LightweightCharts instance with options:`, chartOptions);
-                            const chart = LightweightCharts.createChart(container, chartOptions);
-                            console.log(`✅ Chart instance created:`, chart);
+                                // Chart configuration
+                                const chartOptions = {
+                                    width: finalWidth,
+                                    height: finalHeight,
+                                    layout: {
+                                        background: { color: '#131722' },
+                                        textColor: '#d1d4dc',
+                                    },
+                                    grid: {
+                                        vertLines: { color: '#2a2e39' },
+                                        horzLines: { color: '#2a2e39' },
+                                    },
+                                    rightPriceScale: {
+                                        borderColor: '#2a2e39',
+                                    },
+                                    timeScale: {
+                                        borderColor: '#2a2e39',
+                                        timeVisible: true,
+                                    },
+                                    crosshair: {
+                                        mode: LightweightCharts.CrosshairMode.Normal,
+                                    },
+                                };
 
-                            // Add candlestick series
-                            const candlestickSeries = chart.addCandlestickSeries({
-                                upColor: '#26a69a',
-                                downColor: '#ef5350',
-                                borderDownColor: '#ef5350',
-                                borderUpColor: '#26a69a',
-                                wickDownColor: '#ef5350',
-                                wickUpColor: '#26a69a',
-                            });
+                                // Create chart
+                                console.log(`🔧 Creating LightweightCharts instance with options:`, chartOptions);
+                                const chart = LightweightCharts.createChart(container, chartOptions);
+                                console.log(`✅ Chart instance created:`, chart);
 
-                            // Set data
-                            candlestickSeries.setData(stockData.data);
+                                // Add candlestick series
+                                const candlestickSeries = chart.addCandlestickSeries({
+                                    upColor: '#26a69a',
+                                    downColor: '#ef5350',
+                                    borderDownColor: '#ef5350',
+                                    borderUpColor: '#26a69a',
+                                    wickDownColor: '#ef5350',
+                                    wickUpColor: '#26a69a',
+                                });
 
-                            // Add prediction line
-                            const lineSeries = chart.addLineSeries({
-                                color: '#2962FF',
-                                lineWidth: 2,
-                                lineStyle: LightweightCharts.LineStyle.Dotted,
-                                title: 'Prediction',
-                            });
+                                // Set data
+                                candlestickSeries.setData(stockData.data);
 
-                            // Add prediction point (future date)
-                            const lastDataPoint = stockData.data[stockData.data.length - 1];
-                            const predictionDate = new Date(lastDataPoint.time * 1000);
-                            predictionDate.setDate(predictionDate.getDate() + 7); // 7 days in future
+                                // Add prediction line
+                                const lineSeries = chart.addLineSeries({
+                                    color: '#2962FF',
+                                    lineWidth: 2,
+                                    lineStyle: LightweightCharts.LineStyle.Dotted,
+                                    title: 'Prediction',
+                                });
 
-                            const predictionData = [
-                                { time: lastDataPoint.time, value: lastDataPoint.close },
-                                { time: Math.floor(predictionDate.getTime() / 1000), value: stockData.predictedPrice }
-                            ];
+                                // Add prediction point (future date)
+                                const lastDataPoint = stockData.data[stockData.data.length - 1];
+                                const predictionDate = new Date(lastDataPoint.time * 1000);
+                                predictionDate.setDate(predictionDate.getDate() + 7); // 7 days in future
 
-                            lineSeries.setData(predictionData);
+                                const predictionData = [
+                                    { time: lastDataPoint.time, value: lastDataPoint.close },
+                                    { time: Math.floor(predictionDate.getTime() / 1000), value: stockData.predictedPrice }
+                                ];
 
-                            // Handle resize
-                            const resizeObserver = new ResizeObserver(entries => {
-                                if (entries.length === 0) return;
-                                const newRect = entries[0].contentRect;
-                                chart.applyOptions({ width: newRect.width });
-                            });
+                                lineSeries.setData(predictionData);
 
-                            resizeObserver.observe(container);
+                                // Handle resize
+                                const resizeObserver = new ResizeObserver(entries => {
+                                    if (entries.length === 0) return;
+                                    const newRect = entries[0].contentRect;
+                                    chart.applyOptions({ width: newRect.width });
+                                });
 
-                            console.log(`Chart ${stockData.symbol} initialized successfully`);
+                                resizeObserver.observe(container);
+
+                                console.log(`Chart ${stockData.symbol} initialized successfully`);
+                            }, 100);
+
                         } catch (error) {
                             console.error(`Error creating chart for ${stockData.symbol}:`, error);
                             container.innerHTML = '<div class="text-center text-red-500 p-4">차트 로딩 실패</div>';
