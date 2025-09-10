@@ -6,20 +6,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('🎯 Mobile-Desktop Parity: Ensuring identical UI across devices...');
 
-    // Force desktop layout on mobile
+    // Force EXACT desktop flexbox layout on mobile
     function enforceDesktopLayout() {
         const heroContainer = document.querySelector('.hero-container');
         if (heroContainer && window.innerWidth <= 768) {
-            // Maintain side-by-side layout even on mobile
-            heroContainer.style.setProperty('display', 'grid', 'important');
-            heroContainer.style.setProperty('grid-template-columns', '1fr 1fr', 'important');
-            heroContainer.style.setProperty('gap', '20px', 'important');
+            // Use EXACT same flexbox layout as desktop
+            heroContainer.style.setProperty('display', 'flex', 'important');
             heroContainer.style.setProperty('align-items', 'center', 'important');
+            heroContainer.style.setProperty('justify-content', 'space-between', 'important');
+            heroContainer.style.setProperty('gap', 'var(--tv-space-6, 32px)', 'important');
             heroContainer.style.setProperty('max-width', '1400px', 'important');
             heroContainer.style.setProperty('margin', '0 auto', 'important');
-            heroContainer.style.setProperty('padding', '0 15px', 'important');
+            heroContainer.style.setProperty('padding', '0 var(--tv-space-4, 16px)', 'important');
 
-            console.log('✅ Desktop hero layout enforced on mobile');
+            console.log('✅ Desktop flexbox layout enforced on mobile');
         }
     }
 
@@ -45,6 +45,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 console.log('✅ Desktop text alignment enforced on mobile');
+            }
+        }
+    }
+
+    // Ensure hero content and image get EXACT desktop flex properties
+    function enforceDesktopFlexProperties() {
+        if (window.innerWidth <= 768) {
+            const heroContent = document.querySelector('.hero-content');
+            const heroImage = document.querySelector('.hero-image');
+
+            if (heroContent) {
+                heroContent.style.setProperty('flex', '1', 'important');
+                heroContent.style.setProperty('max-width', '600px', 'important');
+                console.log('✅ Hero content flex properties enforced');
+            }
+
+            if (heroImage) {
+                heroImage.style.setProperty('flex', '1', 'important');
+                heroImage.style.setProperty('max-width', '650px', 'important');
+                console.log('✅ Hero image flex properties enforced');
             }
         }
     }
@@ -107,15 +127,26 @@ document.addEventListener('DOMContentLoaded', function () {
         style.textContent = `
             /* Mobile-Desktop UI Parity - Override all hiding rules */
             @media (max-width: 768px) {
-                /* Force desktop hero layout */
+                /* Force EXACT desktop flexbox layout */
                 .hero-container {
-                    display: grid !important;
-                    grid-template-columns: 1fr 1fr !important;
-                    gap: 20px !important;
+                    display: flex !important;
                     align-items: center !important;
+                    justify-content: space-between !important;
+                    gap: var(--tv-space-6, 32px) !important;
                     max-width: 1400px !important;
                     margin: 0 auto !important;
-                    padding: 0 15px !important;
+                    padding: 0 var(--tv-space-4, 16px) !important;
+                }
+                
+                /* Exact desktop flex properties */
+                .hero-content {
+                    flex: 1 !important;
+                    max-width: 600px !important;
+                }
+                
+                .hero-image {
+                    flex: 1 !important;
+                    max-width: 650px !important;
                 }
                 
                 /* Keep desktop text alignment */
@@ -178,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
         injectParityCSS();
         enforceContentVisibility();
         enforceDesktopLayout();
+        enforceDesktopFlexProperties();
         enforceDesktopAlignment();
         enforceChartVisibility();
 
