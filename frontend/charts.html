@@ -813,6 +813,167 @@
                 <script src="js/app.js?v=1.5"></script>
                 <script src="js/access-limit.js?v=1.0"></script>
 
+                <!-- Chart Initialization Script -->
+                <script>
+                    // Initialize charts when page loads
+                    document.addEventListener('DOMContentLoaded', function () {
+                        console.log('Charts page loaded, initializing charts...');
+                        initializeChartsPageCharts();
+                    });
+
+                    function initializeChartsPageCharts() {
+                        // Sample data for demonstration
+                        const sampleData = [
+                            {
+                                symbol: 'AAPL',
+                                name: 'Apple Inc.',
+                                currentPrice: 182.50,
+                                predictedPrice: 195.00,
+                                change: '+2.8%',
+                                data: generateSampleData(182.50, 30)
+                            },
+                            {
+                                symbol: 'GOOGL',
+                                name: 'Alphabet Inc.',
+                                currentPrice: 142.80,
+                                predictedPrice: 155.00,
+                                change: '+1.5%',
+                                data: generateSampleData(142.80, 30)
+                            },
+                            {
+                                symbol: 'ETH',
+                                name: 'Ethereum',
+                                currentPrice: 4320.00,
+                                predictedPrice: 3800.00,
+                                change: '-1.2%',
+                                data: generateSampleData(4320.00, 30)
+                            }
+                        ];
+
+                        // Initialize each chart
+                        sampleData.forEach((stockData, index) => {
+                            const chartId = `chart-${index + 1}`;
+                            const chartContainer = document.getElementById(chartId);
+
+                            if (chartContainer && typeof LightweightCharts !== 'undefined') {
+                                console.log(`Initializing chart: ${chartId}`);
+                                createStockChart(chartContainer, stockData);
+                            } else {
+                                console.warn(`Chart container ${chartId} not found or LightweightCharts not loaded`);
+                            }
+                        });
+                    }
+
+                    function createStockChart(container, stockData) {
+                        try {
+                            // Chart configuration
+                            const chartOptions = {
+                                width: container.clientWidth,
+                                height: 256,
+                                layout: {
+                                    background: { color: '#131722' },
+                                    textColor: '#d1d4dc',
+                                },
+                                grid: {
+                                    vertLines: { color: '#2a2e39' },
+                                    horzLines: { color: '#2a2e39' },
+                                },
+                                rightPriceScale: {
+                                    borderColor: '#2a2e39',
+                                },
+                                timeScale: {
+                                    borderColor: '#2a2e39',
+                                    timeVisible: true,
+                                },
+                                crosshair: {
+                                    mode: LightweightCharts.CrosshairMode.Normal,
+                                },
+                            };
+
+                            // Create chart
+                            const chart = LightweightCharts.createChart(container, chartOptions);
+
+                            // Add candlestick series
+                            const candlestickSeries = chart.addCandlestickSeries({
+                                upColor: '#26a69a',
+                                downColor: '#ef5350',
+                                borderDownColor: '#ef5350',
+                                borderUpColor: '#26a69a',
+                                wickDownColor: '#ef5350',
+                                wickUpColor: '#26a69a',
+                            });
+
+                            // Set data
+                            candlestickSeries.setData(stockData.data);
+
+                            // Add prediction line
+                            const lineSeries = chart.addLineSeries({
+                                color: '#2962FF',
+                                lineWidth: 2,
+                                lineStyle: LightweightCharts.LineStyle.Dotted,
+                                title: 'Prediction',
+                            });
+
+                            // Add prediction point (future date)
+                            const lastDataPoint = stockData.data[stockData.data.length - 1];
+                            const predictionDate = new Date(lastDataPoint.time * 1000);
+                            predictionDate.setDate(predictionDate.getDate() + 7); // 7 days in future
+
+                            const predictionData = [
+                                { time: lastDataPoint.time, value: lastDataPoint.close },
+                                { time: Math.floor(predictionDate.getTime() / 1000), value: stockData.predictedPrice }
+                            ];
+
+                            lineSeries.setData(predictionData);
+
+                            // Handle resize
+                            const resizeObserver = new ResizeObserver(entries => {
+                                if (entries.length === 0) return;
+                                const newRect = entries[0].contentRect;
+                                chart.applyOptions({ width: newRect.width });
+                            });
+
+                            resizeObserver.observe(container);
+
+                            console.log(`Chart ${stockData.symbol} initialized successfully`);
+                        } catch (error) {
+                            console.error(`Error creating chart for ${stockData.symbol}:`, error);
+                            container.innerHTML = '<div class="text-center text-red-500 p-4">차트 로딩 실패</div>';
+                        }
+                    }
+
+                    function generateSampleData(basePrice, days) {
+                        const data = [];
+                        let currentPrice = basePrice;
+                        const startDate = new Date();
+                        startDate.setDate(startDate.getDate() - days);
+
+                        for (let i = 0; i < days; i++) {
+                            const date = new Date(startDate);
+                            date.setDate(date.getDate() + i);
+
+                            // Generate realistic OHLC data
+                            const change = (Math.random() - 0.5) * 0.05; // ±2.5% change
+                            const open = currentPrice;
+                            const high = open * (1 + Math.random() * 0.03);
+                            const low = open * (1 - Math.random() * 0.03);
+                            const close = open * (1 + change);
+
+                            data.push({
+                                time: Math.floor(date.getTime() / 1000),
+                                open: parseFloat(open.toFixed(2)),
+                                high: parseFloat(high.toFixed(2)),
+                                low: parseFloat(low.toFixed(2)),
+                                close: parseFloat(close.toFixed(2))
+                            });
+
+                            currentPrice = close;
+                        }
+
+                        return data;
+                    }
+                </script>
+
                 <script>
                     // Mobile menu toggle function
                     function toggleMobileMenu() {
@@ -1147,8 +1308,8 @@
                     function showNotification(message, type = 'info') {
                         const notification = document.createElement('div');
                         notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 ${type === 'success' ? 'bg-tv-green text-white' :
-                                type === 'error' ? 'bg-tv-red text-white' :
-                                    'bg-tv-blue text-white'
+                            type === 'error' ? 'bg-tv-red text-white' :
+                                'bg-tv-blue text-white'
                             }`;
                         notification.innerHTML = `
                             <div class="flex items-center space-x-3">
