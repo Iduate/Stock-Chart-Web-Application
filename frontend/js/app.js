@@ -1070,11 +1070,11 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
             const areaSeries = window.heroChart.addAreaSeries(seriesOptions);
             window.currentSeries = areaSeries;
 
-            // Add prediction line series if predictions are enabled
+            // Add prediction line series if predictions are enabled - ENHANCED VISIBILITY
             if (showPredictions) {
                 const predictionSeriesOptions = {
-                    color: '#ff6b35', // Orange color for predictions
-                    lineWidth: 3,
+                    color: '#FF6B35', // Bright orange color for predictions
+                    lineWidth: 4, // Increased from 3 to 4 for better visibility
                     lineStyle: 2, // Dashed line (LightweightCharts.LineStyle.Dashed)
                     priceFormat: {
                         type: 'price',
@@ -1083,25 +1083,32 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
                     },
                     lastValueVisible: true,
                     priceLineVisible: true,
-                    title: '회원 예측',
+                    title: '회원 예측 라인',
+                    crosshairMarkerVisible: true,
+                    crosshairMarkerRadius: 6,
+                    crosshairMarkerBorderColor: '#FF6B35',
+                    crosshairMarkerBackgroundColor: '#FF6B35',
                 };
 
                 try {
                     const predictionLineSeries = window.heroChart.addLineSeries(predictionSeriesOptions);
                     window.predictionSeries = predictionLineSeries;
+                    console.log('✅ Enhanced prediction series added successfully');
                 } catch (error) {
                     console.log('Failed to add prediction series:', error);
-                    // Fallback to simple line series
+                    // Fallback to simple line series with enhanced visibility
                     const simplePredictionSeries = window.heroChart.addLineSeries({
-                        color: '#ff6b35',
-                        lineWidth: 2,
+                        color: '#FF6B35',
+                        lineWidth: 4, // Increased width
                         priceFormat: {
                             type: 'price',
                             precision: 2,
                             minMove: 0.01,
                         },
+                        title: '회원 예측 라인',
                     });
                     window.predictionSeries = simplePredictionSeries;
+                    console.log('✅ Fallback prediction series added successfully');
                 }
             }
 
@@ -1145,15 +1152,31 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
             areaSeries.setData(formattedData);
             console.log('Chart data set successfully - areaSeries.setData() completed');
 
-            // Generate and set prediction data if enabled
+            // Generate and set prediction data if enabled - ENHANCED LOGGING
             if (showPredictions && window.predictionSeries) {
-                console.log('Generating prediction data...');
+                console.log('🔮 Generating enhanced prediction data...');
                 const predictionData = await generatePredictionData(formattedData, symbol);
+                console.log('🔮 Generated prediction data points:', predictionData.length);
+                console.log('🔮 Sample prediction data:', predictionData.slice(0, 3));
+
                 if (predictionData && predictionData.length > 0) {
                     window.predictionSeries.setData(predictionData);
-                    console.log('Prediction data set successfully');
+                    console.log('✅ PREDICTION LINE DATA SET SUCCESSFULLY - SHOULD BE VISIBLE NOW!');
+                    console.log('🔮 Prediction series details:', {
+                        totalPoints: predictionData.length,
+                        firstPoint: predictionData[0],
+                        lastPoint: predictionData[predictionData.length - 1],
+                        series: window.predictionSeries
+                    });
                 } else {
-                    console.log('No prediction data generated');
+                    console.log('❌ No prediction data generated - prediction line will not show');
+                }
+            } else {
+                if (!showPredictions) {
+                    console.log('📊 Predictions disabled - only showing actual data line');
+                }
+                if (!window.predictionSeries) {
+                    console.log('❌ Prediction series not created - check series creation above');
                 }
             }
 
@@ -1355,15 +1378,21 @@ async function generatePredictionData(actualData, symbol) {
         console.log('Could not fetch prediction data, generating sample predictions:', error);
     }
 
-    // Generate sample prediction data based on actual data
+    // Generate sample prediction data based on actual data - ENHANCED FOR VISIBILITY
     const predictionData = [];
-    const startIndex = Math.max(0, actualData.length - 30); // Show predictions for last 30 days
+    const startIndex = Math.max(0, actualData.length - 50); // Show predictions for last 50 days for better visibility
 
     for (let i = startIndex; i < actualData.length; i++) {
         const actualPoint = actualData[i];
-        // Generate prediction with some variance from actual price
-        const variance = (Math.random() - 0.5) * 0.1; // ±10% variance
-        const predictedValue = actualPoint.value * (1 + variance);
+        // Generate prediction with SIGNIFICANT variance from actual price for visibility
+        const baseVariance = (Math.random() - 0.5) * 0.2; // ±20% variance (increased from 10%)
+
+        // Add trend-based prediction that's clearly different
+        const timeProgress = (i - startIndex) / (actualData.length - startIndex);
+        const trendVariance = Math.sin(timeProgress * Math.PI * 2) * 0.15; // Sine wave pattern
+
+        const totalVariance = baseVariance + trendVariance;
+        const predictedValue = actualPoint.value * (1 + totalVariance);
 
         predictionData.push({
             time: actualPoint.time,
@@ -1371,25 +1400,37 @@ async function generatePredictionData(actualData, symbol) {
         });
     }
 
-    // Extend predictions into the future (next 7 days)
+    // Extend predictions into the future (next 10 days) - ENHANCED VISIBILITY
     const lastActualPoint = actualData[actualData.length - 1];
     const lastTime = typeof lastActualPoint.time === 'string'
         ? new Date(lastActualPoint.time + 'T00:00:00Z')
         : new Date(lastActualPoint.time * 1000);
 
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 10; i++) { // Increased from 7 to 10 days
         const futureDate = new Date(lastTime);
         futureDate.setDate(futureDate.getDate() + i);
 
-        const trend = (Math.random() - 0.5) * 0.05; // ±5% daily trend
+        // Enhanced trend calculation for more visible difference
+        const baseTrend = (Math.random() - 0.5) * 0.08; // ±8% daily trend (increased from 5%)
+        const cyclicalTrend = Math.sin(i * Math.PI / 5) * 0.05; // Add cyclical pattern
+        const totalTrend = baseTrend + cyclicalTrend;
+
         const lastPrediction = predictionData[predictionData.length - 1];
-        const futureValue = lastPrediction.value * (1 + trend);
+        const futureValue = lastPrediction.value * (1 + totalTrend);
 
         predictionData.push({
             time: Math.floor(futureDate.getTime() / 1000),
             value: parseFloat(futureValue.toFixed(2))
         });
     }
+
+    console.log('🔮 Enhanced prediction data generated:', {
+        totalPoints: predictionData.length,
+        historicalPoints: predictionData.length - 10,
+        futurePoints: 10,
+        firstValue: predictionData[0]?.value,
+        lastValue: predictionData[predictionData.length - 1]?.value
+    });
 
     return predictionData;
 }
@@ -1587,27 +1628,27 @@ function addDualLineChartLegend(symbol, dataSource, showPredictions, predictionA
     legend.innerHTML = `
         <div class="legend-header">
             <i class="fas fa-chart-line"></i>
-            <span class="legend-title">차트 정보</span>
+            <span class="legend-title">📊 듀얼 라인 차트</span>
         </div>
         <div class="legend-content">
             <div class="legend-item actual-data">
                 <div class="legend-color actual-color"></div>
                 <div class="legend-text">
-                    <span class="legend-label">실제 데이터 라인</span>
-                    <span class="legend-symbol">${symbol} 시장 데이터</span>
+                    <span class="legend-label">🔵 실제 데이터 라인</span>
+                    <span class="legend-symbol">${symbol} 시장 데이터 (파란색)</span>
                 </div>
             </div>
             ${showPredictions ? `
             <div class="legend-item prediction-data">
                 <div class="legend-color prediction-color"></div>
                 <div class="legend-text">
-                    <span class="legend-label">회원 예측 라인</span>
-                    <span class="legend-accuracy">정확도: ${predictionAccuracy}%</span>
+                    <span class="legend-label">🟠 회원 예측 라인</span>
+                    <span class="legend-accuracy">정확도: ${predictionAccuracy}% (주황색)</span>
                 </div>
             </div>
             <div class="legend-accuracy-info">
                 <i class="fas fa-trophy text-tv-green"></i>
-                <span>회원 예측 정확도 ${predictionAccuracy}%</span>
+                <span>⚡ 두 라인이 표시됩니다!</span>
                 <span class="accuracy-note">실시간 업데이트</span>
             </div>
             ` : ''}
