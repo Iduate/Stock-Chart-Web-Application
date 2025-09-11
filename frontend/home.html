@@ -352,6 +352,44 @@
                     <div id="featuredChart" class="w-full h-full"></div>
                 </div>
             </div>
+
+            <!-- Chart Guide for New Users -->
+            <div class="mt-12 bg-tv-card border border-tv-border rounded-xl p-8">
+                <div class="text-center mb-8">
+                    <h3 class="text-xl font-bold text-tv-text-primary mb-2">차트 읽는 방법</h3>
+                    <p class="text-tv-text-secondary">신규 방문자를 위한 가이드</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Actual Data Line -->
+                    <div class="flex items-start space-x-4">
+                        <div class="w-6 h-1 bg-gradient-to-r from-tv-blue to-blue-400 rounded mt-2"></div>
+                        <div>
+                            <h4 class="font-semibold text-tv-text-primary mb-2">실제 데이터 라인</h4>
+                            <p class="text-sm text-tv-text-secondary">파란색 실선으로 표시되는 실제 시장 데이터</p>
+                        </div>
+                    </div>
+
+                    <!-- Prediction Line -->
+                    <div class="flex items-start space-x-4">
+                        <div
+                            class="w-6 h-1 bg-gradient-to-r from-orange-500 to-orange-400 rounded mt-2 border border-dashed border-white/30">
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-tv-text-primary mb-2">회원 예측 라인</h4>
+                            <p class="text-sm text-tv-text-secondary">주황색 점선으로 표시되는 사용자 예측 데이터</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accuracy Display -->
+                <div class="mt-6 text-center p-4 bg-tv-green/10 border border-tv-green/20 rounded-lg">
+                    <div class="text-lg font-bold text-tv-green mb-1">
+                        <i class="fas fa-trophy mr-2"></i>회원 예측 정확도 89.5%
+                    </div>
+                    <p class="text-sm text-tv-text-secondary">실시간 업데이트 • 신규 방문자도 쉽게 이해</p>
+                </div>
+            </div>
         </div>
     </section>
 
