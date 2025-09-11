@@ -269,12 +269,15 @@ class StockChartApp {
     }
 
     initializeAccessTracking() {
+        // TEMPORARY - Disable subscription redirect for chart testing
+        console.log('🆘 TEMPORARY - Subscription redirect disabled for chart testing');
+
         // Initialize access tracking system
-        if (this.isPremiumPage() && !this.canAccessPremium()) {
-            setTimeout(() => {
-                window.location.href = 'subscription.html?payment_required=true';
-            }, 1000);
-        }
+        // if (this.isPremiumPage() && !this.canAccessPremium()) {
+        //     setTimeout(() => {
+        //         window.location.href = 'subscription.html?payment_required=true';
+        //     }, 1000);
+        // }
     }
 
     showAccessLimitModal() {
@@ -299,7 +302,10 @@ class StockChartApp {
     }
 
     showPaymentModal() {
-        window.location.href = 'subscription.html?payment_required=true';
+        // TEMPORARY - Disable subscription redirect for chart testing
+        console.log('🆘 TEMPORARY - Payment modal redirect disabled for chart testing');
+
+        // window.location.href = 'subscription.html?payment_required=true';
     }
 
     updateAuthUI() {

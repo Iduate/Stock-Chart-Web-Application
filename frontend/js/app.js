@@ -6,6 +6,27 @@ const API_BASE_URL = window.location.hostname === 'localhost' || window.location
 console.log('App.js loaded - Real Data Only Version 2.0 - ' + new Date().getTime());
 console.log('API Base URL:', API_BASE_URL);
 
+// Global function to force remove loading overlays - for debugging
+window.forceRemoveLoadingOverlays = function () {
+    console.log('🔧 Manually removing all loading overlays...');
+    const chartElements = document.querySelectorAll('#heroChart, #featuredChart, #chart-1, #chart-2, #chart-3');
+
+    chartElements.forEach(element => {
+        if (element) {
+            const overlays = element.querySelectorAll('div');
+            overlays.forEach(overlay => {
+                if (overlay.textContent.includes('Loading') ||
+                    overlay.textContent.includes('Fetching') ||
+                    overlay.style.position === 'absolute' && overlay.style.background) {
+                    console.log('🗑️ Removing overlay:', overlay.textContent.substring(0, 50));
+                    overlay.remove();
+                }
+            });
+        }
+    });
+    console.log('✅ Manual overlay removal complete');
+};
+
 // Test function to manually call crypto
 window.testCrypto = function () {
     console.log('Manual crypto test called');
@@ -1140,7 +1161,10 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
 
             updateChartTitle(symbol, data[data.length - 1]);
 
-            // Remove loading overlay
+            // Remove loading overlay - Enhanced removal logic
+            const chartElement = document.getElementById('heroChart') || document.getElementById('featuredChart');
+
+            // Remove any existing loading overlays (multiple methods for robustness)
             if (loadingOverlay && loadingOverlay.parentNode) {
                 loadingOverlay.style.opacity = '0';
                 setTimeout(() => {
@@ -1149,6 +1173,18 @@ async function loadStockChart(symbol, useProfessionalStyle = true, showPredictio
                     }
                 }, 300);
             }
+
+            // Also remove any loading overlays by class/selector
+            if (chartElement) {
+                const allOverlays = chartElement.querySelectorAll('[style*="position: absolute"], .loading-overlay, .chart-loading-overlay');
+                allOverlays.forEach(overlay => {
+                    if (overlay.textContent.includes('Loading') || overlay.textContent.includes('Fetching')) {
+                        overlay.remove();
+                    }
+                });
+            }
+
+            console.log('✅ Loading overlay removed - chart should be visible now');
 
         } else {
             console.error('No data or chart not available');

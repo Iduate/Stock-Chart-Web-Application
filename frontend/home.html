@@ -272,7 +272,8 @@
 
                             <!-- Chart Content -->
                             <div class="relative h-96 bg-tv-darker">
-                                <div id="heroChart" class="w-full h-full"></div>
+                                <div id="homeHeroChart" class="w-full h-full"
+                                    style="border: 2px solid red; background: #131722;"></div>
 
                                 <!-- Chart Overlay Stats -->
                                 <div
@@ -2065,10 +2066,16 @@
             initializeFeaturedChart();
         });
 
-        // Initialize hero chart
+        // Initialize hero chart with real BTC data
         function initializeHeroChart() {
-            const chartContainer = document.getElementById('heroChart');
-            if (!chartContainer) return;
+            const chartContainer = document.getElementById('homeHeroChart');
+            if (!chartContainer) {
+                console.error('❌ Home hero chart container not found');
+                return;
+            }
+
+            console.log('🏠 Initializing home hero chart container:', chartContainer);
+            console.log('🏠 Container dimensions:', chartContainer.clientWidth, 'x', chartContainer.clientHeight);
 
             const chart = LightweightCharts.createChart(chartContainer, {
                 width: chartContainer.clientWidth,
@@ -2094,18 +2101,22 @@
                 },
             });
 
-            const candlestickSeries = chart.addCandlestickSeries({
-                upColor: '#26a69a',
-                downColor: '#ef5350',
-                borderDownColor: '#ef5350',
-                borderUpColor: '#26a69a',
-                wickDownColor: '#ef5350',
-                wickUpColor: '#26a69a',
+            // Store chart instance globally for debugging
+            window.homeHeroChartInstance = chart;
+            console.log('🏠 Home hero chart instance created:', chart);
+
+            // Add area series for crypto data like the main app
+            const areaSeries = chart.addAreaSeries({
+                topColor: 'rgba(38, 166, 154, 0.28)',
+                bottomColor: 'rgba(38, 166, 154, 0.05)',
+                lineColor: '#26a69a',
+                lineWidth: 2,
             });
 
-            // Generate sample data
-            const data = generateSampleCandleData();
-            candlestickSeries.setData(data);
+            console.log('🏠 Area series added:', areaSeries);
+
+            // Load real BTC data
+            loadHomeCryptoData('BTC', areaSeries, chartContainer);
 
             // Handle resize
             window.addEventListener('resize', () => {
@@ -2114,9 +2125,87 @@
                     height: chartContainer.clientHeight,
                 });
             });
+
+            // Force chart to be visible
+            setTimeout(() => {
+                console.log('🏠 Forcing home chart visibility after 2 seconds...');
+                chartContainer.style.display = 'block';
+                chartContainer.style.visibility = 'visible';
+                chartContainer.style.opacity = '1';
+                chart.applyOptions({
+                    width: chartContainer.clientWidth,
+                    height: chartContainer.clientHeight,
+                });
+                chart.timeScale().fitContent();
+                console.log('🏠 Home chart visibility forced, container innerHTML:', chartContainer.innerHTML.substring(0, 200));
+            }, 2000);
         }
 
-        // Initialize featured chart
+        // Load real crypto data for home chart
+        async function loadHomeCryptoData(symbol, series, container) {
+            try {
+                console.log(`🏠 Loading home chart data for ${symbol}...`);
+
+                // Show loading state
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'absolute inset-0 flex items-center justify-center bg-tv-darker bg-opacity-80 z-10';
+                loadingDiv.innerHTML = `
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-tv-green mx-auto mb-2"></div>
+                        <div class="text-tv-text-secondary">Loading ${symbol} Chart Data...</div>
+                    </div>
+                `;
+                container.parentElement.appendChild(loadingDiv);
+
+                const response = await fetch(`/api/market-data/coingecko/${symbol}/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(`✅ Home chart data loaded for ${symbol}:`, data.data?.length || 0, 'points');
+
+                if (data.data && data.data.length > 0) {
+                    // Use the same validation and formatting function as the main app
+                    const formattedData = validateAndFormatChartData(data.data);
+                    if (formattedData.length > 0) {
+                        console.log('🏠 About to set chart data:', formattedData.slice(0, 3));
+                        series.setData(formattedData);
+                        console.log(`📊 Home chart data set successfully for ${symbol} - ${formattedData.length} points`);
+
+                        // Force chart to update and fit
+                        setTimeout(() => {
+                            if (window.homeHeroChartInstance) {
+                                console.log('🏠 Forcing home chart time scale fit...');
+                                window.homeHeroChartInstance.timeScale().fitContent();
+                                window.homeHeroChartInstance.applyOptions({
+                                    width: container.clientWidth,
+                                    height: container.clientHeight,
+                                });
+                            }
+                        }, 500);
+                    } else {
+                        console.error(`❌ No valid data points after formatting for ${symbol}`);
+                    }
+                }
+
+                // Remove loading state
+                if (loadingDiv.parentElement) {
+                    loadingDiv.parentElement.removeChild(loadingDiv);
+                }
+
+            } catch (error) {
+                console.error(`❌ Error loading home chart data for ${symbol}:`, error);
+
+                // Remove loading state on error
+                const loadingDiv = container.parentElement.querySelector('.absolute.inset-0');
+                if (loadingDiv) {
+                    loadingDiv.parentElement.removeChild(loadingDiv);
+                }
+            }
+        }
+
+        // Initialize featured chart with real ETH data
         function initializeFeaturedChart() {
             const chartContainer = document.getElementById('featuredChart');
             if (!chartContainer) return;
@@ -2150,9 +2239,8 @@
                 lineWidth: 3,
             });
 
-            // Generate sample line data
-            const data = generateSampleLineData();
-            lineSeries.setData(data);
+            // Load real ETH data
+            loadFeaturedCryptoData('ETH', lineSeries, chartContainer);
 
             // Handle resize
             window.addEventListener('resize', () => {
@@ -2161,6 +2249,88 @@
                     height: chartContainer.clientHeight,
                 });
             });
+        }
+
+        // Load crypto data for featured chart (line format)
+        async function loadFeaturedCryptoData(symbol, series, container) {
+            try {
+                console.log(`🌟 Loading featured chart data for ${symbol}...`);
+
+                const response = await fetch(`/api/market-data/coingecko/${symbol}/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(`✅ Featured chart data loaded for ${symbol}:`, data.data?.length || 0, 'points');
+
+                if (data.data && data.data.length > 0) {
+                    // Use the same validation and formatting function as the main app
+                    const formattedData = validateAndFormatChartData(data.data);
+                    if (formattedData.length > 0) {
+                        // Convert to line data format (same time/value structure works for both)
+                        series.setData(formattedData);
+                        console.log(`📊 Featured chart data set successfully for ${symbol} - ${formattedData.length} points`);
+                    } else {
+                        console.error(`❌ No valid data points after formatting for ${symbol}`);
+                    }
+                }
+
+            } catch (error) {
+                console.error(`❌ Error loading featured chart data for ${symbol}:`, error);
+            }
+        }
+
+        // Data validation and formatting function (from app.js)
+        function validateAndFormatChartData(rawData) {
+            if (!Array.isArray(rawData)) {
+                console.error('Chart data is not an array:', rawData);
+                return [];
+            }
+
+            console.log('🏠 Validating home chart data:', rawData.length, 'items');
+
+            const formattedData = rawData.map((item, index) => {
+                // More comprehensive field checking for different API formats
+                const time = item.date || item.time || item.datetime || item.timestamp;
+                const value = parseFloat(
+                    item.close || item.price || item.value || item.c ||
+                    item.Close || item.Price || item.Value || item.adjusted_close ||
+                    item.current_price // CoinGecko format
+                );
+
+                if (index < 2) {
+                    console.log(`🏠 Data item ${index}:`, {
+                        original: item,
+                        extractedTime: time,
+                        extractedValue: value
+                    });
+                }
+
+                // Convert date string to timestamp if needed
+                let processedTime = time;
+                if (typeof time === 'string') {
+                    const parsed = new Date(time);
+                    if (!isNaN(parsed.getTime())) {
+                        processedTime = Math.floor(parsed.getTime() / 1000);
+                    }
+                } else if (typeof time === 'number' && time > 1000000000000) {
+                    processedTime = Math.floor(time / 1000);
+                } else if (typeof time === 'number' && time > 1000000000) {
+                    processedTime = time; // Already in seconds
+                }
+
+                return { time: processedTime, value, originalIndex: index };
+            }).filter((item) => {
+                const isValid = item.time && !isNaN(item.value) && item.value > 0;
+                if (!isValid && item.originalIndex < 5) {
+                    console.log(`🏠 Filtered out invalid item ${item.originalIndex}:`, item);
+                }
+                return isValid;
+            });
+
+            console.log(`🏠 Formatted ${formattedData.length} valid data points from ${rawData.length} raw items`);
+            return formattedData;
         }
 
         // Generate sample line data

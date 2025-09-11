@@ -228,6 +228,8 @@ def get_events(request):
 @permission_classes([AllowAny])
 def get_charts(request):
     """차트 목록 조회 (심플 엔드포인트)"""
+    print(f"DEBUG: get_charts called - User: {request.user}, Authenticated: {request.user.is_authenticated}")
+    print(f"DEBUG: TEMPORARY - Returning sample chart data for testing")
     try:
         # 샘플 차트 데이터 반환
         sample_charts = [

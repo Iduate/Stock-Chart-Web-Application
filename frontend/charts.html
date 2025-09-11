@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>차트 보드 - StockChart</title>
+    <title>차트 보드 - StockChart (CHART TEST PAGE)</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
@@ -438,73 +438,90 @@
                     </div>
                 </div>
 
-                <!-- Statistics Section -->
-                <section class="py-8 bg-tv-card border-t border-tv-border">
+                <!-- Clean Statistics Section -->
+                <section class="py-20 bg-tv-darker/50 border-t border-tv-border/30">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
-                                <div class="text-3xl mb-3">📊</div>
-                                <div class="text-2xl lg:text-3xl font-bold text-tv-text mb-2">1,247</div>
-                                <div class="text-sm text-tv-text-secondary">활성 예측</div>
+                        <!-- Section Header -->
+                        <div class="text-center mb-16">
+                            <h2 class="text-3xl lg:text-4xl font-bold text-tv-text mb-4">
+                                플랫폼 통계
+                            </h2>
+                            <p class="text-lg text-tv-text-secondary max-w-2xl mx-auto">
+                                실시간으로 업데이트되는 투자 성과 지표
+                            </p>
+                        </div>
+
+                        <!-- Clean Statistics Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <!-- Active Predictions -->
+                            <div
+                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                <div
+                                    class="w-12 h-12 mx-auto mb-4 bg-tv-blue/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-xl text-tv-blue"></i>
+                                </div>
+                                <div class="text-3xl font-bold text-tv-text mb-2">1,247</div>
+                                <div class="text-sm font-medium text-tv-text-secondary">활성 예측</div>
                             </div>
-                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
-                                <div class="text-3xl mb-3">🎯</div>
-                                <div class="text-2xl lg:text-3xl font-bold text-tv-green mb-2">89.5%</div>
-                                <div class="text-sm text-tv-text-secondary">평균 정확도</div>
+
+                            <!-- Average Accuracy -->
+                            <div
+                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                <div
+                                    class="w-12 h-12 mx-auto mb-4 bg-tv-green/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-bullseye text-xl text-tv-green"></i>
+                                </div>
+                                <div class="text-3xl font-bold text-tv-green mb-2">89.5%</div>
+                                <div class="text-sm font-medium text-tv-text-secondary">평균 정확도</div>
                             </div>
-                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
-                                <div class="text-3xl mb-3">👥</div>
-                                <div class="text-2xl lg:text-3xl font-bold text-tv-text mb-2">3,421</div>
-                                <div class="text-sm text-tv-text-secondary">참여 사용자</div>
+
+                            <!-- Participating Users -->
+                            <div
+                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                <div
+                                    class="w-12 h-12 mx-auto mb-4 bg-tv-yellow/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-users text-xl text-tv-yellow"></i>
+                                </div>
+                                <div class="text-3xl font-bold text-tv-text mb-2">3,421</div>
+                                <div class="text-sm font-medium text-tv-text-secondary">참여 사용자</div>
                             </div>
-                            <div class="bg-tv-darker border border-tv-border rounded-xl p-6 text-center">
-                                <div class="text-3xl mb-3">💰</div>
-                                <div class="text-2xl lg:text-3xl font-bold text-tv-green mb-2">+245%</div>
-                                <div class="text-sm text-tv-text-secondary">평균 수익률</div>
+
+                            <!-- Average Returns -->
+                            <div
+                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                <div
+                                    class="w-12 h-12 mx-auto mb-4 bg-tv-green/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-trending-up text-xl text-tv-green"></i>
+                                </div>
+                                <div class="text-3xl font-bold text-tv-green mb-2">+245%</div>
+                                <div class="text-sm font-medium text-tv-text-secondary">평균 수익률</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Footer -->
-                <footer class="bg-tv-darker border-t border-tv-border">
+                <!-- Clean Footer -->
+                <footer class="bg-tv-darker border-t border-tv-border/30">
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <!-- Company Section -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                                <div class="flex items-center space-x-2 mb-4">
-                                    <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-chart-line text-white text-sm"></i>
-                                    </div>
-                                    <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
+                        <!-- Top Section -->
+                        <div class="text-center mb-12">
+                            <div class="flex items-center justify-center space-x-3 mb-4">
+                                <div class="w-10 h-10 bg-tv-blue rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-white"></i>
                                 </div>
-                                <p class="text-tv-text-secondary mb-6 leading-relaxed">
-                                    미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼
-                                </p>
-                                <div class="flex space-x-4">
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-facebook"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-twitter"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-youtube"></i>
-                                    </a>
-                                </div>
+                                <h3 class="text-2xl font-bold text-tv-text">StockChart</h3>
                             </div>
+                            <p class="text-tv-text-secondary max-w-md mx-auto leading-relaxed">
+                                미래의 주식 가격을 예측하고 공유하는 프리미엄 투자 플랫폼
+                            </p>
+                        </div>
 
-                            <!-- Services Section -->
+                        <!-- Main Footer Content -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                            <!-- Services -->
                             <div>
-                                <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
-                                <ul class="space-y-3">
+                                <h4 class="text-lg font-semibold text-tv-text mb-6">서비스</h4>
+                                <ul class="space-y-4">
                                     <li><a href="charts.html"
                                             class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
                                             보드</a></li>
@@ -523,50 +540,290 @@
                                 </ul>
                             </div>
 
-                            <!-- Support Section -->
+                            <!-- Support -->
                             <div>
-                                <h4 class="font-semibold text-tv-text mb-4">고객지원</h4>
-                                <ul class="space-y-3">
+                                <h4 class="text-lg font-semibold text-tv-text mb-6">고객지원</h4>
+                                <ul class="space-y-4">
                                     <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">FAQ</a>
+                                            class="text-tv-text-secondary hover:text-tv-green transition-colors">FAQ</a>
                                     </li>
                                     <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">문의하기</a>
+                                            class="text-tv-text-secondary hover:text-tv-green transition-colors">문의하기</a>
                                     </li>
                                     <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">이용약관</a>
+                                            class="text-tv-text-secondary hover:text-tv-green transition-colors">이용약관</a>
                                     </li>
                                     <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">개인정보처리방침</a>
+                                            class="text-tv-text-secondary hover:text-tv-green transition-colors">개인정보처리방침</a>
                                     </li>
                                 </ul>
                             </div>
 
-                            <!-- Contact Section -->
+                            <!-- Contact -->
                             <div>
-                                <h4 class="font-semibold text-tv-text mb-4">연락처</h4>
-                                <div class="space-y-3 text-tv-text-secondary">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fas fa-envelope text-tv-blue"></i>
+                                <h4 class="text-lg font-semibold text-tv-text mb-6">연락처</h4>
+                                <div class="space-y-4 text-tv-text-secondary">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-envelope text-tv-blue w-5"></i>
                                         <span>support@stockchart.kr</span>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fas fa-phone text-tv-blue"></i>
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-phone text-tv-green w-5"></i>
                                         <span>02-1234-5678</span>
                                     </div>
-                                    <div class="flex items-start space-x-2">
-                                        <i class="fas fa-map-marker-alt text-tv-blue mt-1"></i>
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-map-marker-alt text-tv-yellow w-5 mt-1"></i>
                                         <span>서울시 강남구 테헤란로 123</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Social Links -->
+                        <div class="flex items-center justify-center space-x-6 mb-8">
+                            <a href="#"
+                                class="w-10 h-10 bg-tv-card hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-300">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-tv-card hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-300">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-tv-card hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-300">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 bg-tv-card hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-300">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+
                         <!-- Footer Bottom -->
-                        <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
-                            <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+                        <div class="border-t border-tv-border/20 pt-8 text-center text-tv-text-secondary">
+                            <p>&copy; 2025 StockChart. All rights reserved.</p>
                         </div>
                     </div>
+                </footer>
+
+                <!-- Login Modal -->
+                <div id="loginModal"
+                    class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                        <!-- Services Section -->
+                        <div class="space-y-6">
+                            <h4 class="text-xl font-bold text-tv-text mb-6 relative">
+                                서비스
+                                <div
+                                    class="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-tv-blue to-tv-green rounded-full">
+                                </div>
+                            </h4>
+                            <ul class="space-y-4">
+                                <li>
+                                    <a href="charts.html"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-blue transition-all duration-300">
+                                        <i
+                                            class="fas fa-chart-line w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span class="group-hover:translate-x-1 transition-transform duration-300">차트
+                                            보드</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="prediction.html"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-blue transition-all duration-300">
+                                        <i
+                                            class="fas fa-lightbulb w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">예측하기</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="my-predictions.html"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-blue transition-all duration-300">
+                                        <i
+                                            class="fas fa-user-chart w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span class="group-hover:translate-x-1 transition-transform duration-300">내
+                                            예측</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="ranking.html"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-blue transition-all duration-300">
+                                        <i
+                                            class="fas fa-trophy w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">랭킹</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="events.html"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-blue transition-all duration-300">
+                                        <i
+                                            class="fas fa-calendar w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">이벤트</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Support Section -->
+                        <div class="space-y-6">
+                            <h4 class="text-xl font-bold text-tv-text mb-6 relative">
+                                고객지원
+                                <div
+                                    class="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-tv-green to-tv-yellow rounded-full">
+                                </div>
+                            </h4>
+                            <ul class="space-y-4">
+                                <li>
+                                    <a href="#"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-green transition-all duration-300">
+                                        <i
+                                            class="fas fa-question-circle w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">FAQ</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-green transition-all duration-300">
+                                        <i
+                                            class="fas fa-headset w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">문의하기</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-green transition-all duration-300">
+                                        <i
+                                            class="fas fa-file-contract w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">이용약관</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#"
+                                        class="group flex items-center space-x-3 text-tv-text-secondary hover:text-tv-green transition-all duration-300">
+                                        <i
+                                            class="fas fa-shield-alt w-5 text-center group-hover:scale-110 transition-transform duration-300"></i>
+                                        <span
+                                            class="group-hover:translate-x-1 transition-transform duration-300">개인정보처리방침</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Contact Section -->
+                        <div class="space-y-6">
+                            <h4 class="text-xl font-bold text-tv-text mb-6 relative">
+                                연락처
+                                <div
+                                    class="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-tv-yellow to-tv-red rounded-full">
+                                </div>
+                            </h4>
+                            <div class="space-y-6">
+                                <div
+                                    class="group flex items-start space-x-4 p-4 bg-tv-card/30 rounded-xl backdrop-blur-sm hover:bg-tv-card/50 transition-all duration-300">
+                                    <div
+                                        class="w-10 h-10 bg-tv-blue/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-envelope text-tv-blue"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-tv-text-secondary mb-1">이메일</p>
+                                        <p class="text-tv-text font-medium">support@stockchart.kr</p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="group flex items-start space-x-4 p-4 bg-tv-card/30 rounded-xl backdrop-blur-sm hover:bg-tv-card/50 transition-all duration-300">
+                                    <div
+                                        class="w-10 h-10 bg-tv-green/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-phone text-tv-green"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-tv-text-secondary mb-1">전화번호</p>
+                                        <p class="text-tv-text font-medium">02-1234-5678</p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="group flex items-start space-x-4 p-4 bg-tv-card/30 rounded-xl backdrop-blur-sm hover:bg-tv-card/50 transition-all duration-300">
+                                    <div
+                                        class="w-10 h-10 bg-tv-yellow/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-map-marker-alt text-tv-yellow"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-tv-text-secondary mb-1">주소</p>
+                                        <p class="text-tv-text font-medium">서울시 강남구<br>테헤란로 123</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter Section -->
+                        <div class="space-y-6">
+                            <h4 class="text-xl font-bold text-tv-text mb-6 relative">
+                                뉴스레터
+                                <div
+                                    class="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-tv-red to-tv-blue rounded-full">
+                                </div>
+                            </h4>
+                            <div class="space-y-4">
+                                <p class="text-tv-text-secondary leading-relaxed">
+                                    최신 시장 동향과 투자 인사이트를 받아보세요
+                                </p>
+                                <div class="space-y-3">
+                                    <input type="email" placeholder="이메일 주소"
+                                        class="w-full px-4 py-3 bg-tv-card border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:outline-none focus:ring-2 focus:ring-tv-blue/20 transition-all duration-300">
+                                    <button
+                                        class="w-full bg-gradient-to-r from-tv-blue to-tv-green hover:from-tv-blue hover:to-tv-blue text-white py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-tv-blue/25">
+                                        <i class="fas fa-paper-plane mr-2"></i>
+                                        구독하기
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs text-tv-text-secondary">
+                                    <i class="fas fa-shield-check text-tv-green"></i>
+                                    <span>개인정보는 안전하게 보호됩니다</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Footer Bottom -->
+                    <div class="border-t border-tv-border/30 pt-8">
+                        <div class="flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0">
+                            <div
+                                class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-tv-text-secondary">
+                                <p>&copy; 2025 StockChart. All rights reserved.</p>
+                                <div class="flex items-center space-x-4 text-sm">
+                                    <span class="flex items-center space-x-1">
+                                        <i class="fas fa-shield-alt text-tv-green"></i>
+                                        <span>SSL 보안</span>
+                                    </span>
+                                    <span class="flex items-center space-x-1">
+                                        <i class="fas fa-server text-tv-blue"></i>
+                                        <span>99.9% 업타임</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-6">
+                                <div class="flex items-center space-x-2 text-sm text-tv-text-secondary">
+                                    <i class="fas fa-globe text-tv-blue"></i>
+                                    <span>한국어</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="flex items-center space-x-2 text-sm text-tv-text-secondary">
+                                    <i class="fas fa-won-sign text-tv-green"></i>
+                                    <span>KRW</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </footer>
 
                 <!-- Login Modal -->
@@ -834,41 +1091,51 @@
                 <script>
                     console.log('🚀 Charts page script loaded!');
 
-                    // Initialize charts when both DOM and LightweightCharts are ready
-                    let domReady = false;
-                    let chartsLibReady = false;
+                    // Wait for page to be fully loaded
+                    window.addEventListener('load', function () {
+                        console.log('📊 Page fully loaded, starting chart initialization...');
 
-                    function tryInitializeCharts() {
-                        if (domReady && (chartsLibReady || window.chartLibraryReady)) {
-                            console.log('✅ Both DOM and LightweightCharts ready, initializing charts...');
-                            initializeChartsPageCharts();
-                        }
+                        // Wait a bit more for all scripts to load
+                        setTimeout(() => {
+                            console.log('⏰ Starting delayed chart initialization...');
+
+                            // Check if LightweightCharts is available
+                            if (typeof LightweightCharts === 'undefined') {
+                                console.error('❌ LightweightCharts not available, loading fallback...');
+                                loadLightweightChartsFallback();
+                            } else {
+                                console.log('✅ LightweightCharts is available, proceeding...');
+                                initializeChartsPageCharts();
+                            }
+                        }, 1000);
+                    });
+
+                    function loadLightweightChartsFallback() {
+                        console.log('� Loading LightweightCharts fallback...');
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js';
+                        script.onload = function () {
+                            console.log('✅ LightweightCharts fallback loaded successfully');
+                            setTimeout(() => {
+                                initializeChartsPageCharts();
+                            }, 500);
+                        };
+                        script.onerror = function () {
+                            console.error('❌ Failed to load LightweightCharts fallback');
+                        };
+                        document.head.appendChild(script);
                     }
-
-                    document.addEventListener('DOMContentLoaded', function () {
-                        console.log('📊 Charts page DOM loaded');
-                        domReady = true;
-                        tryInitializeCharts();
-                    });
-
-                    window.addEventListener('lightweightChartsReady', function () {
-                        console.log('📈 LightweightCharts ready event received');
-                        chartsLibReady = true;
-                        tryInitializeCharts();
-                    });
-
-                    // Fallback: try after 2 seconds regardless
-                    setTimeout(() => {
-                        if (!domReady || !chartsLibReady) {
-                            console.log('⏰ Fallback initialization after timeout');
-                            domReady = true;
-                            chartsLibReady = true;
-                            tryInitializeCharts();
-                        }
-                    }, 2000);
 
                     function initializeChartsPageCharts() {
                         console.log('📈 Starting chart initialization...');
+
+                        // Double-check LightweightCharts availability
+                        if (typeof LightweightCharts === 'undefined') {
+                            console.error('❌ LightweightCharts still not available in initializeChartsPageCharts');
+                            return;
+                        }
+
+                        console.log('✅ LightweightCharts confirmed available:', typeof LightweightCharts);
 
                         // Check if chart containers exist
                         const chart1 = document.getElementById('chart-1');
@@ -880,6 +1147,11 @@
                             'chart-2': chart2 ? 'YES' : 'NO',
                             'chart-3': chart3 ? 'YES' : 'NO'
                         });
+
+                        if (!chart1 && !chart2 && !chart3) {
+                            console.error('❌ No chart containers found! Make sure chart-1, chart-2, chart-3 exist.');
+                            return;
+                        }
 
                         // Sample data for demonstration
                         const sampleData = [
@@ -1420,6 +1692,107 @@
                             setTimeout(() => notification.remove(), 300);
                         }, 5000);
                     }
+                </script>
+
+                <!-- EMERGENCY CHART TEST - Simple Direct Approach -->
+                <script>
+                    console.log('🆘 EMERGENCY CHART TEST STARTED');
+
+                    // Wait for everything to load
+                    setTimeout(() => {
+                        console.log('🆘 Emergency test - checking for containers...');
+
+                        // Find containers
+                        const container1 = document.getElementById('chart-1');
+                        const container2 = document.getElementById('chart-2');
+                        const container3 = document.getElementById('chart-3');
+
+                        console.log('🆘 Container check:', {
+                            'chart-1': container1 ? 'FOUND' : 'MISSING',
+                            'chart-2': container2 ? 'FOUND' : 'MISSING',
+                            'chart-3': container3 ? 'FOUND' : 'MISSING'
+                        });
+
+                        if (!container1) {
+                            console.error('🆘 chart-1 container not found!');
+                            return;
+                        }
+
+                        // Check LightweightCharts
+                        if (typeof LightweightCharts === 'undefined') {
+                            console.log('🆘 LightweightCharts not found, loading directly...');
+
+                            // Load script directly
+                            const script = document.createElement('script');
+                            script.src = 'https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js';
+                            script.onload = () => {
+                                console.log('🆘 Script loaded, trying to create chart...');
+                                createEmergencyChart();
+                            };
+                            script.onerror = () => {
+                                console.error('🆘 Failed to load LightweightCharts!');
+                            };
+                            document.head.appendChild(script);
+                        } else {
+                            console.log('🆘 LightweightCharts already available');
+                            createEmergencyChart();
+                        }
+
+                        function createEmergencyChart() {
+                            try {
+                                console.log('🆘 Attempting to create emergency chart...');
+
+                                const container = document.getElementById('chart-1');
+                                if (!container) {
+                                    console.error('🆘 Container disappeared!');
+                                    return;
+                                }
+
+                                // Set container size
+                                container.style.width = '100%';
+                                container.style.height = '300px';
+                                container.style.position = 'relative';
+
+                                console.log('🆘 Container dimensions:', container.clientWidth, 'x', container.clientHeight);
+
+                                // Create chart with minimal config
+                                const chart = LightweightCharts.createChart(container, {
+                                    width: 400,
+                                    height: 300,
+                                    layout: {
+                                        background: { color: '#131722' },
+                                        textColor: '#d1d4dc',
+                                    }
+                                });
+
+                                console.log('🆘 Chart created successfully!', chart);
+
+                                // Add simple line series
+                                const lineSeries = chart.addLineSeries({
+                                    color: '#2962FF',
+                                    lineWidth: 2,
+                                });
+
+                                // Add some test data
+                                const testData = [
+                                    { time: '2023-12-22', value: 100 },
+                                    { time: '2023-12-23', value: 105 },
+                                    { time: '2023-12-24', value: 98 },
+                                    { time: '2023-12-25', value: 110 },
+                                    { time: '2023-12-26', value: 115 },
+                                ];
+
+                                lineSeries.setData(testData);
+
+                                console.log('🆘 SUCCESS! Emergency chart should now be visible');
+
+                            } catch (error) {
+                                console.error('🆘 Emergency chart creation failed:', error);
+                            }
+                        }
+
+                    }, 3000); // Wait 3 seconds
+
                 </script>
 </body>
 

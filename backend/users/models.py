@@ -41,10 +41,19 @@ class User(AbstractUser):
     
     def can_access_premium(self):
         """프리미엄 기능 접근 권한 확인"""
-        if self.user_type == 'paid' or self.user_type == 'admin':
+        # Admin users have full access
+        if self.user_type == 'admin':
             return True
-        if self.user_type == 'free' and self.free_access_count < 3:
+        
+        # Paid users have full access
+        if self.user_type == 'paid':
             return True
+            
+        # Free users get basic chart access (no limit for basic viewing)
+        # Only advanced features like predictions/rankings have limits
+        if self.user_type == 'free':
+            return True  # Allow basic chart viewing for all logged-in users
+            
         return False
     
     def increment_free_access(self):
