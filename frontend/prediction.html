@@ -1112,134 +1112,235 @@
                     </div>
                 </footer>
 
-                <!-- Login Modal -->
-                <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
-                    <div class="flex items-center justify-center min-h-screen px-4">
-                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
+                <!-- Enhanced Login Modal -->
+                <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-lg">
+                    <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                        <div
+                            class="relative bg-gradient-to-br from-tv-card/95 to-tv-darker/90 backdrop-blur-xl border border-tv-border/50 rounded-3xl w-full max-w-md shadow-2xl shadow-tv-blue/20">
+                            <!-- Close Button -->
                             <button onclick="hideLoginModal()"
-                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-                                <i class="fas fa-times text-xl"></i>
+                                class="absolute top-6 right-6 w-10 h-10 bg-tv-light/20 hover:bg-tv-red/20 rounded-full flex items-center justify-center text-tv-text-secondary hover:text-tv-red transition-all duration-300 group">
+                                <i class="fas fa-times text-lg group-hover:scale-110 transition-transform"></i>
                             </button>
 
-                            <div class="text-center mb-8">
-                                <div
-                                    class="w-16 h-16 bg-tv-blue bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-user text-tv-blue text-2xl"></i>
+                            <!-- Header -->
+                            <div class="text-center pt-12 pb-8 px-8">
+                                <div class="relative inline-block mb-6">
+                                    <div
+                                        class="w-20 h-20 bg-gradient-to-br from-tv-blue via-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-tv-blue/30">
+                                        <i class="fas fa-user text-white text-2xl"></i>
+                                    </div>
+                                    <div
+                                        class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-tv-green to-green-500 rounded-full flex items-center justify-center border-2 border-tv-card">
+                                        <i class="fas fa-key text-white text-xs"></i>
+                                    </div>
                                 </div>
-                                <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
-                                <p class="text-tv-text-secondary mt-2">계정에 로그인하여 예측을 시작하세요</p>
+                                <h2
+                                    class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text to-tv-blue mb-3">
+                                    로그인</h2>
+                                <p class="text-tv-text-secondary text-lg leading-relaxed">계정에 로그인하여 프리미엄 예측 서비스를 이용하세요
+                                </p>
                             </div>
 
-                            <form id="loginForm" class="space-y-4">
-                                <div>
-                                    <input type="email" id="loginEmail" placeholder="이메일" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="password" id="loginPassword" placeholder="비밀번호" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <button type="submit"
-                                    class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
-                                    로그인
-                                </button>
-                            </form>
+                            <div class="px-8 pb-8">
+                                <!-- Login Form -->
+                                <form id="loginForm" class="space-y-6">
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-envelope text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="email" id="loginEmail" placeholder="이메일 주소" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg">
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-lock text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="password" id="loginPassword" placeholder="비밀번호" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg">
+                                    </div>
 
-                            <div class="mt-6">
-                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 로그인</div>
+                                    <!-- Remember Me -->
+                                    <div class="flex items-center justify-between">
+                                        <label class="flex items-center space-x-3">
+                                            <input type="checkbox"
+                                                class="rounded border-tv-border bg-tv-light text-tv-blue focus:ring-tv-blue">
+                                            <span class="text-tv-text-secondary">로그인 상태 유지</span>
+                                        </label>
+                                        <a href="#" class="text-tv-blue hover:text-blue-400 text-sm font-medium">비밀번호
+                                            찾기</a>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-tv-blue/25 hover:shadow-xl hover:shadow-tv-blue/40 transition-all duration-300 transform hover:scale-[1.02]">
+                                        <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                                    </button>
+                                </form>
+
+                                <!-- Divider -->
+                                <div class="flex items-center my-8">
+                                    <div
+                                        class="flex-1 h-px bg-gradient-to-r from-transparent via-tv-border to-transparent">
+                                    </div>
+                                    <span class="px-4 text-tv-text-secondary text-sm font-medium">또는</span>
+                                    <div
+                                        class="flex-1 h-px bg-gradient-to-l from-transparent via-tv-border to-transparent">
+                                    </div>
+                                </div>
+
+                                <!-- Social Login -->
                                 <div class="space-y-3">
                                     <button onclick="loginWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
-                                        <i class="fab fa-google text-red-500"></i>
+                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 border border-gray-200 transition-all duration-300 shadow-lg hover:shadow-xl group">
+                                        <i
+                                            class="fab fa-google text-red-500 text-lg group-hover:scale-110 transition-transform"></i>
                                         <span>Google로 로그인</span>
                                     </button>
                                     <button onclick="loginWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
-                                        <i class="fab fa-apple"></i>
+                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg hover:shadow-xl group">
+                                        <i class="fab fa-apple text-lg group-hover:scale-110 transition-transform"></i>
                                         <span>Apple로 로그인</span>
                                     </button>
                                 </div>
-                            </div>
 
-                            <div class="text-center mt-6 text-tv-text-secondary">
-                                계정이 없으신가요? <a href="#" onclick="showSignupModal()"
-                                    class="text-tv-blue hover:underline">회원가입</a>
+                                <!-- Footer -->
+                                <div class="text-center mt-8 pt-6 border-t border-tv-border/30">
+                                    <p class="text-tv-text-secondary">
+                                        계정이 없으신가요?
+                                        <button onclick="hideLoginModal(); showSignupModal();"
+                                            class="text-tv-blue hover:text-blue-400 font-semibold ml-1 transition-colors">
+                                            무료 가입하기
+                                        </button>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Signup Modal -->
-                <div id="signupModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm">
-                    <div class="flex items-center justify-center min-h-screen px-4">
-                        <div class="bg-tv-card border border-tv-border rounded-xl w-full max-w-md p-8 relative">
+                <!-- Enhanced Signup Modal -->
+                <div id="signupModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-lg">
+                    <div class="flex items-center justify-center min-h-screen px-4 py-8">
+                        <div
+                            class="relative bg-gradient-to-br from-tv-card/95 to-tv-darker/90 backdrop-blur-xl border border-tv-border/50 rounded-3xl w-full max-w-lg shadow-2xl shadow-tv-green/20">
+                            <!-- Close Button -->
                             <button onclick="hideSignupModal()"
-                                class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-                                <i class="fas fa-times text-xl"></i>
+                                class="absolute top-6 right-6 w-10 h-10 bg-tv-light/20 hover:bg-tv-red/20 rounded-full flex items-center justify-center text-tv-text-secondary hover:text-tv-red transition-all duration-300 group">
+                                <i class="fas fa-times text-lg group-hover:scale-110 transition-transform"></i>
                             </button>
 
-                            <div class="text-center mb-8">
-                                <div
-                                    class="w-16 h-16 bg-tv-green bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-user-plus text-tv-green text-2xl"></i>
+                            <!-- Header -->
+                            <div class="text-center pt-12 pb-8 px-8">
+                                <div class="relative inline-block mb-6">
+                                    <div
+                                        class="w-20 h-20 bg-gradient-to-br from-tv-green via-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-tv-green/30">
+                                        <i class="fas fa-user-plus text-white text-2xl"></i>
+                                    </div>
+                                    <div
+                                        class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-tv-blue to-blue-500 rounded-full flex items-center justify-center border-2 border-tv-card">
+                                        <i class="fas fa-star text-white text-xs"></i>
+                                    </div>
                                 </div>
-                                <h2 class="text-2xl font-bold text-tv-text">회원가입</h2>
-                                <p class="text-tv-text-secondary mt-2">새 계정을 만들어 예측에 참여하세요</p>
+                                <h2
+                                    class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text to-tv-green mb-3">
+                                    회원가입</h2>
+                                <p class="text-tv-text-secondary text-lg leading-relaxed">프리미엄 투자 예측 플랫폼에 참여하세요</p>
                             </div>
 
-                            <form id="signupForm" class="space-y-4">
-                                <div>
-                                    <input type="text" id="signupUsername" placeholder="사용자명" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="email" id="signupEmail" placeholder="이메일" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="password" id="signupPassword" placeholder="비밀번호" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div>
-                                    <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)"
-                                        class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                </div>
-                                <div class="flex items-start space-x-3">
-                                    <input type="checkbox" id="agreeTerms" required
-                                        class="mt-1 rounded border-tv-border bg-tv-light">
-                                    <label class="text-sm text-tv-text-secondary leading-relaxed">
-                                        이용약관 및 개인정보처리방침에 동의합니다.
-                                    </label>
-                                </div>
-                                <button type="submit"
-                                    class="w-full bg-tv-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors">
-                                    회원가입
-                                </button>
-                            </form>
+                            <div class="px-8 pb-8">
+                                <!-- Signup Form -->
+                                <form id="signupForm" class="space-y-5">
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-user text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="text" id="signupUsername" placeholder="사용자명" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-envelope text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="email" id="signupEmail" placeholder="이메일 주소" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-lock text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="password" id="signupPassword" placeholder="비밀번호" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-check text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
+                                    </div>
+                                    <div class="relative">
+                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                            <i class="fas fa-gift text-tv-text-secondary"></i>
+                                        </div>
+                                        <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)"
+                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
+                                    </div>
 
-                            <div class="mt-6">
-                                <div class="text-center text-tv-text-secondary mb-4">또는 소셜 계정으로 가입</div>
+                                    <!-- Terms Agreement -->
+                                    <div
+                                        class="flex items-start space-x-3 p-4 bg-tv-darker/50 rounded-xl border border-tv-border/30">
+                                        <input type="checkbox" id="agreeTerms" required
+                                            class="mt-1 rounded border-tv-border bg-tv-light text-tv-green focus:ring-tv-green">
+                                        <label class="text-sm text-tv-text-secondary leading-relaxed">
+                                            <span class="text-tv-text font-medium">이용약관</span> 및 <span
+                                                class="text-tv-text font-medium">개인정보처리방침</span>에 동의합니다.
+                                            <br><span class="text-xs text-tv-text-secondary">계속 진행하면 위 약관에 동의한 것으로
+                                                간주됩니다.</span>
+                                        </label>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="w-full bg-gradient-to-r from-tv-green to-green-600 hover:from-green-600 hover:to-tv-green text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-tv-green/25 hover:shadow-xl hover:shadow-tv-green/40 transition-all duration-300 transform hover:scale-[1.02]">
+                                        <i class="fas fa-rocket mr-2"></i>무료 가입하기
+                                    </button>
+                                </form>
+
+                                <!-- Divider -->
+                                <div class="flex items-center my-6">
+                                    <div
+                                        class="flex-1 h-px bg-gradient-to-r from-transparent via-tv-border to-transparent">
+                                    </div>
+                                    <span class="px-4 text-tv-text-secondary text-sm font-medium">또는</span>
+                                    <div
+                                        class="flex-1 h-px bg-gradient-to-l from-transparent via-tv-border to-transparent">
+                                    </div>
+                                </div>
+
+                                <!-- Social Signup -->
                                 <div class="space-y-3">
                                     <button onclick="signupWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 border transition-colors">
-                                        <i class="fab fa-google text-red-500"></i>
+                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 border border-gray-200 transition-all duration-300 shadow-lg hover:shadow-xl group">
+                                        <i
+                                            class="fab fa-google text-red-500 text-lg group-hover:scale-110 transition-transform"></i>
                                         <span>Google로 가입</span>
                                     </button>
                                     <button onclick="signupWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors">
-                                        <i class="fab fa-apple"></i>
+                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg hover:shadow-xl group">
+                                        <i class="fab fa-apple text-lg group-hover:scale-110 transition-transform"></i>
                                         <span>Apple로 가입</span>
                                     </button>
                                 </div>
-                            </div>
 
-                            <div class="text-center mt-6 text-tv-text-secondary">
-                                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()"
-                                    class="text-tv-blue hover:underline">로그인</a>
+                                <!-- Footer -->
+                                <div class="text-center mt-8 pt-6 border-t border-tv-border/30">
+                                    <p class="text-tv-text-secondary">
+                                        이미 계정이 있으신가요?
+                                        <button onclick="hideSignupModal(); showLoginModal();"
+                                            class="text-tv-blue hover:text-blue-400 font-semibold ml-1 transition-colors">
+                                            로그인하기
+                                        </button>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1448,124 +1549,6 @@
                     stockInfoCard.style.transform = 'translateY(-10px)';
                     stockInfoCard.style.transition = 'all 0.3s ease';
                 </script>
-</body>
-
-</html>
-<div class="social-links">
-    <a href="#"><i class="fab fa-facebook"></i></a>
-    <a href="#"><i class="fab fa-twitter"></i></a>
-    <a href="#"><i class="fab fa-instagram"></i></a>
-    <a href="#"><i class="fab fa-youtube"></i></a>
-</div>
-</div>
-<div class="footer-section">
-    <h4>서비스</h4>
-    <ul>
-        <li><a href="charts.html">차트 보드</a></li>
-        <li><a href="prediction.html">예측하기</a></li>
-        <li><a href="my-predictions.html">내 예측</a></li>
-        <li><a href="ranking.html">랭킹</a></li>
-        <li><a href="events.html">이벤트</a></li>
-    </ul>
-</div>
-<div class="footer-section">
-    <h4>고객지원</h4>
-    <ul>
-        <li><a href="#">FAQ</a></li>
-        <li><a href="#">문의하기</a></li>
-        <li><a href="#">이용약관</a></li>
-        <li><a href="#">개인정보처리방침</a></li>
-    </ul>
-</div>
-<div class="footer-section">
-    <h4>연락처</h4>
-    <p>이메일: support@stockchart.kr</p>
-    <p>전화: 02-1234-5678</p>
-    <p>주소: 서울시 강남구 테헤란로 123</p>
-</div>
-</div>
-<div class="footer-bottom">
-    <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
-</div>
-</div>
-</footer>
-
-<!-- 로그인 모달 -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="hideLoginModal()">&times;</span>
-        <h2>로그인</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="loginEmail" placeholder="이메일" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="loginPassword" placeholder="비밀번호" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">로그인</button>
-        </form>
-        <div class="social-login">
-            <p>또는 소셜 계정으로 로그인</p>
-            <button class="btn btn-google" onclick="loginWithGoogle()">
-                <i class="fab fa-google"></i> Google로 로그인
-            </button>
-            <button class="btn btn-apple" onclick="loginWithApple()">
-                <i class="fab fa-apple"></i> Apple로 로그인
-            </button>
-        </div>
-        <p class="modal-footer">
-            계정이 없으신가요? <a href="#" onclick="showSignupModal()">회원가입</a>
-        </p>
-    </div>
-</div>
-
-<!-- 회원가입 모달 -->
-<div id="signupModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="hideSignupModal()">&times;</span>
-        <h2>회원가입</h2>
-        <form id="signupForm">
-            <div class="form-group">
-                <input type="text" id="signupUsername" placeholder="사용자명" required>
-            </div>
-            <div class="form-group">
-                <input type="email" id="signupEmail" placeholder="이메일" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="signupPassword" placeholder="비밀번호" required>
-            </div>
-            <div class="form-group">
-                <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required>
-            </div>
-            <div class="form-group">
-                <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)">
-            </div>
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" id="agreeTerms" required>
-                    이용약관 및 개인정보처리방침에 동의합니다.
-                </label>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">회원가입</button>
-        </form>
-        <div class="social-login">
-            <p>또는 소셜 계정으로 가입</p>
-            <button class="btn btn-google" onclick="signupWithGoogle()">
-                <i class="fab fa-google"></i> Google로 가입
-            </button>
-            <button class="btn btn-apple" onclick="signupWithApple()">
-                <i class="fab fa-apple"></i> Apple로 가입
-            </button>
-        </div>
-        <p class="modal-footer">
-            이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()">로그인</a>
-        </p>
-    </div>
-</div>
-
-<script src="js/notification.js?v=1.0"></script>
-<script src="js/stock-chart-app.js?v=1.0"></script>
-<script src="js/app.js?v=1.5"></script>
 </body>
 
 </html>
