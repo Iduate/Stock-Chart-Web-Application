@@ -410,35 +410,224 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-tv-darker border-t border-tv-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-sm"></i>
+    <!-- Enhanced Professional Footer -->
+    <footer
+        class="relative bg-gradient-to-br from-tv-darker via-tv-dark to-tv-darker border-t border-tv-border/30 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-tv-blue bg-opacity-5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-tv-green bg-opacity-3 rounded-full blur-3xl"></div>
+        </div>
+
+        <!-- Main Footer Content -->
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <!-- Company Section -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-br from-tv-blue to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-tv-blue/25">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
+                        <h3
+                            class="text-2xl font-bold bg-gradient-to-r from-tv-text to-tv-blue bg-clip-text text-transparent">
+                            StockChart
+                        </h3>
                     </div>
-                    <p class="text-tv-text-secondary mb-6 leading-relaxed">미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼</p>
+                    <p class="text-tv-text-secondary mb-8 leading-relaxed text-lg">
+                        미래의 주식 가격을 예측하고 공유하는 <span class="text-tv-blue font-semibold">프리미엄 플랫폼</span>
+                    </p>
+
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#"
+                            class="group w-12 h-12 bg-tv-card hover:bg-tv-blue rounded-xl flex items-center justify-center border border-tv-border hover:border-tv-blue transition-all duration-300 shadow-lg hover:shadow-tv-blue/25">
+                            <i
+                                class="fab fa-facebook text-tv-text-secondary group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="#"
+                            class="group w-12 h-12 bg-tv-card hover:bg-tv-blue rounded-xl flex items-center justify-center border border-tv-border hover:border-tv-blue transition-all duration-300 shadow-lg hover:shadow-tv-blue/25">
+                            <i
+                                class="fab fa-twitter text-tv-text-secondary group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="#"
+                            class="group w-12 h-12 bg-tv-card hover:bg-tv-blue rounded-xl flex items-center justify-center border border-tv-border hover:border-tv-blue transition-all duration-300 shadow-lg hover:shadow-tv-blue/25">
+                            <i
+                                class="fab fa-instagram text-tv-text-secondary group-hover:text-white transition-colors"></i>
+                        </a>
+                        <a href="#"
+                            class="group w-12 h-12 bg-tv-card hover:bg-tv-blue rounded-xl flex items-center justify-center border border-tv-border hover:border-tv-blue transition-all duration-300 shadow-lg hover:shadow-tv-blue/25">
+                            <i
+                                class="fab fa-youtube text-tv-text-secondary group-hover:text-white transition-colors"></i>
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Services Section -->
                 <div>
-                    <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
-                    <ul class="space-y-3">
-                        <li><a href="charts.html" class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
-                                보드</a></li>
-                        <li><a href="prediction.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a></li>
-                        <li><a href="my-predictions.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">내 예측</a></li>
-                        <li><a href="ranking.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a></li>
+                    <h4 class="font-bold text-tv-text mb-6 text-lg flex items-center">
+                        <i class="fas fa-cogs text-tv-blue mr-2"></i>
+                        서비스
+                    </h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="charts.html"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-blue transition-all duration-200">
+                                <i
+                                    class="fas fa-chart-area text-tv-border group-hover:text-tv-blue mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">차트 보드</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="prediction.html"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-blue transition-all duration-200">
+                                <i
+                                    class="fas fa-target text-tv-border group-hover:text-tv-blue mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">예측하기</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="my-predictions.html"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-blue transition-all duration-200">
+                                <i
+                                    class="fas fa-list-alt text-tv-border group-hover:text-tv-blue mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">내 예측</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ranking.html"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-blue transition-all duration-200">
+                                <i
+                                    class="fas fa-trophy text-tv-border group-hover:text-tv-blue mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">랭킹</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="events.html" class="group flex items-center text-tv-blue font-semibold">
+                                <i class="fas fa-calendar-star text-tv-blue mr-3"></i>
+                                <span>이벤트</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
+
+                <!-- Support Section -->
+                <div>
+                    <h4 class="font-bold text-tv-text mb-6 text-lg flex items-center">
+                        <i class="fas fa-headset text-tv-green mr-2"></i>
+                        고객지원
+                    </h4>
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="#"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-green transition-all duration-200">
+                                <i
+                                    class="fas fa-question-circle text-tv-border group-hover:text-tv-green mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">FAQ</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-green transition-all duration-200">
+                                <i
+                                    class="fas fa-envelope text-tv-border group-hover:text-tv-green mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">문의하기</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-green transition-all duration-200">
+                                <i
+                                    class="fas fa-file-contract text-tv-border group-hover:text-tv-green mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">이용약관</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="group flex items-center text-tv-text-secondary hover:text-tv-green transition-all duration-200">
+                                <i
+                                    class="fas fa-shield-alt text-tv-border group-hover:text-tv-green mr-3 transition-colors"></i>
+                                <span class="group-hover:translate-x-1 transition-transform">개인정보처리방침</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter & Contact -->
+                <div>
+                    <h4 class="font-bold text-tv-text mb-6 text-lg flex items-center">
+                        <i class="fas fa-bell text-purple-400 mr-2"></i>
+                        뉴스레터
+                    </h4>
+                    <p class="text-tv-text-secondary mb-6 text-sm leading-relaxed">
+                        최신 시장 동향과 예측 팁을 이메일로 받아보세요
+                    </p>
+
+                    <!-- Newsletter Form -->
+                    <form class="space-y-4" onsubmit="subscribeNewsletter(event)">
+                        <div class="relative">
+                            <input type="email" placeholder="이메일 주소 입력" required
+                                class="w-full px-4 py-3 bg-tv-card border border-tv-border rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all">
+                            <button type="submit"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center">
+                                <i class="fas fa-paper-plane text-sm"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Contact Info -->
+                    <div class="mt-8 space-y-3">
+                        <div class="flex items-center text-tv-text-secondary text-sm">
+                            <i class="fas fa-envelope text-tv-border mr-3"></i>
+                            <span>support@stockchart.kr</span>
+                        </div>
+                        <div class="flex items-center text-tv-text-secondary text-sm">
+                            <i class="fas fa-phone text-tv-border mr-3"></i>
+                            <span>02-1234-5678</span>
+                        </div>
+                        <div class="flex items-center text-tv-text-secondary text-sm">
+                            <i class="fas fa-map-marker-alt text-tv-border mr-3"></i>
+                            <span>서울시 강남구 테헤란로 123</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
-                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
+
+            <!-- Security Badges -->
+            <div class="mt-16 pt-8 border-t border-tv-border/30">
+                <div class="flex flex-col lg:flex-row justify-between items-center space-y-6 lg:space-y-0">
+                    <!-- Security Certifications -->
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-shield-check text-green-400"></i>
+                            </div>
+                            <span class="text-sm text-tv-text-secondary">SSL 보안 인증</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-award text-blue-400"></i>
+                            </div>
+                            <span class="text-sm text-tv-text-secondary">금융위원회 인가</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-shield text-purple-400"></i>
+                            </div>
+                            <span class="text-sm text-tv-text-secondary">개인정보보호</span>
+                        </div>
+                    </div>
+
+                    <!-- Copyright -->
+                    <div class="text-center lg:text-right">
+                        <p class="text-tv-text-secondary text-sm">
+                            &copy; 2025 <span class="text-tv-blue font-semibold">StockChart</span>. 모든 권리 보유.
+                        </p>
+                        <p class="text-tv-text-secondary text-xs mt-1">
+                            Made with <i class="fas fa-heart text-red-400"></i> in Seoul, Korea
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -448,6 +637,92 @@
             const mobileMenu = document.getElementById('mobileMenu');
             mobileMenu.classList.toggle('hidden');
         }
+
+        // Newsletter subscription function
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const emailInput = form.querySelector('input[type="email"]');
+            const button = form.querySelector('button[type="submit"]');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                alert('이메일을 입력해주세요.');
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+
+            // Show loading state
+            const originalButtonContent = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
+            button.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                // Reset form
+                emailInput.value = '';
+                button.innerHTML = originalButtonContent;
+                button.disabled = false;
+
+                // Show success message
+                if (window.showNotification) {
+                    showNotification('뉴스레터 구독이 완료되었습니다! 🎉', 'success');
+                } else {
+                    alert('뉴스레터 구독이 완료되었습니다!');
+                }
+
+                // Store subscription status
+                localStorage.setItem('newsletter_subscribed', 'true');
+                localStorage.setItem('newsletter_email', email);
+            }, 1500);
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-all duration-300 max-w-sm ${type === 'success' ? 'bg-gradient-to-r from-tv-green to-green-600 text-white' :
+                    type === 'error' ? 'bg-gradient-to-r from-tv-red to-red-600 text-white' :
+                        'bg-gradient-to-r from-tv-blue to-blue-600 text-white'
+                }`;
+
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-circle' :
+                        'fa-info-circle'
+                } text-xl"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Make showNotification globally available
+        window.showNotification = showNotification;
     </script>
 </body>
 

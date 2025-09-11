@@ -296,11 +296,11 @@
                             <div class="text-sm text-tv-text-secondary">2시간 전</div>
                         </div>
                         <div class="flex space-x-2">
-                            <button
+                            <button onclick="voteOnPrediction('chart1', 'up')"
                                 class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-up mr-1"></i>상승 동조
                             </button>
-                            <button
+                            <button onclick="voteOnPrediction('chart1', 'down')"
                                 class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-down mr-1"></i>하락 동조
                             </button>
@@ -361,11 +361,11 @@
                             <div class="text-sm text-tv-text-secondary">4시간 전</div>
                         </div>
                         <div class="flex space-x-2">
-                            <button
+                            <button onclick="voteOnPrediction('chart2', 'up')"
                                 class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-up mr-1"></i>상승 동조
                             </button>
-                            <button
+                            <button onclick="voteOnPrediction('chart2', 'down')"
                                 class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-down mr-1"></i>하락 동조
                             </button>
@@ -426,11 +426,11 @@
                             <div class="text-sm text-tv-text-secondary">1시간 전</div>
                         </div>
                         <div class="flex space-x-2">
-                            <button
+                            <button onclick="voteOnPrediction('chart3', 'up')"
                                 class="flex-1 bg-tv-green hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-up mr-1"></i>상승 동조
                             </button>
-                            <button
+                            <button onclick="voteOnPrediction('chart3', 'down')"
                                 class="flex-1 bg-tv-red hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-arrow-down mr-1"></i>하락 동조
                             </button>
@@ -451,50 +451,82 @@
                             </p>
                         </div>
 
-                        <!-- Clean Statistics Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <!-- Enhanced Statistics Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <!-- Active Predictions -->
                             <div
-                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                class="group relative bg-gradient-to-br from-tv-card/60 to-tv-card/30 backdrop-blur-lg border border-tv-border/30 rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-tv-blue/10 transition-all duration-500 hover:scale-105">
                                 <div
-                                    class="w-12 h-12 mx-auto mb-4 bg-tv-blue/10 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-chart-line text-xl text-tv-blue"></i>
+                                    class="absolute inset-0 bg-gradient-to-br from-tv-blue/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
-                                <div class="text-3xl font-bold text-tv-text mb-2">1,247</div>
-                                <div class="text-sm font-medium text-tv-text-secondary">활성 예측</div>
+                                <div class="relative z-10">
+                                    <div
+                                        class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-tv-blue/20 to-tv-blue/10 rounded-2xl flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-chart-line text-2xl text-tv-blue"></i>
+                                    </div>
+                                    <div class="text-4xl font-black text-tv-text mb-3 tracking-tight">1,247</div>
+                                    <div
+                                        class="text-base font-semibold text-tv-text-secondary uppercase tracking-wider">
+                                        활성 예측</div>
+                                    <div class="mt-3 text-xs text-tv-text-tertiary">실시간 업데이트</div>
+                                </div>
                             </div>
 
                             <!-- Average Accuracy -->
                             <div
-                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                class="group relative bg-gradient-to-br from-tv-card/60 to-tv-card/30 backdrop-blur-lg border border-tv-border/30 rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-tv-green/10 transition-all duration-500 hover:scale-105">
                                 <div
-                                    class="w-12 h-12 mx-auto mb-4 bg-tv-green/10 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-bullseye text-xl text-tv-green"></i>
+                                    class="absolute inset-0 bg-gradient-to-br from-tv-green/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
-                                <div class="text-3xl font-bold text-tv-green mb-2">89.5%</div>
-                                <div class="text-sm font-medium text-tv-text-secondary">평균 정확도</div>
+                                <div class="relative z-10">
+                                    <div
+                                        class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-tv-green/20 to-tv-green/10 rounded-2xl flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-bullseye text-2xl text-tv-green"></i>
+                                    </div>
+                                    <div class="text-4xl font-black text-tv-green mb-3 tracking-tight">89.5%</div>
+                                    <div
+                                        class="text-base font-semibold text-tv-text-secondary uppercase tracking-wider">
+                                        평균 정확도</div>
+                                    <div class="mt-3 text-xs text-tv-text-tertiary">지난 30일 기준</div>
+                                </div>
                             </div>
 
                             <!-- Participating Users -->
                             <div
-                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                class="group relative bg-gradient-to-br from-tv-card/60 to-tv-card/30 backdrop-blur-lg border border-tv-border/30 rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-tv-yellow/10 transition-all duration-500 hover:scale-105">
                                 <div
-                                    class="w-12 h-12 mx-auto mb-4 bg-tv-yellow/10 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-users text-xl text-tv-yellow"></i>
+                                    class="absolute inset-0 bg-gradient-to-br from-tv-yellow/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
-                                <div class="text-3xl font-bold text-tv-text mb-2">3,421</div>
-                                <div class="text-sm font-medium text-tv-text-secondary">참여 사용자</div>
+                                <div class="relative z-10">
+                                    <div
+                                        class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-tv-yellow/20 to-tv-yellow/10 rounded-2xl flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-users text-2xl text-tv-yellow"></i>
+                                    </div>
+                                    <div class="text-4xl font-black text-tv-text mb-3 tracking-tight">3,421</div>
+                                    <div
+                                        class="text-base font-semibold text-tv-text-secondary uppercase tracking-wider">
+                                        참여 사용자</div>
+                                    <div class="mt-3 text-xs text-tv-text-tertiary">활성 트레이더</div>
+                                </div>
                             </div>
 
                             <!-- Average Returns -->
                             <div
-                                class="bg-tv-card/40 backdrop-blur-sm border border-tv-border/20 rounded-xl p-8 text-center group hover:bg-tv-card/60 transition-all duration-300">
+                                class="group relative bg-gradient-to-br from-tv-card/60 to-tv-card/30 backdrop-blur-lg border border-tv-border/30 rounded-2xl p-6 text-center hover:shadow-xl hover:shadow-tv-green/10 transition-all duration-500 hover:scale-105">
                                 <div
-                                    class="w-12 h-12 mx-auto mb-4 bg-tv-green/10 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-trending-up text-xl text-tv-green"></i>
+                                    class="absolute inset-0 bg-gradient-to-br from-tv-green/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
-                                <div class="text-3xl font-bold text-tv-green mb-2">+245%</div>
-                                <div class="text-sm font-medium text-tv-text-secondary">평균 수익률</div>
+                                <div class="relative z-10">
+                                    <div
+                                        class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-tv-green/20 to-tv-green/10 rounded-2xl flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-trending-up text-2xl text-tv-green"></i>
+                                    </div>
+                                    <div class="text-4xl font-black text-tv-green mb-3 tracking-tight">+245%</div>
+                                    <div
+                                        class="text-base font-semibold text-tv-text-secondary uppercase tracking-wider">
+                                        평균 수익률</div>
+                                    <div class="mt-3 text-xs text-tv-text-tertiary">연간 기준</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1692,6 +1724,94 @@
                             setTimeout(() => notification.remove(), 300);
                         }, 5000);
                     }
+
+                    // Vote functionality for prediction charts
+                    function voteOnPrediction(chartId, voteType) {
+                        console.log(`🗳️ Vote submitted: ${chartId} - ${voteType}`);
+
+                        // Get the button that was clicked
+                        const button = event.target.closest('button');
+                        const originalContent = button.innerHTML;
+
+                        // Show loading state
+                        button.disabled = true;
+                        button.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i>${voteType === 'up' ? '상승 동조' : '하락 동조'}`;
+
+                        // Simulate API call
+                        setTimeout(() => {
+                            try {
+                                // Store vote in localStorage for demo purposes
+                                const voteKey = `vote_${chartId}`;
+                                const existingVote = localStorage.getItem(voteKey);
+
+                                if (existingVote === voteType) {
+                                    // User is trying to vote the same way again
+                                    showNotification('이미 같은 방향으로 투표하셨습니다!', 'info');
+                                } else {
+                                    // Store the new vote
+                                    localStorage.setItem(voteKey, voteType);
+
+                                    // Show success message
+                                    const voteMessage = voteType === 'up' ? '상승 동조 투표가 완료되었습니다!' : '하락 동조 투표가 완료되었습니다!';
+                                    showNotification(voteMessage, 'success');
+
+                                    // Update button styling to show active state
+                                    updateVoteButtonStyles(chartId, voteType);
+
+                                    // Simulate updating vote count (in real app, this would come from server)
+                                    updateVoteCount(chartId, voteType);
+                                }
+
+                            } catch (error) {
+                                console.error('Vote error:', error);
+                                showNotification('투표 처리 중 오류가 발생했습니다.', 'error');
+                            } finally {
+                                // Reset button
+                                button.innerHTML = originalContent;
+                                button.disabled = false;
+                            }
+                        }, 1000);
+                    }
+
+                    function updateVoteButtonStyles(chartId, selectedVote) {
+                        // Find the chart container and its vote buttons
+                        const chartContainer = document.querySelector(`[data-chart-id="${chartId}"]`) ||
+                            document.querySelector(`#${chartId}`)?.closest('.bg-tv-card');
+
+                        if (!chartContainer) return;
+
+                        const voteButtons = chartContainer.querySelectorAll('button[onclick*="voteOnPrediction"]');
+
+                        voteButtons.forEach(button => {
+                            const isUpButton = button.textContent.includes('상승');
+                            const isDownButton = button.textContent.includes('하락');
+
+                            // Remove active states
+                            button.classList.remove('ring-2', 'ring-white', 'bg-opacity-80');
+
+                            // Add active state to selected button
+                            if ((selectedVote === 'up' && isUpButton) || (selectedVote === 'down' && isDownButton)) {
+                                button.classList.add('ring-2', 'ring-white', 'bg-opacity-80');
+                            }
+                        });
+                    }
+
+                    function updateVoteCount(chartId, voteType) {
+                        // This would normally update from server data
+                        // For demo, we'll just show a visual indication
+                        console.log(`📊 Vote count updated for ${chartId}: ${voteType}`);
+                    }
+
+                    // Initialize vote states on page load
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Check for existing votes and update button styles
+                        ['chart1', 'chart2', 'chart3'].forEach(chartId => {
+                            const existingVote = localStorage.getItem(`vote_${chartId}`);
+                            if (existingVote) {
+                                updateVoteButtonStyles(chartId, existingVote);
+                            }
+                        });
+                    });
                 </script>
 
                 <!-- EMERGENCY CHART TEST - Simple Direct Approach -->
