@@ -1312,6 +1312,14 @@
                 <script>
                     console.log('🚀 Charts page script loaded!');
 
+                    // ========== GLOBAL VARIABLES ==========
+                    const API_BASE_URL = window.location.protocol + '//' + window.location.host;
+                    let marketData = [];
+                    let currentDisplayCount = 3;
+                    let globalStocks = {}; // Will be populated in initializeChartsPageCharts
+
+                    // ========== UTILITY FUNCTIONS ==========
+
                     // Wait for page to be fully loaded
                     window.addEventListener('load', function () {
                         console.log('📊 Page fully loaded, starting chart initialization...');
@@ -1374,11 +1382,10 @@
                             return;
                         }
 
-                        // API Configuration
-                        const API_BASE_URL = window.location.protocol + '//' + window.location.host;
+                        // API Configuration - using global API_BASE_URL
 
-                        // Global stock symbols by market
-                        const globalStocks = {
+                        // Populate global stock symbols by market
+                        globalStocks = {
                             crypto: [
                                 { symbol: 'BTC', name: '비트코인', market: 'crypto' },
                                 { symbol: 'ETH', name: '이더리움', market: 'crypto' },
@@ -1696,6 +1703,9 @@
                             ]
                         };
 
+                        console.log(`📊 Global stocks populated: ${Object.keys(globalStocks).length} markets`);
+                        console.log(`📊 Total stocks available: ${Object.values(globalStocks).flat().length}`);
+
                         // Flatten all stocks for random selection
                         const allStocks = Object.values(globalStocks).flat();
 
@@ -1733,7 +1743,8 @@
                                         data = await loadStockData(stock.symbol);
                                     }
 
-                                    if (data) {
+                                    if (data && data.currentPrice && data.chartData && data.chartData.length > 0) {
+                                        console.log(`✅ Valid real data for ${stock.symbol}: $${data.currentPrice}`);
                                         marketData.push({
                                             symbol: stock.symbol,
                                             name: stock.name,
@@ -1746,19 +1757,13 @@
                                             high: data.high,
                                             low: data.low
                                         });
+                                    } else {
+                                        console.warn(`❌ Invalid data structure for ${stock.symbol}:`, data);
                                     }
                                 } catch (error) {
                                     console.error(`❌ Error loading data for ${stock.symbol}:`, error);
-                                    // Fallback to demo data if API fails
-                                    marketData.push({
-                                        symbol: stock.symbol,
-                                        name: stock.name,
-                                        market: stock.market,
-                                        currentPrice: Math.random() * 1000 + 50,
-                                        predictedPrice: Math.random() * 1000 + 50,
-                                        change: (Math.random() - 0.5) * 10 + '%',
-                                        data: generateSampleData(Math.random() * 1000 + 50, 30)
-                                    });
+                                    console.log(`⚠️ Skipping ${stock.symbol} - no real data available`);
+                                    // Skip this stock - only show real data
                                 }
                             }
 
@@ -1766,71 +1771,81 @@
                             initializeCharts();
                         }
 
-                        // Load cryptocurrency data
+                        // Load cryptocurrency data - BACKEND APIS ONLY
                         async function loadCryptoData(symbol) {
                             try {
-                                // Try your backend API first
-                                const response = await fetch(`${API_BASE_URL}/api/market-data/crypto/${symbol}/`);
-                                if (response.ok) {
-                                    const data = await response.json();
-                                    if (data.success) {
-                                        return formatApiData(data.data);
+                                console.log(`🪙 Loading crypto data for ${symbol} from backend APIs...`);
+
+                                // Try your backend crypto APIs in sequence
+                                const endpoints = [
+                                    `/api/market-data/crypto/${symbol}/`,
+                                    `/api/market-data/quote/${symbol}/`,
+                                    `/api/market-data/enhanced/${symbol}/`,
+                                    `/api/market-data/finnhub-crypto/${symbol}/`
+                                ];
+
+                                for (const endpoint of endpoints) {
+                                    try {
+                                        console.log(`🔄 Trying crypto endpoint: ${endpoint}`);
+                                        const response = await fetch(`${API_BASE_URL}${endpoint}`);
+                                        if (response.ok) {
+                                            const data = await response.json();
+                                            if (data.success || data.current_price || data.price) {
+                                                console.log(`✅ Crypto data found for ${symbol}`);
+                                                return formatApiData(data.data || data);
+                                            }
+                                        }
+                                    } catch (err) {
+                                        console.log(`⏭️ Trying next crypto endpoint for ${symbol}...`);
                                     }
                                 }
 
-                                // Fallback to CoinGecko API (free, no API key needed)
-                                const coinGeckoResponse = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${getCoinGeckoId(symbol)}&vs_currencies=usd&include_24hr_change=true`);
-                                if (coinGeckoResponse.ok) {
-                                    const coinData = await coinGeckoResponse.json();
-                                    const coinId = getCoinGeckoId(symbol);
+                                console.warn(`❌ All crypto APIs failed for ${symbol}`);
+                                return null;
 
-                                    if (coinData[coinId]) {
-                                        const price = coinData[coinId].usd;
-                                        const change = coinData[coinId].usd_24h_change || 0;
-
-                                        return {
-                                            currentPrice: price,
-                                            change: change > 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`,
-                                            chartData: generateRealisticData(price, 30),
-                                            volume: Math.floor(Math.random() * 1000000),
-                                            high: price * (1 + Math.random() * 0.05),
-                                            low: price * (1 - Math.random() * 0.05)
-                                        };
-                                    }
-                                }
                             } catch (error) {
                                 console.error(`Error loading crypto data for ${symbol}:`, error);
+                                return null;
                             }
-                            return null;
                         }
 
-                        // Load stock data
+                        // Load stock data - IMPROVED WITH BETTER ERROR HANDLING
                         async function loadStockData(symbol) {
                             try {
+                                console.log(`📈 Loading stock data for ${symbol} from backend APIs...`);
+
                                 // Try your backend APIs in sequence
                                 const endpoints = [
                                     `/api/market-data/quote/${symbol}/`,
                                     `/api/market-data/enhanced/${symbol}/`,
                                     `/api/market-data/alpha-vantage/${symbol}/`,
-                                    `/api/market-data/twelve-data/${symbol}/`
+                                    `/api/market-data/twelve-data/${symbol}/`,
+                                    `/api/market-data/finnhub/${symbol}/`,
+                                    `/api/market-data/polygon/${symbol}/`,
+                                    `/api/market-data/tiingo/${symbol}/`,
+                                    `/api/market-data/marketstack/${symbol}/`
                                 ];
 
                                 for (const endpoint of endpoints) {
                                     try {
+                                        console.log(`🔄 Trying stock endpoint: ${endpoint}`);
                                         const response = await fetch(`${API_BASE_URL}${endpoint}`);
+
                                         if (response.ok) {
                                             const data = await response.json();
-                                            if (data.success || data.current_price) {
+                                            if (data.success || data.current_price || data.price || data.close) {
+                                                console.log(`✅ Stock data found for ${symbol}`);
                                                 return formatApiData(data.data || data);
                                             }
+                                        } else {
+                                            console.log(`❌ ${endpoint} returned ${response.status}`);
                                         }
                                     } catch (err) {
-                                        console.log(`Trying next endpoint for ${symbol}...`);
+                                        console.log(`⏭️ ${endpoint} failed: ${err.message}`);
                                     }
                                 }
 
-                                // If all APIs fail, generate realistic demo data
-                                console.warn(`All APIs failed for ${symbol}, using demo data`);
+                                console.warn(`❌ All stock APIs failed for ${symbol}`);
                                 return null;
 
                             } catch (error) {
@@ -1839,34 +1854,56 @@
                             }
                         }
 
-                        // Format API response data
+                        // Format API response data - REAL DATA ONLY
                         function formatApiData(data) {
-                            const currentPrice = data.current_price || data.price || data.close || 0;
-                            const change = data.change_percent || data.change || 0;
+                            console.log('🔧 Formatting API data:', data);
+
+                            const currentPrice = data.current_price || data.price || data.close || data.regularMarketPrice;
+                            const change = data.change_percent || data.change || data.regularMarketChangePercent;
+                            const volume = data.volume || data.regularMarketVolume;
+                            const high = data.high || data.regularMarketDayHigh || data.dayHigh;
+                            const low = data.low || data.regularMarketDayLow || data.dayLow;
+
+                            // Only proceed if we have a valid current price
+                            if (!currentPrice || currentPrice <= 0) {
+                                console.warn('❌ No valid price data found');
+                                return null;
+                            }
+
+                            // Try to extract historical data from API response
+                            let chartData = [];
+                            if (data.historical || data.chart || data.time_series) {
+                                const historicalData = data.historical || data.chart || data.time_series;
+
+                                if (Array.isArray(historicalData)) {
+                                    chartData = historicalData.map(item => ({
+                                        time: item.date || item.time || item.timestamp,
+                                        value: item.close || item.price || item.value
+                                    })).filter(item => item.time && item.value);
+                                } else if (typeof historicalData === 'object') {
+                                    chartData = Object.entries(historicalData).map(([date, priceData]) => ({
+                                        time: date,
+                                        value: priceData.close || priceData['4. close'] || priceData.price
+                                    })).filter(item => item.time && item.value);
+                                }
+                            }
+
+                            // If no historical data, create a single point for current price
+                            if (chartData.length === 0) {
+                                const today = new Date().toISOString().split('T')[0];
+                                chartData = [{ time: today, value: currentPrice }];
+                            }
+
+                            console.log(`✅ Formatted data for price: $${currentPrice}, points: ${chartData.length}`);
 
                             return {
-                                currentPrice: currentPrice,
+                                currentPrice: parseFloat(currentPrice),
                                 change: typeof change === 'string' ? change : (change > 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`),
-                                chartData: generateRealisticData(currentPrice, 30),
-                                volume: data.volume || Math.floor(Math.random() * 1000000),
-                                high: data.high || currentPrice * 1.05,
-                                low: data.low || currentPrice * 0.95
+                                chartData: chartData,
+                                volume: volume || 0,
+                                high: high || currentPrice,
+                                low: low || currentPrice
                             };
-                        }
-
-                        // Get CoinGecko ID mapping
-                        function getCoinGeckoId(symbol) {
-                            const mapping = {
-                                'BTC': 'bitcoin',
-                                'ETH': 'ethereum',
-                                'ADA': 'cardano',
-                                'SOL': 'solana',
-                                'XRP': 'ripple',
-                                'DOT': 'polkadot',
-                                'AVAX': 'avalanche-2',
-                                'LINK': 'chainlink'
-                            };
-                            return mapping[symbol] || symbol.toLowerCase();
                         }
 
                         // Generate realistic chart data
@@ -1896,19 +1933,90 @@
                         // Initialize charts with real data
                         function initializeCharts() {
                             console.log('📊 About to initialize', marketData.length, 'charts with real data');
+
+                            // Get the charts container
+                            const chartsContainer = document.getElementById('charts-container');
+                            if (!chartsContainer) {
+                                console.error('❌ Charts container not found!');
+                                return;
+                            }
+
+                            // Clear existing charts
+                            chartsContainer.innerHTML = '';
+
+                            // Create charts for all loaded data
                             marketData.forEach((stockData, index) => {
-                                const chartId = `chart-${index + 1}`;
-                                const chartContainer = document.getElementById(chartId);
+                                // Create chart card
+                                const chartCard = document.createElement('div');
+                                chartCard.className = 'tv-card p-6 rounded-lg border bg-card text-card-foreground shadow-lg hover:shadow-xl transition-all duration-300';
 
-                                console.log(`🔍 Looking for chart container: ${chartId}`, chartContainer);
+                                // Get market display name
+                                const marketDisplayNames = {
+                                    'crypto': 'Cryptocurrency',
+                                    'us': 'US Stock',
+                                    'korean': 'Korean Stock',
+                                    'japanese': 'Japanese Stock',
+                                    'indian': 'Indian Stock',
+                                    'uk': 'UK Stock',
+                                    'canadian': 'Canadian Stock',
+                                    'french': 'French Stock',
+                                    'german': 'German Stock',
+                                    'taiwanese': 'Taiwanese Stock'
+                                };
 
+                                chartCard.innerHTML = `
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-white">${stockData.name}</h3>
+                                            <p class="text-sm text-gray-400">${stockData.symbol} • ${marketDisplayNames[stockData.market] || stockData.market}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xl font-bold text-white">$${stockData.currentPrice?.toFixed(2) || '0.00'}</div>
+                                            <div class="text-sm ${stockData.change?.includes('-') ? 'text-red-400' : 'text-green-400'}">${stockData.change || '+0.00%'}</div>
+                                        </div>
+                                    </div>
+                                    <div class="relative h-64 bg-tv-dark chart-container-fluorescent">
+                                        <div class="chart-placeholder w-full h-full" id="chart-${index + 1}"></div>
+                                    </div>
+                                    <div class="mt-4 grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-400">High</p>
+                                            <p class="text-green-400 font-semibold">$${stockData.high?.toFixed(2) || '0.00'}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-400">Low</p>
+                                            <p class="text-red-400 font-semibold">$${stockData.low?.toFixed(2) || '0.00'}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-400">Volume</p>
+                                            <p class="text-white font-semibold">${stockData.volume ? formatVolume(stockData.volume) : 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                `;
+
+                                chartsContainer.appendChild(chartCard);
+
+                                // Now create the chart in the container
+                                const chartContainer = document.getElementById(`chart-${index + 1}`);
                                 if (chartContainer && typeof LightweightCharts !== 'undefined') {
-                                    console.log(`✅ Initializing chart: ${chartId} with ${stockData.symbol}`);
+                                    console.log(`✅ Initializing chart: chart-${index + 1} with ${stockData.symbol}`);
                                     createStockChart(chartContainer, stockData);
                                 } else {
-                                    console.warn(`❌ Chart container ${chartId} not found or LightweightCharts not loaded`);
+                                    console.warn(`❌ Chart container chart-${index + 1} not found or LightweightCharts not loaded`);
                                 }
                             });
+                        }
+
+                        // Format volume for display
+                        function formatVolume(volume) {
+                            if (volume >= 1000000000) {
+                                return (volume / 1000000000).toFixed(1) + 'B';
+                            } else if (volume >= 1000000) {
+                                return (volume / 1000000).toFixed(1) + 'M';
+                            } else if (volume >= 1000) {
+                                return (volume / 1000).toFixed(1) + 'K';
+                            }
+                            return volume.toString();
                         }
 
                         // Start loading data
