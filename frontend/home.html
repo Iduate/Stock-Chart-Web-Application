@@ -60,6 +60,55 @@
     <script src="js/chart-reload.js"></script>
     <!-- BOSS REQUIREMENT: Fluorescent Charts with Maximum Contrast -->
     <script src="js/fluorescent-charts.js"></script>
+    <style>
+        /* Mobile optimization for spacing */
+        @media (max-width: 768px) {
+            section {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            .py-12 {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            .py-16 {
+                padding-top: 2.5rem !important;
+                padding-bottom: 2.5rem !important;
+            }
+
+            .mb-8 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .mb-6 {
+                margin-bottom: 1rem !important;
+            }
+
+            .mb-4 {
+                margin-bottom: 0.75rem !important;
+            }
+
+            .text-3xl {
+                font-size: 1.5rem !important;
+            }
+
+            .text-2xl {
+                font-size: 1.25rem !important;
+            }
+
+            /* Reduce gaps between sections */
+            section+section {
+                margin-top: -1rem;
+            }
+        }
+
+        /* Ensure no excessive whitespace */
+        .section-spacer {
+            height: 1rem;
+        }
+    </style>
 </head>
 
 <body class="bg-tv-dark text-tv-text-primary font-inter overflow-x-hidden">
@@ -172,13 +221,13 @@
             </div>
         </div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+            <div class="grid lg:grid-cols-2 gap-8 items-center">
                 <!-- Left Content -->
                 <div class="text-center lg:text-left animate-fade-in">
                     <!-- Trust Badge -->
                     <div
-                        class="inline-flex items-center bg-tv-light border border-tv-border rounded-full px-4 py-2 mb-6">
+                        class="inline-flex items-center bg-tv-light border border-tv-border rounded-full px-4 py-2 mb-4">
                         <i class="fas fa-shield-check text-tv-green mr-2"></i>
                         <span class="text-sm font-medium text-tv-text-secondary">신뢰할 수 있는 AI 기반 예측 플랫폼</span>
                         <span
@@ -186,16 +235,16 @@
                     </div>
 
                     <!-- Main Heading -->
-                    <h1 class="text-4xl lg:text-6xl font-bold leading-tight mb-6">
+                    <h1 class="text-3xl lg:text-5xl font-bold leading-tight mb-4">
                         전세계 금융 전문가와 함께<br>
                         <span class="bg-gradient-to-r from-tv-blue to-tv-purple bg-clip-text text-transparent">미래 시장을
                             예측하세요</span>
                     </h1>
 
                     <!-- Description -->
-                    <div class="flex items-start space-x-3 mb-6">
+                    <div class="flex items-start space-x-3 mb-4">
                         <i class="fas fa-chart-line text-tv-green text-lg mt-1 flex-shrink-0"></i>
-                        <p class="text-lg text-tv-text-secondary leading-relaxed">
+                        <p class="text-base text-tv-text-secondary leading-relaxed">
                             암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
                             다른 사용자들과 예측 결과를 공유할 수 있는 전문 금융 플랫폼입니다.
                         </p>
@@ -235,21 +284,21 @@
                     </div>
 
                     <!-- CTA Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
                         <button onclick="window.location.href='prediction.html'"
-                            class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
+                            class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
                             <span>무료로 시작하기</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                         <button onclick="window.location.href='charts.html'"
-                            class="bg-tv-light hover:bg-tv-border text-tv-text-primary border border-tv-border px-8 py-4 rounded-lg font-semibold text-lg flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105">
+                            class="bg-tv-light hover:bg-tv-border text-tv-text-primary border border-tv-border px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105">
                             <i class="fas fa-chart-line"></i>
                             <span>라이브 차트 보기</span>
                         </button>
                     </div>
 
                     <!-- Features -->
-                    <div class="flex flex-wrap justify-center lg:justify-start gap-6 text-sm text-tv-text-secondary">
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-tv-text-secondary">
                         <div class="flex items-center space-x-2">
                             <i class="fas fa-shield-alt text-tv-green"></i>
                             <span>안전한 거래</span>
@@ -331,12 +380,12 @@
     </section>
 
     <!-- Main Chart Section -->
-    <section class="py-20 bg-tv-darker">
+    <section class="py-12 bg-tv-darker">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-12">
-                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">실시간 시장 분석</h2>
-                <p class="text-lg text-tv-text-secondary max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
+            <div class="text-center mb-8">
+                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
+                <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
 
             <!-- Chart Container -->
@@ -428,24 +477,24 @@
     </section>
 
     <!-- Market Data Section -->
-    <section class="py-20 bg-tv-dark">
+    <section class="py-12 bg-tv-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-12">
-                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">실시간 시장 현황</h2>
-                <p class="text-lg text-tv-text-secondary max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
+            <div class="text-center mb-8">
+                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 현황</h2>
+                <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
             </div>
 
             <!-- Market Tabs -->
-            <div class="flex justify-center mb-8">
+            <div class="flex justify-center mb-6">
                 <div class="bg-tv-light rounded-xl p-1 inline-flex">
-                    <button class="bg-tv-blue text-white px-6 py-3 rounded-lg font-medium transition-all"
+                    <button class="bg-tv-blue text-white px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="stock-tab">한국 주식</button>
                     <button
-                        class="text-tv-text-secondary hover:text-tv-text-primary px-6 py-3 rounded-lg font-medium transition-all"
+                        class="text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="crypto-tab">암호화폐</button>
                     <button
-                        class="text-tv-text-secondary hover:text-tv-text-primary px-6 py-3 rounded-lg font-medium transition-all"
+                        class="text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="global-tab">글로벌</button>
                 </div>
             </div>
@@ -619,74 +668,83 @@
             </div>
         </div>
     </section>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </section> <!-- 메인 차트 섹션 -->
-    <section class="main-chart-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>실시간 시장 분석</h2>
-                <p>최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
+
+    <!-- 메인 차트 섹션 -->
+    <section class="main-chart-section py-12 bg-tv-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="section-header text-center mb-8">
+                <h2 class="text-2xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
+                <p class="text-tv-text-secondary">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
-            <div class="featured-chart-container" id="featuredChart">
+            <div class="featured-chart-container bg-tv-darker rounded-xl p-6" id="featuredChart">
                 <!-- This is where the large chart will be rendered -->
             </div>
-            <div class="chart-control-row">
-                <div class="chart-timeframes">
-                    <button class="btn btn-timeframe active" data-timeframe="1D">1D</button>
-                    <button class="btn btn-timeframe" data-timeframe="1W">1W</button>
-                    <button class="btn btn-timeframe" data-timeframe="1M">1M</button>
-                    <button class="btn btn-timeframe" data-timeframe="3M">3M</button>
-                    <button class="btn btn-timeframe" data-timeframe="1Y">1Y</button>
-                    <button class="btn btn-timeframe" data-timeframe="ALL">ALL</button>
+            <div class="chart-control-row mt-6 flex justify-between items-center">
+                <div class="chart-timeframes flex space-x-2">
+                    <button class="btn btn-timeframe active bg-tv-blue text-white px-3 py-2 rounded-md text-sm"
+                        data-timeframe="1D">1D</button>
+                    <button
+                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        data-timeframe="1W">1W</button>
+                    <button
+                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        data-timeframe="1M">1M</button>
+                    <button
+                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        data-timeframe="3M">3M</button>
+                    <button
+                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        data-timeframe="1Y">1Y</button>
+                    <button
+                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        data-timeframe="ALL">ALL</button>
                 </div>
-                <div class="feature-buttons">
-                    <button class="feature-button" data-feature="characteristic">
+                <div class="feature-buttons flex space-x-2">
+                    <button
+                        class="feature-button bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2"
+                        data-feature="characteristic">
                         <i class="fas fa-chart-line"></i>
-                        특성
+                        <span>특성</span>
                     </button>
-                    <button class="feature-button" data-feature="equipment">
+                    <button
+                        class="feature-button bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2"
+                        data-feature="equipment">
                         <i class="fas fa-tools"></i>
-                        장비
+                        <span>장비</span>
                     </button>
                 </div>
             </div>
-            <div class="chart-indicators">
-                <button class="btn btn-indicator">
+            <div class="chart-indicators mt-4 flex space-x-2">
+                <button
+                    class="btn btn-indicator bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2">
                     <i class="fas fa-chart-line"></i>
                     <span>지표</span>
                 </button>
-                <button class="btn btn-indicator">
+                <button
+                    class="btn btn-indicator bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2">
                     <i class="fas fa-shapes"></i>
                     <span>도구</span>
                 </button>
             </div>
         </div>
-        </div>
     </section>
 
     <!-- Professional Features Section -->
-    <section class="py-24 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary">
+    <section class="py-16 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-16">
+            <div class="text-center mb-8">
                 <div
-                    class="inline-flex items-center px-4 py-2 bg-tv-blue bg-opacity-10 rounded-full border border-tv-blue border-opacity-20 mb-6">
+                    class="inline-flex items-center px-4 py-2 bg-tv-blue bg-opacity-10 rounded-full border border-tv-blue border-opacity-20 mb-4">
                     <i class="fas fa-star text-tv-blue mr-2"></i>
                     <span class="text-tv-blue font-medium">Why StockChart</span>
                 </div>
-                <h2 class="text-4xl lg:text-5xl font-bold text-tv-text-primary mb-6">
+                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">
                     왜 <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-tv-blue to-purple-400">StockChart</span>를
                     선택해야 할까요?
                 </h2>
-                <p class="text-xl text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
+                <p class="text-lg text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
                     혁신적인 기능들로 더 스마트한 투자를 경험해보세요
                 </p>
             </div>
