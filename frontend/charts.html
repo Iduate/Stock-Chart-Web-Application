@@ -54,6 +54,16 @@
                         'tv-text-tertiary': '#5d606b',
                         'tv-border': '#2a2e39',
                         'tv-card': '#1e222d',
+                        // Fluorescent colors as requested by boss - HIGH CONTRAST VERSION
+                        'neon-green': '#00FF00',     // Pure bright green
+                        'neon-blue': '#0033FF',      // Deep electric blue  
+                        'neon-pink': '#FF0066',      // Hot magenta pink
+                        'neon-yellow': '#FFFF00',    // Pure bright yellow
+                        'neon-orange': '#FF3300',    // Bright red-orange
+                        'neon-purple': '#6600FF',    // Electric purple
+                        'neon-cyan': '#00FFCC',      // Electric cyan
+                        'neon-red': '#FF0033',       // Laser red
+                        'tv-card': '#1e222d',
                     },
                     fontFamily: {
                         'inter': ['Inter', 'ui-sans-serif', 'system-ui'],
@@ -70,11 +80,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <!-- Fluorescent Chart Styles - Boss Requirements -->
+    <style>
+        @keyframes neon-pulse {
+
+            0%,
+            100% {
+                opacity: 0.1;
+                transform: scale(1);
+                box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(1.02);
+                box-shadow: 0 0 40px rgba(0, 255, 65, 0.6);
+            }
+        }
+
+        .chart-container-fluorescent {
+            background: radial-gradient(circle at center, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container-fluorescent::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #00FF41, #0080FF, #FF007F);
+            border-radius: 20px;
+            opacity: 0.1;
+            animation: neon-pulse 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .chart-container-fluorescent:nth-child(2)::before {
+            background: linear-gradient(45deg, #0080FF, #00FFFF, #8A2BE2);
+        }
+
+        .chart-container-fluorescent:nth-child(3)::before {
+            background: linear-gradient(45deg, #FF007F, #FF4500, #FFFF00);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container-fluorescent {
+                min-height: 200px;
+            }
+        }
+    </style>
+
     <!-- JavaScript files -->
     <script src="js/tradingview-pro.js"></script>
     <script src="js/chart-legend.js"></script>
     <script src="js/chart-controls.js"></script>
     <script src="js/view-toggle.js"></script>
+    <!-- Fluorescent Charts Module - Boss Requirements -->
+    <script src="js/fluorescent-charts.js"></script>
 </head>
 
 <body class="bg-tv-dark text-tv-text font-inter overflow-x-hidden">
@@ -269,14 +335,19 @@
                         </div>
                     </div>
 
-                    <!-- Chart Body -->
-                    <div class="relative h-64 bg-tv-dark">
+                    <!-- Chart Body - Enhanced with Fluorescent Effects -->
+                    <div class="relative h-64 bg-tv-dark chart-container-fluorescent">
                         <div class="chart-placeholder w-full h-full" id="chart-1"></div>
 
-                        <!-- Chart Overlay -->
-                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
-                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
-                            <div class="text-sm font-semibold text-tv-green">$120,000</div>
+                        <!-- Enhanced Chart Overlay with Fluorescent Styling -->
+                        <div class="absolute top-4 right-4 bg-black bg-opacity-90 backdrop-blur-sm rounded-lg p-3 border-2 border-neon-green"
+                            style="box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);">
+                            <div class="text-xs text-gray-400 mb-1">목표가</div>
+                            <div class="text-sm font-semibold text-neon-green">$120,000</div>
+                            <div class="flex items-center mt-2">
+                                <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse mr-2"></div>
+                                <span class="text-xs text-neon-green">실시간</span>
+                            </div>
                         </div>
                     </div>
 
@@ -334,14 +405,20 @@
                         </div>
                     </div>
 
-                    <!-- Chart Body -->
-                    <div class="relative h-64 bg-tv-dark">
+                    <!-- Chart Body - Enhanced with Fluorescent Effects -->
+                    <div class="relative h-64 bg-tv-dark chart-container-fluorescent">
                         <div class="chart-placeholder w-full h-full" id="chart-2"></div>
 
-                        <!-- Chart Overlay -->
-                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
-                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
-                            <div class="text-sm font-semibold text-tv-green">₩80,000</div>
+                        <!-- Enhanced Chart Overlay with Blue Fluorescent Styling -->
+                        <div class="absolute top-4 right-4 bg-black bg-opacity-90 backdrop-blur-sm rounded-lg p-3 border-2 border-neon-blue"
+                            style="border-color: #0033FF; box-shadow: 0 0 20px rgba(0, 51, 255, 0.4);">
+                            <div class="text-xs text-gray-400 mb-1">목표가</div>
+                            <div class="text-sm font-semibold" style="color: #0033FF;">₩80,000</div>
+                            <div class="flex items-center mt-2">
+                                <div class="w-2 h-2 rounded-full animate-pulse mr-2" style="background-color: #0033FF;">
+                                </div>
+                                <span class="text-xs" style="color: #0033FF;">실시간</span>
+                            </div>
                         </div>
                     </div>
 
@@ -399,14 +476,20 @@
                         </div>
                     </div>
 
-                    <!-- Chart Body -->
-                    <div class="relative h-64 bg-tv-dark">
+                    <!-- Chart Body - Enhanced with Fluorescent Effects -->
+                    <div class="relative h-64 bg-tv-dark chart-container-fluorescent">
                         <div class="chart-placeholder w-full h-full" id="chart-3"></div>
 
-                        <!-- Chart Overlay -->
-                        <div class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm rounded-lg p-3">
-                            <div class="text-xs text-tv-text-secondary mb-1">목표가</div>
-                            <div class="text-sm font-semibold text-tv-red">$3,800</div>
+                        <!-- Enhanced Chart Overlay with Pink Fluorescent Styling -->
+                        <div class="absolute top-4 right-4 bg-black bg-opacity-90 backdrop-blur-sm rounded-lg p-3 border-2 border-neon-pink"
+                            style="border-color: #FF0066; box-shadow: 0 0 20px rgba(255, 0, 102, 0.4);">
+                            <div class="text-xs text-gray-400 mb-1">목표가</div>
+                            <div class="text-sm font-semibold" style="color: #FF0066;">$3,800</div>
+                            <div class="flex items-center mt-2">
+                                <div class="w-2 h-2 rounded-full animate-pulse mr-2" style="background-color: #FF0066;">
+                                </div>
+                                <span class="text-xs" style="color: #FF0066;">실시간</span>
+                            </div>
                         </div>
                     </div>
 
