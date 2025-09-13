@@ -262,7 +262,7 @@
                         </div>
 
                         <!-- Main Form Container -->
-                        <div
+                        <form id="predictionForm" method="POST" action="/api/predictions/"
                             class="relative bg-tv-card/95 backdrop-blur-lg border border-tv-border/50 rounded-3xl p-8 lg:p-10 shadow-2xl shadow-tv-blue/10 hover:shadow-tv-blue/20 transition-all duration-500">
                             <!-- Enhanced Form Header -->
                             <div class="mb-10">
@@ -484,7 +484,7 @@
 
                                             <!-- Dropdown Selection -->
                                             <div class="relative">
-                                                <select id="stockSelect"
+                                                <select id="stockSelect" name="stock_symbol" required
                                                     class="w-full px-6 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-2xl text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 appearance-none cursor-pointer text-lg">
                                                     <option value="">💼 전체 종목에서 선택하기</option>
                                                     <option value="AAPL">🍎 Apple Inc. (AAPL) - $182.50</option>
@@ -593,7 +593,7 @@
                                                 <i class="fas fa-dollar-sign text-tv-blue mr-2"></i>현재 가격
                                             </label>
                                             <div class="relative">
-                                                <input type="number" id="currentPrice"
+                                                <input type="number" id="currentPrice" name="current_price" step="0.01"
                                                     class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg"
                                                     placeholder="자동으로 로드됩니다" readonly>
                                                 <span
@@ -611,7 +611,8 @@
                                                 <i class="fas fa-target text-tv-green mr-2"></i>예측 가격
                                             </label>
                                             <div class="relative">
-                                                <input type="number" id="predictedPrice"
+                                                <input type="number" id="predictedPrice" name="predicted_price"
+                                                    step="0.01" required
                                                     class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300 text-lg pl-12"
                                                     placeholder="예측 가격 입력">
                                                 <span
@@ -704,7 +705,8 @@
                                                 <i class="fas fa-percentage text-tv-blue mr-2"></i>신뢰도
                                             </label>
                                             <div class="space-y-2">
-                                                <input type="range" id="confidence" min="50" max="100" value="75"
+                                                <input type="range" id="confidence" name="confidence" min="50" max="100"
+                                                    value="75"
                                                     class="w-full h-2 bg-tv-light rounded-lg appearance-none cursor-pointer slider">
                                                 <div class="flex justify-between text-sm text-tv-text-secondary">
                                                     <span>50%</span>
@@ -720,7 +722,7 @@
                                             <label class="block text-sm font-medium text-tv-text mb-2">
                                                 <i class="fas fa-lightbulb text-tv-blue mr-2"></i>예측 근거 (선택사항)
                                             </label>
-                                            <textarea id="reasoning" rows="4"
+                                            <textarea id="reasoning" name="reasoning" rows="4"
                                                 class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent resize-none"
                                                 placeholder="예측의 근거나 분석 내용을 입력해주세요..."></textarea>
                                         </div>
@@ -728,7 +730,7 @@
                                         <!-- Public Sharing -->
                                         <div
                                             class="flex items-start space-x-3 p-4 bg-tv-darker border border-tv-border rounded-lg">
-                                            <input type="checkbox" id="isPublic" checked
+                                            <input type="checkbox" id="isPublic" name="is_public" checked
                                                 class="mt-1 rounded border-tv-border bg-tv-light">
                                             <div>
                                                 <label for="isPublic"
@@ -769,15 +771,15 @@
                                     </button>
 
                                     <button type="submit"
-                                        class="group px-10 py-3 bg-gradient-to-r from-tv-green to-green-600 hover:from-green-600 hover:to-tv-green text-white rounded-xl font-bold transition-all duration-300 shadow-lg shadow-tv-green/25 hover:shadow-xl hover:shadow-tv-green/40 hidden flex items-center space-x-2"
-                                        id="submitPrediction">
+                                        class="group px-10 py-3 bg-gradient-to-r from-tv-green to-green-600 hover:from-green-600 hover:to-tv-green text-white rounded-xl font-bold transition-all duration-300 shadow-lg shadow-tv-green/25 hover:shadow-xl hover:shadow-tv-green/40 flex items-center space-x-2"
+                                        id="submitPrediction" style="display: none;">
                                         <i
                                             class="fas fa-rocket group-hover:scale-110 transition-transform duration-300"></i>
                                         <span>예측 생성하기</span>
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
 
                     <!-- Enhanced Side Panel -->
@@ -1377,7 +1379,7 @@
                             document.getElementById('prevStep').disabled = false;
                             if (currentStep === maxSteps) {
                                 document.getElementById('nextStep').style.display = 'none';
-                                document.getElementById('submitPrediction').classList.remove('hidden');
+                                document.getElementById('submitPrediction').style.display = 'flex';
                             }
 
                             // Update progress
@@ -1401,7 +1403,7 @@
                                 document.getElementById('prevStep').disabled = true;
                             }
                             document.getElementById('nextStep').style.display = 'inline-block';
-                            document.getElementById('submitPrediction').classList.add('hidden');
+                            document.getElementById('submitPrediction').style.display = 'none';
 
                             // Update progress
                             updateProgress();
@@ -1548,6 +1550,160 @@
                     stockInfoCard.style.opacity = '0';
                     stockInfoCard.style.transform = 'translateY(-10px)';
                     stockInfoCard.style.transition = 'all 0.3s ease';
+
+                    // Enhanced Form Submission Handler
+                    document.getElementById('predictionForm').addEventListener('submit', async function (e) {
+                        e.preventDefault();
+
+                        // Show loading state
+                        const submitBtn = document.getElementById('submitPrediction');
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>예측 생성 중...';
+                        submitBtn.disabled = true;
+
+                        try {
+                            // Collect form data
+                            const formData = new FormData(this);
+                            const predictionData = {
+                                stock_symbol: formData.get('stock_symbol'),
+                                current_price: parseFloat(formData.get('current_price')),
+                                predicted_price: parseFloat(formData.get('predicted_price')),
+                                confidence: parseInt(formData.get('confidence')),
+                                reasoning: formData.get('reasoning') || '',
+                                is_public: formData.get('is_public') === 'on',
+                                prediction_date: new Date().toISOString()
+                            };
+
+                            // Validate required fields
+                            if (!predictionData.stock_symbol) {
+                                throw new Error('주식을 선택해주세요.');
+                            }
+                            if (!predictionData.predicted_price || predictionData.predicted_price <= 0) {
+                                throw new Error('올바른 예측 가격을 입력해주세요.');
+                            }
+
+                            // Submit to backend
+                            const response = await fetch('/api/predictions/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCsrfToken()
+                                },
+                                body: JSON.stringify(predictionData)
+                            });
+
+                            if (response.ok) {
+                                const result = await response.json();
+
+                                // Show success message
+                                showSuccessMessage('예측이 성공적으로 생성되었습니다!');
+
+                                // Redirect to my predictions page
+                                setTimeout(() => {
+                                    window.location.href = 'my-predictions.html';
+                                }, 2000);
+
+                            } else {
+                                const error = await response.json();
+                                throw new Error(error.message || '예측 생성에 실패했습니다.');
+                            }
+
+                        } catch (error) {
+                            console.error('Prediction submission error:', error);
+                            showErrorMessage(error.message || '예측 생성 중 오류가 발생했습니다.');
+
+                            // Reset button
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                        }
+                    });
+
+                    // Utility Functions
+                    function getCsrfToken() {
+                        const cookies = document.cookie.split(';');
+                        for (let cookie of cookies) {
+                            const [name, value] = cookie.trim().split('=');
+                            if (name === 'csrftoken') {
+                                return value;
+                            }
+                        }
+                        return '';
+                    }
+
+                    function showSuccessMessage(message) {
+                        // Create success notification
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-tv-green text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                        notification.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-xl"></i>
+                                <span class="font-medium">${message}</span>
+                            </div>
+                        `;
+                        document.body.appendChild(notification);
+
+                        // Animate in
+                        setTimeout(() => {
+                            notification.classList.remove('translate-x-full');
+                        }, 100);
+
+                        // Auto remove
+                        setTimeout(() => {
+                            notification.classList.add('translate-x-full');
+                            setTimeout(() => notification.remove(), 300);
+                        }, 3000);
+                    }
+
+                    function showErrorMessage(message) {
+                        // Create error notification
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-tv-red text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                        notification.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-exclamation-circle text-xl"></i>
+                                <span class="font-medium">${message}</span>
+                            </div>
+                        `;
+                        document.body.appendChild(notification);
+
+                        // Animate in
+                        setTimeout(() => {
+                            notification.classList.remove('translate-x-full');
+                        }, 100);
+
+                        // Auto remove
+                        setTimeout(() => {
+                            notification.classList.add('translate-x-full');
+                            setTimeout(() => notification.remove(), 300);
+                        }, 5000);
+                    }
+
+                    // Form validation feedback
+                    function validateCurrentStep() {
+                        const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
+                        const inputs = currentStepElement.querySelectorAll('input[required], select[required]');
+                        let isValid = true;
+
+                        inputs.forEach(input => {
+                            if (!input.value.trim()) {
+                                input.classList.add('border-tv-red');
+                                isValid = false;
+                            } else {
+                                input.classList.remove('border-tv-red');
+                            }
+                        });
+
+                        return isValid;
+                    }
+
+                    // Override next step to include validation
+                    const originalNextClick = document.getElementById('nextStep').onclick;
+                    document.getElementById('nextStep').addEventListener('click', function (e) {
+                        if (!validateCurrentStep()) {
+                            showErrorMessage('필수 항목을 모두 입력해주세요.');
+                            return false;
+                        }
+                    });
                 </script>
 </body>
 
