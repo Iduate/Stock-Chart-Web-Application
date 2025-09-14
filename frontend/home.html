@@ -64,30 +64,43 @@
         /* Mobile optimization for spacing */
         @media (max-width: 768px) {
             section {
-                padding-top: 2rem !important;
-                padding-bottom: 2rem !important;
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
+            }
+
+            .py-8 {
+                padding-top: 1rem !important;
+                padding-bottom: 1rem !important;
             }
 
             .py-12 {
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+
+            .py-16 {
                 padding-top: 2rem !important;
                 padding-bottom: 2rem !important;
             }
 
-            .py-16 {
-                padding-top: 2.5rem !important;
-                padding-bottom: 2.5rem !important;
-            }
-
             .mb-8 {
-                margin-bottom: 1.5rem !important;
-            }
-
-            .mb-6 {
                 margin-bottom: 1rem !important;
             }
 
-            .mb-4 {
+            .mb-6 {
                 margin-bottom: 0.75rem !important;
+            }
+
+            .mb-4 {
+                margin-bottom: 0.5rem !important;
+            }
+
+            .mb-3 {
+                margin-bottom: 0.25rem !important;
+            }
+
+            .mt-8 {
+                margin-top: 1rem !important;
             }
 
             .text-3xl {
@@ -100,13 +113,24 @@
 
             /* Reduce gaps between sections */
             section+section {
-                margin-top: -1rem;
+                margin-top: -0.5rem;
+            }
+
+            /* Compress hero section */
+            .relative.bg-gradient-to-br {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
             }
         }
 
         /* Ensure no excessive whitespace */
         .section-spacer {
-            height: 1rem;
+            height: 0.5rem;
+        }
+
+        /* Remove any potential hidden elements causing space */
+        div:empty {
+            display: none;
         }
     </style>
 </head>
@@ -210,7 +234,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden">
+    <section class="relative bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden py-8 lg:py-12">
         <!-- Background Effects -->
         <div class="absolute inset-0">
             <div
@@ -221,7 +245,7 @@
             </div>
         </div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-8 items-center">
                 <!-- Left Content -->
                 <div class="text-center lg:text-left animate-fade-in">
@@ -380,10 +404,10 @@
     </section>
 
     <!-- Main Chart Section -->
-    <section class="py-12 bg-tv-darker">
+    <section class="py-8 bg-tv-darker">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
                 <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
@@ -437,7 +461,7 @@
             </div>
 
             <!-- Chart Guide for New Users -->
-            <div class="mt-12 bg-tv-card border border-tv-border rounded-xl p-8">
+            <div class="mt-8 bg-tv-card border border-tv-border rounded-xl p-6">
                 <div class="text-center mb-8">
                     <h3 class="text-xl font-bold text-tv-text-primary mb-2">차트 읽는 방법</h3>
                     <p class="text-tv-text-secondary">신규 방문자를 위한 가이드</p>
@@ -477,10 +501,10 @@
     </section>
 
     <!-- Market Data Section -->
-    <section class="py-12 bg-tv-dark">
+    <section class="py-8 bg-tv-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 현황</h2>
                 <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
             </div>
@@ -670,9 +694,9 @@
     </section>
 
     <!-- 메인 차트 섹션 -->
-    <section class="main-chart-section py-12 bg-tv-dark">
+    <section class="main-chart-section py-8 bg-tv-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="section-header text-center mb-8">
+            <div class="section-header text-center mb-6">
                 <h2 class="text-2xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
                 <p class="text-tv-text-secondary">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
@@ -730,21 +754,21 @@
     </section>
 
     <!-- Professional Features Section -->
-    <section class="py-16 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary">
+    <section class="py-8 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <div
-                    class="inline-flex items-center px-4 py-2 bg-tv-blue bg-opacity-10 rounded-full border border-tv-blue border-opacity-20 mb-4">
+                    class="inline-flex items-center px-4 py-2 bg-tv-blue bg-opacity-10 rounded-full border border-tv-blue border-opacity-20 mb-3">
                     <i class="fas fa-star text-tv-blue mr-2"></i>
                     <span class="text-tv-blue font-medium">Why StockChart</span>
                 </div>
-                <h2 class="text-3xl lg:text-4xl font-bold text-tv-text-primary mb-4">
+                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">
                     왜 <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-tv-blue to-purple-400">StockChart</span>를
                     선택해야 할까요?
                 </h2>
-                <p class="text-lg text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
+                <p class="text-base text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
                     혁신적인 기능들로 더 스마트한 투자를 경험해보세요
                 </p>
             </div>
@@ -1178,7 +1202,7 @@
             </div>
 
             <!-- Professional Community Insights Section -->
-            <div class="mb-16">
+            <div class="mb-8">
                 <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
@@ -1348,8 +1372,8 @@
     </section>
 
     <!-- Professional Footer -->
-    <footer class="bg-tv-bg-secondary border-t border-tv-border mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer class="bg-tv-bg-secondary border-t border-tv-border mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Main Footer Content -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                 <!-- Company Info -->
@@ -1525,7 +1549,7 @@
             </div>
 
             <!-- Footer Bottom -->
-            <div class="border-t border-tv-border mt-12 pt-8">
+            <div class="border-t border-tv-border mt-8 pt-6">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <div class="flex items-center space-x-4">
                         <p class="text-tv-text-secondary">

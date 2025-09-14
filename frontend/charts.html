@@ -1326,7 +1326,7 @@
                     console.log('🚀 Charts page script loaded!');
 
                     // ========== GLOBAL VARIABLES ==========
-                    const API_BASE_URL = window.location.protocol + '//' + window.location.host;
+                    // API_BASE_URL is already declared in app.js
                     let marketData = [];
                     let currentDisplayCount = 3;
                     let globalStocks = {}; // Will be populated in initializeChartsPageCharts
@@ -2907,6 +2907,12 @@
                     // Load specific market data
                     async function loadSpecificMarket(market) {
                         console.log(`📡 Loading ${market} market data...`);
+
+                        // Check if globalStocks is initialized
+                        if (!globalStocks || Object.keys(globalStocks).length === 0) {
+                            console.warn('⚠️ globalStocks not initialized yet, skipping market load');
+                            return;
+                        }
 
                         // Clean up existing charts first
                         if (window.cleanupCharts) {
