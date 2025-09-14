@@ -421,138 +421,79 @@
             </div>
         </div>
 
-        <!-- Mobile Navigation Overlay -->
-        <div id="mobileMenuOverlay"
-            class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-custom z-[99998] md:hidden opacity-0 invisible transition-all duration-300"
-            onclick="closeMobileMenu()">
         </div>
+        </div>
+        </div>
+    </nav>
 
-        <!-- Professional Mobile Navigation Menu -->
-        <div id="mobileMenu"
-            class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-tv-dark border-l border-tv-border z-[99999] md:hidden transform translate-x-full transition-all duration-300 ease-in-out">
+    <!-- Mobile Menu Portal - Outside Nav Context -->
+    <div id="mobile-menu-portal" class="fixed inset-0 lg:hidden"
+        style="display: none; z-index: 999999 !important; position: fixed !important;">
+        <!-- Full Screen Overlay -->
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" style="z-index: 999990 !important;"
+            onclick="toggleMobileMenu()"></div>
 
+        <!-- Menu Sidebar -->
+        <div id="mobile-menu-content"
+            class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
+            style="z-index: 999999 !important;">
             <!-- Menu Header -->
-            <div class="flex items-center justify-between p-6 border-b border-tv-border">
+            <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-tv-blue rounded-xl flex items-center justify-center">
-                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    <div
+                        class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-sm"></i>
                     </div>
-                    <div>
-                        <h3 class="text-tv-text-primary font-bold text-lg">StockChart</h3>
-                        <p class="text-tv-text-secondary text-sm">메뉴</p>
-                    </div>
+                    <span class="text-white font-bold text-xl">StockChart</span>
                 </div>
-                <button onclick="closeMobileMenu()"
-                    class="text-tv-text-secondary hover:text-white p-2 rounded-lg transition-colors">
+                <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
 
             <!-- Menu Items -->
-            <div class="px-6 py-4 space-y-2 overflow-y-auto h-full pb-20">
-                <!-- Primary Actions -->
-                <div class="mb-6">
-                    <button onclick="showLoginModal(); closeMobileMenu();"
-                        class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-rocket text-lg"></i>
-                        <span>지금 시작하기</span>
+            <div class="p-6 space-y-4">
+                <a href="charts.html"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                    <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                    <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
+                </a>
+                <a href="prediction.html"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                    <i class="fas fa-brain text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                    <span class="text-gray-300 group-hover:text-white transition-colors">AI 예측</span>
+                </a>
+                <a href="ranking.html"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                    <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                    <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
+                </a>
+                <a href="events.html"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                    <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                    <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
+                </a>
+                <a href="subscription.html"
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                    <i class="fas fa-crown text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                    <span class="text-gray-300 group-hover:text-white transition-colors">구독</span>
+                </a>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="absolute bottom-6 left-6 right-6">
+                <div
+                    class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
+                    <div class="text-white font-semibold mb-2">프리미엄 구독</div>
+                    <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
+                    <button
+                        class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
+                        무료로 시작하기
                     </button>
-                </div>
-
-                <!-- Navigation Links -->
-                <div class="space-y-1">
-                    <a href="home.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl bg-tv-blue bg-opacity-20 border border-tv-blue text-tv-text-primary transition-all duration-200">
-                        <div class="w-10 h-10 bg-tv-blue rounded-lg flex items-center justify-center">
-                            <i class="fas fa-home text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-semibold">홈</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-tv-blue"></i>
-                    </a>
-
-                    <a href="charts.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-tv-green rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-chart-line group-hover:text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">차트 보드</span>
-                            <p class="text-xs text-tv-text-tertiary">실시간 차트 분석</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <a href="prediction.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-bright-yellow rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-lightbulb group-hover:text-black"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">예측하기</span>
-                            <p class="text-xs text-tv-text-tertiary">AI 기반 예측</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <a href="my-predictions.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-hot-pink rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-user-chart group-hover:text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">내 예측</span>
-                            <p class="text-xs text-tv-text-tertiary">예측 기록 관리</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <a href="ranking.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-tv-red rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-trophy group-hover:text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">랭킹</span>
-                            <p class="text-xs text-tv-text-tertiary">성과 순위</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <a href="events.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-electric-purple rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-calendar group-hover:text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">이벤트</span>
-                            <p class="text-xs text-tv-text-tertiary">특별 이벤트</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <a href="subscription.html"
-                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
-                        <div
-                            class="w-10 h-10 bg-tv-border group-hover:bg-neon-orange rounded-lg flex items-center justify-center transition-colors">
-                            <i class="fas fa-crown group-hover:text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="font-medium">구독</span>
-                            <p class="text-xs text-tv-text-tertiary">프리미엄 기능</p>
-                        </div>
-                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 
     <!-- Hero Section -->
     <section
@@ -2975,14 +2916,14 @@
             return data;
         }
 
-        // Professional Mobile Menu Functions
+        // Professional Portal-Style Mobile Menu Functions
         function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('mobileMenuOverlay');
+            const portal = document.getElementById('mobile-menu-portal');
+            const content = document.getElementById('mobile-menu-content');
             const button = document.getElementById('mobileMenuButton');
             const body = document.body;
 
-            const isOpen = !mobileMenu.classList.contains('translate-x-full');
+            const isOpen = portal.style.display !== 'none';
 
             if (isOpen) {
                 closeMobileMenu();
@@ -2992,51 +2933,60 @@
         }
 
         function openMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('mobileMenuOverlay');
+            const portal = document.getElementById('mobile-menu-portal');
+            const content = document.getElementById('mobile-menu-content');
             const button = document.getElementById('mobileMenuButton');
             const body = document.body;
 
             // Prevent body scrolling
             body.style.overflow = 'hidden';
 
-            // Show overlay
-            overlay.classList.remove('opacity-0', 'invisible');
-            overlay.classList.add('opacity-100', 'visible');
+            // Show portal
+            portal.style.display = 'block';
+            portal.style.pointerEvents = 'none';
+
+            // Allow interaction with portal children
+            const overlay = portal.querySelector('.absolute.inset-0');
+            const menuContent = portal.querySelector('#mobile-menu-content');
+            if (overlay) overlay.style.pointerEvents = 'auto';
+            if (menuContent) menuContent.style.pointerEvents = 'auto';
 
             // Slide in menu
-            mobileMenu.classList.remove('translate-x-full');
-            mobileMenu.classList.add('translate-x-0');
+            setTimeout(() => {
+                content.classList.remove('-translate-x-full');
+                content.classList.add('translate-x-0');
+            }, 10);
 
             // Animate hamburger to X
-            button.classList.add('menu-open');
+            if (button) button.classList.add('menu-open');
 
             // Update aria label
-            button.setAttribute('aria-label', '메뉴 닫기');
+            if (button) button.setAttribute('aria-label', '메뉴 닫기');
         }
 
         function closeMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            const overlay = document.getElementById('mobileMenuOverlay');
+            const portal = document.getElementById('mobile-menu-portal');
+            const content = document.getElementById('mobile-menu-content');
             const button = document.getElementById('mobileMenuButton');
             const body = document.body;
 
             // Allow body scrolling
             body.style.overflow = '';
 
-            // Hide overlay
-            overlay.classList.remove('opacity-100', 'visible');
-            overlay.classList.add('opacity-0', 'invisible');
-
             // Slide out menu
-            mobileMenu.classList.remove('translate-x-0');
-            mobileMenu.classList.add('translate-x-full');
+            content.classList.remove('translate-x-0');
+            content.classList.add('-translate-x-full');
+
+            // Hide portal after animation
+            setTimeout(() => {
+                portal.style.display = 'none';
+            }, 300);
 
             // Animate X back to hamburger
-            button.classList.remove('menu-open');
+            if (button) button.classList.remove('menu-open');
 
             // Update aria label
-            button.setAttribute('aria-label', '메뉴 열기');
+            if (button) button.setAttribute('aria-label', '메뉴 열기');
         }
 
         // Close menu when clicking outside or pressing Escape
@@ -3050,6 +3000,14 @@
         window.addEventListener('resize', function () {
             if (window.innerWidth >= 768) {
                 closeMobileMenu();
+            }
+        });
+
+        // Initialize mobile menu portal
+        document.addEventListener('DOMContentLoaded', function () {
+            const portal = document.getElementById('mobile-menu-portal');
+            if (portal) {
+                portal.style.display = 'none';
             }
         });
 
