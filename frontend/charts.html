@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" class="dark">
+<html lang="ko" class="dark overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="UTF-8">
@@ -141,9 +141,16 @@
     <script src="js/view-toggle.js"></script>
     <!-- Fluorescent Charts Module - Boss Requirements -->
     <script src="js/fluorescent-charts.js"></script>
+
+    <style>
+        /* Mobile overflow prevention using pure Tailwind approach */
+        * {
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 
-<body class="bg-tv-dark text-tv-text font-inter overflow-x-hidden">
+<body class="bg-tv-dark text-tv-text font-inter overflow-x-hidden max-w-full min-h-screen">
     <!-- Navigation Bar -->
     <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

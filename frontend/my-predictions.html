@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="UTF-8">
@@ -43,9 +43,47 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+
+    <style>
+        /* CRITICAL: Fix horizontal scrolling on mobile */
+        html,
+        body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            position: relative !important;
+        }
+
+        * {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Prevent any element from causing horizontal overflow */
+        .container,
+        .max-w-7xl,
+        .w-full {
+            max-width: 100vw !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        /* Ensure all sections stay within viewport */
+        section {
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+
+        /* Fix chart containers */
+        .chart-container,
+        #chartContainer {
+            max-width: 100% !important;
+            width: 100% !important;
+            overflow: hidden !important;
+        }
+    </style>
 </head>
 
-<body class="bg-tv-darker text-tv-text font-sans">
+<body class="bg-tv-darker text-tv-text font-sans overflow-x-hidden max-w-full relative">
     <!-- Navigation Bar -->
     <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

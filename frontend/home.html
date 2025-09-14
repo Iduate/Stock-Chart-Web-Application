@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="UTF-8">
@@ -40,10 +40,19 @@
                     fontFamily: {
                         'inter': ['Inter', 'sans-serif'],
                         'noto': ['Noto Sans KR', 'sans-serif']
+                    },
+                    // Mobile overflow prevention
+                    maxWidth: {
+                        'mobile': '100vw',
+                        'safe': 'calc(100vw - 2rem)'
                     }
                 }
             },
-            darkMode: 'class'
+            darkMode: 'class',
+            // Add base styles for mobile overflow prevention
+            corePlugins: {
+                container: false // Disable default container to use custom
+            }
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -61,6 +70,75 @@
     <!-- BOSS REQUIREMENT: Fluorescent Charts with Maximum Contrast -->
     <script src="js/fluorescent-charts.js"></script>
     <style>
+        /* Professional Mobile Menu Animations */
+        .hamburger-line {
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .menu-open .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-open .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .menu-open .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Smooth slide animation for mobile menu */
+        #mobileMenu {
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Professional hover effects */
+        .menu-item-hover:hover {
+            transform: translateX(-4px);
+        }
+
+        /* Smooth backdrop filter */
+        .backdrop-blur-custom {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Mobile overflow prevention - Pure CSS approach */
+        * {
+            box-sizing: border-box;
+        }
+
+        .mobile-safe-container {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .mobile-safe-container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .mobile-safe-container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+
+        /* Ensure all elements respect mobile boundaries */
+        .mobile-safe {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
         /* Mobile optimization for better spacing and layout */
         @media (max-width: 768px) {
             section {
@@ -240,10 +318,10 @@
     </style>
 </head>
 
-<body class="bg-tv-dark text-tv-text-primary font-inter overflow-x-hidden">
+<body class="bg-tv-dark text-tv-text-primary font-inter overflow-x-hidden max-w-full min-h-screen box-border">
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm overflow-x-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full overflow-x-hidden">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
@@ -306,40 +384,158 @@
 
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
-                    <button onclick="toggleMobileMenu()" class="text-tv-text-secondary hover:text-white p-2">
-                        <i class="fas fa-bars"></i>
+                    <button onclick="toggleMobileMenu()"
+                        class="relative z-50 text-tv-text-secondary hover:text-white p-2 rounded-lg transition-all duration-300 hover:bg-tv-light"
+                        id="mobileMenuButton" aria-label="메뉴 열기">
+                        <div class="w-6 h-6 flex flex-col justify-center items-center">
+                            <span
+                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center"></span>
+                            <span
+                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center mt-1.5"></span>
+                            <span
+                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center mt-1.5"></span>
+                        </div>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Navigation -->
-        <div id="mobileMenu" class="md:hidden hidden bg-tv-card border-t border-tv-border">
-            <div class="px-4 py-2 space-y-1">
-                <a href="home.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">홈</a>
-                <a href="charts.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
-                    보드</a>
-                <a href="prediction.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
-                <a href="my-predictions.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">내
-                    예측</a>
-                <a href="ranking.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
-                <a href="events.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
-                <a href="subscription.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
-                <button onclick="showLoginModal()"
-                    class="block w-full text-left px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors mt-2">로그인</button>
+        <!-- Mobile Navigation Overlay -->
+        <div id="mobileMenuOverlay"
+            class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-custom z-40 md:hidden opacity-0 invisible transition-all duration-300"
+            onclick="closeMobileMenu()">
+        </div>
+
+        <!-- Professional Mobile Navigation Menu -->
+        <div id="mobileMenu"
+            class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-tv-dark border-l border-tv-border z-50 md:hidden transform translate-x-full transition-all duration-300 ease-in-out">
+
+            <!-- Menu Header -->
+            <div class="flex items-center justify-between p-6 border-b border-tv-border">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-tv-blue rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-tv-text-primary font-bold text-lg">StockChart</h3>
+                        <p class="text-tv-text-secondary text-sm">메뉴</p>
+                    </div>
+                </div>
+                <button onclick="closeMobileMenu()"
+                    class="text-tv-text-secondary hover:text-white p-2 rounded-lg transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="px-6 py-4 space-y-2 overflow-y-auto h-full pb-20">
+                <!-- Primary Actions -->
+                <div class="mb-6">
+                    <button onclick="showLoginModal(); closeMobileMenu();"
+                        class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white px-6 py-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        <i class="fas fa-rocket text-lg"></i>
+                        <span>지금 시작하기</span>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="space-y-1">
+                    <a href="home.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl bg-tv-blue bg-opacity-20 border border-tv-blue text-tv-text-primary transition-all duration-200">
+                        <div class="w-10 h-10 bg-tv-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-semibold">홈</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-tv-blue"></i>
+                    </a>
+
+                    <a href="charts.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-tv-green rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-chart-line group-hover:text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">차트 보드</span>
+                            <p class="text-xs text-tv-text-tertiary">실시간 차트 분석</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <a href="prediction.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-bright-yellow rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-lightbulb group-hover:text-black"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">예측하기</span>
+                            <p class="text-xs text-tv-text-tertiary">AI 기반 예측</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <a href="my-predictions.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-hot-pink rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-user-chart group-hover:text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">내 예측</span>
+                            <p class="text-xs text-tv-text-tertiary">예측 기록 관리</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <a href="ranking.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-tv-red rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-trophy group-hover:text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">랭킹</span>
+                            <p class="text-xs text-tv-text-tertiary">성과 순위</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <a href="events.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-electric-purple rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-calendar group-hover:text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">이벤트</span>
+                            <p class="text-xs text-tv-text-tertiary">특별 이벤트</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <a href="subscription.html"
+                        class="flex items-center space-x-4 px-4 py-4 rounded-xl text-tv-text-secondary hover:text-tv-text-primary hover:bg-tv-light transition-all duration-200 group menu-item-hover">
+                        <div
+                            class="w-10 h-10 bg-tv-border group-hover:bg-neon-orange rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fas fa-crown group-hover:text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-medium">구독</span>
+                            <p class="text-xs text-tv-text-tertiary">프리미엄 기능</p>
+                        </div>
+                        <i class="fas fa-chevron-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden py-8 lg:py-12">
+    <section
+        class="relative bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden py-8 lg:py-12 w-full max-w-full overflow-x-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0">
             <div
@@ -350,7 +546,7 @@
             </div>
         </div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full overflow-x-hidden">
             <div class="grid lg:grid-cols-2 gap-8 items-center">
                 <!-- Left Content -->
                 <div class="text-center lg:text-left animate-fade-in">
@@ -509,8 +705,8 @@
     </section>
 
     <!-- Main Chart Section -->
-    <section class="py-8 bg-tv-darker">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="py-8 bg-tv-darker w-full max-w-full overflow-x-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full overflow-x-hidden">
             <!-- Section Header -->
             <div class="text-center mb-6">
                 <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
@@ -606,7 +802,7 @@
     </section>
 
     <!-- Market Data Section -->
-    <section class="py-8 bg-tv-dark">
+    <section class="py-8 bg-tv-dark w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-6">
@@ -799,7 +995,7 @@
     </section>
 
     <!-- 메인 차트 섹션 -->
-    <section class="main-chart-section py-8 bg-tv-dark">
+    <section class="main-chart-section py-8 bg-tv-dark w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="section-header text-center mb-6">
                 <h2 class="text-2xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
@@ -859,7 +1055,8 @@
     </section>
 
     <!-- Professional Features Section -->
-    <section class="py-8 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary">
+    <section
+        class="py-8 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-6">
@@ -1055,7 +1252,7 @@
     </section>
 
     <!-- 실시간 시장 데이터 섹션 -->
-    <section id="market-data" class="market-data">
+    <section id="market-data" class="market-data w-full max-w-full overflow-x-hidden">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">실시간 시장 현황</h2>
@@ -1284,7 +1481,7 @@
     </section>
 
     <!-- 차트 보드 섹션 -->
-    <section class="chart-board">
+    <section class="chart-board w-full max-w-full overflow-x-hidden">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">온 세상 사람들과 함께 마켓 탐구</h2>
@@ -1443,7 +1640,7 @@
     </section>
 
     <!-- CTA 섹션 -->
-    <section class="cta-section">
+    <section class="cta-section w-full max-w-full overflow-x-hidden">
         <div class="container">
             <div class="cta-content">
                 <h2>지금 시작하여 미래를 예측해보세요</h2>
@@ -2757,11 +2954,83 @@
             return data;
         }
 
-        // Mobile menu toggle function
+        // Professional Mobile Menu Functions
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const button = document.getElementById('mobileMenuButton');
+            const body = document.body;
+
+            const isOpen = !mobileMenu.classList.contains('translate-x-full');
+
+            if (isOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
         }
+
+        function openMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const button = document.getElementById('mobileMenuButton');
+            const body = document.body;
+
+            // Prevent body scrolling
+            body.style.overflow = 'hidden';
+
+            // Show overlay
+            overlay.classList.remove('opacity-0', 'invisible');
+            overlay.classList.add('opacity-100', 'visible');
+
+            // Slide in menu
+            mobileMenu.classList.remove('translate-x-full');
+            mobileMenu.classList.add('translate-x-0');
+
+            // Animate hamburger to X
+            button.classList.add('menu-open');
+
+            // Update aria label
+            button.setAttribute('aria-label', '메뉴 닫기');
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const button = document.getElementById('mobileMenuButton');
+            const body = document.body;
+
+            // Allow body scrolling
+            body.style.overflow = '';
+
+            // Hide overlay
+            overlay.classList.remove('opacity-100', 'visible');
+            overlay.classList.add('opacity-0', 'invisible');
+
+            // Slide out menu
+            mobileMenu.classList.remove('translate-x-0');
+            mobileMenu.classList.add('translate-x-full');
+
+            // Animate X back to hamburger
+            button.classList.remove('menu-open');
+
+            // Update aria label
+            button.setAttribute('aria-label', '메뉴 열기');
+        }
+
+        // Close menu when clicking outside or pressing Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMobileMenu();
+            }
+        });
+
+        // Ensure menu is closed on resize to desktop
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768) {
+                closeMobileMenu();
+            }
+        });
 
         // Professional Modal Functions - Override any conflicting functions from app.js
         function showLoginModal() {
