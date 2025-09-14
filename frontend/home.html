@@ -61,150 +61,181 @@
     <!-- BOSS REQUIREMENT: Fluorescent Charts with Maximum Contrast -->
     <script src="js/fluorescent-charts.js"></script>
     <style>
-        /* Mobile optimization for spacing - AGGRESSIVE */
+        /* Mobile optimization for better spacing and layout */
         @media (max-width: 768px) {
             section {
-                padding-top: 0.5rem !important;
-                padding-bottom: 0.5rem !important;
-            }
-
-            .py-8 {
-                padding-top: 0.5rem !important;
-                padding-bottom: 0.5rem !important;
-            }
-
-            .py-12 {
-                padding-top: 0.75rem !important;
-                padding-bottom: 0.75rem !important;
-            }
-
-            .py-16 {
                 padding-top: 1rem !important;
                 padding-bottom: 1rem !important;
             }
 
+            .py-8 {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            .py-12 {
+                padding-top: 2.5rem !important;
+                padding-bottom: 2.5rem !important;
+            }
+
+            .py-16 {
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
+            }
+
             .mb-8 {
-                margin-bottom: 0.5rem !important;
+                margin-bottom: 1.5rem !important;
             }
 
             .mb-6 {
-                margin-bottom: 0.5rem !important;
+                margin-bottom: 1rem !important;
             }
 
             .mb-4 {
-                margin-bottom: 0.25rem !important;
+                margin-bottom: 0.75rem !important;
             }
 
             .mb-3 {
-                margin-bottom: 0.25rem !important;
+                margin-bottom: 0.5rem !important;
             }
 
             .mt-8 {
-                margin-top: 0.5rem !important;
+                margin-top: 1.5rem !important;
             }
 
             .mt-6 {
-                margin-top: 0.25rem !important;
+                margin-top: 1rem !important;
             }
 
             .mt-4 {
-                margin-top: 0.25rem !important;
+                margin-top: 0.75rem !important;
             }
 
-            /* Remove minimum heights that cause blank space */
+            /* Proper minimum heights */
             .min-h-screen {
-                min-height: auto !important;
+                min-height: 100vh !important;
             }
 
-            /* Reduce gap between grid items */
+            /* Better gap spacing */
             .gap-8 {
-                gap: 0.5rem !important;
+                gap: 1.5rem !important;
             }
 
             .gap-6 {
-                gap: 0.25rem !important;
+                gap: 1rem !important;
             }
 
             .gap-4 {
-                gap: 0.25rem !important;
+                gap: 0.75rem !important;
             }
 
-            /* Compact containers */
+            /* Better container spacing */
             .container,
             .max-w-7xl,
             .max-w-6xl {
-                padding-left: 0.5rem !important;
-                padding-right: 0.5rem !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
             }
 
             /* Footer spacing */
             footer {
-                margin-top: 0.25rem !important;
+                margin-top: 2rem !important;
             }
 
             .text-3xl {
-                font-size: 1.5rem !important;
+                font-size: 1.875rem !important;
+                line-height: 2.25rem !important;
             }
 
             .text-2xl {
+                font-size: 1.5rem !important;
+                line-height: 2rem !important;
+            }
+
+            .text-xl {
                 font-size: 1.25rem !important;
+                line-height: 1.75rem !important;
             }
 
-            /* Reduce gaps between sections */
-            section+section {
-                margin-top: -0.5rem;
+            .text-lg {
+                font-size: 1.125rem !important;
+                line-height: 1.75rem !important;
             }
 
-            /* Compress hero section */
+            /* Better hero section spacing */
             .relative.bg-gradient-to-br {
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
+            }
+
+            /* Grid spacing for hero */
+            .grid.lg\\:grid-cols-2 {
+                gap: 2rem !important;
+            }
+        }
+
+        /* Desktop optimizations */
+        @media (min-width: 769px) {
+            .py-8 {
                 padding-top: 2rem !important;
                 padding-bottom: 2rem !important;
             }
+
+            .py-12 {
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
+            }
+
+            .gap-8 {
+                gap: 2rem !important;
+            }
+
+            .mb-6 {
+                margin-bottom: 1.5rem !important;
+            }
+
+            .mb-8 {
+                margin-bottom: 2rem !important;
+            }
+
+            /* Hero section proper spacing */
+            .relative.bg-gradient-to-br {
+                padding-top: 4rem !important;
+                padding-bottom: 4rem !important;
+            }
         }
 
-        /* Ensure no excessive whitespace */
-        .section-spacer {
-            height: 0.5rem;
+        /* Animation styles */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Remove any potential hidden elements causing space */
-        div:empty {
-            display: none;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Mobile-specific aggressive spacing reduction */
-        @media (max-width: 768px) {
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
 
-            /* Force compact layout */
-            * {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
-            }
-
-            section {
-                margin-top: 0 !important;
-                margin-bottom: 0 !important;
-                padding-top: 0.5rem !important;
-                padding-bottom: 0.5rem !important;
-            }
-
-            /* Allow only small internal spacing */
-            .mb-4,
-            .mt-4 {
-                margin-top: 0.25rem !important;
-                margin-bottom: 0.25rem !important;
-            }
-
-            .mb-2,
-            .mt-2 {
-                margin-top: 0.125rem !important;
-                margin-bottom: 0.125rem !important;
-            }
-
-            /* Compress hero content */
-            .grid.lg\\:grid-cols-2 {
-                gap: 0.5rem !important;
-            }
+        .animate-slide-up {
+            animation: slideUp 1s ease-out 0.2s both;
         }
     </style>
 </head>
@@ -429,9 +460,9 @@
                             </div>
 
                             <!-- Chart Content -->
-                            <div class="relative h-96 bg-tv-darker">
-                                <div id="homeHeroChart" class="w-full h-full"
-                                    style="border: 2px solid red; background: #131722;"></div>
+                            <div class="relative h-[380px] bg-tv-darker">
+                                <div id="homeHeroChart" class="w-full h-[380px]"
+                                    style="background: #131722; min-height: 380px; position: relative;"></div>
 
                                 <!-- 🔥 DUAL-LINE LEGEND FOR BOSS 🔥 -->
                                 <div
@@ -2305,9 +2336,13 @@
             console.log('🏠 Initializing home hero chart container:', chartContainer);
             console.log('🏠 Container dimensions:', chartContainer.clientWidth, 'x', chartContainer.clientHeight);
 
+            // Use fixed dimensions to ensure chart is always visible
+            const chartWidth = chartContainer.clientWidth || 600;
+            const chartHeight = 380; // Fixed height for consistency
+
             const chart = LightweightCharts.createChart(chartContainer, {
-                width: chartContainer.clientWidth,
-                height: chartContainer.clientHeight,
+                width: chartWidth,
+                height: chartHeight,
                 layout: {
                     background: { color: '#131722' },
                     textColor: '#d1d4dc',
@@ -2383,10 +2418,15 @@
                 chartContainer.style.display = 'block';
                 chartContainer.style.visibility = 'visible';
                 chartContainer.style.opacity = '1';
+
+                // Apply fixed dimensions for consistency
+                const fixedWidth = chartContainer.clientWidth || 600;
                 chart.applyOptions({
-                    width: chartContainer.clientWidth,
-                    height: chartContainer.clientHeight,
+                    width: fixedWidth,
+                    height: 380, // Fixed height for consistency
                 });
+
+                // Fit content to ensure all data is visible
                 chart.timeScale().fitContent();
                 console.log('🏠 Home chart visibility forced, container innerHTML:', chartContainer.innerHTML.substring(0, 200));
             }, 2000);
