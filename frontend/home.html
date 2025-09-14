@@ -2448,7 +2448,11 @@
                 `;
                 container.parentElement.appendChild(loadingDiv);
 
-                const response = await fetch(`/api/market-data/coingecko/${symbol}/`);
+                // Set API base URL for local development
+                const baseUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                    ? `http://${window.location.hostname}:8000` : '';
+
+                const response = await fetch(`${baseUrl}/api/market-data/coingecko/${symbol}/`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -2561,7 +2565,11 @@
             try {
                 console.log(`🌟 Loading featured chart data for ${symbol}...`);
 
-                const response = await fetch(`/api/market-data/coingecko/${symbol}/`);
+                // Set API base URL for local development
+                const baseUrl = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+                    ? `http://${window.location.hostname}:8000` : '';
+
+                const response = await fetch(`${baseUrl}/api/market-data/coingecko/${symbol}/`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
