@@ -1993,8 +1993,8 @@
                             };
                         }
 
-                        // Generate realistic chart data
-                        function generateRealisticData(basePrice, days) {
+                        // Generate realistic chart data - Make it globally available
+                        window.generateRealisticData = function (basePrice, days) {
                             const data = [];
                             let price = basePrice;
                             const today = new Date();
@@ -2016,6 +2016,9 @@
 
                             return data;
                         }
+
+                        // Also create a local reference for easy access
+                        const generateRealisticData = window.generateRealisticData;
 
                         // Initialize charts with real data
                         function initializeCharts() {
@@ -3004,7 +3007,7 @@
                                         currentPrice: basePrice,
                                         predictedPrice: basePrice * (1 + (Math.random() - 0.5) * 0.1),
                                         change: `${(Math.random() - 0.5) * 10 > 0 ? '+' : ''}${((Math.random() - 0.5) * 10).toFixed(2)}%`,
-                                        data: generateRealisticData(basePrice, 30),
+                                        data: window.generateRealisticData(basePrice, 30),
                                         volume: Math.floor(Math.random() * 1000000),
                                         high: basePrice * 1.05,
                                         low: basePrice * 0.95
@@ -3022,7 +3025,7 @@
                                     currentPrice: basePrice,
                                     predictedPrice: basePrice * (1 + (Math.random() - 0.5) * 0.1),
                                     change: `${(Math.random() - 0.5) * 10 > 0 ? '+' : ''}${((Math.random() - 0.5) * 10).toFixed(2)}%`,
-                                    data: generateRealisticData(basePrice, 30),
+                                    data: window.generateRealisticData(basePrice, 30),
                                     volume: Math.floor(Math.random() * 1000000),
                                     high: basePrice * 1.05,
                                     low: basePrice * 0.95

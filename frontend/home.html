@@ -61,38 +61,38 @@
     <!-- BOSS REQUIREMENT: Fluorescent Charts with Maximum Contrast -->
     <script src="js/fluorescent-charts.js"></script>
     <style>
-        /* Mobile optimization for spacing */
+        /* Mobile optimization for spacing - AGGRESSIVE */
         @media (max-width: 768px) {
             section {
-                padding-top: 1rem !important;
-                padding-bottom: 1rem !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
             }
 
             .py-8 {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            .py-12 {
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+            }
+
+            .py-16 {
                 padding-top: 1rem !important;
                 padding-bottom: 1rem !important;
             }
 
-            .py-12 {
-                padding-top: 1.5rem !important;
-                padding-bottom: 1.5rem !important;
-            }
-
-            .py-16 {
-                padding-top: 2rem !important;
-                padding-bottom: 2rem !important;
-            }
-
             .mb-8 {
-                margin-bottom: 1rem !important;
+                margin-bottom: 0.5rem !important;
             }
 
             .mb-6 {
-                margin-bottom: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
             }
 
             .mb-4 {
-                margin-bottom: 0.5rem !important;
+                margin-bottom: 0.25rem !important;
             }
 
             .mb-3 {
@@ -100,7 +100,46 @@
             }
 
             .mt-8 {
-                margin-top: 1rem !important;
+                margin-top: 0.5rem !important;
+            }
+
+            .mt-6 {
+                margin-top: 0.25rem !important;
+            }
+
+            .mt-4 {
+                margin-top: 0.25rem !important;
+            }
+
+            /* Remove minimum heights that cause blank space */
+            .min-h-screen {
+                min-height: auto !important;
+            }
+
+            /* Reduce gap between grid items */
+            .gap-8 {
+                gap: 0.5rem !important;
+            }
+
+            .gap-6 {
+                gap: 0.25rem !important;
+            }
+
+            .gap-4 {
+                gap: 0.25rem !important;
+            }
+
+            /* Compact containers */
+            .container,
+            .max-w-7xl,
+            .max-w-6xl {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+
+            /* Footer spacing */
+            footer {
+                margin-top: 0.25rem !important;
             }
 
             .text-3xl {
@@ -131,6 +170,41 @@
         /* Remove any potential hidden elements causing space */
         div:empty {
             display: none;
+        }
+
+        /* Mobile-specific aggressive spacing reduction */
+        @media (max-width: 768px) {
+
+            /* Force compact layout */
+            * {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            section {
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+            }
+
+            /* Allow only small internal spacing */
+            .mb-4,
+            .mt-4 {
+                margin-top: 0.25rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+
+            .mb-2,
+            .mt-2 {
+                margin-top: 0.125rem !important;
+                margin-bottom: 0.125rem !important;
+            }
+
+            /* Compress hero content */
+            .grid.lg\\:grid-cols-2 {
+                gap: 0.5rem !important;
+            }
         }
     </style>
 </head>
@@ -461,7 +535,7 @@
             </div>
 
             <!-- Chart Guide for New Users -->
-            <div class="mt-8 bg-tv-card border border-tv-border rounded-xl p-6">
+            <div class="mt-2 bg-tv-card border border-tv-border rounded-xl p-6">
                 <div class="text-center mb-8">
                     <h3 class="text-xl font-bold text-tv-text-primary mb-2">차트 읽는 방법</h3>
                     <p class="text-tv-text-secondary">신규 방문자를 위한 가이드</p>
@@ -490,7 +564,7 @@
                 </div>
 
                 <!-- Accuracy Display -->
-                <div class="mt-6 text-center p-4 bg-tv-green/10 border border-tv-green/20 rounded-lg">
+                <div class="mt-2 text-center p-4 bg-tv-green/10 border border-tv-green/20 rounded-lg">
                     <div class="text-lg font-bold text-tv-green mb-1">
                         <i class="fas fa-trophy mr-2"></i>회원 예측 정확도 89.5%
                     </div>
@@ -703,7 +777,7 @@
             <div class="featured-chart-container bg-tv-darker rounded-xl p-6" id="featuredChart">
                 <!-- This is where the large chart will be rendered -->
             </div>
-            <div class="chart-control-row mt-6 flex justify-between items-center">
+            <div class="chart-control-row mt-2 flex justify-between items-center">
                 <div class="chart-timeframes flex space-x-2">
                     <button class="btn btn-timeframe active bg-tv-blue text-white px-3 py-2 rounded-md text-sm"
                         data-timeframe="1D">1D</button>
@@ -1372,7 +1446,7 @@
     </section>
 
     <!-- Professional Footer -->
-    <footer class="bg-tv-bg-secondary border-t border-tv-border mt-8">
+    <footer class="bg-tv-bg-secondary border-t border-tv-border mt-2">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <!-- Main Footer Content -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
@@ -1549,7 +1623,7 @@
             </div>
 
             <!-- Footer Bottom -->
-            <div class="border-t border-tv-border mt-8 pt-6">
+            <div class="border-t border-tv-border mt-2 pt-6">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <div class="flex items-center space-x-4">
                         <p class="text-tv-text-secondary">
@@ -1686,7 +1760,7 @@
                 </div>
 
                 <!-- Footer - More prominent signup option -->
-                <div class="mt-8 text-center bg-tv-bg-primary rounded-xl p-4">
+                <div class="mt-2 text-center bg-tv-bg-primary rounded-xl p-4">
                     <p class="text-tv-text-secondary mb-3">StockChart가 처음이신가요?</p>
                     <button onclick="showSignupModal()"
                         class="w-full bg-gradient-to-r from-tv-green to-emerald-500 hover:from-emerald-500 hover:to-tv-green text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg">

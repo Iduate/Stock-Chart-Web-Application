@@ -1,8 +1,8 @@
 // Stock Chart Web Application - Main JavaScript File
 // API Base URL Configuration - Auto-detect environment
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://127.0.0.1:8000/api'
-    : '/api';  // Use relative path for production
+    ? 'http://127.0.0.1:8000'
+    : '';  // Use relative path for production
 console.log('App.js loaded - Real Data Only Version 2.0 - ' + new Date().getTime());
 console.log('API Base URL:', API_BASE_URL);
 
