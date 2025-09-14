@@ -139,17 +139,25 @@
             box-sizing: border-box;
         }
 
-        /* Mobile menu z-index hierarchy */
+        /* Mobile menu z-index hierarchy - Force to highest layer */
         #mobileMenu {
-            z-index: 9999 !important;
+            z-index: 99999 !important;
+            isolation: isolate !important;
         }
 
         #mobileMenuOverlay {
-            z-index: 9998 !important;
+            z-index: 99998 !important;
+            isolation: isolate !important;
         }
 
         #mobileMenuButton {
-            z-index: 9999 !important;
+            z-index: 99999 !important;
+            isolation: isolate !important;
+        }
+
+        /* Ensure nav doesn't create stacking context issues */
+        nav {
+            isolation: auto !important;
         }
 
         /* Mobile optimization for better spacing and layout */
@@ -398,7 +406,7 @@
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button onclick="toggleMobileMenu()"
-                        class="relative z-[9999] text-tv-text-secondary hover:text-white p-2 rounded-lg transition-all duration-300 hover:bg-tv-light"
+                        class="relative z-[99999] text-tv-text-secondary hover:text-white p-2 rounded-lg transition-all duration-300 hover:bg-tv-light"
                         id="mobileMenuButton" aria-label="메뉴 열기">
                         <div class="w-6 h-6 flex flex-col justify-center items-center">
                             <span
@@ -415,13 +423,13 @@
 
         <!-- Mobile Navigation Overlay -->
         <div id="mobileMenuOverlay"
-            class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-custom z-[9998] md:hidden opacity-0 invisible transition-all duration-300"
+            class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-custom z-[99998] md:hidden opacity-0 invisible transition-all duration-300"
             onclick="closeMobileMenu()">
         </div>
 
         <!-- Professional Mobile Navigation Menu -->
         <div id="mobileMenu"
-            class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-tv-dark border-l border-tv-border z-[9999] md:hidden transform translate-x-full transition-all duration-300 ease-in-out">
+            class="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-tv-dark border-l border-tv-border z-[99999] md:hidden transform translate-x-full transition-all duration-300 ease-in-out">
 
             <!-- Menu Header -->
             <div class="flex items-center justify-between p-6 border-b border-tv-border">
