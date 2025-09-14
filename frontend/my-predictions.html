@@ -131,26 +131,79 @@
         </div>
 
         <!-- Mobile Navigation -->
-        <div id="mobileMenu" class="lg:hidden hidden bg-tv-card border-t border-tv-border">
-            <div class="px-4 py-2 space-y-1">
-                <a href="home.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
-                <a href="charts.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
-                    보드</a>
-                <a href="prediction.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
-                <a href="my-predictions.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">내
-                    예측</a>
-                <a href="ranking.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
-                <a href="events.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
-                <a href="subscription.html"
-                    class="block px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
-                <button onclick="showLoginModal()"
-                    class="block w-full text-left px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors mt-2">로그인</button>
+        <!-- Mobile Menu Portal - Outside Nav Context -->
+        <div id="mobile-menu-portal" class="fixed inset-0 lg:hidden"
+            style="display: none; z-index: 999999 !important; position: fixed !important;">
+            <!-- Full Screen Overlay -->
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" style="z-index: 999990 !important;"
+                onclick="toggleMobileMenu()"></div>
+            <!-- Menu Sidebar -->
+            <div id="mobile-menu-content"
+                class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
+                style="z-index: 999999 !important;">
+                <!-- Menu Header -->
+                <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
+                        <span class="text-white font-bold text-xl">StockChart</span>
+                    </div>
+                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <!-- Menu Items -->
+                <div class="p-6 space-y-4">
+                    <a href="home.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-home text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">홈</span>
+                    </a>
+                    <a href="charts.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
+                    </a>
+                    <a href="prediction.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-brain text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">AI 예측</span>
+                    </a>
+                    <a href="my-predictions.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg bg-[#8b5cf6]/20 border border-[#8b5cf6] transition-colors group">
+                        <i class="fas fa-user-chart text-[#8b5cf6] transition-colors"></i>
+                        <span class="text-white transition-colors">내 예측</span>
+                    </a>
+                    <a href="ranking.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
+                    </a>
+                    <a href="events.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
+                    </a>
+                    <a href="subscription.html"
+                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
+                        <i class="fas fa-crown text-[#8b5cf6] group-hover:text-white transition-colors"></i>
+                        <span class="text-gray-300 group-hover:text-white transition-colors">구독</span>
+                    </a>
+                </div>
+                <!-- Bottom Section -->
+                <div class="absolute bottom-6 left-6 right-6">
+                    <div
+                        class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
+                        <div class="text-white font-semibold mb-2">프리미엄 구독</div>
+                        <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
+                        <button
+                            class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
+                            무료로 시작하기
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
