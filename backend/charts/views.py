@@ -218,30 +218,73 @@ def all_predictions_api(request):
 class ChartPredictionViewSet(viewsets.ModelViewSet):
     """차트 예측 뷰셋"""
     serializer_class = ChartPredictionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Temporarily allow all for testing
     
     def get_permissions(self):
         """
         특정 액션에 대해 다른 권한 설정
         """
-        if self.action in ['create_ai_prediction', 'available_symbols']:
+        if self.action in ['create_ai_prediction', 'available_symbols', 'create', 'list']:
             permission_classes = [AllowAny]
         else:
-            permission_classes = self.permission_classes
+            permission_classes = [AllowAny]  # Temporarily allow all
         return [permission() for permission in permission_classes]
     
     def get_queryset(self):
-        return ChartPrediction.objects.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            return ChartPrediction.objects.filter(user=self.request.user)
+        else:
+            return ChartPrediction.objects.filter(user__isnull=True)
     
     def perform_create(self, serializer):
         """
         Create a new prediction and automatically set it to public
         """
         # Save the prediction and automatically set is_public to True
+        user = self.request.user if self.request.user.is_authenticated else None
         serializer.save(
-            user=self.request.user,
+            user=user,
             is_public=True  # Always make predictions public
         )
+    
+    def create(self, request, *args, **kwargs):
+        """
+        Override create method to provide better error handling
+        """
+        try:
+            print(f"DEBUG: Creating prediction with data: {request.data}")
+            
+            # Validate required fields
+            required_fields = ['stock_symbol', 'current_price', 'predicted_price', 'target_date']
+            missing_fields = [field for field in required_fields if not request.data.get(field)]
+            
+            if missing_fields:
+                return Response(
+                    {'error': f'Missing required fields: {", ".join(missing_fields)}'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+                print(f"DEBUG: Prediction created successfully: {serializer.data}")
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            else:
+                print(f"DEBUG: Serializer validation errors: {serializer.errors}")
+                return Response(
+                    {'error': 'Validation failed', 'details': serializer.errors}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+        except Exception as e:
+            print(f"DEBUG: Exception in create method: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {'error': f'Server error: {str(e)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def public_predictions(self, request):

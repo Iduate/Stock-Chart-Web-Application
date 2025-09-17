@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" class="overflow-x-hidden max-w-full">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -42,37 +42,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <script src="js/tradingview-pro.js"></script>
-    <script src="js/chart-legend.js"></script>
-
-    <style>
-        /* Mobile overflow prevention using pure Tailwind approach */
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Hamburger Menu Animation */
-        .hamburger-line {
-            transition: all 0.3s ease;
-            transform-origin: center;
-        }
-
-        .menu-open .hamburger-line:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-
-        .menu-open .hamburger-line:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-open .hamburger-line:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
-        }
-    </style>
 </head>
 
-<body class="bg-tv-darker text-tv-text font-sans overflow-x-hidden max-w-full min-h-screen">
+<body class="bg-tv-darker text-tv-text min-h-screen">
     <!-- Navigation Bar -->
     <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -127,1933 +99,497 @@
                 </div>
             </div>
         </div>
-
-        </div>
-        </div>
-        </div>
     </nav>
 
-    <!-- Mobile Menu Portal - Outside Nav Context -->
-    <div id="mobile-menu-portal" class="fixed inset-0 lg:hidden"
-        style="display: none; z-index: 999999 !important; position: fixed !important;">
-        <!-- Full Screen Overlay -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" style="z-index: 999990 !important;"
-            onclick="toggleMobileMenu()"></div>
-
-        <!-- Menu Sidebar -->
-        <div id="mobile-menu-content"
-            class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
-            style="z-index: 999999 !important;">
-            <!-- Menu Header -->
-            <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-white text-sm"></i>
-                    </div>
-                    <span class="text-white font-bold text-xl">StockChart</span>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu"
+        class="lg:hidden fixed inset-0 z-[9999] transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="toggleMobileMenu()"></div>
+        <div class="absolute right-0 top-0 h-full w-80 bg-tv-dark border-l border-tv-border shadow-2xl">
+            <div class="p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-tv-text">메뉴</h3>
+                    <button onclick="toggleMobileMenu()" class="text-tv-text-secondary hover:text-white p-2">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
-                <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Menu Items -->
-            <div class="p-6 space-y-4">
-                <a href="home.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-home text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">홈</span>
-                </a>
-                <a href="charts.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
-                </a>
-                <a href="prediction.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg bg-[#8b5cf6]/20 border border-[#8b5cf6] transition-colors group">
-                    <i class="fas fa-brain text-[#8b5cf6] transition-colors"></i>
-                    <span class="text-white transition-colors">AI 예측</span>
-                </a>
-                <a href="my-predictions.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-user-chart text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">내 예측</span>
-                </a>
-                <a href="ranking.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
-                </a>
-                <a href="events.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
-                </a>
-                <a href="subscription.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-crown text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">구독</span>
-                </a>
-            </div>
-
-            <!-- Bottom Section -->
-            <div class="absolute bottom-6 left-6 right-6">
-                <div
-                    class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
-                    <div class="text-white font-semibold mb-2">프리미엄 구독</div>
-                    <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
-                    <button
-                        class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
-                        무료로 시작하기
+                <div class="space-y-3">
+                    <a href="home.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-home w-5"></i>
+                        <span>홈</span>
+                    </a>
+                    <a href="charts.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>차트 보드</span>
+                    </a>
+                    <a href="prediction.html"
+                        class="flex items-center space-x-3 text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue p-3 rounded-lg">
+                        <i class="fas fa-lightbulb w-5"></i>
+                        <span>예측하기</span>
+                    </a>
+                    <a href="my-predictions.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-user-chart w-5"></i>
+                        <span>내 예측</span>
+                    </a>
+                    <a href="ranking.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-trophy w-5"></i>
+                        <span>랭킹</span>
+                    </a>
+                    <a href="events.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-calendar w-5"></i>
+                        <span>이벤트</span>
+                    </a>
+                    <a href="subscription.html"
+                        class="flex items-center space-x-3 text-tv-text-secondary hover:text-tv-text p-3 rounded-lg hover:bg-tv-light transition-all duration-200">
+                        <i class="fas fa-crown w-5"></i>
+                        <span>구독</span>
+                    </a>
+                </div>
+                <div class="pt-6 border-t border-tv-border">
+                    <button onclick="showLoginModal()"
+                        class="w-full bg-tv-blue hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        로그인
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Prediction Section -->
-    <section class="py-12 bg-gradient-to-br from-tv-darker via-tv-dark to-tv-darker min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Enhanced Page Header -->
-            <div class="text-center mb-16">
-                <div class="relative">
-                    <!-- Background Elements -->
-                    <div class="absolute inset-0 -z-10">
-                        <div class="absolute top-10 left-10 w-72 h-72 bg-tv-blue bg-opacity-5 rounded-full blur-3xl">
-                        </div>
-                        <div
-                            class="absolute bottom-10 right-10 w-96 h-96 bg-tv-green bg-opacity-3 rounded-full blur-3xl">
-                        </div>
-                    </div>
+    <!-- Main Content -->
+    <main class="py-8 bg-tv-darker min-h-screen">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Page Header -->
+            <div class="mb-8 text-center">
+                <h1 class="text-4xl font-bold text-tv-text mb-4">주식 예측하기</h1>
+                <p class="text-lg text-tv-text-secondary">종목을 선택하고 예측 정보를 입력하여 예측을 발행하세요</p>
+            </div>
 
-                    <!-- Main Header -->
-                    <div class="flex flex-col items-center justify-center mb-8">
-                        <div class="relative mb-6">
-                            <div
-                                class="w-24 h-24 bg-gradient-to-br from-tv-blue via-blue-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-tv-blue/30 transform hover:scale-105 transition-transform duration-300">
-                                <i class="fas fa-chart-line text-white text-4xl"></i>
-                            </div>
-                            <div
-                                class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-tv-green to-green-500 rounded-full flex items-center justify-center shadow-lg">
-                                <i class="fas fa-plus text-white text-sm"></i>
-                            </div>
-                            <!-- Animated Ring -->
-                            <div
-                                class="absolute inset-0 w-24 h-24 border-2 border-tv-blue/30 rounded-3xl animate-pulse">
-                            </div>
-                        </div>
+            <!-- Main Form -->
+            <div class="bg-tv-card border border-tv-border rounded-2xl p-8 shadow-xl">
+                <form id="predictionForm" class="space-y-8">
 
-                        <div class="text-center max-w-4xl">
-                            <h1
-                                class="text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text via-tv-blue to-tv-green mb-4 tracking-tight">
-                                스마트 예측 생성기
-                            </h1>
+                    <!-- Step 1: Stock Selection -->
+                    <div class="space-y-4">
+                        <label class="block text-lg font-semibold text-tv-text">
+                            <i class="fas fa-chart-line text-tv-blue mr-2"></i>종목 선택
+                        </label>
 
-                            <div class="flex flex-wrap items-center justify-center gap-4 mb-6">
-                                <div
-                                    class="flex items-center space-x-2 px-4 py-2 bg-tv-card/50 backdrop-blur-sm rounded-full border border-tv-border/30">
-                                    <div class="w-2 h-2 bg-tv-blue rounded-full animate-pulse"></div>
-                                    <span class="text-tv-blue font-semibold text-sm">AI 실시간 분석</span>
+                        <!-- Stock Search -->
+                        <input type="text" id="stockSearch"
+                            class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all"
+                            placeholder="종목명 또는 심볼 검색 (예: AAPL, TSLA, BTC)">
+
+                        <!-- Stock Selection Dropdown -->
+                        <select id="stockSelect" name="stock_symbol" required
+                            class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all">
+                            <option value="">종목을 선택하세요</option>
+                            <option value="AAPL">AAPL - Apple Inc.</option>
+                            <option value="MSFT">MSFT - Microsoft Corporation</option>
+                            <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                            <option value="TSLA">TSLA - Tesla Inc.</option>
+                            <option value="AMZN">AMZN - Amazon.com Inc.</option>
+                            <option value="NVDA">NVDA - NVIDIA Corporation</option>
+                            <option value="META">META - Meta Platforms Inc.</option>
+                            <option value="BTC">BTC - Bitcoin</option>
+                            <option value="ETH">ETH - Ethereum</option>
+                        </select>
+
+                        <!-- Current Stock Info Display -->
+                        <div id="stockInfo" class="hidden bg-tv-light/50 border border-tv-border rounded-lg p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 id="selectedStockName" class="text-xl font-semibold text-tv-text"></h3>
+                                    <p id="selectedStockSymbol" class="text-tv-text-secondary"></p>
                                 </div>
-                                <div
-                                    class="flex items-center space-x-2 px-4 py-2 bg-tv-card/50 backdrop-blur-sm rounded-full border border-tv-border/30">
-                                    <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse"></div>
-                                    <span class="text-tv-green font-semibold text-sm">고정밀 예측</span>
-                                </div>
-                                <div
-                                    class="flex items-center space-x-2 px-4 py-2 bg-tv-card/50 backdrop-blur-sm rounded-full border border-tv-border/30">
-                                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                                    <span class="text-purple-400 font-semibold text-sm">전문가 인사이트</span>
-                                </div>
-                            </div>
-
-                            <p
-                                class="text-xl lg:text-2xl text-tv-text-secondary max-w-3xl mx-auto leading-relaxed mb-8">
-                                최첨단 AI 분석과 전문가 인사이트를 활용하여
-                                <span class="text-tv-blue font-bold">정확한 예측</span>을 만들고
-                                <span class="text-tv-green font-bold">수익을 극대화</span>하세요
-                            </p>
-
-                            <!-- Enhanced Quick Stats -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                                <div class="group relative">
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-br from-tv-blue/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    </div>
-                                    <div
-                                        class="relative p-6 bg-tv-card/40 backdrop-blur-lg border border-tv-border/30 rounded-2xl hover:border-tv-blue/50 transition-all duration-300">
-                                        <div
-                                            class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-tv-blue to-blue-400 mb-2">
-                                            94.2%</div>
-                                        <div class="text-tv-text font-semibold mb-1">평균 정확도</div>
-                                        <div class="text-sm text-tv-text-secondary">지난 30일 기준</div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-gradient-to-r from-tv-blue to-blue-400 h-1 rounded-full"
-                                                style="width: 94%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="group relative">
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-br from-tv-green/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    </div>
-                                    <div
-                                        class="relative p-6 bg-tv-card/40 backdrop-blur-lg border border-tv-border/30 rounded-2xl hover:border-tv-green/50 transition-all duration-300">
-                                        <div
-                                            class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-tv-green to-green-400 mb-2">
-                                            +187%</div>
-                                        <div class="text-tv-text font-semibold mb-1">평균 수익률</div>
-                                        <div class="text-sm text-tv-text-secondary">성공한 예측 기준</div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-gradient-to-r from-tv-green to-green-400 h-1 rounded-full"
-                                                style="width: 87%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="group relative">
-                                    <div
-                                        class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    </div>
-                                    <div
-                                        class="relative p-6 bg-tv-card/40 backdrop-blur-lg border border-tv-border/30 rounded-2xl hover:border-purple-500/50 transition-all duration-300">
-                                        <div
-                                            class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-purple-300 mb-2">
-                                            12.8K</div>
-                                        <div class="text-tv-text font-semibold mb-1">성공한 예측</div>
-                                        <div class="text-sm text-tv-text-secondary">전체 플랫폼 합계</div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-gradient-to-r from-purple-400 to-purple-300 h-1 rounded-full"
-                                                style="width: 78%"></div>
-                                        </div>
-                                    </div>
+                                <div class="text-right">
+                                    <p class="text-sm text-tv-text-secondary">현재 가격</p>
+                                    <p id="currentStockPrice" class="text-3xl font-bold text-tv-text">$0.00</p>
+                                    <p id="loadingPrice" class="text-sm text-tv-blue">
+                                        <i class="fas fa-spinner fa-spin mr-1"></i>가격 로딩 중...
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Step 2: Price Prediction -->
+                    <div class="space-y-4">
+                        <label class="block text-lg font-semibold text-tv-text">
+                            <i class="fas fa-dollar-sign text-tv-green mr-2"></i>예측 정보
+                        </label>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Current Price (Auto-filled) -->
+                            <div>
+                                <label class="block text-sm font-medium text-tv-text-secondary mb-2">현재 가격</label>
+                                <input type="number" id="currentPrice" name="current_price" step="0.01" readonly
+                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-lg text-tv-text cursor-not-allowed"
+                                    placeholder="종목 선택 후 자동 입력">
+                            </div>
+
+                            <!-- Predicted Price (User Input) -->
+                            <div>
+                                <label class="block text-sm font-medium text-tv-text-secondary mb-2">예측 가격</label>
+                                <input type="number" id="predictedPrice" name="predicted_price" step="0.01" required
+                                    class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all"
+                                    placeholder="예측하는 가격을 입력하세요">
+                            </div>
+                        </div>
+
+                        <!-- Price Change Indicator -->
+                        <div id="priceChangeIndicator"
+                            class="hidden bg-tv-light/30 border border-tv-border rounded-lg p-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-tv-text-secondary">예상 변화율:</span>
+                                <span id="priceChangePercent" class="font-bold text-lg"></span>
+                                <span id="priceChangeDirection" class="text-sm font-medium"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Time Period -->
+                    <div class="space-y-4">
+                        <label class="block text-lg font-semibold text-tv-text">
+                            <i class="fas fa-calendar text-tv-blue mr-2"></i>예측 기간
+                        </label>
+
+                        <select id="predictionDays" name="prediction_days" required
+                            class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all">
+                            <option value="">예측 기간을 선택하세요</option>
+                            <option value="1">1일</option>
+                            <option value="3">3일</option>
+                            <option value="7">7일 (1주일)</option>
+                            <option value="14">14일 (2주일)</option>
+                            <option value="30">30일 (1개월)</option>
+                        </select>
+
+                        <!-- Target Date Display -->
+                        <div id="targetDateDisplay"
+                            class="hidden bg-tv-light/30 border border-tv-border rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-tv-text-secondary">목표 날짜:</span>
+                                <span id="targetDateText" class="font-semibold text-tv-text"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Optional: Analysis/Reasoning -->
+                    <div class="space-y-4">
+                        <label class="block text-lg font-semibold text-tv-text">
+                            <i class="fas fa-lightbulb text-orange-500 mr-2"></i>예측 근거 (선택사항)
+                        </label>
+
+                        <textarea id="predictionReason" name="reasoning" rows="3"
+                            class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all resize-none"
+                            placeholder="예측의 근거나 분석 내용을 간단히 작성해주세요 (선택사항)"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-6">
+                        <button type="submit" id="submitPrediction"
+                            class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg hover:shadow-tv-blue/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-none">
+                            <i class="fas fa-rocket mr-2"></i>
+                            <span id="submitButtonText">예측 발행하기</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage"
+                class="hidden mt-8 bg-tv-green/20 border border-tv-green/30 rounded-lg p-6 text-center">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="w-16 h-16 bg-tv-green/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-tv-green text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-tv-green mb-2">예측이 성공적으로 발행되었습니다!</h3>
+                <p class="text-tv-text-secondary mb-4">예측이 저장되었으며 다른 사용자들이 볼 수 있습니다.</p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="resetForm()"
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
+                        새 예측 작성
+                    </button>
+                    <a href="my-predictions.html"
+                        class="bg-tv-green hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors">
+                        내 예측 보기
+                    </a>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <!-- Enhanced Prediction Form -->
-                <div class="lg:col-span-2">
-                    <div class="relative group">
-                        <!-- Background Gradient with Animation -->
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-tv-card/90 via-tv-card/60 to-tv-card/40 backdrop-blur-xl rounded-3xl">
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-tv-blue/10 via-transparent to-tv-green/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                        </div>
-
-                        <!-- Animated Border -->
-                        <div
-                            class="absolute inset-0 rounded-3xl bg-gradient-to-r from-tv-blue/20 via-tv-green/20 to-tv-blue/20 p-px">
-                            <div class="h-full w-full bg-tv-card/95 rounded-3xl"></div>
-                        </div>
-
-                        <!-- Main Form Container -->
-                        <form id="predictionForm"
-                            class="relative bg-tv-card/95 backdrop-blur-lg border border-tv-border/50 rounded-3xl p-8 lg:p-10 shadow-2xl shadow-tv-blue/10 hover:shadow-tv-blue/20 transition-all duration-500">
-                            <!-- Enhanced Form Header -->
-                            <div class="mb-10">
-                                <div class="flex items-center space-x-4 mb-6">
-                                    <div class="relative">
-                                        <div
-                                            class="w-16 h-16 bg-gradient-to-br from-tv-blue/30 via-tv-blue/20 to-tv-blue/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-tv-blue/20">
-                                            <i class="fas fa-edit text-tv-blue text-2xl"></i>
-                                        </div>
-                                        <div
-                                            class="absolute -top-1 -right-1 w-5 h-5 bg-tv-green rounded-full border-2 border-tv-card animate-pulse">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h2
-                                            class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text to-tv-blue mb-2">
-                                            예측 정보 입력</h2>
-                                        <p class="text-tv-text-secondary text-lg">AI 가이드와 함께 단계별로 정확한 정보를 입력해주세요</p>
-                                    </div>
-                                </div>
-
-                                <!-- Process Indicator -->
-                                <div class="flex items-center space-x-2 text-sm">
-                                    <div class="flex items-center space-x-1 px-3 py-1 bg-tv-blue/20 rounded-full">
-                                        <div class="w-2 h-2 bg-tv-blue rounded-full animate-pulse"></div>
-                                        <span class="text-tv-blue font-medium">실시간 처리</span>
-                                    </div>
-                                    <div class="flex items-center space-x-1 px-3 py-1 bg-tv-green/20 rounded-full">
-                                        <div class="w-2 h-2 bg-tv-green rounded-full"></div>
-                                        <span class="text-tv-green font-medium">AI 검증</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Enhanced Progress Steps -->
-                            <div class="relative mb-12">
-                                <!-- Background Line -->
-                                <div
-                                    class="absolute top-5 left-0 right-0 h-1 bg-gradient-to-r from-tv-border via-tv-border to-tv-border rounded-full">
-                                </div>
-                                <div class="absolute top-5 left-0 h-1 bg-gradient-to-r from-tv-blue to-blue-500 rounded-full transition-all duration-500"
-                                    style="width: 25%"></div>
-
-                                <div class="relative flex justify-between">
-                                    <!-- Step 1 -->
-                                    <div class="flex flex-col items-center group">
-                                        <div class="relative mb-4">
-                                            <div
-                                                class="w-12 h-12 bg-gradient-to-br from-tv-blue via-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg shadow-tv-blue/30 transform group-hover:scale-110 transition-transform duration-300 border-4 border-tv-card">
-                                                <i class="fas fa-chart-line"></i>
-                                            </div>
-                                            <div
-                                                class="absolute -inset-2 bg-tv-blue/20 rounded-full animate-pulse opacity-75">
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-sm font-bold text-tv-blue mb-1">종목 선택</div>
-                                            <div class="text-xs text-tv-text-secondary">원하는 종목 고르기</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Step 2 -->
-                                    <div class="flex flex-col items-center group">
-                                        <div class="relative mb-4">
-                                            <div
-                                                class="w-12 h-12 bg-tv-border hover:bg-tv-blue text-tv-text-secondary hover:text-white rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-4 border-tv-card group-hover:scale-105">
-                                                <i class="fas fa-dollar-sign"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div
-                                                class="text-sm font-medium text-tv-text-secondary group-hover:text-tv-text transition-colors mb-1">
-                                                가격 정보</div>
-                                            <div class="text-xs text-tv-text-secondary">목표 가격 설정</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Step 3 -->
-                                    <div class="flex flex-col items-center group">
-                                        <div class="relative mb-4">
-                                            <div
-                                                class="w-12 h-12 bg-tv-border hover:bg-tv-green text-tv-text-secondary hover:text-white rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-4 border-tv-card group-hover:scale-105">
-                                                <i class="fas fa-calendar"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div
-                                                class="text-sm font-medium text-tv-text-secondary group-hover:text-tv-text transition-colors mb-1">
-                                                기간 설정</div>
-                                            <div class="text-xs text-tv-text-secondary">예측 기간 선택</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Step 4 -->
-                                    <div class="flex flex-col items-center group">
-                                        <div class="relative mb-4">
-                                            <div
-                                                class="w-12 h-12 bg-tv-border hover:bg-tv-green text-tv-text-secondary hover:text-white rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-4 border-tv-card group-hover:scale-105">
-                                                <i class="fas fa-rocket"></i>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div
-                                                class="text-sm font-medium text-tv-text-secondary group-hover:text-tv-text transition-colors mb-1">
-                                                완료</div>
-                                            <div class="text-xs text-tv-text-secondary">예측 생성하기</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Enhanced Form Steps -->
-                            <div class="space-y-10 mt-12">
-                                <!-- Step 1: Enhanced Stock Selection -->
-                                <div class="form-step active" data-step="1">
-                                    <div class="mb-8">
-                                        <div class="flex items-center space-x-4 mb-6">
-                                            <div
-                                                class="w-10 h-10 bg-gradient-to-br from-tv-blue to-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
-                                                <i class="fas fa-chart-line"></i>
-                                            </div>
-                                            <div class="flex-1">
-                                                <h3 class="text-2xl font-bold text-tv-text mb-1">종목 선택</h3>
-                                                <p class="text-tv-text-secondary">예측하고 싶은 종목을 선택해주세요</p>
-                                            </div>
-                                            <div class="hidden md:block">
-                                                <div
-                                                    class="px-4 py-2 bg-tv-blue/20 rounded-xl border border-tv-blue/30">
-                                                    <span class="text-tv-blue text-sm font-semibold">1/4 단계</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-8">
-                                        <div class="relative">
-                                            <label class="block text-lg font-bold text-tv-text mb-4">
-                                                <i class="fas fa-search text-tv-blue mr-3"></i>종목 검색 및 선택
-                                            </label>
-
-                                            <!-- Search Input -->
-                                            <div class="relative mb-4">
-                                                <input type="text" id="stockSearch"
-                                                    class="w-full px-6 py-4 pl-14 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-2xl text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg placeholder-tv-text-secondary"
-                                                    placeholder="종목명 또는 심볼을 검색하세요... (예: Apple, AAPL)">
-                                                <div class="absolute left-5 top-1/2 transform -translate-y-1/2">
-                                                    <i class="fas fa-search text-tv-text-secondary"></i>
-                                                </div>
-                                                <div class="absolute right-5 top-1/2 transform -translate-y-1/2">
-                                                    <div class="flex items-center space-x-2">
-                                                        <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse">
-                                                        </div>
-                                                        <span class="text-xs text-tv-green font-medium">실시간</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Popular Stocks Grid -->
-                                            <div class="mb-6">
-                                                <h4 class="text-lg font-semibold text-tv-text mb-4 flex items-center">
-                                                    <i class="fas fa-fire text-orange-500 mr-2"></i>인기 종목
-                                                </h4>
-                                                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                                    <div
-                                                        class="group cursor-pointer p-4 bg-gradient-to-br from-tv-card/60 to-tv-darker/40 rounded-xl border border-tv-border/30 hover:border-tv-blue/50 transition-all duration-300 hover:shadow-lg hover:shadow-tv-blue/10">
-                                                        <div class="flex items-center space-x-3">
-                                                            <div
-                                                                class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                                                <span class="text-xl">🍎</span>
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <div
-                                                                    class="font-bold text-tv-text group-hover:text-tv-blue transition-colors">
-                                                                    AAPL</div>
-                                                                <div class="text-xs text-tv-text-secondary">$182.50
-                                                                </div>
-                                                            </div>
-                                                            <div class="text-xs text-tv-green font-semibold">+2.8%</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div
-                                                        class="group cursor-pointer p-4 bg-gradient-to-br from-tv-card/60 to-tv-darker/40 rounded-xl border border-tv-border/30 hover:border-tv-blue/50 transition-all duration-300 hover:shadow-lg hover:shadow-tv-blue/10">
-                                                        <div class="flex items-center space-x-3">
-                                                            <div
-                                                                class="w-10 h-10 bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                                                <span class="text-xl">₿</span>
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <div
-                                                                    class="font-bold text-tv-text group-hover:text-tv-blue transition-colors">
-                                                                    BTC</div>
-                                                                <div class="text-xs text-tv-text-secondary">$67,450
-                                                                </div>
-                                                            </div>
-                                                            <div class="text-xs text-tv-green font-semibold">+5.2%</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div
-                                                        class="group cursor-pointer p-4 bg-gradient-to-br from-tv-card/60 to-tv-darker/40 rounded-xl border border-tv-border/30 hover:border-tv-blue/50 transition-all duration-300 hover:shadow-lg hover:shadow-tv-blue/10">
-                                                        <div class="flex items-center space-x-3">
-                                                            <div
-                                                                class="w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                                                <span class="text-xl">🚗</span>
-                                                            </div>
-                                                            <div class="flex-1">
-                                                                <div
-                                                                    class="font-bold text-tv-text group-hover:text-tv-blue transition-colors">
-                                                                    TSLA</div>
-                                                                <div class="text-xs text-tv-text-secondary">$251.20
-                                                                </div>
-                                                            </div>
-                                                            <div class="text-xs text-tv-red font-semibold">-1.5%</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Dropdown Selection -->
-                                            <div class="relative">
-                                                <select id="stockSelect" name="stock_symbol" required
-                                                    class="w-full px-6 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-2xl text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 appearance-none cursor-pointer text-lg">
-                                                    <option value="">💼 전체 종목에서 선택하기</option>
-                                                    <option value="AAPL">🍎 Apple Inc. (AAPL) - $182.50</option>
-                                                    <option value="GOOGL">🔍 Alphabet Inc. (GOOGL) - $142.80</option>
-                                                    <option value="TSLA">🚗 Tesla Inc. (TSLA) - $251.20</option>
-                                                    <option value="MSFT">💻 Microsoft Corp. (MSFT) - $371.50</option>
-                                                    <option value="005930">🔧 삼성전자 (005930) - ₩68,900</option>
-                                                    <option value="BTC">₿ Bitcoin (BTC) - $67,450</option>
-                                                    <option value="ETH">⟠ Ethereum (ETH) - $4,320</option>
-                                                </select>
-                                                <div
-                                                    class="absolute right-6 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                                    <i class="fas fa-chevron-down text-tv-text-secondary"></i>
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                class="mt-4 p-4 bg-gradient-to-r from-tv-blue/10 to-transparent rounded-xl border border-tv-blue/20">
-                                                <div class="flex items-start space-x-3">
-                                                    <div
-                                                        class="w-6 h-6 bg-tv-blue/20 rounded-full flex items-center justify-center mt-0.5">
-                                                        <i class="fas fa-lightbulb text-tv-blue text-xs"></i>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-sm text-tv-text font-medium mb-1">💡 추천 종목</p>
-                                                        <p class="text-sm text-tv-text-secondary">Apple, Tesla, Bitcoin이
-                                                            현재 높은 예측 정확도를 보이고 있습니다</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Enhanced Stock Info Card -->
-                                        <div id="stockInfoCard" class="hidden">
-                                            <div class="relative group">
-                                                <div
-                                                    class="absolute inset-0 bg-gradient-to-br from-tv-blue/20 to-tv-green/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                                </div>
-                                                <div
-                                                    class="relative p-6 bg-gradient-to-br from-tv-card/80 to-tv-darker/60 rounded-2xl border border-tv-border/50 backdrop-blur-sm">
-                                                    <div class="flex items-center justify-between mb-4">
-                                                        <div class="flex items-center space-x-4">
-                                                            <div
-                                                                class="w-16 h-16 bg-gradient-to-br from-tv-blue/30 to-tv-blue/10 rounded-2xl flex items-center justify-center">
-                                                                <span id="stockIcon" class="text-3xl">🍎</span>
-                                                            </div>
-                                                            <div>
-                                                                <h4 id="stockName"
-                                                                    class="text-2xl font-bold text-tv-text mb-1">Apple
-                                                                    Inc.</h4>
-                                                                <p id="stockSymbol"
-                                                                    class="text-tv-text-secondary text-lg">AAPL • NASDAQ
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <div id="stockPrice"
-                                                                class="text-3xl font-black text-tv-text mb-1">$182.50
-                                                            </div>
-                                                            <div id="stockChange"
-                                                                class="text-lg text-tv-green font-semibold">+2.8% ↗️
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Market Stats -->
-                                                    <div class="grid grid-cols-3 gap-4 mt-6">
-                                                        <div class="text-center p-3 bg-tv-light/30 rounded-lg">
-                                                            <div class="text-lg font-bold text-tv-text">$2.8T</div>
-                                                            <div class="text-xs text-tv-text-secondary">시가총액</div>
-                                                        </div>
-                                                        <div class="text-center p-3 bg-tv-light/30 rounded-lg">
-                                                            <div class="text-lg font-bold text-tv-text">45.2M</div>
-                                                            <div class="text-xs text-tv-text-secondary">거래량</div>
-                                                        </div>
-                                                        <div class="text-center p-3 bg-tv-light/30 rounded-lg">
-                                                            <div class="text-lg font-bold text-tv-green">95%</div>
-                                                            <div class="text-xs text-tv-text-secondary">예측 신뢰도</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 2: Enhanced Price Information -->
-                                <div class="form-step hidden" data-step="2">
-                                    <div class="mb-8">
-                                        <div class="flex items-center space-x-3 mb-4">
-                                            <div
-                                                class="w-8 h-8 bg-gradient-to-br from-tv-green to-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
-                                                2
-                                            </div>
-                                            <h3 class="text-2xl font-bold text-tv-text">AI 예측 설정</h3>
-                                            <div
-                                                class="flex-1 h-px bg-gradient-to-r from-tv-green/30 to-transparent ml-4">
-                                            </div>
-                                        </div>
-                                        <p class="text-tv-text-secondary ml-11">현재 가격 확인 및 예측 기간을 설정해주세요</p>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div class="relative">
-                                            <label class="block text-sm font-semibold text-tv-text mb-3">
-                                                <i class="fas fa-dollar-sign text-tv-blue mr-2"></i>현재 가격
-                                            </label>
-                                            <div class="relative">
-                                                <input type="number" id="currentPrice" name="current_price" step="0.01"
-                                                    class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg"
-                                                    placeholder="자동으로 로드됩니다" readonly>
-                                                <span
-                                                    class="absolute right-6 top-1/2 transform -translate-y-1/2 text-tv-text-secondary text-sm font-medium">USD</span>
-                                                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                                    <i class="fas fa-chart-area text-tv-blue"></i>
-                                                </div>
-                                            </div>
-                                            <div class="mt-2 text-xs text-tv-text-secondary ml-1">
-                                                📊 실시간 시장 가격
-                                            </div>
-                                        </div>
-                                        <div class="relative">
-                                            <label class="block text-sm font-semibold text-tv-text mb-3">
-                                                <i class="fas fa-calendar-alt text-tv-green mr-2"></i>예측 기간
-                                            </label>
-                                            <div class="relative">
-                                                <select id="predictionDays" name="prediction_days" required
-                                                    class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300 text-lg appearance-none">
-                                                    <option value="">예측 기간 선택</option>
-                                                    <option value="1">1일 (단기)</option>
-                                                    <option value="3">3일 (단기)</option>
-                                                    <option value="7" selected>7일 (1주일) - 추천</option>
-                                                    <option value="14">14일 (2주일)</option>
-                                                    <option value="21">21일 (3주일)</option>
-                                                    <option value="30">30일 (1개월)</option>
-                                                </select>
-                                                <div
-                                                    class="absolute right-6 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                                    <i class="fas fa-chevron-down text-tv-text-secondary"></i>
-                                                </div>
-                                                <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                                    <i class="fas fa-clock text-tv-green"></i>
-                                                </div>
-                                            </div>
-                                            <div class="mt-2 text-xs text-tv-text-secondary ml-1">
-                                                🕒 AI가 선택한 기간 동안 가격을 예측합니다
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Enhanced Price Difference Display -->
-                                    <div id="priceDifference"
-                                        class="mt-8 p-6 bg-gradient-to-r from-tv-darker/80 to-tv-card/50 border border-tv-border/30 rounded-xl hidden backdrop-blur-sm">
-                                        <div class="flex items-center justify-between mb-4">
-                                            <h4 class="text-lg font-semibold text-tv-text">📈 예측 분석</h4>
-                                            <span
-                                                class="px-3 py-1 bg-tv-blue/20 text-tv-blue rounded-full text-sm font-medium">분석
-                                                완료</span>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-4">
-                                            <div class="text-center p-4 bg-tv-light/30 rounded-lg">
-                                                <div class="text-2xl font-bold text-tv-green mb-1">+12.5%</div>
-                                                <div class="text-xs text-tv-text-secondary">예상 변동률</div>
-                                            </div>
-                                            <div class="text-center p-4 bg-tv-light/30 rounded-lg">
-                                                <div class="text-2xl font-bold text-tv-blue mb-1">$23.50</div>
-                                                <div class="text-xs text-tv-text-secondary">가격 차이</div>
-                                            </div>
-                                            <div class="text-center p-4 bg-tv-light/30 rounded-lg">
-                                                <div class="text-2xl font-bold text-tv-text mb-1">상승</div>
-                                                <div class="text-xs text-tv-text-secondary">예측 방향</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 3: Time Period -->
-                                <div class="form-step hidden" data-step="3">
-                                    <div class="mb-6">
-                                        <div class="flex items-center space-x-2 mb-2">
-                                            <span
-                                                class="w-6 h-6 bg-tv-blue text-white rounded-full flex items-center justify-center text-xs font-semibold">3</span>
-                                            <h3 class="text-xl font-semibold text-tv-text">기간 설정</h3>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-tv-text mb-2">
-                                                <i class="fas fa-calendar text-tv-blue mr-2"></i>목표 날짜
-                                            </label>
-                                            <input type="date" id="targetDate"
-                                                class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-tv-text mb-2">
-                                                <i class="fas fa-clock text-tv-blue mr-2"></i>예측 기간
-                                            </label>
-                                            <select id="duration"
-                                                class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                                                <option value="7">📅 1주일</option>
-                                                <option value="14">📅 2주일</option>
-                                                <option value="30">📅 1개월</option>
-                                                <option value="90">📅 3개월</option>
-                                                <option value="180">📅 6개월</option>
-                                                <option value="365">📅 1년</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 4: Additional Settings -->
-                                <div class="form-step hidden" data-step="4">
-                                    <div class="mb-6">
-                                        <div class="flex items-center space-x-2 mb-2">
-                                            <span
-                                                class="w-6 h-6 bg-tv-blue text-white rounded-full flex items-center justify-center text-xs font-semibold">4</span>
-                                            <h3 class="text-xl font-semibold text-tv-text">추가 설정</h3>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-6">
-                                        <!-- Confidence Slider -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-tv-text mb-2">
-                                                <i class="fas fa-percentage text-tv-blue mr-2"></i>신뢰도
-                                            </label>
-                                            <div class="space-y-2">
-                                                <input type="range" id="confidence" name="confidence" min="50" max="100"
-                                                    value="75"
-                                                    class="w-full h-2 bg-tv-light rounded-lg appearance-none cursor-pointer slider">
-                                                <div class="flex justify-between text-sm text-tv-text-secondary">
-                                                    <span>50%</span>
-                                                    <span id="confidenceValue"
-                                                        class="font-semibold text-tv-text">75%</span>
-                                                    <span>100%</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Reasoning -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-tv-text mb-2">
-                                                <i class="fas fa-lightbulb text-tv-blue mr-2"></i>예측 근거 (선택사항)
-                                            </label>
-                                            <textarea id="reasoning" name="reasoning" rows="4"
-                                                class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent resize-none"
-                                                placeholder="예측의 근거나 분석 내용을 입력해주세요..."></textarea>
-                                        </div>
-
-                                        <!-- Public Sharing -->
-                                        <div
-                                            class="flex items-start space-x-3 p-4 bg-tv-darker border border-tv-border rounded-lg">
-                                            <input type="checkbox" id="isPublic" name="is_public" checked
-                                                class="mt-1 rounded border-tv-border bg-tv-light">
-                                            <div>
-                                                <label for="isPublic"
-                                                    class="text-sm font-medium text-tv-text cursor-pointer">예측을
-                                                    공개적으로 공유하기</label>
-                                                <p class="text-xs text-tv-text-secondary mt-1">다른 사용자들이 내 예측을 볼
-                                                    수
-                                                    있습니다</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Enhanced Form Navigation -->
-                            <div class="flex items-center justify-between mt-12 pt-8 border-t border-tv-border/30">
-                                <button type="button"
-                                    class="group px-8 py-3 bg-gradient-to-r from-tv-light to-tv-border hover:from-tv-border hover:to-tv-light text-tv-text rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg disabled:shadow-none flex items-center space-x-2"
-                                    id="prevStep" disabled>
-                                    <i
-                                        class="fas fa-chevron-left group-hover:-translate-x-1 transition-transform duration-300"></i>
-                                    <span>이전 단계</span>
-                                </button>
-
-                                <div class="flex space-x-4">
-                                    <button type="button"
-                                        class="group px-6 py-3 bg-gradient-to-r from-tv-border/50 to-tv-light/50 hover:from-tv-border hover:to-tv-light text-tv-text rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl flex items-center space-x-2">
-                                        <i class="fas fa-save"></i>
-                                        <span>임시저장</span>
-                                    </button>
-
-                                    <button type="button"
-                                        class="group px-8 py-3 bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white rounded-xl font-bold transition-all duration-300 shadow-lg shadow-tv-blue/25 hover:shadow-xl hover:shadow-tv-blue/40 flex items-center space-x-2"
-                                        id="nextStep">
-                                        <span>다음 단계</span>
-                                        <i
-                                            class="fas fa-chevron-right group-hover:translate-x-1 transition-transform duration-300"></i>
-                                    </button>
-
-                                    <button type="submit"
-                                        class="group px-10 py-3 bg-gradient-to-r from-tv-green to-green-600 hover:from-green-600 hover:to-tv-green text-white rounded-xl font-bold transition-all duration-300 shadow-lg shadow-tv-green/25 hover:shadow-xl hover:shadow-tv-green/40 flex items-center space-x-2"
-                                        id="submitPrediction" style="display: none;">
-                                        <i
-                                            class="fas fa-rocket group-hover:scale-110 transition-transform duration-300"></i>
-                                        <span>예측 생성하기</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Enhanced Side Panel -->
-                    <div class="space-y-8">
-                        <!-- Enhanced AI Assistant -->
-                        <div class="relative group">
-                            <!-- Background Effects -->
-                            <div
-                                class="absolute inset-0 bg-gradient-to-br from-tv-blue/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                            </div>
-
-                            <div
-                                class="relative bg-tv-card/90 backdrop-blur-lg border border-tv-border/50 rounded-2xl p-6 shadow-xl shadow-tv-blue/5 hover:shadow-tv-blue/10 transition-all duration-300">
-                                <div class="flex items-center space-x-3 mb-6">
-                                    <div class="relative">
-                                        <div
-                                            class="w-12 h-12 bg-gradient-to-br from-tv-blue to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                                            <i class="fas fa-robot text-white text-xl"></i>
-                                        </div>
-                                        <div
-                                            class="absolute -top-1 -right-1 w-4 h-4 bg-tv-green rounded-full border-2 border-tv-card animate-pulse">
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-xl font-bold text-tv-text">AI 어시스턴트</h3>
-                                        <p class="text-sm text-tv-text-secondary">실시간 분석 중...</p>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <div
-                                        class="relative p-4 bg-gradient-to-r from-tv-darker/80 to-tv-card/30 rounded-xl border border-tv-border/20">
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-6 h-6 bg-tv-green/20 rounded-full flex items-center justify-center mt-1">
-                                                <i class="fas fa-chart-line text-tv-green text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-tv-text-secondary mb-2 font-medium">📊
-                                                    실시간 시장 분석:</p>
-                                                <p class="text-sm text-tv-text leading-relaxed">현재 시장은 <span
-                                                        class="text-tv-green font-semibold">상승 추세</span>를 보이고
-                                                    있으며, <span class="text-tv-blue font-semibold">기술주 섹터</span>가
-                                                    강세입니다.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="relative p-4 bg-gradient-to-r from-tv-darker/80 to-tv-card/30 rounded-xl border border-tv-border/20">
-                                        <div class="flex items-start space-x-3">
-                                            <div
-                                                class="w-6 h-6 bg-tv-blue/20 rounded-full flex items-center justify-center mt-1">
-                                                <i class="fas fa-lightbulb text-tv-blue text-xs"></i>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm text-tv-text-secondary mb-2 font-medium">💡 예측
-                                                    팁:</p>
-                                                <p class="text-sm text-tv-text leading-relaxed">과거 데이터와 뉴스 이벤트를
-                                                    함께 고려하여 <span class="text-tv-green font-semibold">예측
-                                                        정확도</span>를 높여보세요.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- AI Confidence Meter -->
-                                    <div
-                                        class="p-4 bg-gradient-to-r from-tv-blue/10 to-transparent rounded-xl border border-tv-blue/20">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="text-sm font-medium text-tv-text">AI 신뢰도</span>
-                                            <span class="text-sm font-bold text-tv-blue">94%</span>
-                                        </div>
-                                        <div class="w-full bg-tv-border rounded-full h-2">
-                                            <div class="bg-gradient-to-r from-tv-blue to-blue-600 h-2 rounded-full"
-                                                style="width: 94%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Enhanced Recent Predictions -->
-                        <div class="relative group">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-br from-tv-green/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                            </div>
-
-                            <div
-                                class="relative bg-tv-card/90 backdrop-blur-lg border border-tv-border/50 rounded-2xl p-6 shadow-xl shadow-tv-green/5 hover:shadow-tv-green/10 transition-all duration-300">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-bold text-tv-text">🏆 성공적인 예측</h3>
-                                    <div
-                                        class="px-3 py-1 bg-tv-green/20 text-tv-green rounded-full text-xs font-medium">
-                                        TOP 3
-                                    </div>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <div
-                                        class="relative p-4 bg-gradient-to-r from-tv-darker/80 to-tv-card/30 rounded-xl border border-tv-border/20 hover:border-tv-green/30 transition-colors">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-3">
-                                                <div
-                                                    class="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-lg flex items-center justify-center">
-                                                    <span class="text-lg">🍎</span>
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-bold text-tv-text">AAPL</p>
-                                                    <p class="text-xs text-tv-text-secondary">ProTrader ⭐</p>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="text-lg font-bold text-tv-green">+8.5%</p>
-                                                <p class="text-xs text-tv-text-secondary">정확도: 94%</p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-tv-green h-1 rounded-full" style="width: 94%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="relative p-4 bg-gradient-to-r from-tv-darker/80 to-tv-card/30 rounded-xl border border-tv-border/20 hover:border-tv-green/30 transition-colors">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-3">
-                                                <div
-                                                    class="w-10 h-10 bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-lg flex items-center justify-center">
-                                                    <span class="text-lg">₿</span>
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-bold text-tv-text">BTC</p>
-                                                    <p class="text-xs text-tv-text-secondary">CryptoKing 👑</p>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="text-lg font-bold text-tv-green">+15.2%</p>
-                                                <p class="text-xs text-tv-text-secondary">정확도: 87%</p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-tv-green h-1 rounded-full" style="width: 87%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="relative p-4 bg-gradient-to-r from-tv-darker/80 to-tv-card/30 rounded-xl border border-tv-border/20 hover:border-tv-green/30 transition-colors">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-3">
-                                                <div
-                                                    class="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-lg flex items-center justify-center">
-                                                    <span class="text-lg">⟠</span>
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-bold text-tv-text">ETH</p>
-                                                    <p class="text-xs text-tv-text-secondary">EthMaster 💎</p>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="text-lg font-bold text-tv-green">+22.8%</p>
-                                                <p class="text-xs text-tv-text-secondary">정확도: 91%</p>
-                                            </div>
-                                        </div>
-                                        <div class="mt-3 w-full bg-tv-border/50 rounded-full h-1">
-                                            <div class="bg-tv-green h-1 rounded-full" style="width: 91%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Enhanced Tips -->
-                        <div class="relative group">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                            </div>
-
-                            <div
-                                class="relative bg-tv-card/90 backdrop-blur-lg border border-tv-border/50 rounded-2xl p-6 shadow-xl">
-                                <div class="flex items-center space-x-3 mb-6">
-                                    <div
-                                        class="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl flex items-center justify-center">
-                                        <i class="fas fa-star text-purple-400 text-lg"></i>
-                                    </div>
-                                    <h3 class="text-xl font-bold text-tv-text">💡 예측 마스터 팁</h3>
-                                </div>
-
-                                <div class="space-y-4 text-sm text-tv-text-secondary">
-                                    <div
-                                        class="flex items-start space-x-3 p-3 bg-gradient-to-r from-tv-darker/60 to-transparent rounded-lg hover:from-tv-darker/80 transition-colors">
-                                        <div
-                                            class="w-6 h-6 bg-tv-blue/20 rounded-full flex items-center justify-center mt-0.5">
-                                            <i class="fas fa-chart-bar text-tv-blue text-xs"></i>
-                                        </div>
-                                        <p class="leading-relaxed">기술적 분석과 펀더멘털 분석을 <span
-                                                class="text-tv-blue font-semibold">함께 활용</span>하세요</p>
-                                    </div>
-
-                                    <div
-                                        class="flex items-start space-x-3 p-3 bg-gradient-to-r from-tv-darker/60 to-transparent rounded-lg hover:from-tv-darker/80 transition-colors">
-                                        <div
-                                            class="w-6 h-6 bg-tv-green/20 rounded-full flex items-center justify-center mt-0.5">
-                                            <i class="fas fa-history text-tv-green text-xs"></i>
-                                        </div>
-                                        <p class="leading-relaxed">과거 패턴과 현재 시장 상황을 <span
-                                                class="text-tv-green font-semibold">비교 분석</span>해보세요</p>
-                                    </div>
-
-                                    <div
-                                        class="flex items-start space-x-3 p-3 bg-gradient-to-r from-tv-darker/60 to-transparent rounded-lg hover:from-tv-darker/80 transition-colors">
-                                        <div
-                                            class="w-6 h-6 bg-purple-500/20 rounded-full flex items-center justify-center mt-0.5">
-                                            <i class="fas fa-newspaper text-purple-400 text-xs"></i>
-                                        </div>
-                                        <p class="leading-relaxed">관련 뉴스와 이벤트를 <span
-                                                class="text-purple-400 font-semibold">실시간 모니터링</span>하세요</p>
-                                    </div>
-
-                                    <div
-                                        class="flex items-start space-x-3 p-3 bg-gradient-to-r from-tv-darker/60 to-transparent rounded-lg hover:from-tv-darker/80 transition-colors">
-                                        <div
-                                            class="w-6 h-6 bg-yellow-500/20 rounded-full flex items-center justify-center mt-0.5">
-                                            <i class="fas fa-users text-yellow-400 text-xs"></i>
-                                        </div>
-                                        <p class="leading-relaxed">커뮤니티의 <span class="text-yellow-400 font-semibold">집단
-                                                지성</span>을 활용해보세요</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer -->
-                <footer class="bg-tv-darker border-t border-tv-border">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <!-- Company Section -->
-                            <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                                <div class="flex items-center space-x-2 mb-4">
-                                    <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-chart-line text-white text-sm"></i>
-                                    </div>
-                                    <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
-                                </div>
-                                <p class="text-tv-text-secondary mb-6 leading-relaxed">
-                                    미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼
-                                </p>
-                                <div class="flex space-x-4">
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-facebook"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-twitter"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a href="#"
-                                        class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200">
-                                        <i class="fab fa-youtube"></i>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <!-- Services Section -->
-                            <div>
-                                <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
-                                <ul class="space-y-3">
-                                    <li><a href="charts.html"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
-                                            보드</a></li>
-                                    <li><a href="prediction.html"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a>
-                                    </li>
-                                    <li><a href="my-predictions.html"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">내
-                                            예측</a></li>
-                                    <li><a href="ranking.html"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a>
-                                    </li>
-                                    <li><a href="events.html"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">이벤트</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- Support Section -->
-                            <div>
-                                <h4 class="font-semibold text-tv-text mb-4">고객지원</h4>
-                                <ul class="space-y-3">
-                                    <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">FAQ</a>
-                                    </li>
-                                    <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">문의하기</a>
-                                    </li>
-                                    <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">이용약관</a>
-                                    </li>
-                                    <li><a href="#"
-                                            class="text-tv-text-secondary hover:text-tv-blue transition-colors">개인정보처리방침</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- Contact Section -->
-                            <div>
-                                <h4 class="font-semibold text-tv-text mb-4">연락처</h4>
-                                <div class="space-y-3 text-tv-text-secondary">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fas fa-envelope text-tv-blue"></i>
-                                        <span>support@stockchart.kr</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fas fa-phone text-tv-blue"></i>
-                                        <span>02-1234-5678</span>
-                                    </div>
-                                    <div class="flex items-start space-x-2">
-                                        <i class="fas fa-map-marker-alt text-tv-blue mt-1"></i>
-                                        <span>서울시 강남구 테헤란로 123</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer Bottom -->
-                        <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
-                            <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
-                        </div>
-                    </div>
-                </footer>
-
-                <!-- Enhanced Login Modal -->
-                <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-lg">
-                    <div class="flex items-center justify-center min-h-screen px-4 py-8">
-                        <div
-                            class="relative bg-gradient-to-br from-tv-card/95 to-tv-darker/90 backdrop-blur-xl border border-tv-border/50 rounded-3xl w-full max-w-md shadow-2xl shadow-tv-blue/20">
-                            <!-- Close Button -->
-                            <button onclick="hideLoginModal()"
-                                class="absolute top-6 right-6 w-10 h-10 bg-tv-light/20 hover:bg-tv-red/20 rounded-full flex items-center justify-center text-tv-text-secondary hover:text-tv-red transition-all duration-300 group">
-                                <i class="fas fa-times text-lg group-hover:scale-110 transition-transform"></i>
-                            </button>
-
-                            <!-- Header -->
-                            <div class="text-center pt-12 pb-8 px-8">
-                                <div class="relative inline-block mb-6">
-                                    <div
-                                        class="w-20 h-20 bg-gradient-to-br from-tv-blue via-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-tv-blue/30">
-                                        <i class="fas fa-user text-white text-2xl"></i>
-                                    </div>
-                                    <div
-                                        class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-tv-green to-green-500 rounded-full flex items-center justify-center border-2 border-tv-card">
-                                        <i class="fas fa-key text-white text-xs"></i>
-                                    </div>
-                                </div>
-                                <h2
-                                    class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text to-tv-blue mb-3">
-                                    로그인</h2>
-                                <p class="text-tv-text-secondary text-lg leading-relaxed">계정에 로그인하여 프리미엄 예측 서비스를 이용하세요
-                                </p>
-                            </div>
-
-                            <div class="px-8 pb-8">
-                                <!-- Login Form -->
-                                <form id="loginForm" class="space-y-6">
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-envelope text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="email" id="loginEmail" placeholder="이메일 주소" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg">
-                                    </div>
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-lock text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="password" id="loginPassword" placeholder="비밀번호" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all duration-300 text-lg">
-                                    </div>
-
-                                    <!-- Remember Me -->
-                                    <div class="flex items-center justify-between">
-                                        <label class="flex items-center space-x-3">
-                                            <input type="checkbox"
-                                                class="rounded border-tv-border bg-tv-light text-tv-blue focus:ring-tv-blue">
-                                            <span class="text-tv-text-secondary">로그인 상태 유지</span>
-                                        </label>
-                                        <a href="#" class="text-tv-blue hover:text-blue-400 text-sm font-medium">비밀번호
-                                            찾기</a>
-                                    </div>
-
-                                    <button type="submit"
-                                        class="w-full bg-gradient-to-r from-tv-blue to-blue-600 hover:from-blue-600 hover:to-tv-blue text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-tv-blue/25 hover:shadow-xl hover:shadow-tv-blue/40 transition-all duration-300 transform hover:scale-[1.02]">
-                                        <i class="fas fa-sign-in-alt mr-2"></i>로그인
-                                    </button>
-                                </form>
-
-                                <!-- Divider -->
-                                <div class="flex items-center my-8">
-                                    <div
-                                        class="flex-1 h-px bg-gradient-to-r from-transparent via-tv-border to-transparent">
-                                    </div>
-                                    <span class="px-4 text-tv-text-secondary text-sm font-medium">또는</span>
-                                    <div
-                                        class="flex-1 h-px bg-gradient-to-l from-transparent via-tv-border to-transparent">
-                                    </div>
-                                </div>
-
-                                <!-- Social Login -->
-                                <div class="space-y-3">
-                                    <button onclick="loginWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 border border-gray-200 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                                        <i
-                                            class="fab fa-google text-red-500 text-lg group-hover:scale-110 transition-transform"></i>
-                                        <span>Google로 로그인</span>
-                                    </button>
-                                    <button onclick="loginWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                                        <i class="fab fa-apple text-lg group-hover:scale-110 transition-transform"></i>
-                                        <span>Apple로 로그인</span>
-                                    </button>
-                                </div>
-
-                                <!-- Footer -->
-                                <div class="text-center mt-8 pt-6 border-t border-tv-border/30">
-                                    <p class="text-tv-text-secondary">
-                                        계정이 없으신가요?
-                                        <button onclick="hideLoginModal(); showSignupModal();"
-                                            class="text-tv-blue hover:text-blue-400 font-semibold ml-1 transition-colors">
-                                            무료 가입하기
-                                        </button>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Enhanced Signup Modal -->
-                <div id="signupModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-lg">
-                    <div class="flex items-center justify-center min-h-screen px-4 py-8">
-                        <div
-                            class="relative bg-gradient-to-br from-tv-card/95 to-tv-darker/90 backdrop-blur-xl border border-tv-border/50 rounded-3xl w-full max-w-lg shadow-2xl shadow-tv-green/20">
-                            <!-- Close Button -->
-                            <button onclick="hideSignupModal()"
-                                class="absolute top-6 right-6 w-10 h-10 bg-tv-light/20 hover:bg-tv-red/20 rounded-full flex items-center justify-center text-tv-text-secondary hover:text-tv-red transition-all duration-300 group">
-                                <i class="fas fa-times text-lg group-hover:scale-110 transition-transform"></i>
-                            </button>
-
-                            <!-- Header -->
-                            <div class="text-center pt-12 pb-8 px-8">
-                                <div class="relative inline-block mb-6">
-                                    <div
-                                        class="w-20 h-20 bg-gradient-to-br from-tv-green via-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-tv-green/30">
-                                        <i class="fas fa-user-plus text-white text-2xl"></i>
-                                    </div>
-                                    <div
-                                        class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-tv-blue to-blue-500 rounded-full flex items-center justify-center border-2 border-tv-card">
-                                        <i class="fas fa-star text-white text-xs"></i>
-                                    </div>
-                                </div>
-                                <h2
-                                    class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-tv-text to-tv-green mb-3">
-                                    회원가입</h2>
-                                <p class="text-tv-text-secondary text-lg leading-relaxed">프리미엄 투자 예측 플랫폼에 참여하세요</p>
-                            </div>
-
-                            <div class="px-8 pb-8">
-                                <!-- Signup Form -->
-                                <form id="signupForm" class="space-y-5">
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-user text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="text" id="signupUsername" placeholder="사용자명" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
-                                    </div>
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-envelope text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="email" id="signupEmail" placeholder="이메일 주소" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
-                                    </div>
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-lock text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="password" id="signupPassword" placeholder="비밀번호" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
-                                    </div>
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-check text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" required
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
-                                    </div>
-                                    <div class="relative">
-                                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                            <i class="fas fa-gift text-tv-text-secondary"></i>
-                                        </div>
-                                        <input type="text" id="referralCode" placeholder="추천인 코드 (선택사항)"
-                                            class="w-full pl-12 pr-4 py-4 bg-gradient-to-r from-tv-light/80 to-tv-light/60 border border-tv-border/50 rounded-xl text-tv-text placeholder-tv-text-secondary focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300">
-                                    </div>
-
-                                    <!-- Terms Agreement -->
-                                    <div
-                                        class="flex items-start space-x-3 p-4 bg-tv-darker/50 rounded-xl border border-tv-border/30">
-                                        <input type="checkbox" id="agreeTerms" required
-                                            class="mt-1 rounded border-tv-border bg-tv-light text-tv-green focus:ring-tv-green">
-                                        <label class="text-sm text-tv-text-secondary leading-relaxed">
-                                            <span class="text-tv-text font-medium">이용약관</span> 및 <span
-                                                class="text-tv-text font-medium">개인정보처리방침</span>에 동의합니다.
-                                            <br><span class="text-xs text-tv-text-secondary">계속 진행하면 위 약관에 동의한 것으로
-                                                간주됩니다.</span>
-                                        </label>
-                                    </div>
-
-                                    <button type="submit"
-                                        class="w-full bg-gradient-to-r from-tv-green to-green-600 hover:from-green-600 hover:to-tv-green text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-tv-green/25 hover:shadow-xl hover:shadow-tv-green/40 transition-all duration-300 transform hover:scale-[1.02]">
-                                        <i class="fas fa-rocket mr-2"></i>무료 가입하기
-                                    </button>
-                                </form>
-
-                                <!-- Divider -->
-                                <div class="flex items-center my-6">
-                                    <div
-                                        class="flex-1 h-px bg-gradient-to-r from-transparent via-tv-border to-transparent">
-                                    </div>
-                                    <span class="px-4 text-tv-text-secondary text-sm font-medium">또는</span>
-                                    <div
-                                        class="flex-1 h-px bg-gradient-to-l from-transparent via-tv-border to-transparent">
-                                    </div>
-                                </div>
-
-                                <!-- Social Signup -->
-                                <div class="space-y-3">
-                                    <button onclick="signupWithGoogle()"
-                                        class="w-full bg-white hover:bg-gray-50 text-gray-900 py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 border border-gray-200 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                                        <i
-                                            class="fab fa-google text-red-500 text-lg group-hover:scale-110 transition-transform"></i>
-                                        <span>Google로 가입</span>
-                                    </button>
-                                    <button onclick="signupWithApple()"
-                                        class="w-full bg-black hover:bg-gray-900 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center space-x-3 transition-all duration-300 shadow-lg hover:shadow-xl group">
-                                        <i class="fab fa-apple text-lg group-hover:scale-110 transition-transform"></i>
-                                        <span>Apple로 가입</span>
-                                    </button>
-                                </div>
-
-                                <!-- Footer -->
-                                <div class="text-center mt-8 pt-6 border-t border-tv-border/30">
-                                    <p class="text-tv-text-secondary">
-                                        이미 계정이 있으신가요?
-                                        <button onclick="hideSignupModal(); showLoginModal();"
-                                            class="text-tv-blue hover:text-blue-400 font-semibold ml-1 transition-colors">
-                                            로그인하기
-                                        </button>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <script src="js/notification.js?v=1.0"></script>
-                <script src="js/stock-chart-app.js?v=1.0"></script>
-                <script src="js/app.js?v=1.5"></script>
-                <script src="js/access-limit.js?v=1.0"></script>
-
-                <script>
-                    // Mobile menu toggle
-                    function toggleMobileMenu() {
-                        const mobileMenu = document.getElementById('mobileMenu');
-                        mobileMenu.classList.toggle('hidden');
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Stock data for simulation
+        const stockData = {
+            'AAPL': { name: 'Apple Inc.', symbol: 'AAPL', price: 238.71 },
+            'MSFT': { name: 'Microsoft Corporation', symbol: 'MSFT', price: 415.23 },
+            'GOOGL': { name: 'Alphabet Inc.', symbol: 'GOOGL', price: 165.84 },
+            'TSLA': { name: 'Tesla Inc.', symbol: 'TSLA', price: 248.50 },
+            'AMZN': { name: 'Amazon.com Inc.', symbol: 'AMZN', price: 186.29 },
+            'NVDA': { name: 'NVIDIA Corporation', symbol: 'NVDA', price: 875.42 },
+            'META': { name: 'Meta Platforms Inc.', symbol: 'META', price: 542.81 },
+            'BTC': { name: 'Bitcoin', symbol: 'BTC', price: 51250.00 },
+            'ETH': { name: 'Ethereum', symbol: 'ETH', price: 2435.67 }
+        };
+
+        // DOM elements
+        const stockSearch = document.getElementById('stockSearch');
+        const stockSelect = document.getElementById('stockSelect');
+        const stockInfo = document.getElementById('stockInfo');
+        const selectedStockName = document.getElementById('selectedStockName');
+        const selectedStockSymbol = document.getElementById('selectedStockSymbol');
+        const currentStockPrice = document.getElementById('currentStockPrice');
+        const loadingPrice = document.getElementById('loadingPrice');
+        const currentPrice = document.getElementById('currentPrice');
+        const predictedPrice = document.getElementById('predictedPrice');
+        const priceChangeIndicator = document.getElementById('priceChangeIndicator');
+        const priceChangePercent = document.getElementById('priceChangePercent');
+        const priceChangeDirection = document.getElementById('priceChangeDirection');
+        const predictionDays = document.getElementById('predictionDays');
+        const targetDateDisplay = document.getElementById('targetDateDisplay');
+        const targetDateText = document.getElementById('targetDateText');
+        const predictionForm = document.getElementById('predictionForm');
+        const submitButton = document.getElementById('submitPrediction');
+        const submitButtonText = document.getElementById('submitButtonText');
+        const successMessage = document.getElementById('successMessage');
+
+        // Stock search functionality
+        stockSearch.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const options = stockSelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value === '') return;
+                const text = option.textContent.toLowerCase();
+                option.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Stock selection handler
+        stockSelect.addEventListener('change', function () {
+            const selectedSymbol = this.value;
+
+            if (selectedSymbol && stockData[selectedSymbol]) {
+                loadingPrice.style.display = 'block';
+                currentStockPrice.textContent = '$0.00';
+
+                // Show stock info
+                stockInfo.classList.remove('hidden');
+
+                // Simulate loading delay
+                setTimeout(() => {
+                    const stock = stockData[selectedSymbol];
+
+                    selectedStockName.textContent = stock.name;
+                    selectedStockSymbol.textContent = stock.symbol;
+                    currentStockPrice.textContent = `$${stock.price.toLocaleString()}`;
+                    currentPrice.value = stock.price;
+
+                    loadingPrice.style.display = 'none';
+
+                    // Trigger price change calculation if predicted price exists
+                    if (predictedPrice.value) {
+                        calculatePriceChange();
                     }
+                }, 1000);
+            } else {
+                stockInfo.classList.add('hidden');
+                currentPrice.value = '';
+                priceChangeIndicator.classList.add('hidden');
+            }
+        });
 
-                    // Step navigation
-                    let currentStep = 1;
-                    const maxSteps = 4;
+        // Predicted price input handler
+        predictedPrice.addEventListener('input', calculatePriceChange);
 
-                    document.getElementById('nextStep').addEventListener('click', function () {
-                        if (currentStep < maxSteps) {
-                            // Hide current step
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.add('hidden');
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+        function calculatePriceChange() {
+            const current = parseFloat(currentPrice.value);
+            const predicted = parseFloat(predictedPrice.value);
 
-                            // Show next step
-                            currentStep++;
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('hidden');
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+            if (current && predicted) {
+                const changePercent = ((predicted - current) / current) * 100;
+                const isPositive = changePercent >= 0;
 
-                            // Update buttons
-                            document.getElementById('prevStep').disabled = false;
-                            if (currentStep === maxSteps) {
-                                document.getElementById('nextStep').style.display = 'none';
-                                document.getElementById('submitPrediction').style.display = 'flex';
-                            }
+                priceChangePercent.textContent = `${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`;
+                priceChangePercent.className = `font-bold text-lg ${isPositive ? 'text-tv-green' : 'text-tv-red'}`;
 
-                            // Update progress
-                            updateProgress();
-                        }
-                    });
+                priceChangeDirection.textContent = isPositive ? '📈 상승 예측' : '📉 하락 예측';
+                priceChangeDirection.className = `text-sm font-medium ${isPositive ? 'text-tv-green' : 'text-tv-red'}`;
 
-                    document.getElementById('prevStep').addEventListener('click', function () {
-                        if (currentStep > 1) {
-                            // Hide current step
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.add('hidden');
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('active');
+                priceChangeIndicator.classList.remove('hidden');
+            } else {
+                priceChangeIndicator.classList.add('hidden');
+            }
+        }
 
-                            // Show previous step
-                            currentStep--;
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.remove('hidden');
-                            document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+        // Prediction days change handler
+        predictionDays.addEventListener('change', function () {
+            const days = parseInt(this.value);
 
-                            // Update buttons
-                            if (currentStep === 1) {
-                                document.getElementById('prevStep').disabled = true;
-                            }
-                            document.getElementById('nextStep').style.display = 'inline-block';
-                            document.getElementById('submitPrediction').style.display = 'none';
+            if (days) {
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() + days);
 
-                            // Update progress
-                            updateProgress();
-                        }
-                    });
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                };
 
-                    function updateProgress() {
-                        // Update step indicators in the progress bar
-                        const progressSteps = document.querySelectorAll('.w-8.h-8');
-                        progressSteps.forEach((step, index) => {
-                            if (index < currentStep) {
-                                step.classList.remove('bg-tv-border', 'text-tv-text-secondary');
-                                step.classList.add('bg-tv-blue', 'text-white');
-                            } else {
-                                step.classList.remove('bg-tv-blue', 'text-white');
-                                step.classList.add('bg-tv-border', 'text-tv-text-secondary');
-                            }
-                        });
+                targetDateText.textContent = targetDate.toLocaleDateString('ko-KR', options);
+                targetDateDisplay.classList.remove('hidden');
+            } else {
+                targetDateDisplay.classList.add('hidden');
+            }
+        });
+
+        // Form submission handler
+        predictionForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButtonText.textContent = '발행 중...';
+            submitButton.querySelector('i').className = 'fas fa-spinner fa-spin mr-2';
+
+            try {
+                // Calculate target date
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() + parseInt(predictionDays.value));
+
+                const formData = {
+                    stock_symbol: stockSelect.value,
+                    current_price: parseFloat(currentPrice.value),
+                    predicted_price: parseFloat(predictedPrice.value),
+                    target_date: targetDate.toISOString().split('T')[0], // YYYY-MM-DD format
+                    reasoning: document.getElementById('predictionReason').value || 'User prediction',
+                    confidence: 75
+                };
+
+                console.log('Submitting prediction:', formData);
+
+                // Submit to API
+                const response = await fetch('/api/charts/predictions/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || '',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Prediction created:', result);
+
+                    // Show success message
+                    predictionForm.style.display = 'none';
+                    successMessage.classList.remove('hidden');
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create prediction');
+                }
+
+            } catch (error) {
+                console.error('Error submitting prediction:', error);
+                alert('예측 발행 중 오류가 발생했습니다: ' + error.message);
+            } finally {
+                // Re-enable submit button
+                submitButton.disabled = false;
+                submitButtonText.textContent = '예측 발행하기';
+                submitButton.querySelector('i').className = 'fas fa-rocket mr-2';
+            }
+        });
+
+        // Reset form function
+        function resetForm() {
+            predictionForm.reset();
+            stockInfo.classList.add('hidden');
+            priceChangeIndicator.classList.add('hidden');
+            targetDateDisplay.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            predictionForm.style.display = 'block';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Prediction page loaded');
+        });
+
+        // CSRF Token helper function
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
-
-                    // Confidence slider update
-                    document.getElementById('confidence').addEventListener('input', function () {
-                        document.getElementById('confidenceValue').textContent = this.value + '%';
-                    });
-
-                    // Enhanced stock selection with info card
-                    document.getElementById('stockSelect').addEventListener('change', function () {
-                        const selectedValue = this.value;
-                        const stockInfoCard = document.getElementById('stockInfoCard');
-
-                        if (selectedValue) {
-                            // Stock data mapping
-                            const stockData = {
-                                'AAPL': {
-                                    icon: '🍎',
-                                    name: 'Apple Inc.',
-                                    symbol: 'AAPL',
-                                    price: '$182.50',
-                                    change: '+2.8% ↗️',
-                                    changeClass: 'text-tv-green'
-                                },
-                                'GOOGL': {
-                                    icon: '🔍',
-                                    name: 'Alphabet Inc.',
-                                    symbol: 'GOOGL',
-                                    price: '$142.80',
-                                    change: '+1.5% ↗️',
-                                    changeClass: 'text-tv-green'
-                                },
-                                'TSLA': {
-                                    icon: '🚗',
-                                    name: 'Tesla Inc.',
-                                    symbol: 'TSLA',
-                                    price: '$251.20',
-                                    change: '-0.8% ↘️',
-                                    changeClass: 'text-tv-red'
-                                },
-                                'MSFT': {
-                                    icon: '💻',
-                                    name: 'Microsoft Corp.',
-                                    symbol: 'MSFT',
-                                    price: '$371.50',
-                                    change: '+3.2% ↗️',
-                                    changeClass: 'text-tv-green'
-                                },
-                                'BTC': {
-                                    icon: '₿',
-                                    name: 'Bitcoin',
-                                    symbol: 'BTC',
-                                    price: '$67,450',
-                                    change: '+5.7% ↗️',
-                                    changeClass: 'text-tv-green'
-                                },
-                                'ETH': {
-                                    icon: '⟠',
-                                    name: 'Ethereum',
-                                    symbol: 'ETH',
-                                    price: '$4,320',
-                                    change: '-1.2% ↘️',
-                                    changeClass: 'text-tv-red'
-                                }
-                            };
-
-                            const stock = stockData[selectedValue];
-                            if (stock) {
-                                // Update info card
-                                document.getElementById('stockIcon').textContent = stock.icon;
-                                document.getElementById('stockName').textContent = stock.name;
-                                document.getElementById('stockSymbol').textContent = stock.symbol;
-                                document.getElementById('stockPrice').textContent = stock.price;
-                                document.getElementById('stockChange').textContent = stock.change;
-                                document.getElementById('stockChange').className = `text-sm ${stock.changeClass}`;
-
-                                // Show card with animation
-                                stockInfoCard.classList.remove('hidden');
-                                setTimeout(() => {
-                                    stockInfoCard.style.opacity = '1';
-                                    stockInfoCard.style.transform = 'translateY(0)';
-                                }, 100);
-
-                                // Auto-populate current price in step 2
-                                document.getElementById('currentPrice').value = stock.price.replace('$', '').replace(',', '');
-                            }
-                        } else {
-                            // Hide card
-                            stockInfoCard.style.opacity = '0';
-                            stockInfoCard.style.transform = 'translateY(-10px)';
-                            setTimeout(() => {
-                                stockInfoCard.classList.add('hidden');
-                            }, 300);
-                        }
-                    });
-
-                    // Price difference calculation
-                    document.getElementById('predictedPrice').addEventListener('input', function () {
-                        const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 0;
-                        const predictedPrice = parseFloat(this.value) || 0;
-                        const priceDifference = document.getElementById('priceDifference');
-
-                        if (currentPrice > 0 && predictedPrice > 0) {
-                            const change = ((predictedPrice - currentPrice) / currentPrice) * 100;
-                            const changeText = change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-                            const changeClass = change >= 0 ? 'text-tv-green' : 'text-tv-red';
-                            const direction = change >= 0 ? '상승' : '하락';
-                            const directionClass = change >= 0 ? 'text-tv-green' : 'text-tv-red';
-
-                            // Update the display
-                            priceDifference.querySelector('.text-2xl.font-bold.text-tv-green, .text-2xl.font-bold.text-tv-red').textContent = changeText;
-                            priceDifference.querySelector('.text-2xl.font-bold.text-tv-green, .text-2xl.font-bold.text-tv-red').className = `text-2xl font-bold ${changeClass} mb-1`;
-
-                            priceDifference.querySelector('.text-2xl.font-bold.text-tv-blue').textContent = `$${Math.abs(predictedPrice - currentPrice).toFixed(2)}`;
-
-                            priceDifference.querySelector('.text-2xl.font-bold.text-tv-text').textContent = direction;
-                            priceDifference.querySelector('.text-2xl.font-bold.text-tv-text').className = `text-2xl font-bold ${directionClass} mb-1`;
-
-                            priceDifference.classList.remove('hidden');
-                        } else {
-                            priceDifference.classList.add('hidden');
-                        }
-                    });
-
-                    // Initialize stock info card styles
-                    const stockInfoCard = document.getElementById('stockInfoCard');
-                    stockInfoCard.style.opacity = '0';
-                    stockInfoCard.style.transform = 'translateY(-10px)';
-                    stockInfoCard.style.transition = 'all 0.3s ease';
-
-                    // Enhanced Form Submission Handler
-                    document.getElementById('predictionForm').addEventListener('submit', async function (e) {
-                        e.preventDefault();
-
-                        // Show loading state
-                        const submitBtn = document.getElementById('submitPrediction');
-                        const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>예측 생성 중...';
-                        submitBtn.disabled = true;
-
-                        try {
-                            // Collect form data
-                            const formData = new FormData(this);
-
-                            // Get selected stock and market type
-                            const stockSymbol = formData.get('stock_symbol');
-                            const selectedStock = availableStocks.find(stock =>
-                                `${stock.symbol}_${stock.market}` === stockSymbol
-                            );
-
-                            if (!selectedStock) {
-                                throw new Error('주식을 선택해주세요.');
-                            }
-
-                            // Prepare AI prediction request
-                            const predictionData = {
-                                symbol: selectedStock.symbol,
-                                market: selectedStock.market,
-                                prediction_days: parseInt(formData.get('prediction_days')) || 7
-                            };
-
-                            // Validate required fields
-                            if (!predictionData.symbol) {
-                                throw new Error('주식 심볼이 필요합니다.');
-                            }
-
-                            // Submit to our new AI prediction endpoint
-                            const response = await fetch('/api/charts/predictions/create_ai_prediction/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRFToken': getCsrfToken()
-                                },
-                                body: JSON.stringify(predictionData)
-                            });
-
-                            if (response.ok) {
-                                const result = await response.json();
-
-                                // Update UI with AI prediction results
-                                displayPredictionResults(result);
-
-                                // Show success message
-                                showSuccessMessage('AI 예측이 성공적으로 생성되었습니다!');
-
-                                // Optionally redirect to my predictions page
-                                setTimeout(() => {
-                                    window.location.href = 'my-predictions.html';
-                                }, 3000);
-
-                            } else {
-                                const error = await response.json();
-                                throw new Error(error.error || '예측 생성에 실패했습니다.');
-                            }
-
-                        } catch (error) {
-                            console.error('Prediction submission error:', error);
-                            showErrorMessage(error.message || '예측 생성 중 오류가 발생했습니다.');
-
-                            // Reset button
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
-                        }
-                    });
-
-                    // Utility Functions
-                    function getCsrfToken() {
-                        const cookies = document.cookie.split(';');
-                        for (let cookie of cookies) {
-                            const [name, value] = cookie.trim().split('=');
-                            if (name === 'csrftoken') {
-                                return value;
-                            }
-                        }
-                        return '';
-                    }
-
-                    function showSuccessMessage(message) {
-                        // Create success notification
-                        const notification = document.createElement('div');
-                        notification.className = 'fixed top-4 right-4 bg-tv-green text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-                        notification.innerHTML = `
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-check-circle text-xl"></i>
-                                <span class="font-medium">${message}</span>
-                            </div>
-                        `;
-                        document.body.appendChild(notification);
-
-                        // Animate in
-                        setTimeout(() => {
-                            notification.classList.remove('translate-x-full');
-                        }, 100);
-
-                        // Auto remove
-                        setTimeout(() => {
-                            notification.classList.add('translate-x-full');
-                            setTimeout(() => notification.remove(), 300);
-                        }, 3000);
-                    }
-
-                    function showErrorMessage(message) {
-                        // Create error notification
-                        const notification = document.createElement('div');
-                        notification.className = 'fixed top-4 right-4 bg-tv-red text-white px-6 py-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-                        notification.innerHTML = `
-                            <div class="flex items-center space-x-3">
-                                <i class="fas fa-exclamation-circle text-xl"></i>
-                                <span class="font-medium">${message}</span>
-                            </div>
-                        `;
-                        document.body.appendChild(notification);
-
-                        // Animate in
-                        setTimeout(() => {
-                            notification.classList.remove('translate-x-full');
-                        }, 100);
-
-                        // Auto remove
-                        setTimeout(() => {
-                            notification.classList.add('translate-x-full');
-                            setTimeout(() => notification.remove(), 300);
-                        }, 5000);
-                    }
-
-                    // Form validation feedback
-                    function validateCurrentStep() {
-                        const currentStepElement = document.querySelector(`[data-step="${currentStep}"]`);
-                        const inputs = currentStepElement.querySelectorAll('input[required], select[required]');
-                        let isValid = true;
-
-                        inputs.forEach(input => {
-                            if (!input.value.trim()) {
-                                input.classList.add('border-tv-red');
-                                isValid = false;
-                            } else {
-                                input.classList.remove('border-tv-red');
-                            }
-                        });
-
-                        return isValid;
-                    }
-
-                    // Override next step to include validation
-                    const originalNextClick = document.getElementById('nextStep').onclick;
-                    document.getElementById('nextStep').addEventListener('click', function (e) {
-                        if (!validateCurrentStep()) {
-                            showErrorMessage('필수 항목을 모두 입력해주세요.');
-                            return false;
-                        }
-                    });
-                </script>
-
-                <!-- Portal-Style Mobile Menu JavaScript -->
-                <script>
-                    // Professional Portal-Style Mobile Menu Functions
-                    function toggleMobileMenu() {
-                        const portal = document.getElementById('mobile-menu-portal');
-                        const content = document.getElementById('mobile-menu-content');
-                        const button = document.getElementById('mobileMenuButton');
-                        const body = document.body;
-
-                        const isOpen = portal.style.display !== 'none';
-
-                        if (isOpen) {
-                            closeMobileMenu();
-                        } else {
-                            openMobileMenu();
-                        }
-                    }
-
-                    function openMobileMenu() {
-                        const portal = document.getElementById('mobile-menu-portal');
-                        const content = document.getElementById('mobile-menu-content');
-                        const button = document.getElementById('mobileMenuButton');
-                        const body = document.body;
-
-                        // Prevent body scrolling
-                        body.style.overflow = 'hidden';
-
-                        // Show portal
-                        portal.style.display = 'block';
-                        portal.style.pointerEvents = 'none';
-
-                        // Allow interaction with portal children
-                        const overlay = portal.querySelector('.absolute.inset-0');
-                        const menuContent = portal.querySelector('#mobile-menu-content');
-                        if (overlay) overlay.style.pointerEvents = 'auto';
-                        if (menuContent) menuContent.style.pointerEvents = 'auto';
-
-                        // Slide in menu
-                        setTimeout(() => {
-                            content.classList.remove('-translate-x-full');
-                            content.classList.add('translate-x-0');
-                        }, 10);
-
-                        // Animate hamburger to X
-                        if (button) button.classList.add('menu-open');
-
-                        // Update aria label
-                        if (button) button.setAttribute('aria-label', '메뉴 닫기');
-                    }
-
-                    function closeMobileMenu() {
-                        const portal = document.getElementById('mobile-menu-portal');
-                        const content = document.getElementById('mobile-menu-content');
-                        const button = document.getElementById('mobileMenuButton');
-                        const body = document.body;
-
-                        // Allow body scrolling
-                        body.style.overflow = '';
-
-                        // Slide out menu
-                        content.classList.remove('translate-x-0');
-                        content.classList.add('-translate-x-full');
-
-                        // Hide portal after animation
-                        setTimeout(() => {
-                            portal.style.display = 'none';
-                        }, 300);
-
-                        // Animate X back to hamburger
-                        if (button) button.classList.remove('menu-open');
-
-                        // Update aria label
-                        if (button) button.setAttribute('aria-label', '메뉴 열기');
-                    }
-
-                    // Close menu when clicking outside or pressing Escape
-                    document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape') {
-                            closeMobileMenu();
-                        }
-                    });
-
-                    // Ensure menu is closed on resize to desktop
-                    window.addEventListener('resize', function () {
-                        if (window.innerWidth >= 768) {
-                            closeMobileMenu();
-                        }
-                    });
-
-                    // Initialize mobile menu portal
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const portal = document.getElementById('mobile-menu-portal');
-                        if (portal) {
-                            portal.style.display = 'none';
-                        }
-
-                        // Load available stocks for predictions
-                        loadAvailableStocks();
-                    });
-
-                    // Global variable to store available stocks
-                    let availableStocks = [];
-
-                    // Load available stocks from API
-                    async function loadAvailableStocks() {
-                        try {
-                            const response = await fetch('/api/charts/predictions/available_symbols/');
-                            if (response.ok) {
-                                const stockData = await response.json();
-
-                                // Flatten the stock data
-                                availableStocks = [];
-                                Object.entries(stockData).forEach(([market, stocks]) => {
-                                    stocks.forEach(stock => {
-                                        availableStocks.push({
-                                            ...stock,
-                                            display_name: `${stock.name} (${stock.symbol}) - ${market.toUpperCase()}`
-                                        });
-                                    });
-                                });
-
-                                // Update stock selection dropdown
-                                updateStockDropdown();
-
-                            } else {
-                                console.error('Failed to load stocks');
-                                // Use fallback stocks
-                                useFallbackStocks();
-                            }
-                        } catch (error) {
-                            console.error('Error loading stocks:', error);
-                            useFallbackStocks();
-                        }
-                    }
-
-                    function useFallbackStocks() {
-                        availableStocks = [
-                            { symbol: 'AAPL', name: 'Apple Inc.', market: 'us_stock', display_name: 'Apple Inc. (AAPL) - US_STOCK' },
-                            { symbol: 'GOOGL', name: 'Alphabet Inc.', market: 'us_stock', display_name: 'Alphabet Inc. (GOOGL) - US_STOCK' },
-                            { symbol: 'TSLA', name: 'Tesla Inc.', market: 'us_stock', display_name: 'Tesla Inc. (TSLA) - US_STOCK' },
-                            { symbol: 'BTC', name: 'Bitcoin', market: 'crypto', display_name: 'Bitcoin (BTC) - CRYPTO' },
-                            { symbol: 'ETH', name: 'Ethereum', market: 'crypto', display_name: 'Ethereum (ETH) - CRYPTO' }
-                        ];
-                        updateStockDropdown();
-                    }
-
-                    function updateStockDropdown() {
-                        const stockSelect = document.querySelector('select[name="stock_symbol"]');
-                        if (!stockSelect) return;
-
-                        // Clear existing options except the first one
-                        stockSelect.innerHTML = '<option value="">주식을 선택하세요</option>';
-
-                        // Add stock options
-                        availableStocks.forEach(stock => {
-                            const option = document.createElement('option');
-                            option.value = `${stock.symbol}_${stock.market}`;
-                            option.textContent = stock.display_name;
-                            stockSelect.appendChild(option);
-                        });
-                    }
-
-                    // Display AI prediction results
-                    function displayPredictionResults(result) {
-                        // Create results modal or update page content
-                        const resultsHTML = `
-                            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="predictionModal">
-                                <div class="bg-tv-card rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
-                                    <div class="text-center">
-                                        <div class="w-16 h-16 bg-tv-green rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <i class="fas fa-check text-white text-2xl"></i>
-                                        </div>
-                                        <h3 class="text-2xl font-bold text-tv-text mb-4">AI 예측 완료!</h3>
-                                        
-                                        <div class="space-y-3 text-left bg-tv-darker rounded-lg p-4 mb-6">
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">심볼:</span>
-                                                <span class="text-tv-text font-semibold">${result.symbol}</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">현재 가격:</span>
-                                                <span class="text-tv-text">$${result.current_price.toLocaleString()}</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">예측 가격:</span>
-                                                <span class="text-tv-text font-bold">$${result.predicted_price.toLocaleString()}</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">예상 변화:</span>
-                                                <span class="text-tv-text ${result.price_change >= 0 ? 'text-tv-green' : 'text-tv-red'}">
-                                                    ${result.price_change >= 0 ? '+' : ''}${result.price_change_percent.toFixed(2)}%
-                                                </span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">신뢰도:</span>
-                                                <span class="text-tv-text">${(result.confidence_score * 100).toFixed(0)}%</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">위험도:</span>
-                                                <span class="text-tv-text capitalize">${result.risk_level}</span>
-                                            </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-tv-text-secondary">예측 기간:</span>
-                                                <span class="text-tv-text">${result.prediction_days}일</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="text-xs text-tv-text-secondary mb-4">
-                                            사용된 알고리즘: ${result.algorithms_used.join(', ')}
-                                        </div>
-                                        
-                                        <button onclick="closePredictionModal()" 
-                                                class="w-full bg-tv-blue hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                                            확인
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-
-                        // Add modal to page
-                        document.body.insertAdjacentHTML('beforeend', resultsHTML);
-                    }
-
-                    function closePredictionModal() {
-                        const modal = document.getElementById('predictionModal');
-                        if (modal) {
-                            modal.remove();
-                        }
-                    }
-
-                    // Close modal when clicking outside
-                    document.addEventListener('click', function (e) {
-                        if (e.target.id === 'predictionModal') {
-                            closePredictionModal();
-                        }
-                    });
-                </script>
-
+                }
+            }
+            return cookieValue;
+        }
+
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+
+            if (mobileMenu.classList.contains('translate-x-full')) {
+                // Open menu
+                mobileMenu.classList.remove('translate-x-full');
+                mobileMenu.classList.add('translate-x-0');
+                mobileMenuButton.classList.add('menu-open');
+                document.body.style.overflow = 'hidden';
+            } else {
+                // Close menu
+                mobileMenu.classList.remove('translate-x-0');
+                mobileMenu.classList.add('translate-x-full');
+                mobileMenuButton.classList.remove('menu-open');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Login modal function (placeholder)
+        function showLoginModal() {
+            alert('로그인 기능은 곧 구현될 예정입니다.');
+        }
+
+        // Add hamburger menu animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .hamburger-line {
+                transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            }
+            
+            .menu-open .hamburger-line:nth-child(1) {
+                transform: rotate(45deg) translate(6px, 6px);
+            }
+            
+            .menu-open .hamburger-line:nth-child(2) {
+                opacity: 0;
+                transform: scale(0);
+            }
+            
+            .menu-open .hamburger-line:nth-child(3) {
+                transform: rotate(-45deg) translate(6px, -6px);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 
 </html>

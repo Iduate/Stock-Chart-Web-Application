@@ -12,6 +12,7 @@ from rest_framework import status
 from .services import get_market_service
 from .models import MarketData, PriceHistory
 from .serializers import MarketDataSerializer, PriceHistorySerializer
+from .precision_handler import PrecisionHandler
 import json
 import logging
 
@@ -631,12 +632,12 @@ def generate_sample_historical_data(symbol):
         data.append({
             'date': current_date.strftime('%Y-%m-%d'),
             'time': current_date.strftime('%Y-%m-%d'),
-            'close': round(current_price, 2),
-            'price': round(current_price, 2),
-            'value': round(current_price, 2),
-            'open': round(current_price * random.uniform(0.99, 1.01), 2),
-            'high': round(current_price * random.uniform(1.0, 1.03), 2),
-            'low': round(current_price * random.uniform(0.97, 1.0), 2),
+            'close': float(PrecisionHandler.format_price(current_price, symbol, 'us_stock')),
+            'price': float(PrecisionHandler.format_price(current_price, symbol, 'us_stock')),
+            'value': float(PrecisionHandler.format_price(current_price, symbol, 'us_stock')),
+            'open': float(PrecisionHandler.format_price(current_price * random.uniform(0.99, 1.01), symbol, 'us_stock')),
+            'high': float(PrecisionHandler.format_price(current_price * random.uniform(1.0, 1.03), symbol, 'us_stock')),
+            'low': float(PrecisionHandler.format_price(current_price * random.uniform(0.97, 1.0), symbol, 'us_stock')),
             'volume': random.randint(1000000, 10000000)
         })
         

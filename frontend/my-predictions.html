@@ -532,8 +532,24 @@
                 if (response.ok) {
                     const data = await response.json();
                     console.log('API response data:', data);
-                    userPredictions = data.predictions || [];
-                    console.log('Loaded predictions count:', userPredictions.length);
+
+                    // Filter predictions for the current user (anonymous for non-authenticated users)
+                    const allPredictions = data.predictions || [];
+                    console.log('Total predictions from API:', allPredictions.length);
+
+                    // Debug: Log first few predictions to see structure
+                    if (allPredictions.length > 0) {
+                        console.log('First prediction structure:', allPredictions[0]);
+                        console.log('Sample prediction user:', allPredictions[0].user);
+                    }
+
+                    // For anonymous users, show only predictions by "anonymous" user
+                    userPredictions = allPredictions.filter(p => {
+                        console.log('Filtering prediction:', p.id, 'User:', p.user?.username);
+                        return p.user && p.user.username === 'anonymous';
+                    });
+
+                    console.log('Filtered predictions for anonymous user:', userPredictions.length);
 
                     // Also merge with any local predictions (for offline support)
                     const localPredictions = localStorage.getItem('userPredictions');
@@ -793,17 +809,32 @@
         function displayPredictions() {
             console.log('displayPredictions called with', userPredictions.length, 'predictions');
             const container = document.getElementById('predictionsContainer');
-            const emptyState = document.getElementById('emptyState');
 
-            if (userPredictions.length === 0) {
-                console.log('No predictions, showing empty state');
-                emptyState.style.display = 'block';
-                container.innerHTML = '';
+            // Check if container exists
+            if (!container) {
+                console.error('predictionsContainer not found');
                 return;
             }
 
-            console.log('Hiding empty state and displaying predictions');
-            emptyState.style.display = 'none';
+            if (userPredictions.length === 0) {
+                console.log('No predictions, showing empty state');
+                container.innerHTML = `
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center py-16">
+                        <div class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-chart-line text-4xl text-tv-text-secondary"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-tv-text mb-2">아직 예측이 없습니다</h3>
+                        <p class="text-tv-text-secondary mb-6">첫 번째 예측을 만들어 투자 여정을 시작해보세요!</p>
+                        <button onclick="createNewPrediction()" class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-plus mr-2"></i>첫 예측 만들기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            console.log('Displaying predictions');
 
             try {
                 const html = userPredictions.map(prediction => createPredictionCard(prediction)).join('');
@@ -1001,6 +1032,12 @@
         function displayFilteredPredictions(predictions) {
             const container = document.getElementById('predictionsContainer');
             const emptyState = document.getElementById('emptyState');
+
+            // Check if elements exist
+            if (!container) {
+                console.error('predictionsContainer not found in displayFilteredPredictions');
+                return;
+            }
 
             if (predictions.length === 0) {
                 container.innerHTML = `

@@ -786,8 +786,8 @@ class MarketDataService:
                             results.append({
                                 'symbol': symbol,
                                 'name': name,
-                                'price': round(current_price, 2),
-                                'change_24h': round(change_percent, 2),
+                                'price': float(PrecisionHandler.format_price(current_price, symbol, 'index')),
+                                'change_24h': float(PrecisionHandler.format_percentage(change_percent)),
                                 'type': 'index'
                             })
                     except Exception as e:
@@ -832,8 +832,8 @@ class MarketDataService:
                                 results.append({
                                     'symbol': symbol,
                                     'name': name,
-                                    'price': round(price, 2),
-                                    'change_24h': round(change_percent, 2),
+                                    'price': float(PrecisionHandler.format_price(price, symbol, 'index')),
+                                    'change_24h': float(PrecisionHandler.format_percentage(change_percent)),
                                     'type': 'index'
                                 })
                         except Exception as e:
@@ -1607,12 +1607,12 @@ class MarketDataService:
                         'datetime': date_obj.isoformat(),
                         'timestamp': int(timestamp / 1000),
                         'time': int(timestamp / 1000),
-                        'open': round(open_price, 6),
-                        'high': round(high_price, 6),
-                        'low': round(low_price, 6),
-                        'close': round(price, 6),
-                        'price': round(price, 6),  # Alternative field name
-                        'value': round(price, 6),  # Alternative field name
+                        'open': float(PrecisionHandler.format_price(open_price, symbol, 'crypto')),
+                        'high': float(PrecisionHandler.format_price(high_price, symbol, 'crypto')),
+                        'low': float(PrecisionHandler.format_price(low_price, symbol, 'crypto')),
+                        'close': float(PrecisionHandler.format_price(price, symbol, 'crypto')),
+                        'price': float(PrecisionHandler.format_price(price, symbol, 'crypto')),  # Alternative field name
+                        'value': float(PrecisionHandler.format_price(price, symbol, 'crypto')),  # Alternative field name
                         'volume': int(volume),
                         'symbol': symbol.upper(),
                         'source': 'coingecko'
