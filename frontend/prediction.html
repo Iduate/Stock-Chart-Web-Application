@@ -189,15 +189,305 @@
                         <select id="stockSelect" name="stock_symbol" required
                             class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all">
                             <option value="">종목을 선택하세요</option>
-                            <option value="AAPL">AAPL - Apple Inc.</option>
-                            <option value="MSFT">MSFT - Microsoft Corporation</option>
-                            <option value="GOOGL">GOOGL - Alphabet Inc.</option>
-                            <option value="TSLA">TSLA - Tesla Inc.</option>
-                            <option value="AMZN">AMZN - Amazon.com Inc.</option>
-                            <option value="NVDA">NVDA - NVIDIA Corporation</option>
-                            <option value="META">META - Meta Platforms Inc.</option>
-                            <option value="BTC">BTC - Bitcoin</option>
-                            <option value="ETH">ETH - Ethereum</option>
+
+                            <!-- US Stocks -->
+                            <optgroup label="🇺🇸 미국 주식">
+                                <option value="AAPL">AAPL - 애플</option>
+                                <option value="MSFT">MSFT - 마이크로소프트</option>
+                                <option value="GOOGL">GOOGL - 구글 (알파벳)</option>
+                                <option value="AMZN">AMZN - 아마존</option>
+                                <option value="TSLA">TSLA - 테슬라</option>
+                                <option value="NVDA">NVDA - 엔비디아</option>
+                                <option value="META">META - 메타 (페이스북)</option>
+                                <option value="NFLX">NFLX - 넷플릭스</option>
+                                <option value="CRM">CRM - 세일즈포스</option>
+                                <option value="PYPL">PYPL - 페이팔</option>
+                                <option value="ADBE">ADBE - 어도비</option>
+                                <option value="INTC">INTC - 인텔</option>
+                                <option value="AMD">AMD - AMD</option>
+                                <option value="CSCO">CSCO - 시스코</option>
+                                <option value="ORCL">ORCL - 오라클</option>
+                                <option value="IBM">IBM - IBM</option>
+                                <option value="UBER">UBER - 우버</option>
+                                <option value="SPOT">SPOT - 스포티파이</option>
+                                <option value="ZM">ZM - 줌</option>
+                                <option value="SQ">SQ - 블록 (스퀘어)</option>
+                                <option value="V">V - 비자</option>
+                                <option value="MA">MA - 마스터카드</option>
+                                <option value="JPM">JPM - JP모건</option>
+                                <option value="JNJ">JNJ - 존슨앤존슨</option>
+                                <option value="WMT">WMT - 월마트</option>
+                                <option value="PG">PG - 프록터앤갬블</option>
+                                <option value="UNH">UNH - 유나이티드헬스</option>
+                                <option value="HD">HD - 홈디포</option>
+                                <option value="BAC">BAC - 뱅크오브아메리카</option>
+                                <option value="DIS">DIS - 디즈니</option>
+                                <option value="ADBE">ADBE - 어도비</option>
+                                <option value="CRM">CRM - 세일즈포스</option>
+                                <option value="NOW">NOW - 서비스나우</option>
+                                <option value="BABA">BABA - 알리바바</option>
+                                <option value="PFE">PFE - 화이자</option>
+                                <option value="KO">KO - 코카콜라</option>
+                                <option value="PEP">PEP - 펩시코</option>
+                                <option value="TMO">TMO - 써모피셔</option>
+                                <option value="ABT">ABT - 애벗</option>
+                                <option value="COST">COST - 코스트코</option>
+                                <option value="AVGO">AVGO - 브로드컴</option>
+                                <option value="TXN">TXN - 텍사스인스트루먼트</option>
+                                <option value="QCOM">QCOM - 퀄컴</option>
+                                <option value="LLY">LLY - 일라이릴리</option>
+                                <option value="XOM">XOM - 엑손모빌</option>
+                                <option value="CVX">CVX - 셰브론</option>
+                                <option value="ABBV">ABBV - 애비</option>
+                                <option value="MRK">MRK - 머크</option>
+                                <option value="ACN">ACN - 액센츄어</option>
+                                <option value="ORCL">ORCL - 오라클</option>
+                                <option value="VZ">VZ - 버라이즌</option>
+                                <option value="T">T - AT&T</option>
+                                <option value="CMCSA">CMCSA - 컴캐스트</option>
+                                <option value="MDT">MDT - 메드트로닉</option>
+                                <option value="NEE">NEE - 넥스트에라에너지</option>
+                            </optgroup>
+
+                            <!-- Korean Stocks -->
+                            <optgroup label="🇰🇷 한국 주식">
+                                <option value="005930.KS">005930.KS - 삼성전자</option>
+                                <option value="000660.KS">000660.KS - SK하이닉스</option>
+                                <option value="035420.KS">035420.KS - 네이버</option>
+                                <option value="207940.KS">207940.KS - 삼성바이오로직스</option>
+                                <option value="006400.KS">006400.KS - 삼성SDI</option>
+                                <option value="051910.KS">051910.KS - LG화학</option>
+                                <option value="096770.KS">096770.KS - SK이노베이션</option>
+                                <option value="028260.KS">028260.KS - 삼성물산</option>
+                                <option value="034730.KS">034730.KS - SK</option>
+                                <option value="068270.KS">068270.KS - 셀트리온</option>
+                                <option value="323410.KS">323410.KS - 카카오뱅크</option>
+                                <option value="035720.KS">035720.KS - 카카오</option>
+                                <option value="352820.KS">352820.KS - 하이브</option>
+                                <option value="003670.KS">003670.KS - 포스코홀딩스</option>
+                                <option value="105560.KS">105560.KS - KB금융</option>
+                                <option value="055550.KS">055550.KS - 신한지주</option>
+                                <option value="086790.KS">086790.KS - 하나금융지주</option>
+                                <option value="017670.KS">017670.KS - SK텔레콤</option>
+                                <option value="030200.KS">030200.KS - KT</option>
+                                <option value="032830.KS">032830.KS - 삼성생명</option>
+                                <option value="009150.KS">009150.KS - 삼성전기</option>
+                                <option value="000270.KS">000270.KS - 기아</option>
+                                <option value="005380.KS">005380.KS - 현대차</option>
+                                <option value="012330.KS">012330.KS - 현대모비스</option>
+                                <option value="066570.KS">066570.KS - LG전자</option>
+                                <option value="003550.KS">003550.KS - LG</option>
+                                <option value="018260.KS">018260.KS - 삼성에스디에스</option>
+                                <option value="361610.KS">361610.KS - SK아이이테크놀로지</option>
+                                <option value="247540.KS">247540.KS - 에코프로비엠</option>
+                                <option value="373220.KS">373220.KS - LG에너지솔루션</option>
+                                <option value="036570.KS">036570.KS - 엔씨소프트</option>
+                                <option value="251270.KS">251270.KS - 넷마블</option>
+                                <option value="112040.KS">112040.KS - 위메이드</option>
+                                <option value="259960.KS">259960.KS - 크래프톤</option>
+                                <option value="035900.KS">035900.KS - JYP Ent.</option>
+                                <option value="122870.KS">122870.KS - 와이지엔터테인먼트</option>
+                                <option value="041510.KS">041510.KS - 에스엠</option>
+                                <option value="000810.KS">000810.KS - 삼성화재</option>
+                                <option value="024110.KS">024110.KS - 기업은행</option>
+                                <option value="316140.KS">316140.KS - 우리금융지주</option>
+                                <option value="128940.KS">128940.KS - 한미약품</option>
+                                <option value="196170.KS">196170.KS - 알테오젠</option>
+                                <option value="068760.KS">068760.KS - 셀트리온제약</option>
+                                <option value="091990.KS">091990.KS - 셀트리온헬스케어</option>
+                                <option value="207940.KS">207940.KS - 삼성바이오로직스</option>
+                                <option value="302440.KS">302440.KS - SK바이오사이언스</option>
+                            </optgroup>
+
+                            <!-- Japanese Stocks -->
+                            <optgroup label="🇯🇵 일본 주식">
+                                <option value="7203.T">7203.T - 도요타자동차</option>
+                                <option value="6758.T">6758.T - 소니그룹</option>
+                                <option value="9984.T">9984.T - 소프트뱅크그룹</option>
+                                <option value="6501.T">6501.T - 히타치</option>
+                                <option value="8306.T">8306.T - 미쓰비시UFJ은행</option>
+                                <option value="4502.T">4502.T - 다케다제약</option>
+                                <option value="7974.T">7974.T - 닌텐도</option>
+                                <option value="6861.T">6861.T - 키엔스</option>
+                                <option value="4519.T">4519.T - 추가이제약</option>
+                                <option value="8035.T">8035.T - 도쿄일렉트론</option>
+                                <option value="9432.T">9432.T - NTT</option>
+                                <option value="4661.T">4661.T - 오리엔탈랜드</option>
+                                <option value="6954.T">6954.T - 파낙</option>
+                                <option value="7751.T">7751.T - 캐논</option>
+                                <option value="8031.T">8031.T - 미쓰이물산</option>
+                                <option value="9434.T">9434.T - 소프트뱅크</option>
+                                <option value="4568.T">4568.T - 다이이치산쿄</option>
+                                <option value="8058.T">8058.T - 미쓰비시상사</option>
+                                <option value="9433.T">9433.T - KDDI</option>
+                                <option value="4063.T">4063.T - 신에쓰화학</option>
+                                <option value="6098.T">6098.T - 리쿠루트홀딩스</option>
+                                <option value="7267.T">7267.T - 혼다기연</option>
+                                <option value="8766.T">8766.T - 도쿄해상</option>
+                                <option value="4911.T">4911.T - 시세이도</option>
+                                <option value="2914.T">2914.T - JT</option>
+                            </optgroup>
+
+                            <!-- Indian Stocks -->
+                            <optgroup label="🇮🇳 인도 주식">
+                                <option value="RELIANCE.NS">RELIANCE.NS - 릴라이언스인더스트리</option>
+                                <option value="TCS.NS">TCS.NS - 타타컨설턴시서비스</option>
+                                <option value="HDFCBANK.NS">HDFCBANK.NS - HDFC은행</option>
+                                <option value="INFY.NS">INFY.NS - 인포시스</option>
+                                <option value="HINDUNILVR.NS">HINDUNILVR.NS - 힌두스탄유니레버</option>
+                                <option value="ICICIBANK.NS">ICICIBANK.NS - ICICI은행</option>
+                                <option value="SBIN.NS">SBIN.NS - 인도국립은행</option>
+                                <option value="BHARTIARTL.NS">BHARTIARTL.NS - 바르티에어텔</option>
+                                <option value="ITC.NS">ITC.NS - ITC</option>
+                                <option value="KOTAKBANK.NS">KOTAKBANK.NS - 코탁마힌드라은행</option>
+                                <option value="LT.NS">LT.NS - 라슨앤투브로</option>
+                                <option value="ASIANPAINT.NS">ASIANPAINT.NS - 아시안페인트</option>
+                                <option value="MARUTI.NS">MARUTI.NS - 마루티스즈키</option>
+                                <option value="AXISBANK.NS">AXISBANK.NS - 액시스은행</option>
+                                <option value="WIPRO.NS">WIPRO.NS - 위프로</option>
+                                <option value="HCLTECH.NS">HCLTECH.NS - HCL테크놀로지</option>
+                                <option value="BAJFINANCE.NS">BAJFINANCE.NS - 바즈파이낸스</option>
+                                <option value="SUNPHARMA.NS">SUNPHARMA.NS - 선파마</option>
+                                <option value="TECHM.NS">TECHM.NS - 테크마힌드라</option>
+                                <option value="TITAN.NS">TITAN.NS - 타이탄</option>
+                                <option value="ULTRACEMCO.NS">ULTRACEMCO.NS - 울트라테크시멘트</option>
+                                <option value="NESTLEIND.NS">NESTLEIND.NS - 네슬레인디아</option>
+                                <option value="POWERGRID.NS">POWERGRID.NS - 파워그리드</option>
+                                <option value="NTPC.NS">NTPC.NS - NTPC</option>
+                                <option value="COALINDIA.NS">COALINDIA.NS - 콜인디아</option>
+                            </optgroup> <!-- UK Stocks -->
+                            <optgroup label="🇬🇧 영국 주식">
+                                <option value="AZN.L">AZN.L - 아스트라제네카</option>
+                                <option value="SHEL.L">SHEL.L - 셸</option>
+                                <option value="ULVR.L">ULVR.L - 유니레버</option>
+                                <option value="BP.L">BP.L - BP</option>
+                                <option value="HSBA.L">HSBA.L - HSBC홀딩스</option>
+                                <option value="GSK.L">GSK.L - GSK</option>
+                                <option value="DGE.L">DGE.L - 디아지오</option>
+                                <option value="RIO.L">RIO.L - 리오틴토</option>
+                                <option value="BT-A.L">BT-A.L - BT그룹</option>
+                                <option value="LLOY.L">LLOY.L - 로이즈뱅킹그룹</option>
+                                <option value="BARC.L">BARC.L - 바클레이스</option>
+                                <option value="VOD.L">VOD.L - 보다폰그룹</option>
+                                <option value="NWG.L">NWG.L - 네이션와이드그룹</option>
+                                <option value="GLEN.L">GLEN.L - 글렌코어</option>
+                                <option value="TSCO.L">TSCO.L - 테스코</option>
+                            </optgroup>
+
+                            <!-- Canadian Stocks -->
+                            <optgroup label="🇨🇦 캐나다 주식">
+                                <option value="SHOP.TO">SHOP.TO - 쇼피파이</option>
+                                <option value="RY.TO">RY.TO - 로열뱅크오브캐나다</option>
+                                <option value="TD.TO">TD.TO - 토론토도미니언은행</option>
+                                <option value="BNS.TO">BNS.TO - 뱅크오브노바스코샤</option>
+                                <option value="BMO.TO">BMO.TO - 뱅크오브몬트리올</option>
+                                <option value="CNR.TO">CNR.TO - 캐나디언내셔널철도</option>
+                                <option value="CP.TO">CP.TO - 캐나디언퍼시픽철도</option>
+                                <option value="CNQ.TO">CNQ.TO - 캐나디언내추럴리소스</option>
+                                <option value="SU.TO">SU.TO - 선코어에너지</option>
+                                <option value="TRI.TO">TRI.TO - 톰슨로이터</option>
+                                <option value="ENB.TO">ENB.TO - 엔브리지</option>
+                                <option value="WN.TO">WN.TO - 조지웨스턴</option>
+                                <option value="CSU.TO">CSU.TO - 컨스텔레이션소프트웨어</option>
+                                <option value="ATD.TO">ATD.TO - 알리멘테이션쿠셰타드</option>
+                                <option value="CCL-B.TO">CCL-B.TO - CCL인더스트리</option>
+                            </optgroup>
+
+                            <!-- French Stocks -->
+                            <optgroup label="🇫🇷 프랑스 주식">
+                                <option value="MC.PA">MC.PA - LVMH</option>
+                                <option value="OR.PA">OR.PA - 로레알</option>
+                                <option value="SAN.PA">SAN.PA - 사노피</option>
+                                <option value="ASML.PA">ASML.PA - ASML홀딩</option>
+                                <option value="TTE.PA">TTE.PA - 토탈에너지</option>
+                                <option value="BNP.PA">BNP.PA - BNP파리바</option>
+                                <option value="ACA.PA">ACA.PA - 크레디트아그리콜</option>
+                                <option value="AI.PA">AI.PA - 에어리퀴드</option>
+                                <option value="DG.PA">DG.PA - 빈치</option>
+                                <option value="BN.PA">BN.PA - 다논</option>
+                                <option value="CAP.PA">CAP.PA - 캡제미니</option>
+                                <option value="KER.PA">KER.PA - 케링</option>
+                                <option value="RNO.PA">RNO.PA - 르노</option>
+                                <option value="SU.PA">SU.PA - 슈나이더일렉트릭</option>
+                                <option value="AIR.PA">AIR.PA - 에어버스</option>
+                            </optgroup>
+
+                            <!-- German Stocks -->
+                            <optgroup label="🇩🇪 독일 주식">
+                                <option value="SAP.DE">SAP.DE - SAP</option>
+                                <option value="ASME.DE">ASME.DE - ASML홀딩</option>
+                                <option value="SIE.DE">SIE.DE - 지멘스</option>
+                                <option value="ADS.DE">ADS.DE - 아디다스</option>
+                                <option value="ALV.DE">ALV.DE - 알리안츠</option>
+                                <option value="BAS.DE">BAS.DE - BASF</option>
+                                <option value="BMW.DE">BMW.DE - BMW</option>
+                                <option value="DAI.DE">DAI.DE - 메르세데스벤츠그룹</option>
+                                <option value="VOW3.DE">VOW3.DE - 폭스바겐</option>
+                                <option value="DBK.DE">DBK.DE - 도이체뱅크</option>
+                                <option value="MUV2.DE">MUV2.DE - 뮌헨재보험</option>
+                                <option value="DTE.DE">DTE.DE - 도이체텔레콤</option>
+                                <option value="LIN.DE">LIN.DE - 린데</option>
+                                <option value="BEI.DE">BEI.DE - 바이어스도르프</option>
+                                <option value="HEN3.DE">HEN3.DE - 헨켈</option>
+                            </optgroup>
+
+                            <!-- Taiwanese Stocks -->
+                            <optgroup label="🇹🇼 대만 주식">
+                                <option value="2330.TW">2330.TW - 대만반도체(TSMC)</option>
+                                <option value="2454.TW">2454.TW - 미디어텍</option>
+                                <option value="2317.TW">2317.TW - 훙하이정밀</option>
+                                <option value="2412.TW">2412.TW - 중화텔레콤</option>
+                                <option value="1303.TW">1303.TW - 난야플라스틱</option>
+                                <option value="2882.TW">2882.TW - 캐세이금융</option>
+                                <option value="1326.TW">1326.TW - 포모사케미컬</option>
+                                <option value="2408.TW">2408.TW - 난야테크놀로지</option>
+                                <option value="2881.TW">2881.TW - 푸본금융</option>
+                                <option value="3008.TW">3008.TW - 라간정밀</option>
+                                <option value="2303.TW">2303.TW - 유나이티드마이크로일렉트로닉스</option>
+                                <option value="2891.TW">2891.TW - CTBC금융</option>
+                                <option value="6505.TW">6505.TW - 포모사페트로케미컬</option>
+                                <option value="2207.TW">2207.TW - 호타이모터</option>
+                                <option value="2886.TW">2886.TW - 메가금융</option>
+                            </optgroup>
+
+                            <!-- Cryptocurrencies -->
+                            <optgroup label="₿ 암호화폐">
+                                <option value="BTC-USD">BTC-USD - 비트코인</option>
+                                <option value="ETH-USD">ETH-USD - 이더리움</option>
+                                <option value="BNB-USD">BNB-USD - 바이낸스코인</option>
+                                <option value="XRP-USD">XRP-USD - 리플</option>
+                                <option value="ADA-USD">ADA-USD - 카르다노</option>
+                                <option value="SOL-USD">SOL-USD - 솔라나</option>
+                                <option value="DOT-USD">DOT-USD - 폴카닷</option>
+                                <option value="DOGE-USD">DOGE-USD - 도지코인</option>
+                                <option value="AVAX-USD">AVAX-USD - 아발란체</option>
+                                <option value="SHIB-USD">SHIB-USD - 시바이누</option>
+                                <option value="MATIC-USD">MATIC-USD - 폴리곤</option>
+                                <option value="LTC-USD">LTC-USD - 라이트코인</option>
+                                <option value="UNI-USD">UNI-USD - 유니스왑</option>
+                                <option value="LINK-USD">LINK-USD - 체인링크</option>
+                                <option value="ATOM-USD">ATOM-USD - 코스모스</option>
+                                <option value="TRX-USD">TRX-USD - 트론</option>
+                                <option value="NEAR-USD">NEAR-USD - 니어프로토콜</option>
+                                <option value="ALGO-USD">ALGO-USD - 알고랜드</option>
+                                <option value="VET-USD">VET-USD - 비체인</option>
+                                <option value="ICP-USD">ICP-USD - 인터넷컴퓨터</option>
+                                <option value="FTM-USD">FTM-USD - 팬텀</option>
+                                <option value="HBAR-USD">HBAR-USD - 헤데라</option>
+                                <option value="FIL-USD">FIL-USD - 파일코인</option>
+                                <option value="ETC-USD">ETC-USD - 이더리움클래식</option>
+                                <option value="XMR-USD">XMR-USD - 모네로</option>
+                                <option value="XLM-USD">XLM-USD - 스텔라</option>
+                                <option value="BCH-USD">BCH-USD - 비트코인캐시</option>
+                                <option value="THETA-USD">THETA-USD - 테타</option>
+                                <option value="SAND-USD">SAND-USD - 더샌드박스</option>
+                                <option value="MANA-USD">MANA-USD - 디센트럴랜드</option>
+                                <option value="AXS-USD">AXS-USD - 액시인피니티</option>
+                                <option value="GRT-USD">GRT-USD - 더그래프</option>
+                                <option value="ENJ-USD">ENJ-USD - 엔진코인</option>
+                                <option value="CRV-USD">CRV-USD - 커브</option>
+                                <option value="SUSHI-USD">SUSHI-USD - 스시스왑</option>
+                            </optgroup>
                         </select>
 
                         <!-- Current Stock Info Display -->
