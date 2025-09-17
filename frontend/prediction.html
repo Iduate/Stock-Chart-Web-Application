@@ -619,19 +619,6 @@
 
     <!-- JavaScript -->
     <script>
-        // Stock data for simulation
-        const stockData = {
-            'AAPL': { name: 'Apple Inc.', symbol: 'AAPL', price: 238.71 },
-            'MSFT': { name: 'Microsoft Corporation', symbol: 'MSFT', price: 415.23 },
-            'GOOGL': { name: 'Alphabet Inc.', symbol: 'GOOGL', price: 165.84 },
-            'TSLA': { name: 'Tesla Inc.', symbol: 'TSLA', price: 248.50 },
-            'AMZN': { name: 'Amazon.com Inc.', symbol: 'AMZN', price: 186.29 },
-            'NVDA': { name: 'NVIDIA Corporation', symbol: 'NVDA', price: 875.42 },
-            'META': { name: 'Meta Platforms Inc.', symbol: 'META', price: 542.81 },
-            'BTC': { name: 'Bitcoin', symbol: 'BTC', price: 51250.00 },
-            'ETH': { name: 'Ethereum', symbol: 'ETH', price: 2435.67 }
-        };
-
         // DOM elements
         const stockSearch = document.getElementById('stockSearch');
         const stockSelect = document.getElementById('stockSelect');
@@ -653,6 +640,101 @@
         const submitButtonText = document.getElementById('submitButtonText');
         const successMessage = document.getElementById('successMessage');
 
+        // Function to determine market type based on symbol
+        function getMarketType(symbol) {
+            if (symbol.includes('-USD') || ['BTC', 'ETH', 'BNB', 'ADA', 'SOL', 'XRP', 'DOT', 'DOGE', 'AVAX', 'SHIB', 'MATIC', 'LTC', 'UNI', 'LINK', 'ATOM'].includes(symbol.split('-')[0])) {
+                return 'crypto';
+            } else if (symbol.includes('.KS')) {
+                return 'kr_stock';
+            } else if (symbol.includes('.T')) {
+                return 'jp_stock';
+            } else if (symbol.includes('.NS') || symbol.includes('.BO')) {
+                return 'in_stock';
+            } else if (symbol.includes('.L')) {
+                return 'uk_stock';
+            } else if (symbol.includes('.TO')) {
+                return 'ca_stock';
+            } else if (symbol.includes('.PA')) {
+                return 'fr_stock';
+            } else if (symbol.includes('.DE')) {
+                return 'de_stock';
+            } else if (symbol.includes('.TW')) {
+                return 'tw_stock';
+            } else {
+                return 'us_stock';
+            }
+        }
+
+        // Function to fetch stock price from backend API
+        async function fetchStockPrice(symbol) {
+            try {
+                console.log(`Fetching price for symbol: ${symbol}`);
+
+                // Determine market type
+                const market = getMarketType(symbol);
+
+                // Call the backend API to get stock price
+                const response = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Price data received:', data);
+
+                    // Extract price from various possible fields
+                    let price = data.price || data.current_price || data.regularMarketPrice || data.c || 0;
+
+                    // Handle cases where price might be null or undefined
+                    if (!price || price === 0) {
+                        // Try to extract from nested data
+                        if (data.quote && data.quote.price) {
+                            price = data.quote.price;
+                        } else if (data.data && data.data.price) {
+                            price = data.data.price;
+                        }
+                    }
+
+                    return {
+                        price: parseFloat(price) || 0,
+                        name: data.name || data.company_name || data.shortName || data.longName || getStockDisplayName(symbol),
+                        symbol: symbol,
+                        source: data.source || 'api',
+                        is_sample: data.is_sample || false
+                    };
+                } else {
+                    const errorText = await response.text();
+                    console.error('Failed to fetch price:', response.status, response.statusText, errorText);
+                    throw new Error(`Failed to fetch price for ${symbol}: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Error fetching stock price:', error);
+                // Return fallback data with price 0
+                return {
+                    price: 0,
+                    name: getStockDisplayName(symbol),
+                    symbol: symbol,
+                    source: 'fallback',
+                    is_sample: true
+                };
+            }
+        }
+
+        // Function to get display name from the selected option
+        function getStockDisplayName(symbol) {
+            const selectedOption = stockSelect.querySelector(`option[value="${symbol}"]`);
+            if (selectedOption) {
+                const fullText = selectedOption.textContent;
+                // Extract company name (part after the " - ")
+                const parts = fullText.split(' - ');
+                return parts.length > 1 ? parts[1] : symbol;
+            }
+            return symbol;
+        }
+
         // Stock search functionality
         stockSearch.addEventListener('input', function () {
             const searchTerm = this.value.toLowerCase();
@@ -666,24 +748,70 @@
         });
 
         // Stock selection handler
-        stockSelect.addEventListener('change', function () {
+        stockSelect.addEventListener('change', async function () {
             const selectedSymbol = this.value;
 
-            if (selectedSymbol && stockData[selectedSymbol]) {
+            if (selectedSymbol) {
+                // Show loading state
                 loadingPrice.style.display = 'block';
                 currentStockPrice.textContent = '$0.00';
-
-                // Show stock info
                 stockInfo.classList.remove('hidden');
 
-                // Simulate loading delay
-                setTimeout(() => {
-                    const stock = stockData[selectedSymbol];
+                // Update basic info immediately
+                selectedStockName.textContent = getStockDisplayName(selectedSymbol);
+                selectedStockSymbol.textContent = selectedSymbol;
 
-                    selectedStockName.textContent = stock.name;
-                    selectedStockSymbol.textContent = stock.symbol;
-                    currentStockPrice.textContent = `$${stock.price.toLocaleString()}`;
-                    currentPrice.value = stock.price;
+                try {
+                    // Fetch stock data from API
+                    const stockData = await fetchStockPrice(selectedSymbol);
+
+                    // Update UI with stock information
+                    selectedStockName.textContent = stockData.name;
+                    selectedStockSymbol.textContent = stockData.symbol;
+
+                    // Format price based on symbol type and value
+                    let formattedPrice;
+                    if (stockData.price === 0) {
+                        formattedPrice = '가격 정보 없음';
+                        currentStockPrice.className = 'text-3xl font-bold text-tv-text-secondary';
+                    } else if (selectedSymbol.includes('-USD') || getMarketType(selectedSymbol) === 'crypto') {
+                        // Cryptocurrency formatting
+                        if (stockData.price > 1) {
+                            formattedPrice = `$${stockData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        } else {
+                            formattedPrice = `$${stockData.price.toFixed(6)}`;
+                        }
+                        currentStockPrice.className = 'text-3xl font-bold text-tv-green';
+                    } else {
+                        // Stock formatting
+                        formattedPrice = `$${stockData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                        currentStockPrice.className = 'text-3xl font-bold text-tv-text';
+                    }
+
+                    currentStockPrice.textContent = formattedPrice;
+                    currentPrice.value = stockData.price;
+
+                    // Show data source if it's sample data
+                    if (stockData.is_sample) {
+                        const sourceIndicator = document.createElement('p');
+                        sourceIndicator.className = 'text-xs text-tv-text-secondary mt-1';
+                        sourceIndicator.textContent = '샘플 데이터 (실제 가격과 다를 수 있음)';
+                        sourceIndicator.id = 'sourceIndicator';
+
+                        // Remove existing source indicator
+                        const existingIndicator = document.getElementById('sourceIndicator');
+                        if (existingIndicator) {
+                            existingIndicator.remove();
+                        }
+
+                        currentStockPrice.parentNode.appendChild(sourceIndicator);
+                    } else {
+                        // Remove source indicator if it exists
+                        const existingIndicator = document.getElementById('sourceIndicator');
+                        if (existingIndicator) {
+                            existingIndicator.remove();
+                        }
+                    }
 
                     loadingPrice.style.display = 'none';
 
@@ -691,11 +819,34 @@
                     if (predictedPrice.value) {
                         calculatePriceChange();
                     }
-                }, 1000);
+
+                } catch (error) {
+                    console.error('Error loading stock data:', error);
+                    loadingPrice.style.display = 'none';
+                    currentStockPrice.textContent = '가격 로딩 실패';
+                    currentStockPrice.className = 'text-3xl font-bold text-tv-red';
+
+                    // Still show basic info
+                    selectedStockName.textContent = getStockDisplayName(selectedSymbol);
+                    selectedStockSymbol.textContent = selectedSymbol;
+
+                    // Allow user to manually enter current price
+                    currentPrice.value = '';
+                    currentPrice.readOnly = false;
+                    currentPrice.placeholder = '현재 가격을 수동으로 입력하세요';
+                }
             } else {
                 stockInfo.classList.add('hidden');
                 currentPrice.value = '';
+                currentPrice.readOnly = true;
+                currentPrice.placeholder = '종목 선택 후 자동 입력';
                 priceChangeIndicator.classList.add('hidden');
+
+                // Remove source indicator if it exists
+                const existingIndicator = document.getElementById('sourceIndicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
             }
         });
 
