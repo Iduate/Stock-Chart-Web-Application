@@ -22,7 +22,8 @@ def auto_publish_prediction(sender, instance, **kwargs):
         if not instance.prediction_date:
             instance.prediction_date = timezone.now()
         
-        logger.info(f'New prediction created for {instance.stock.symbol} by {instance.user.username}')
+        username = instance.user.username if instance.user else 'Anonymous'
+        logger.info(f'New prediction created for {instance.stock.symbol} by {username}')
 
 @receiver(post_save, sender=ChartPrediction)
 def update_user_stats_on_completion(sender, instance, created, **kwargs):
@@ -66,9 +67,10 @@ def log_prediction_activity(sender, instance, created, **kwargs):
     """
     Log prediction activity for monitoring and analytics
     """
+    username = instance.user.username if instance.user else 'Anonymous'
     if created:
         logger.info(
-            f'📊 New prediction: {instance.user.username} predicts '
+            f'📊 New prediction: {username} predicts '
             f'{instance.stock.symbol} will be ${instance.predicted_price} '
             f'by {instance.target_date} (currently ${instance.current_price})'
         )
@@ -76,7 +78,7 @@ def log_prediction_activity(sender, instance, created, **kwargs):
         accuracy = instance.accuracy_percentage or 0
         profit = instance.profit_rate or 0
         logger.info(
-            f'✅ Prediction completed: {instance.user.username} '
+            f'✅ Prediction completed: {username} '
             f'predicted ${instance.predicted_price} vs actual ${instance.actual_price} '
             f'(Accuracy: {accuracy:.1f}%, Profit: {profit:.1f}%)'
         )

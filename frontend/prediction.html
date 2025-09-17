@@ -355,7 +355,7 @@
                         </div>
 
                         <!-- Main Form Container -->
-                        <form id="predictionForm" method="POST" action="/api/predictions/"
+                        <form id="predictionForm"
                             class="relative bg-tv-card/95 backdrop-blur-lg border border-tv-border/50 rounded-3xl p-8 lg:p-10 shadow-2xl shadow-tv-blue/10 hover:shadow-tv-blue/20 transition-all duration-500">
                             <!-- Enhanced Form Header -->
                             <div class="mb-10">
@@ -672,12 +672,12 @@
                                                 class="w-8 h-8 bg-gradient-to-br from-tv-green to-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
                                                 2
                                             </div>
-                                            <h3 class="text-2xl font-bold text-tv-text">가격 정보</h3>
+                                            <h3 class="text-2xl font-bold text-tv-text">AI 예측 설정</h3>
                                             <div
                                                 class="flex-1 h-px bg-gradient-to-r from-tv-green/30 to-transparent ml-4">
                                             </div>
                                         </div>
-                                        <p class="text-tv-text-secondary ml-11">현재 가격과 예측 가격을 입력해주세요</p>
+                                        <p class="text-tv-text-secondary ml-11">현재 가격 확인 및 예측 기간을 설정해주세요</p>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -701,21 +701,29 @@
                                         </div>
                                         <div class="relative">
                                             <label class="block text-sm font-semibold text-tv-text mb-3">
-                                                <i class="fas fa-target text-tv-green mr-2"></i>예측 가격
+                                                <i class="fas fa-calendar-alt text-tv-green mr-2"></i>예측 기간
                                             </label>
                                             <div class="relative">
-                                                <input type="number" id="predictedPrice" name="predicted_price"
-                                                    step="0.01" required
-                                                    class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300 text-lg pl-12"
-                                                    placeholder="예측 가격 입력">
-                                                <span
-                                                    class="absolute right-6 top-1/2 transform -translate-y-1/2 text-tv-text-secondary text-sm font-medium">USD</span>
+                                                <select id="predictionDays" name="prediction_days" required
+                                                    class="w-full px-6 py-4 bg-gradient-to-r from-tv-light to-tv-light/80 border border-tv-border/50 rounded-xl text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all duration-300 text-lg appearance-none">
+                                                    <option value="">예측 기간 선택</option>
+                                                    <option value="1">1일 (단기)</option>
+                                                    <option value="3">3일 (단기)</option>
+                                                    <option value="7" selected>7일 (1주일) - 추천</option>
+                                                    <option value="14">14일 (2주일)</option>
+                                                    <option value="21">21일 (3주일)</option>
+                                                    <option value="30">30일 (1개월)</option>
+                                                </select>
+                                                <div
+                                                    class="absolute right-6 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                                    <i class="fas fa-chevron-down text-tv-text-secondary"></i>
+                                                </div>
                                                 <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                                                    <i class="fas fa-bullseye text-tv-green"></i>
+                                                    <i class="fas fa-clock text-tv-green"></i>
                                                 </div>
                                             </div>
                                             <div class="mt-2 text-xs text-tv-text-secondary ml-1">
-                                                🎯 목표 가격을 입력하세요
+                                                🕒 AI가 선택한 기간 동안 가격을 예측합니다
                                             </div>
                                         </div>
                                     </div>
@@ -1657,26 +1665,31 @@
                         try {
                             // Collect form data
                             const formData = new FormData(this);
+
+                            // Get selected stock and market type
+                            const stockSymbol = formData.get('stock_symbol');
+                            const selectedStock = availableStocks.find(stock =>
+                                `${stock.symbol}_${stock.market}` === stockSymbol
+                            );
+
+                            if (!selectedStock) {
+                                throw new Error('주식을 선택해주세요.');
+                            }
+
+                            // Prepare AI prediction request
                             const predictionData = {
-                                stock_symbol: formData.get('stock_symbol'),
-                                current_price: parseFloat(formData.get('current_price')),
-                                predicted_price: parseFloat(formData.get('predicted_price')),
-                                confidence: parseInt(formData.get('confidence')),
-                                reasoning: formData.get('reasoning') || '',
-                                is_public: formData.get('is_public') === 'on',
-                                prediction_date: new Date().toISOString()
+                                symbol: selectedStock.symbol,
+                                market: selectedStock.market,
+                                prediction_days: parseInt(formData.get('prediction_days')) || 7
                             };
 
                             // Validate required fields
-                            if (!predictionData.stock_symbol) {
-                                throw new Error('주식을 선택해주세요.');
-                            }
-                            if (!predictionData.predicted_price || predictionData.predicted_price <= 0) {
-                                throw new Error('올바른 예측 가격을 입력해주세요.');
+                            if (!predictionData.symbol) {
+                                throw new Error('주식 심볼이 필요합니다.');
                             }
 
-                            // Submit to backend
-                            const response = await fetch('/api/predictions/', {
+                            // Submit to our new AI prediction endpoint
+                            const response = await fetch('/api/charts/predictions/create_ai_prediction/', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -1688,17 +1701,20 @@
                             if (response.ok) {
                                 const result = await response.json();
 
-                                // Show success message
-                                showSuccessMessage('예측이 성공적으로 생성되었습니다!');
+                                // Update UI with AI prediction results
+                                displayPredictionResults(result);
 
-                                // Redirect to my predictions page
+                                // Show success message
+                                showSuccessMessage('AI 예측이 성공적으로 생성되었습니다!');
+
+                                // Optionally redirect to my predictions page
                                 setTimeout(() => {
                                     window.location.href = 'my-predictions.html';
-                                }, 2000);
+                                }, 3000);
 
                             } else {
                                 const error = await response.json();
-                                throw new Error(error.message || '예측 생성에 실패했습니다.');
+                                throw new Error(error.error || '예측 생성에 실패했습니다.');
                             }
 
                         } catch (error) {
@@ -1893,6 +1909,147 @@
                         const portal = document.getElementById('mobile-menu-portal');
                         if (portal) {
                             portal.style.display = 'none';
+                        }
+
+                        // Load available stocks for predictions
+                        loadAvailableStocks();
+                    });
+
+                    // Global variable to store available stocks
+                    let availableStocks = [];
+
+                    // Load available stocks from API
+                    async function loadAvailableStocks() {
+                        try {
+                            const response = await fetch('/api/charts/predictions/available_symbols/');
+                            if (response.ok) {
+                                const stockData = await response.json();
+
+                                // Flatten the stock data
+                                availableStocks = [];
+                                Object.entries(stockData).forEach(([market, stocks]) => {
+                                    stocks.forEach(stock => {
+                                        availableStocks.push({
+                                            ...stock,
+                                            display_name: `${stock.name} (${stock.symbol}) - ${market.toUpperCase()}`
+                                        });
+                                    });
+                                });
+
+                                // Update stock selection dropdown
+                                updateStockDropdown();
+
+                            } else {
+                                console.error('Failed to load stocks');
+                                // Use fallback stocks
+                                useFallbackStocks();
+                            }
+                        } catch (error) {
+                            console.error('Error loading stocks:', error);
+                            useFallbackStocks();
+                        }
+                    }
+
+                    function useFallbackStocks() {
+                        availableStocks = [
+                            { symbol: 'AAPL', name: 'Apple Inc.', market: 'us_stock', display_name: 'Apple Inc. (AAPL) - US_STOCK' },
+                            { symbol: 'GOOGL', name: 'Alphabet Inc.', market: 'us_stock', display_name: 'Alphabet Inc. (GOOGL) - US_STOCK' },
+                            { symbol: 'TSLA', name: 'Tesla Inc.', market: 'us_stock', display_name: 'Tesla Inc. (TSLA) - US_STOCK' },
+                            { symbol: 'BTC', name: 'Bitcoin', market: 'crypto', display_name: 'Bitcoin (BTC) - CRYPTO' },
+                            { symbol: 'ETH', name: 'Ethereum', market: 'crypto', display_name: 'Ethereum (ETH) - CRYPTO' }
+                        ];
+                        updateStockDropdown();
+                    }
+
+                    function updateStockDropdown() {
+                        const stockSelect = document.querySelector('select[name="stock_symbol"]');
+                        if (!stockSelect) return;
+
+                        // Clear existing options except the first one
+                        stockSelect.innerHTML = '<option value="">주식을 선택하세요</option>';
+
+                        // Add stock options
+                        availableStocks.forEach(stock => {
+                            const option = document.createElement('option');
+                            option.value = `${stock.symbol}_${stock.market}`;
+                            option.textContent = stock.display_name;
+                            stockSelect.appendChild(option);
+                        });
+                    }
+
+                    // Display AI prediction results
+                    function displayPredictionResults(result) {
+                        // Create results modal or update page content
+                        const resultsHTML = `
+                            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" id="predictionModal">
+                                <div class="bg-tv-card rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-tv-green rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i class="fas fa-check text-white text-2xl"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-tv-text mb-4">AI 예측 완료!</h3>
+                                        
+                                        <div class="space-y-3 text-left bg-tv-darker rounded-lg p-4 mb-6">
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">심볼:</span>
+                                                <span class="text-tv-text font-semibold">${result.symbol}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">현재 가격:</span>
+                                                <span class="text-tv-text">$${result.current_price.toLocaleString()}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">예측 가격:</span>
+                                                <span class="text-tv-text font-bold">$${result.predicted_price.toLocaleString()}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">예상 변화:</span>
+                                                <span class="text-tv-text ${result.price_change >= 0 ? 'text-tv-green' : 'text-tv-red'}">
+                                                    ${result.price_change >= 0 ? '+' : ''}${result.price_change_percent.toFixed(2)}%
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">신뢰도:</span>
+                                                <span class="text-tv-text">${(result.confidence_score * 100).toFixed(0)}%</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">위험도:</span>
+                                                <span class="text-tv-text capitalize">${result.risk_level}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-tv-text-secondary">예측 기간:</span>
+                                                <span class="text-tv-text">${result.prediction_days}일</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-xs text-tv-text-secondary mb-4">
+                                            사용된 알고리즘: ${result.algorithms_used.join(', ')}
+                                        </div>
+                                        
+                                        <button onclick="closePredictionModal()" 
+                                                class="w-full bg-tv-blue hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                                            확인
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        // Add modal to page
+                        document.body.insertAdjacentHTML('beforeend', resultsHTML);
+                    }
+
+                    function closePredictionModal() {
+                        const modal = document.getElementById('predictionModal');
+                        if (modal) {
+                            modal.remove();
+                        }
+                    }
+
+                    // Close modal when clicking outside
+                    document.addEventListener('click', function (e) {
+                        if (e.target.id === 'predictionModal') {
+                            closePredictionModal();
                         }
                     });
                 </script>

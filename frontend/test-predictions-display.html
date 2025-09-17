@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictions Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl mb-8">Predictions Display Test</h1>
+
+        <button id="testBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">
+            Test Display
+        </button>
+
+        <div id="results" class="space-y-4"></div>
+
+        <div id="stats" class="grid grid-cols-4 gap-4 mb-8"></div>
+        <div id="predictions" class="space-y-6"></div>
+    </div>
+
+    <script>
+        // Test data that matches the API structure
+        const testPredictions = [
+            {
+                "id": 1,
+                "symbol": "AAPL",
+                "stock_name": "AAPL Stock",
+                "market_type": "us_stock",
+                "current_price": 238.71,
+                "predicted_price": 230.6,
+                "prediction_date": "2025-09-16T07:53:39.455561+00:00",
+                "target_date": "2025-09-23T15:53:39.454585+00:00",
+                "duration_days": 7,
+                "status": "pending",
+                "is_completed": false,
+                "user": {
+                    "username": "Anonymous",
+                    "is_authenticated": false
+                },
+                "created_at": "2025-09-16T15:53:39.524229+00:00",
+                "views_count": 0,
+                "likes_count": 0,
+                "comments_count": 0
+            },
+            {
+                "id": 2,
+                "symbol": "BTC",
+                "stock_name": "BTC Stock",
+                "market_type": "crypto",
+                "current_price": 51.25,
+                "predicted_price": 55.16,
+                "prediction_date": "2025-09-16T08:25:40.948196+00:00",
+                "target_date": "2025-09-30T16:25:40.947020+00:00",
+                "duration_days": 14,
+                "status": "pending",
+                "is_completed": false,
+                "user": {
+                    "username": "Anonymous",
+                    "is_authenticated": false
+                },
+                "created_at": "2025-09-16T16:25:40.962136+00:00",
+                "views_count": 0,
+                "likes_count": 0,
+                "comments_count": 0
+            }
+        ];
+
+        function createPredictionCard(prediction) {
+            console.log('Creating card for:', prediction);
+            const currentDate = new Date();
+            const targetDate = new Date(prediction.target_date);
+            const predictionDate = new Date(prediction.prediction_date);
+
+            const daysDiff = Math.ceil((targetDate - currentDate) / (1000 * 60 * 60 * 24));
+            const daysLeft = daysDiff > 0 ? daysDiff : 0;
+
+            const priceChange = ((parseFloat(prediction.predicted_price) - parseFloat(prediction.current_price)) / parseFloat(prediction.current_price)) * 100;
+            const priceChangeClass = priceChange >= 0 ? 'text-green-400' : 'text-red-400';
+            const priceChangeText = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+
+            return `
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-blue-600 bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">${prediction.symbol}</h3>
+                                <p class="text-sm text-gray-400">${prediction.stock_name}</p>
+                                <p class="text-xs text-gray-500">${prediction.user.username}</p>
+                            </div>
+                        </div>
+                        <span class="bg-blue-600 bg-opacity-20 text-blue-400 px-3 py-1 rounded-full text-sm">
+                            진행중
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">예측 가격</div>
+                            <div class="text-xl font-bold">$${parseFloat(prediction.predicted_price).toLocaleString()}</div>
+                            <div class="text-sm ${priceChangeClass}">${priceChangeText}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">기준 가격</div>
+                            <div class="text-xl font-bold">$${parseFloat(prediction.current_price).toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400 mb-1">남은 일수</div>
+                            <div class="text-xl font-bold">D-${daysLeft}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('testBtn').addEventListener('click', function () {
+            console.log('Testing predictions display...');
+            const container = document.getElementById('predictions');
+
+            try {
+                const html = testPredictions.map(prediction => createPredictionCard(prediction)).join('');
+                container.innerHTML = html;
+
+                document.getElementById('results').innerHTML = `
+                    <div class="bg-green-800 p-4 rounded">
+                        ✅ Successfully displayed ${testPredictions.length} predictions
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Test failed:', error);
+                document.getElementById('results').innerHTML = `
+                    <div class="bg-red-800 p-4 rounded">
+                        ❌ Test failed: ${error.message}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

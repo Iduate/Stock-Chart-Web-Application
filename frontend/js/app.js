@@ -1701,7 +1701,7 @@ async function loadPopularStocks() {
 
         for (const symbol of symbols) {
             try {
-                const response = await fetch(`${API_BASE_URL}/market-data/quote/${symbol}/`);
+                const response = await fetch(`${API_BASE_URL}/api/market-data/quote/${symbol}/`);
                 if (response.ok) {
                     const data = await response.json();
                     stockData.push({ symbol, ...data });
@@ -2442,12 +2442,12 @@ async function testAllAPIs(symbol = 'AAPL') {
     console.log(`Testing all APIs for ${symbol}...`);
 
     const apis = [
-        { name: 'Alpha Vantage', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
-        { name: 'Twelve Data', url: `${API_BASE_URL}/market-data/quote/${symbol}/` },
-        { name: 'Finnhub', url: `${API_BASE_URL}/market-data/enhanced/${symbol}/` },
-        { name: 'Polygon', url: `${API_BASE_URL}/market-data/polygon/historical/${symbol}/` },
-        { name: 'Tiingo', url: `${API_BASE_URL}/market-data/tiingo/${symbol}/` },
-        { name: 'Marketstack', url: `${API_BASE_URL}/market-data/marketstack/${symbol}/` }
+        { name: 'Alpha Vantage', url: `${API_BASE_URL}/api/market-data/quote/${symbol}/` },
+        { name: 'Twelve Data', url: `${API_BASE_URL}/api/market-data/quote/${symbol}/` },
+        { name: 'Finnhub', url: `${API_BASE_URL}/api/market-data/enhanced/${symbol}/` },
+        { name: 'Polygon', url: `${API_BASE_URL}/api/market-data/polygon/historical/${symbol}/` },
+        { name: 'Tiingo', url: `${API_BASE_URL}/api/market-data/tiingo/${symbol}/` },
+        { name: 'Marketstack', url: `${API_BASE_URL}/api/market-data/marketstack/${symbol}/` }
     ];
 
     const results = {};

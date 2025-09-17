@@ -59,7 +59,7 @@ class ChartPrediction(models.Model):
         ('cancelled', '취소됨'),
     ]
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='사용자')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='사용자', null=True, blank=True)
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, verbose_name='종목')
     current_price = models.DecimalField('현재 가격', max_digits=15, decimal_places=2)
     predicted_price = models.DecimalField('예측 가격', max_digits=15, decimal_places=2)
@@ -83,7 +83,8 @@ class ChartPrediction(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.user.username} - {self.stock.name} 예측"
+        username = self.user.username if self.user else 'Anonymous'
+        return f"{username} - {self.stock.name} 예측"
     
     def calculate_accuracy(self):
         """정확도 계산"""
@@ -131,7 +132,8 @@ class ChartComment(models.Model):
         ordering = ['created_at']
     
     def __str__(self):
-        return f"{self.user.username}: {self.content[:50]}"
+        username = self.user.username if self.user else 'Anonymous'
+        return f"{username}: {self.content[:50]}"
 
 class Event(models.Model):
     """이벤트"""

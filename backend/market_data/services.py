@@ -13,6 +13,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 import logging
+from .precision_handler import PrecisionHandler
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +97,8 @@ class MarketDataService:
                 data = api_func(symbol)
                 if data:
                     data['source'] = api_name
+                    # Apply precision formatting
+                    data = PrecisionHandler.format_market_data(data, symbol, market)
                     cache.set(cache_key, data, timeout=cache_timeout)
                     logger.info(f"Successfully got quote from {api_name}")
                     return data
@@ -112,12 +115,16 @@ class MarketDataService:
         logger.warning(f"All APIs failed for quote {symbol}, trying CoinGecko as fallback")
         coingecko_data = self._get_coingecko_stock_fallback(symbol)
         if coingecko_data:
+            # Apply precision formatting
+            coingecko_data = PrecisionHandler.format_market_data(coingecko_data, symbol, market)
             cache.set(cache_key, coingecko_data, timeout=300)  # 5분 캐시
             return coingecko_data
         
         # CoinGecko도 실패 시 샘플 데이터 반환
         logger.warning(f"CoinGecko also failed for {symbol}, returning sample data")
-        return self._get_sample_stock_data(symbol)
+        sample_data = self._get_sample_stock_data(symbol)
+        # Apply precision formatting to sample data
+        return PrecisionHandler.format_market_data(sample_data, symbol, market)
     
     def _get_sample_stock_data(self, symbol: str) -> Dict[str, Any]:
         """샘플 주식 데이터 제공"""

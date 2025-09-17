@@ -213,9 +213,21 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Page Header -->
             <div class="mb-8">
-                <div class="flex items-center space-x-3 mb-4">
-                    <i class="fas fa-user-chart text-tv-blue text-3xl"></i>
-                    <h1 class="text-3xl lg:text-4xl font-bold text-tv-text">내 예측</h1>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-user-chart text-tv-blue text-3xl"></i>
+                        <h1 class="text-3xl lg:text-4xl font-bold text-tv-text">내 예측</h1>
+                    </div>
+                    <button onclick="loadUserPredictions()"
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>새로고침</span>
+                    </button>
+                    <button onclick="loadTestData()"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ml-2">
+                        <i class="fas fa-flask"></i>
+                        <span>테스트 데이터</span>
+                    </button>
                 </div>
                 <p class="text-lg text-tv-text-secondary max-w-2xl">나의 예측 현황과 성과를 확인하고 분석해보세요</p>
             </div>
@@ -485,64 +497,207 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM Content Loaded - starting initialization');
+
+            // Check if required elements exist
+            const container = document.getElementById('predictionsContainer');
+            const stats = document.getElementById('statsOverview');
+            const empty = document.getElementById('emptyState');
+
+            console.log('Required elements check:');
+            console.log('- predictionsContainer:', container ? 'Found' : 'Missing');
+            console.log('- statsOverview:', stats ? 'Found' : 'Missing');
+            console.log('- emptyState:', empty ? 'Found' : 'Missing');
+
+            if (!container || !stats || !empty) {
+                console.error('Missing required elements!');
+                return;
+            }
+
             loadUserPredictions();
             setupEventListeners();
         });
 
-        function loadUserPredictions() {
-            // Load predictions from localStorage
-            const saved = localStorage.getItem('userPredictions');
-            userPredictions = saved ? JSON.parse(saved) : [];
+        async function loadUserPredictions() {
+            try {
+                // Show loading state
+                console.log('Loading predictions - showing loading state...');
+                showLoadingState();
 
+                // Load predictions from API
+                console.log('Fetching predictions from API...');
+                const response = await fetch('/api/charts/predictions/all/');
+                console.log('API response status:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API response data:', data);
+                    userPredictions = data.predictions || [];
+                    console.log('Loaded predictions count:', userPredictions.length);
+
+                    // Also merge with any local predictions (for offline support)
+                    const localPredictions = localStorage.getItem('userPredictions');
+                    if (localPredictions) {
+                        const localData = JSON.parse(localPredictions);
+                        // Add local predictions that aren't in the API response
+                        localData.forEach(localPred => {
+                            if (!userPredictions.find(p => p.id === localPred.id)) {
+                                userPredictions.push(localPred);
+                            }
+                        });
+                    }
+                } else {
+                    // Fallback to localStorage if API fails
+                    console.warn('Failed to load predictions from API, using localStorage');
+                    const saved = localStorage.getItem('userPredictions');
+                    userPredictions = saved ? JSON.parse(saved) : [];
+                }
+
+                console.log('Displaying stats and predictions...');
+                displayStats();
+                displayPredictions();
+                console.log('Hiding loading state...');
+                hideLoadingState();
+
+            } catch (error) {
+                console.error('Error loading predictions:', error);
+                // Fallback to localStorage
+                const saved = localStorage.getItem('userPredictions');
+                userPredictions = saved ? JSON.parse(saved) : [];
+                displayStats();
+                displayPredictions();
+                hideLoadingState();
+            }
+        }
+
+        function loadTestData() {
+            console.log('Loading test data...');
+            showLoadingState();
+
+            // Use the exact same data structure as the API
+            userPredictions = [
+                {
+                    "id": 1,
+                    "symbol": "AAPL",
+                    "stock_name": "AAPL Stock",
+                    "market_type": "us_stock",
+                    "current_price": 238.71,
+                    "predicted_price": 230.6,
+                    "prediction_date": "2025-09-16T07:53:39.455561+00:00",
+                    "target_date": "2025-09-23T15:53:39.454585+00:00",
+                    "duration_days": 7,
+                    "status": "pending",
+                    "is_completed": false,
+                    "user": {
+                        "username": "Anonymous",
+                        "is_authenticated": false
+                    },
+                    "created_at": "2025-09-16T15:53:39.524229+00:00",
+                    "views_count": 0,
+                    "likes_count": 0,
+                    "comments_count": 0
+                },
+                {
+                    "id": 2,
+                    "symbol": "BTC",
+                    "stock_name": "BTC Stock",
+                    "market_type": "crypto",
+                    "current_price": 51.25,
+                    "predicted_price": 55.16,
+                    "prediction_date": "2025-09-16T08:25:40.948196+00:00",
+                    "target_date": "2025-09-30T16:25:40.947020+00:00",
+                    "duration_days": 14,
+                    "status": "pending",
+                    "is_completed": false,
+                    "user": {
+                        "username": "Anonymous",
+                        "is_authenticated": false
+                    },
+                    "created_at": "2025-09-16T16:25:40.962136+00:00",
+                    "views_count": 0,
+                    "likes_count": 0,
+                    "comments_count": 0
+                }
+            ];
+
+            console.log('Test data loaded:', userPredictions.length, 'predictions');
             displayStats();
             displayPredictions();
+            hideLoadingState();
+        }
+
+        function showLoadingState() {
+            const container = document.getElementById('predictionsContainer');
+            container.innerHTML = `
+                <div class="text-center py-16">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-tv-text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-tv-text mb-2">예측 목록 로딩 중...</h3>
+                    <p class="text-tv-text-secondary">잠시만 기다려주세요.</p>
+                </div>
+            `;
+        }
+
+        function hideLoadingState() {
+            // Remove loading state - the container will be populated by displayPredictions()
+            console.log('Hiding loading state');
         }
 
         function displayStats() {
-            const stats = calculateStats();
-            const container = document.getElementById('statsOverview');
+            console.log('displayStats called');
+            try {
+                const stats = calculateStats();
+                console.log('Calculated stats:', stats);
+                const container = document.getElementById('statsOverview');
 
-            container.innerHTML = `
-                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="fas fa-chart-line text-tv-blue text-2xl"></i>
-                        <span class="text-sm ${stats.totalChange >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
-                            ${stats.totalChange >= 0 ? '+' : ''}${stats.totalChange.toFixed(1)}%
-                        </span>
+                container.innerHTML = `
+                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-chart-line text-tv-blue text-2xl"></i>
+                            <span class="text-sm ${stats.totalChange >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
+                                ${stats.totalChange >= 0 ? '+' : ''}${stats.totalChange.toFixed(1)}%
+                            </span>
+                        </div>
+                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalCount}</div>
+                        <div class="text-sm text-tv-text-secondary">총 예측 수</div>
                     </div>
-                    <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalCount}</div>
-                    <div class="text-sm text-tv-text-secondary">총 예측 수</div>
-                </div>
 
-                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="fas fa-target text-tv-green text-2xl"></i>
-                        <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">↑</span>
+                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-target text-tv-green text-2xl"></i>
+                            <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">↑</span>
+                        </div>
+                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.accuracy.toFixed(1)}%</div>
+                        <div class="text-sm text-tv-text-secondary">정확도</div>
                     </div>
-                    <div class="text-2xl font-bold text-tv-text mb-1">${stats.accuracy.toFixed(1)}%</div>
-                    <div class="text-sm text-tv-text-secondary">정확도</div>
-                </div>
 
-                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="fas fa-trophy text-tv-blue text-2xl"></i>
-                        <span class="text-sm text-tv-text-secondary">#${stats.ranking}</span>
+                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-trophy text-tv-blue text-2xl"></i>
+                            <span class="text-sm text-tv-text-secondary">#${stats.ranking}</span>
+                        </div>
+                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.successStreak}</div>
+                        <div class="text-sm text-tv-text-secondary">연속 성공</div>
                     </div>
-                    <div class="text-2xl font-bold text-tv-text mb-1">${stats.successStreak}</div>
-                    <div class="text-sm text-tv-text-secondary">연속 성공</div>
-                </div>
 
-                <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="fas fa-coins text-tv-green text-2xl"></i>
-                        <span class="text-sm ${stats.totalReturn >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
-                            ${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%
-                        </span>
+                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <i class="fas fa-coins text-tv-green text-2xl"></i>
+                            <span class="text-sm ${stats.totalReturn >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
+                                ${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%
+                            </span>
+                        </div>
+                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%</div>
+                        <div class="text-sm text-tv-text-secondary">총 수익률</div>
                     </div>
-                    <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%</div>
-                    <div class="text-sm text-tv-text-secondary">총 수익률</div>
-                </div>
-            `;
+                `;
+                console.log('Stats displayed successfully');
+            } catch (error) {
+                console.error('Error displaying stats:', error);
+                const container = document.getElementById('statsOverview');
+                container.innerHTML = '<div class="text-center py-4 text-tv-text">통계를 불러오는 중 오류가 발생했습니다.</div>';
+            }
         }
 
         function calculateStats() {
@@ -557,25 +712,75 @@
                 };
             }
 
-            const completed = userPredictions.filter(p => p.status === 'completed');
-            const successful = completed.filter(p => p.success);
+            // Filter completed predictions (either status='completed' or past target date)
+            const completed = userPredictions.filter(p => {
+                const targetDate = new Date(p.target_date);
+                const currentDate = new Date();
+                return p.status === 'completed' || currentDate >= targetDate;
+            });
+
+            // Calculate successful predictions
+            const successful = completed.filter(p => {
+                if (p.actual_price) {
+                    // Use actual accuracy if available
+                    return p.accuracy_percentage && parseFloat(p.accuracy_percentage) > 70;
+                } else {
+                    // For predictions without actual_price, consider direction accuracy
+                    const predicted = parseFloat(p.predicted_price);
+                    const current = parseFloat(p.current_price);
+                    // This is a simplified success metric - could be enhanced
+                    return Math.abs(predicted - current) / current < 0.1; // Within 10%
+                }
+            });
+
+            // Calculate total return/profit
+            const totalReturn = completed.reduce((sum, p) => {
+                if (p.profit_rate) {
+                    return sum + parseFloat(p.profit_rate);
+                }
+                return sum;
+            }, 0);
+
+            // Calculate average change
+            const avgChange = completed.length > 0 ? totalReturn / completed.length : 0;
 
             return {
                 totalCount: userPredictions.length,
                 accuracy: completed.length > 0 ? (successful.length / completed.length) * 100 : 0,
-                totalReturn: completed.reduce((sum, p) => sum + (p.return || 0), 0),
-                successStreak: calculateSuccessStreak(),
-                ranking: Math.floor(Math.random() * 50) + 1, // Simulated ranking
-                totalChange: Math.random() * 10 - 5 // Simulated change
+                totalReturn: totalReturn,
+                successStreak: calculateSuccessStreak(completed, successful),
+                ranking: Math.floor(Math.random() * 50) + 1, // Simulated ranking - could be real
+                totalChange: avgChange
             };
         }
 
-        function calculateSuccessStreak() {
-            let streak = 0;
-            const completed = userPredictions.filter(p => p.status === 'completed').reverse();
+        function calculateSuccessStreak(completed = null, successful = null) {
+            if (!completed) {
+                completed = userPredictions.filter(p => {
+                    const targetDate = new Date(p.target_date);
+                    const currentDate = new Date();
+                    return p.status === 'completed' || currentDate >= targetDate;
+                });
+            }
 
-            for (const prediction of completed) {
-                if (prediction.success) {
+            if (!successful) {
+                successful = completed.filter(p => {
+                    if (p.actual_price) {
+                        return p.accuracy_percentage && parseFloat(p.accuracy_percentage) > 70;
+                    } else {
+                        const predicted = parseFloat(p.predicted_price);
+                        const current = parseFloat(p.current_price);
+                        return Math.abs(predicted - current) / current < 0.1;
+                    }
+                });
+            }
+
+            let streak = 0;
+            const sortedCompleted = completed.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            for (const prediction of sortedCompleted) {
+                const isSuccessful = successful.some(s => s.id === prediction.id);
+                if (isSuccessful) {
                     streak++;
                 } else {
                     break;
@@ -586,44 +791,125 @@
         }
 
         function displayPredictions() {
+            console.log('displayPredictions called with', userPredictions.length, 'predictions');
             const container = document.getElementById('predictionsContainer');
             const emptyState = document.getElementById('emptyState');
 
             if (userPredictions.length === 0) {
+                console.log('No predictions, showing empty state');
                 emptyState.style.display = 'block';
+                container.innerHTML = '';
                 return;
             }
 
+            console.log('Hiding empty state and displaying predictions');
             emptyState.style.display = 'none';
 
-            const html = userPredictions.map(prediction => createPredictionCard(prediction)).join('');
-            container.innerHTML = html;
+            try {
+                const html = userPredictions.map(prediction => createPredictionCard(prediction)).join('');
+                console.log('Generated HTML length:', html.length);
+                container.innerHTML = html;
+                console.log('Predictions displayed successfully');
+            } catch (error) {
+                console.error('Error creating prediction cards:', error);
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-tv-text">예측을 표시하는 중 오류가 발생했습니다.</p>
+                        <button onclick="loadUserPredictions()" class="mt-4 bg-tv-blue text-white px-4 py-2 rounded">
+                            다시 시도
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         function createPredictionCard(prediction) {
-            const statusConfig = {
-                'active': { class: 'bg-tv-blue bg-opacity-20 text-tv-blue', text: '진행중', icon: 'fa-clock' },
-                'completed': {
-                    class: prediction.success ? 'bg-tv-green bg-opacity-20 text-tv-green' : 'bg-tv-red bg-opacity-20 text-tv-red',
-                    text: prediction.success ? '성공' : '실패',
-                    icon: prediction.success ? 'fa-check' : 'fa-times'
-                },
-                'cancelled': { class: 'bg-tv-text-secondary bg-opacity-20 text-tv-text-secondary', text: '취소됨', icon: 'fa-ban' }
-            };
+            console.log('Creating prediction card for:', prediction);
 
-            const config = statusConfig[prediction.status] || statusConfig.active;
+            try {
+                // Convert API data format to display format
+                const currentDate = new Date();
+                const targetDate = new Date(prediction.target_date);
+                const predictionDate = new Date(prediction.prediction_date);
+                const isCompleted = currentDate >= targetDate;
 
-            return `
+                console.log('Dates parsed:', {
+                    current: currentDate,
+                    target: targetDate,
+                    prediction: predictionDate,
+                    isCompleted: isCompleted
+                });
+
+                // Calculate days left or days since completion
+                const daysDiff = Math.ceil((targetDate - currentDate) / (1000 * 60 * 60 * 24));
+                const daysLeft = daysDiff > 0 ? daysDiff : 0;
+
+                // Determine status and success
+                let status = prediction.status;
+                if (isCompleted && status === 'pending') {
+                    status = 'completed';
+                }
+
+                console.log('Status calculated:', status, 'Days left:', daysLeft);
+
+                // Calculate if prediction was successful (if we have actual price)
+                let isSuccessful = false;
+                if (prediction.actual_price) {
+                    const predicted = parseFloat(prediction.predicted_price);
+                    const actual = parseFloat(prediction.actual_price);
+                    const current = parseFloat(prediction.current_price);
+
+                    // Success if the prediction was in the right direction
+                    if (predicted > current && actual >= predicted * 0.95) {
+                        isSuccessful = true;
+                    } else if (predicted < current && actual <= predicted * 1.05) {
+                        isSuccessful = true;
+                    }
+                }
+
+                const statusConfig = {
+                    'pending': { class: 'bg-tv-blue bg-opacity-20 text-tv-blue', text: '진행중', icon: 'fa-clock' },
+                    'completed': {
+                        class: isSuccessful ? 'bg-tv-green bg-opacity-20 text-tv-green' : 'bg-tv-red bg-opacity-20 text-tv-red',
+                        text: isSuccessful ? '성공' : '완료',
+                        icon: isSuccessful ? 'fa-check' : 'fa-chart-line'
+                    },
+                    'cancelled': { class: 'bg-tv-text-secondary bg-opacity-20 text-tv-text-secondary', text: '취소됨', icon: 'fa-ban' }
+                };
+
+                const config = statusConfig[status] || statusConfig.pending;
+
+                // Format dates
+                const predictionDateStr = predictionDate.toLocaleDateString('ko-KR');
+                const targetDateStr = targetDate.toLocaleDateString('ko-KR');
+
+                // Determine stock icon based on market type
+                let stockIcon = 'fa-chart-line';
+                if (prediction.market_type === 'crypto') {
+                    stockIcon = 'fa-bitcoin';
+                } else if (prediction.market_type === 'us_stock') {
+                    stockIcon = 'fa-building';
+                } else if (prediction.market_type === 'kr_stock') {
+                    stockIcon = 'fa-won-sign';
+                }
+
+                // Calculate price change percentage
+                const priceChange = ((parseFloat(prediction.predicted_price) - parseFloat(prediction.current_price)) / parseFloat(prediction.current_price)) * 100;
+                const priceChangeClass = priceChange >= 0 ? 'text-tv-green' : 'text-tv-red';
+                const priceChangeText = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
+
+                return `
                 <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200">
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-center space-x-3">
                                 <div class="w-12 h-12 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                                    <i class="${prediction.icon} text-tv-blue"></i>
+                                    <i class="fas ${stockIcon} text-tv-blue"></i>
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-semibold text-tv-text">${prediction.symbol}</h3>
-                                    <p class="text-sm text-tv-text-secondary">${prediction.date} 예측</p>
+                                    <p class="text-sm text-tv-text-secondary">${prediction.stock_name}</p>
+                                    <p class="text-xs text-tv-text-secondary">${predictionDateStr} 예측 • ${prediction.user.username}</p>
                                 </div>
                             </div>
                             <span class="${config.class} px-3 py-1 rounded-full text-sm font-medium flex items-center">
@@ -634,40 +920,60 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
                                 <div class="text-sm text-tv-text-secondary mb-1">예측 가격</div>
-                                <div class="text-xl font-bold text-tv-text">$${prediction.targetPrice.toLocaleString()}</div>
+                                <div class="text-xl font-bold text-tv-text">$${parseFloat(prediction.predicted_price).toLocaleString()}</div>
+                                <div class="text-sm ${priceChangeClass}">${priceChangeText}</div>
                             </div>
                             <div>
-                                <div class="text-sm text-tv-text-secondary mb-1">현재 가격</div>
-                                <div class="text-xl font-bold ${prediction.currentPrice > prediction.initialPrice ? 'text-tv-green' : 'text-tv-red'}">
-                                    $${prediction.currentPrice.toLocaleString()}
+                                <div class="text-sm text-tv-text-secondary mb-1">기준 가격</div>
+                                <div class="text-xl font-bold text-tv-text">
+                                    $${parseFloat(prediction.current_price).toLocaleString()}
                                 </div>
                             </div>
                             <div>
                                 <div class="text-sm text-tv-text-secondary mb-1">목표일</div>
-                                <div class="text-xl font-bold text-tv-text">${prediction.targetDate}</div>
+                                <div class="text-xl font-bold text-tv-text">${targetDateStr}</div>
+                                ${status === 'pending' && daysLeft > 0 ? `<div class="text-sm text-tv-blue">D-${daysLeft}</div>` : ''}
                             </div>
                         </div>
 
+                        ${prediction.actual_price ? `
+                            <div class="mb-4 p-3 bg-tv-light bg-opacity-50 rounded-lg">
+                                <div class="text-sm text-tv-text-secondary mb-1">실제 가격</div>
+                                <div class="text-lg font-bold ${isSuccessful ? 'text-tv-green' : 'text-tv-red'}">
+                                    $${parseFloat(prediction.actual_price).toLocaleString()}
+                                </div>
+                                ${prediction.accuracy_percentage ? `
+                                    <div class="text-sm text-tv-text-secondary">정확도: ${parseFloat(prediction.accuracy_percentage).toFixed(1)}%</div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="text-sm text-tv-text-secondary">신뢰도: <span class="text-tv-text font-medium">${prediction.confidence}%</span></div>
-                                ${prediction.status === 'active' ? `<div class="text-sm text-tv-text-secondary">남은 기간: <span class="text-tv-text font-medium">${prediction.daysLeft}일</span></div>` : ''}
+                                <div class="text-sm text-tv-text-secondary">기간: <span class="text-tv-text font-medium">${prediction.duration_days}일</span></div>
+                                <div class="text-sm text-tv-text-secondary">조회: <span class="text-tv-text font-medium">${prediction.views_count}</span></div>
+                                ${prediction.likes_count > 0 ? `<div class="text-sm text-tv-text-secondary">❤️ <span class="text-tv-text font-medium">${prediction.likes_count}</span></div>` : ''}
                             </div>
                             <div class="flex space-x-2">
-                                ${prediction.status === 'active' ? `
-                                    <button onclick="editPrediction('${prediction.id}')"
-                                        class="bg-tv-light hover:bg-tv-border text-tv-text px-4 py-2 rounded-lg text-sm font-medium transition-colors">수정</button>
-                                    <button onclick="cancelPrediction('${prediction.id}')"
-                                        class="bg-tv-red hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">취소</button>
-                                ` : `
-                                    <button onclick="viewPredictionDetails('${prediction.id}')"
-                                        class="bg-tv-light hover:bg-tv-border text-tv-text px-4 py-2 rounded-lg text-sm font-medium transition-colors">상세보기</button>
-                                `}
+                                <button onclick="viewPredictionDetails('${prediction.id}')"
+                                    class="bg-tv-light hover:bg-tv-border text-tv-text px-4 py-2 rounded-lg text-sm font-medium transition-colors">상세보기</button>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
+
+            } catch (error) {
+                console.error('Error creating prediction card:', error, 'for prediction:', prediction);
+                return `
+                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
+                        <div class="text-center text-tv-text">
+                            <p>예측 카드를 생성하는 중 오류가 발생했습니다.</p>
+                            <p class="text-sm text-tv-text-secondary mt-2">ID: ${prediction.id}</p>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function setupEventListeners() {

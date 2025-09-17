@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+
+<body>
+    <h1>API Test</h1>
+    <button onclick="testAPI()">Test Predictions API</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            console.log('Testing API...');
+            const results = document.getElementById('results');
+            results.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch('/api/charts/predictions/all/');
+                console.log('Response status:', response.status);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('API data:', data);
+                    results.innerHTML = `
+                        <h2>Success!</h2>
+                        <p>Total predictions: ${data.total_count}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    results.innerHTML = `<p>Error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                console.error('API test error:', error);
+                results.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
