@@ -14,7 +14,10 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     path('api/charts/', include('charts.urls')),
     path('api/payments/', include('payment_system.urls')),
+    path('api/korean-payments/', include('korean_payments.urls')),  # 한국 결제 게이트웨이 API
     path('api/market-data/', include('market_data.urls')),
+    path('api/affiliates/', include('affiliates.urls')),  # 새로 추가된 홍보파트너 API
+    path('api/i18n/', include('i18n.urls')),  # 다국어 지원 API
     # Direct market endpoints for compatibility
     path('api/market/stocks/', views.market_stocks_redirect, name='market_stocks_redirect'),
     # 추가 API 엔드포인트
@@ -29,6 +32,8 @@ urlpatterns = [
     path('ranking.html', views.serve_html_page, {'page_name': 'ranking.html'}, name='ranking_page'),
     path('events.html', views.serve_html_page, {'page_name': 'events.html'}, name='events_page'),
     path('subscription.html', views.serve_html_page, {'page_name': 'subscription.html'}, name='subscription_page'),
+    path('payment.html', views.serve_html_page, {'page_name': 'payment.html'}, name='payment_page'),  # 결제 페이지 추가
+    path('partners.html', views.serve_html_page, {'page_name': 'partners.html'}, name='partners_page'),  # 파트너 페이지 추가
     
     # 홈페이지는 마지막에 위치 (모든 static 파일 처리 후)
     path('', views.home, name='home'),

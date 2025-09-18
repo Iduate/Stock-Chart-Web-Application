@@ -42,6 +42,11 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Chart.js for interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 
 <body class="bg-tv-darker text-tv-text min-h-screen">
@@ -508,63 +513,109 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: Price Prediction -->
+                    <!-- Step 2: Interactive Chart Prediction -->
                     <div class="space-y-4">
                         <label class="block text-lg font-semibold text-tv-text">
-                            <i class="fas fa-dollar-sign text-tv-green mr-2"></i>예측 정보
+                            <i class="fas fa-chart-line text-tv-green mr-2"></i>차트에서 예측하기
                         </label>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Current Price (Auto-filled) -->
-                            <div>
-                                <label class="block text-sm font-medium text-tv-text-secondary mb-2">현재 가격</label>
-                                <input type="number" id="currentPrice" name="current_price" step="0.01" readonly
-                                    class="w-full px-4 py-3 bg-tv-darker border border-tv-border rounded-lg text-tv-text cursor-not-allowed"
-                                    placeholder="종목 선택 후 자동 입력">
-                            </div>
-
-                            <!-- Predicted Price (User Input) -->
-                            <div>
-                                <label class="block text-sm font-medium text-tv-text-secondary mb-2">예측 가격</label>
-                                <input type="number" id="predictedPrice" name="predicted_price" step="0.01" required
-                                    class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-green focus:border-tv-green transition-all"
-                                    placeholder="예측하는 가격을 입력하세요">
+                        <!-- Chart Instructions -->
+                        <div class="bg-tv-blue/10 border border-tv-blue/30 rounded-lg p-4 mb-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fas fa-info-circle text-tv-blue mt-1"></i>
+                                <div class="text-sm text-tv-text">
+                                    <p class="font-semibold mb-2">📊 차트 예측 방법:</p>
+                                    <ul class="space-y-1 text-tv-text-secondary">
+                                        <li>• 차트에서 미래 날짜로 이동하세요</li>
+                                        <li>• 원하는 날짜와 가격 위치를 클릭/터치하세요</li>
+                                        <li>• 여러 날짜에 예측점을 추가할 수 있습니다</li>
+                                        <li>• 모바일에서도 터치로 쉽게 예측 가능합니다</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Price Change Indicator -->
-                        <div id="priceChangeIndicator"
-                            class="hidden bg-tv-light/30 border border-tv-border rounded-lg p-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-tv-text-secondary">예상 변화율:</span>
-                                <span id="priceChangePercent" class="font-bold text-lg"></span>
-                                <span id="priceChangeDirection" class="text-sm font-medium"></span>
+                        <!-- Chart Container -->
+                        <div class="bg-tv-card border border-tv-border rounded-lg overflow-hidden">
+                            <!-- Chart Controls -->
+                            <div class="bg-tv-light border-b border-tv-border p-4">
+                                <div class="flex items-center justify-between flex-wrap gap-4">
+                                    <div class="flex items-center space-x-4">
+                                        <span class="text-sm font-medium text-tv-text">시간 범위:</span>
+                                        <select id="chartTimeRange"
+                                            class="px-3 py-1 bg-tv-darker border border-tv-border rounded text-tv-text text-sm">
+                                            <option value="30">30일</option>
+                                            <option value="90" selected>90일</option>
+                                            <option value="180">180일</option>
+                                            <option value="365">1년</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button type="button" id="clearPredictions"
+                                            class="px-3 py-1 bg-tv-red/20 border border-tv-red/30 text-tv-red rounded text-sm hover:bg-tv-red/30 transition-colors">
+                                            <i class="fas fa-trash mr-1"></i>예측 지우기
+                                        </button>
+                                        <button type="button" id="fitChart"
+                                            class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
+                                            <i class="fas fa-compress-arrows-alt mr-1"></i>전체 보기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chart Canvas -->
+                            <div id="chartContainer" class="relative bg-tv-darker" style="height: 500px;">
+                                <canvas id="predictionChart" class="w-full h-full cursor-crosshair"></canvas>
+                                <div id="chartLoading"
+                                    class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
+                                    <div class="text-center">
+                                        <i class="fas fa-spinner fa-spin text-tv-blue text-2xl mb-2"></i>
+                                        <p class="text-tv-text-secondary">차트 로딩 중...</p>
+                                    </div>
+                                </div>
+                                <div id="noStockSelected"
+                                    class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
+                                    <div class="text-center">
+                                        <i class="fas fa-chart-line text-tv-text-secondary text-4xl mb-4"></i>
+                                        <p class="text-tv-text-secondary">종목을 선택하면 차트가 표시됩니다</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chart Legend and Info -->
+                            <div class="bg-tv-light border-t border-tv-border p-4">
+                                <div class="flex items-center justify-between flex-wrap gap-4">
+                                    <div class="flex items-center space-x-6 text-sm">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-3 bg-tv-blue rounded-full"></div>
+                                            <span class="text-tv-text-secondary">실제 가격</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-3 bg-tv-green rounded-full"></div>
+                                            <span class="text-tv-text-secondary">예측 지점</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-1 bg-tv-green rounded-full"></div>
+                                            <span class="text-tv-text-secondary">예측 라인</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-tv-text-secondary">
+                                        <span id="currentPriceDisplay">현재가: -</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Step 3: Time Period -->
-                    <div class="space-y-4">
-                        <label class="block text-lg font-semibold text-tv-text">
-                            <i class="fas fa-calendar text-tv-blue mr-2"></i>예측 기간
-                        </label>
-
-                        <select id="predictionDays" name="prediction_days" required
-                            class="w-full px-4 py-3 bg-tv-light border border-tv-border rounded-lg text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-tv-blue transition-all">
-                            <option value="">예측 기간을 선택하세요</option>
-                            <option value="1">1일</option>
-                            <option value="3">3일</option>
-                            <option value="7">7일 (1주일)</option>
-                            <option value="14">14일 (2주일)</option>
-                            <option value="30">30일 (1개월)</option>
-                        </select>
-
-                        <!-- Target Date Display -->
-                        <div id="targetDateDisplay"
-                            class="hidden bg-tv-light/30 border border-tv-border rounded-lg p-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-tv-text-secondary">목표 날짜:</span>
-                                <span id="targetDateText" class="font-semibold text-tv-text"></span>
+                        <!-- Predictions Summary -->
+                        <div id="predictionsPanel" class="hidden bg-tv-light/30 border border-tv-border rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="font-semibold text-tv-text">
+                                    <i class="fas fa-list text-tv-green mr-2"></i>설정된 예측
+                                </h4>
+                                <span id="predictionCount" class="text-sm text-tv-text-secondary">0개 예측</span>
+                            </div>
+                            <div id="predictionsList" class="space-y-2 max-h-32 overflow-y-auto">
+                                <!-- Predictions will be dynamically added here -->
                             </div>
                         </div>
                     </div>
@@ -619,26 +670,36 @@
 
     <!-- JavaScript -->
     <script>
+        // Global variables
+        let chart = null;
+        let stockData = [];
+        let currentStockSymbol = '';
+        let predictions = [];
+        let isDragging = false;
+
         // DOM elements
-        const stockSearch = document.getElementById('stockSearch');
         const stockSelect = document.getElementById('stockSelect');
+        const stockSearch = document.getElementById('stockSearch');
         const stockInfo = document.getElementById('stockInfo');
+        const chartContainer = document.getElementById('chartContainer');
+        const chartCanvas = document.getElementById('predictionChart');
+        const chartLoading = document.getElementById('chartLoading');
+        const noStockSelected = document.getElementById('noStockSelected');
+        const chartTimeRange = document.getElementById('chartTimeRange');
+        const clearPredictions = document.getElementById('clearPredictions');
+        const fitChart = document.getElementById('fitChart');
+        const predictionsPanel = document.getElementById('predictionsPanel');
+        const predictionsList = document.getElementById('predictionsList');
+        const predictionCount = document.getElementById('predictionCount');
+        const currentPriceDisplay = document.getElementById('currentPriceDisplay');
+        const submitButton = document.getElementById('submitPrediction');
+        const submitButtonText = document.getElementById('submitButtonText');
+        const predictionForm = document.getElementById('predictionForm');
+        const successMessage = document.getElementById('successMessage');
         const selectedStockName = document.getElementById('selectedStockName');
         const selectedStockSymbol = document.getElementById('selectedStockSymbol');
         const currentStockPrice = document.getElementById('currentStockPrice');
         const loadingPrice = document.getElementById('loadingPrice');
-        const currentPrice = document.getElementById('currentPrice');
-        const predictedPrice = document.getElementById('predictedPrice');
-        const priceChangeIndicator = document.getElementById('priceChangeIndicator');
-        const priceChangePercent = document.getElementById('priceChangePercent');
-        const priceChangeDirection = document.getElementById('priceChangeDirection');
-        const predictionDays = document.getElementById('predictionDays');
-        const targetDateDisplay = document.getElementById('targetDateDisplay');
-        const targetDateText = document.getElementById('targetDateText');
-        const predictionForm = document.getElementById('predictionForm');
-        const submitButton = document.getElementById('submitPrediction');
-        const submitButtonText = document.getElementById('submitButtonText');
-        const successMessage = document.getElementById('successMessage');
 
         // Function to determine market type based on symbol
         function getMarketType(symbol) {
@@ -665,75 +726,403 @@
             }
         }
 
-        // Function to fetch stock price from backend API
-        async function fetchStockPrice(symbol) {
-            try {
-                console.log(`Fetching price for symbol: ${symbol}`);
+        // Initialize chart
+        function initializeChart() {
+            const ctx = chartCanvas.getContext('2d');
 
-                // Determine market type
-                const market = getMarketType(symbol);
-
-                // Call the backend API to get stock price
-                const response = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Price data received:', data);
-
-                    // Extract price from various possible fields
-                    let price = data.price || data.current_price || data.regularMarketPrice || data.c || 0;
-
-                    // Handle cases where price might be null or undefined
-                    if (!price || price === 0) {
-                        // Try to extract from nested data
-                        if (data.quote && data.quote.price) {
-                            price = data.quote.price;
-                        } else if (data.data && data.data.price) {
-                            price = data.data.price;
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: '실제 가격',
+                            data: [],
+                            borderColor: '#2962ff',
+                            backgroundColor: 'rgba(41, 98, 255, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            tension: 0.1
+                        },
+                        {
+                            label: '예측',
+                            data: [],
+                            borderColor: '#26a69a',
+                            backgroundColor: '#26a69a',
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 8,
+                            pointHoverRadius: 10,
+                            borderDash: [5, 5],
+                            showLine: true
                         }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 34, 45, 0.95)',
+                            titleColor: '#d1d4dc',
+                            bodyColor: '#d1d4dc',
+                            borderColor: '#363a45',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function (context) {
+                                    if (context[0]) {
+                                        return new Date(context[0].parsed.x).toLocaleDateString('ko-KR');
+                                    }
+                                },
+                                label: function (context) {
+                                    return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MMM dd'
+                                }
+                            },
+                            grid: {
+                                color: '#363a45',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#868993',
+                                maxTicksLimit: 8
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: '#363a45',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#868993',
+                                callback: function (value) {
+                                    return '$' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    onClick: handleChartClick,
+                    onHover: (event, activeElements) => {
+                        chartCanvas.style.cursor = activeElements.length > 0 ? 'pointer' : 'crosshair';
                     }
-
-                    return {
-                        price: parseFloat(price) || 0,
-                        name: data.name || data.company_name || data.shortName || data.longName || getStockDisplayName(symbol),
-                        symbol: symbol,
-                        source: data.source || 'api',
-                        is_sample: data.is_sample || false
-                    };
-                } else {
-                    const errorText = await response.text();
-                    console.error('Failed to fetch price:', response.status, response.statusText, errorText);
-                    throw new Error(`Failed to fetch price for ${symbol}: ${response.status}`);
                 }
+            });
+        }
+
+        // Handle chart click for predictions
+        function handleChartClick(event, elements) {
+            if (!currentStockSymbol) return;
+
+            const canvasPosition = Chart.helpers.getRelativePosition(event, chart);
+            const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
+            const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
+
+            const clickDate = new Date(dataX);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Only allow predictions for future dates
+            if (clickDate <= today) {
+                showMessage('미래 날짜에만 예측을 설정할 수 있습니다.', 'warning');
+                return;
+            }
+
+            // Check if there's already a prediction for this date (within 1 day tolerance)
+            const existingPredictionIndex = predictions.findIndex(p => {
+                const predDate = new Date(p.date);
+                const diffDays = Math.abs((predDate - clickDate) / (1000 * 60 * 60 * 24));
+                return diffDays < 1;
+            });
+
+            if (existingPredictionIndex >= 0) {
+                // Update existing prediction
+                predictions[existingPredictionIndex].price = dataY;
+                predictions[existingPredictionIndex].date = clickDate.toISOString();
+            } else {
+                // Add new prediction
+                predictions.push({
+                    date: clickDate.toISOString(),
+                    price: dataY,
+                    id: Date.now()
+                });
+            }
+
+            updateChart();
+            updatePredictionsList();
+            showMessage(`예측 설정: ${clickDate.toLocaleDateString('ko-KR')} - $${dataY.toFixed(2)}`, 'info');
+        }
+
+        // Update chart with predictions
+        function updateChart() {
+            if (!chart) return;
+
+            // Update prediction points
+            chart.data.datasets[1].data = predictions.map(p => ({
+                x: new Date(p.date),
+                y: p.price
+            }));
+
+            chart.update('none');
+        }
+
+        // Update predictions list display
+        function updatePredictionsList() {
+            if (predictions.length === 0) {
+                predictionsPanel.classList.add('hidden');
+                return;
+            }
+
+            predictionsPanel.classList.remove('hidden');
+            predictionCount.textContent = `${predictions.length}개 예측`;
+
+            predictionsList.innerHTML = predictions
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .map(p => {
+                    const date = new Date(p.date);
+                    const currentPrice = getCurrentPrice();
+                    const change = currentPrice ? ((p.price - currentPrice) / currentPrice * 100) : 0;
+                    const changeClass = change >= 0 ? 'text-tv-green' : 'text-tv-red';
+                    const changeIcon = change >= 0 ? '📈' : '📉';
+
+                    return `
+                        <div class="flex items-center justify-between p-3 bg-tv-card rounded-lg border border-tv-border">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-medium text-tv-text">${date.toLocaleDateString('ko-KR')}</span>
+                                    <span class="text-xs text-tv-text-secondary">${date.toLocaleDateString('ko-KR', { weekday: 'short' })}</span>
+                                </div>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="text-lg font-bold text-tv-text">$${p.price.toFixed(2)}</span>
+                                    <span class="${changeClass} text-sm font-medium">
+                                        ${changeIcon} ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                                    </span>
+                                </div>
+                            </div>
+                            <button onclick="removePrediction(${p.id})" class="ml-3 text-tv-red hover:text-red-400 transition-colors">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // Remove prediction
+        function removePrediction(id) {
+            predictions = predictions.filter(p => p.id !== id);
+            updateChart();
+            updatePredictionsList();
+        }
+
+        // Clear all predictions
+        clearPredictions.addEventListener('click', () => {
+            predictions = [];
+            updateChart();
+            updatePredictionsList();
+            showMessage('모든 예측이 삭제되었습니다.', 'info');
+        });
+
+        // Fit chart to show all data
+        fitChart.addEventListener('click', () => {
+            if (chart && stockData.length > 0) {
+                const minPrice = Math.min(...stockData.map(d => d.y));
+                const maxPrice = Math.max(...stockData.map(d => d.y));
+                const padding = (maxPrice - minPrice) * 0.1;
+
+                chart.options.scales.y.min = minPrice - padding;
+                chart.options.scales.y.max = maxPrice + padding;
+                chart.update();
+            }
+        });
+
+        // Get current price
+        function getCurrentPrice() {
+            if (stockData.length === 0) return 0;
+            return stockData[stockData.length - 1].y;
+        }
+
+        // Load stock data
+        async function loadStockData(symbol) {
+            if (!symbol) return;
+
+            chartLoading.style.display = 'flex';
+            noStockSelected.style.display = 'none';
+
+            try {
+                // Get number of days for historical data
+                const days = parseInt(chartTimeRange.value) || 90;
+
+                // Try to fetch real data first, fallback to mock data
+                let data;
+                try {
+                    data = await fetchRealStockData(symbol, days);
+                } catch (error) {
+                    console.log('Falling back to mock data:', error);
+                    data = generateMockStockData(symbol, days);
+                }
+
+                stockData = data;
+                currentStockSymbol = symbol;
+
+                // Update chart
+                if (chart) {
+                    chart.data.datasets[0].data = stockData;
+
+                    // Extend chart range to show future dates
+                    const lastDate = new Date(stockData[stockData.length - 1].x);
+                    const futureDate = new Date(lastDate);
+                    futureDate.setDate(futureDate.getDate() + 30); // Show 30 days into future
+
+                    chart.options.scales.x.max = futureDate;
+                    chart.update();
+                }
+
+                // Update current price display
+                const currentPrice = getCurrentPrice();
+                currentPriceDisplay.textContent = `현재가: $${currentPrice.toFixed(2)}`;
+
+                // Update stock info
+                selectedStockName.textContent = getStockDisplayName(symbol);
+                selectedStockSymbol.textContent = symbol;
+                currentStockPrice.textContent = `$${currentPrice.toFixed(2)}`;
+                currentStockPrice.className = 'text-3xl font-bold text-tv-text';
+                stockInfo.classList.remove('hidden');
+
+                chartLoading.style.display = 'none';
+
             } catch (error) {
-                console.error('Error fetching stock price:', error);
-                // Return fallback data with price 0
-                return {
-                    price: 0,
-                    name: getStockDisplayName(symbol),
-                    symbol: symbol,
-                    source: 'fallback',
-                    is_sample: true
-                };
+                console.error('Error loading stock data:', error);
+                chartLoading.style.display = 'none';
+                showMessage('차트 데이터 로딩에 실패했습니다.', 'error');
             }
         }
 
-        // Function to get display name from the selected option
-        function getStockDisplayName(symbol) {
-            const selectedOption = stockSelect.querySelector(`option[value="${symbol}"]`);
-            if (selectedOption) {
-                const fullText = selectedOption.textContent;
-                // Extract company name (part after the " - ")
-                const parts = fullText.split(' - ');
-                return parts.length > 1 ? parts[1] : symbol;
+        // Fetch real stock data from API
+        async function fetchRealStockData(symbol, days) {
+            const market = getMarketType(symbol);
+            const response = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}&days=${days}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data: ${response.status}`);
             }
-            return symbol;
+
+            const data = await response.json();
+
+            // Convert API response to chart format
+            if (data.historical_data && Array.isArray(data.historical_data)) {
+                return data.historical_data.map(item => ({
+                    x: new Date(item.date),
+                    y: item.price || item.close || item.value
+                }));
+            } else {
+                throw new Error('No historical data available');
+            }
         }
+
+        // Generate mock stock data (fallback)
+        function generateMockStockData(symbol, days) {
+            const data = [];
+            const basePrice = Math.random() * 100 + 50; // Random base price between 50-150
+            let currentPrice = basePrice;
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
+
+            for (let i = 0; i < days; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i);
+
+                // Add some realistic price movement
+                const change = (Math.random() - 0.5) * 0.05; // -2.5% to +2.5% daily change
+                currentPrice = currentPrice * (1 + change);
+
+                data.push({
+                    x: date,
+                    y: currentPrice
+                });
+            }
+
+            return data;
+        }
+
+        // Get stock display name
+        function getStockDisplayName(symbol) {
+            const option = stockSelect.querySelector(`option[value="${symbol}"]`);
+            return option ? option.textContent.split(' - ')[1] || option.textContent : symbol;
+        }
+
+        // Show message
+        function showMessage(message, type = 'info') {
+            // Create a temporary message element
+            const messageEl = document.createElement('div');
+            messageEl.className = `fixed top-4 right-4 z-50 p-4 rounded-lg border max-w-sm ${type === 'error' ? 'bg-tv-red/20 border-tv-red/30 text-tv-red' :
+                    type === 'warning' ? 'bg-orange-500/20 border-orange-500/30 text-orange-500' :
+                        'bg-tv-blue/20 border-tv-blue/30 text-tv-blue'
+                }`;
+            messageEl.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(messageEl);
+
+            setTimeout(() => {
+                messageEl.remove();
+            }, 3000);
+        }
+
+        // Stock selection handler
+        stockSelect.addEventListener('change', function () {
+            const symbol = this.value;
+            if (symbol) {
+                loadStockData(symbol);
+                predictions = []; // Clear previous predictions
+                updatePredictionsList();
+            } else {
+                stockInfo.classList.add('hidden');
+                noStockSelected.style.display = 'flex';
+                chartLoading.style.display = 'none';
+                currentStockSymbol = '';
+                predictions = [];
+                updatePredictionsList();
+                if (chart) {
+                    chart.data.datasets[0].data = [];
+                    chart.data.datasets[1].data = [];
+                    chart.update();
+                }
+            }
+        });
+
+        // Chart time range handler
+        chartTimeRange.addEventListener('change', function () {
+            if (currentStockSymbol) {
+                loadStockData(currentStockSymbol);
+            }
+        });
 
         // Stock search functionality
         stockSearch.addEventListener('input', function () {
@@ -742,162 +1131,26 @@
 
             options.forEach(option => {
                 if (option.value === '') return;
+
                 const text = option.textContent.toLowerCase();
-                option.style.display = text.includes(searchTerm) ? '' : 'none';
+                const value = option.value.toLowerCase();
+
+                if (text.includes(searchTerm) || value.includes(searchTerm)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
             });
-        });
-
-        // Stock selection handler
-        stockSelect.addEventListener('change', async function () {
-            const selectedSymbol = this.value;
-
-            if (selectedSymbol) {
-                // Show loading state
-                loadingPrice.style.display = 'block';
-                currentStockPrice.textContent = '$0.00';
-                stockInfo.classList.remove('hidden');
-
-                // Update basic info immediately
-                selectedStockName.textContent = getStockDisplayName(selectedSymbol);
-                selectedStockSymbol.textContent = selectedSymbol;
-
-                try {
-                    // Fetch stock data from API
-                    const stockData = await fetchStockPrice(selectedSymbol);
-
-                    // Update UI with stock information
-                    selectedStockName.textContent = stockData.name;
-                    selectedStockSymbol.textContent = stockData.symbol;
-
-                    // Format price based on symbol type and value
-                    let formattedPrice;
-                    if (stockData.price === 0) {
-                        formattedPrice = '가격 정보 없음';
-                        currentStockPrice.className = 'text-3xl font-bold text-tv-text-secondary';
-                    } else if (selectedSymbol.includes('-USD') || getMarketType(selectedSymbol) === 'crypto') {
-                        // Cryptocurrency formatting
-                        if (stockData.price > 1) {
-                            formattedPrice = `$${stockData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                        } else {
-                            formattedPrice = `$${stockData.price.toFixed(6)}`;
-                        }
-                        currentStockPrice.className = 'text-3xl font-bold text-tv-green';
-                    } else {
-                        // Stock formatting
-                        formattedPrice = `$${stockData.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                        currentStockPrice.className = 'text-3xl font-bold text-tv-text';
-                    }
-
-                    currentStockPrice.textContent = formattedPrice;
-                    currentPrice.value = stockData.price;
-
-                    // Show data source if it's sample data
-                    if (stockData.is_sample) {
-                        const sourceIndicator = document.createElement('p');
-                        sourceIndicator.className = 'text-xs text-tv-text-secondary mt-1';
-                        sourceIndicator.textContent = '샘플 데이터 (실제 가격과 다를 수 있음)';
-                        sourceIndicator.id = 'sourceIndicator';
-
-                        // Remove existing source indicator
-                        const existingIndicator = document.getElementById('sourceIndicator');
-                        if (existingIndicator) {
-                            existingIndicator.remove();
-                        }
-
-                        currentStockPrice.parentNode.appendChild(sourceIndicator);
-                    } else {
-                        // Remove source indicator if it exists
-                        const existingIndicator = document.getElementById('sourceIndicator');
-                        if (existingIndicator) {
-                            existingIndicator.remove();
-                        }
-                    }
-
-                    loadingPrice.style.display = 'none';
-
-                    // Trigger price change calculation if predicted price exists
-                    if (predictedPrice.value) {
-                        calculatePriceChange();
-                    }
-
-                } catch (error) {
-                    console.error('Error loading stock data:', error);
-                    loadingPrice.style.display = 'none';
-                    currentStockPrice.textContent = '가격 로딩 실패';
-                    currentStockPrice.className = 'text-3xl font-bold text-tv-red';
-
-                    // Still show basic info
-                    selectedStockName.textContent = getStockDisplayName(selectedSymbol);
-                    selectedStockSymbol.textContent = selectedSymbol;
-
-                    // Allow user to manually enter current price
-                    currentPrice.value = '';
-                    currentPrice.readOnly = false;
-                    currentPrice.placeholder = '현재 가격을 수동으로 입력하세요';
-                }
-            } else {
-                stockInfo.classList.add('hidden');
-                currentPrice.value = '';
-                currentPrice.readOnly = true;
-                currentPrice.placeholder = '종목 선택 후 자동 입력';
-                priceChangeIndicator.classList.add('hidden');
-
-                // Remove source indicator if it exists
-                const existingIndicator = document.getElementById('sourceIndicator');
-                if (existingIndicator) {
-                    existingIndicator.remove();
-                }
-            }
-        });
-
-        // Predicted price input handler
-        predictedPrice.addEventListener('input', calculatePriceChange);
-
-        function calculatePriceChange() {
-            const current = parseFloat(currentPrice.value);
-            const predicted = parseFloat(predictedPrice.value);
-
-            if (current && predicted) {
-                const changePercent = ((predicted - current) / current) * 100;
-                const isPositive = changePercent >= 0;
-
-                priceChangePercent.textContent = `${isPositive ? '+' : ''}${changePercent.toFixed(2)}%`;
-                priceChangePercent.className = `font-bold text-lg ${isPositive ? 'text-tv-green' : 'text-tv-red'}`;
-
-                priceChangeDirection.textContent = isPositive ? '📈 상승 예측' : '📉 하락 예측';
-                priceChangeDirection.className = `text-sm font-medium ${isPositive ? 'text-tv-green' : 'text-tv-red'}`;
-
-                priceChangeIndicator.classList.remove('hidden');
-            } else {
-                priceChangeIndicator.classList.add('hidden');
-            }
-        }
-
-        // Prediction days change handler
-        predictionDays.addEventListener('change', function () {
-            const days = parseInt(this.value);
-
-            if (days) {
-                const targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + days);
-
-                const options = {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday: 'long'
-                };
-
-                targetDateText.textContent = targetDate.toLocaleDateString('ko-KR', options);
-                targetDateDisplay.classList.remove('hidden');
-            } else {
-                targetDateDisplay.classList.add('hidden');
-            }
         });
 
         // Form submission handler
         predictionForm.addEventListener('submit', async function (e) {
             e.preventDefault();
+
+            if (predictions.length === 0) {
+                showMessage('차트에서 예측을 설정해주세요.', 'warning');
+                return;
+            }
 
             // Disable submit button
             submitButton.disabled = true;
@@ -905,46 +1158,43 @@
             submitButton.querySelector('i').className = 'fas fa-spinner fa-spin mr-2';
 
             try {
-                // Calculate target date
-                const targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + parseInt(predictionDays.value));
+                const currentPrice = getCurrentPrice();
 
-                const formData = {
-                    stock_symbol: stockSelect.value,
-                    current_price: parseFloat(currentPrice.value),
-                    predicted_price: parseFloat(predictedPrice.value),
-                    target_date: targetDate.toISOString().split('T')[0], // YYYY-MM-DD format
-                    reasoning: document.getElementById('predictionReason').value || 'User prediction',
-                    confidence: 75
-                };
+                // Create predictions for each point
+                for (const prediction of predictions) {
+                    const formData = {
+                        stock_symbol: currentStockSymbol,
+                        current_price: currentPrice,
+                        predicted_price: prediction.price,
+                        target_date: new Date(prediction.date).toISOString().split('T')[0],
+                        reasoning: `Chart-based prediction for ${currentStockSymbol}`,
+                        confidence: 75
+                    };
 
-                console.log('Submitting prediction:', formData);
+                    console.log('Submitting prediction:', formData);
 
-                // Submit to API
-                const response = await fetch('/api/charts/predictions/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken') || '',
-                    },
-                    body: JSON.stringify(formData)
-                });
+                    const response = await fetch('/api/charts/predictions/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') || '',
+                        },
+                        body: JSON.stringify(formData)
+                    });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('Prediction created:', result);
-
-                    // Show success message
-                    predictionForm.style.display = 'none';
-                    successMessage.classList.remove('hidden');
-                } else {
-                    const error = await response.json();
-                    throw new Error(error.detail || 'Failed to create prediction');
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.detail || 'Failed to create prediction');
+                    }
                 }
 
+                // Show success message
+                predictionForm.style.display = 'none';
+                successMessage.classList.remove('hidden');
+
             } catch (error) {
-                console.error('Error submitting prediction:', error);
-                alert('예측 발행 중 오류가 발생했습니다: ' + error.message);
+                console.error('Error submitting predictions:', error);
+                showMessage('예측 발행 중 오류가 발생했습니다: ' + error.message, 'error');
             } finally {
                 // Re-enable submit button
                 submitButton.disabled = false;
@@ -953,19 +1203,12 @@
             }
         });
 
-        // Reset form function
-        function resetForm() {
-            predictionForm.reset();
-            stockInfo.classList.add('hidden');
-            priceChangeIndicator.classList.add('hidden');
-            targetDateDisplay.classList.add('hidden');
-            successMessage.classList.add('hidden');
-            predictionForm.style.display = 'block';
-        }
-
-        // Initialize page
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('Prediction page loaded');
+            initializeChart();
+            noStockSelected.style.display = 'flex';
+            chartLoading.style.display = 'none';
+            console.log('Interactive prediction chart initialized');
         });
 
         // CSRF Token helper function
@@ -982,6 +1225,23 @@
                 }
             }
             return cookieValue;
+        }
+
+        // Reset form function
+        function resetForm() {
+            predictionForm.reset();
+            stockInfo.classList.add('hidden');
+            predictionsPanel.classList.add('hidden');
+            successMessage.classList.add('hidden');
+            predictionForm.style.display = 'block';
+            predictions = [];
+            currentStockSymbol = '';
+            if (chart) {
+                chart.data.datasets[0].data = [];
+                chart.data.datasets[1].data = [];
+                chart.update();
+            }
+            noStockSelected.style.display = 'flex';
         }
 
         // Mobile menu functions
@@ -1027,6 +1287,29 @@
             
             .menu-open .hamburger-line:nth-child(3) {
                 transform: rotate(-45deg) translate(6px, -6px);
+            }
+
+            /* Chart container responsive styles */
+            @media (max-width: 768px) {
+                #chartContainer {
+                    height: 400px;
+                }
+                
+                .chart-controls {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+
+            /* Touch-friendly interactions on mobile */
+            @media (hover: none) and (pointer: coarse) {
+                #predictionChart {
+                    cursor: default !important;
+                }
+                
+                .prediction-point {
+                    touch-action: manipulation;
+                }
             }
         `;
         document.head.appendChild(style);

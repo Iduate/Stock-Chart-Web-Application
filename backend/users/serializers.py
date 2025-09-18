@@ -2,6 +2,17 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import User, UserProfile, Subscription
 
+# 소셜 인증 시리얼라이저 임포트
+try:
+    from .social_serializers import (
+        SocialAccountSerializer,
+        SocialProviderSerializer,
+        SocialLoginSessionSerializer
+    )
+except ImportError:
+    # 소셜 인증 모듈이 없는 경우 스킵
+    pass
+
 class UserSerializer(serializers.ModelSerializer):
     """사용자 시리얼라이저"""
     password = serializers.CharField(write_only=True, validators=[validate_password])

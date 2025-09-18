@@ -1,0 +1,453 @@
+/* 소셜 로그인 스타일 */
+
+/* 소셜 로그인 컨테이너 */
+.social-login-container {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.social-login-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    text-align: center;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #dee2e6;
+}
+
+.social-login-divider span {
+    padding: 0 15px;
+    background: #f8f9fa;
+}
+
+/* 소셜 로그인 버튼 기본 스타일 */
+.social-login-btn {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-color: #adb5bd;
+}
+
+.social-login-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.social-login-btn .social-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    border-radius: 4px;
+}
+
+/* 개별 소셜 제공업체 스타일 */
+.social-login-btn-google {
+    border-color: #db4437;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-google:hover {
+    background: linear-gradient(135deg, #db4437 0%, #c23321 100%);
+    color: #ffffff;
+    border-color: #db4437;
+}
+
+.social-login-btn-facebook {
+    border-color: #4267B2;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-facebook:hover {
+    background: linear-gradient(135deg, #4267B2 0%, #365899 100%);
+    color: #ffffff;
+    border-color: #4267B2;
+}
+
+.social-login-btn-naver {
+    border-color: #03C75A;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-naver:hover {
+    background: linear-gradient(135deg, #03C75A 0%, #02B250 100%);
+    color: #ffffff;
+    border-color: #03C75A;
+}
+
+.social-login-btn-kakao {
+    border-color: #FEE500;
+    background: linear-gradient(135deg, #ffffff 0%, #fff9c4 100%);
+    color: #3C1E1E;
+}
+
+.social-login-btn-kakao:hover {
+    background: linear-gradient(135deg, #FEE500 0%, #FFDB00 100%);
+    color: #3C1E1E;
+    border-color: #FEE500;
+}
+
+.social-login-btn-apple {
+    border-color: #000000;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-apple:hover {
+    background: linear-gradient(135deg, #000000 0%, #1c1c1e 100%);
+    color: #ffffff;
+    border-color: #000000;
+}
+
+.social-login-btn-github {
+    border-color: #333333;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-github:hover {
+    background: linear-gradient(135deg, #333333 0%, #24292e 100%);
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.social-login-btn-twitter {
+    border-color: #1DA1F2;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.social-login-btn-twitter:hover {
+    background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+    color: #ffffff;
+    border-color: #1DA1F2;
+}
+
+/* 로딩 상태 */
+.social-login-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.social-login-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: social-loading-spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes social-loading-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* 소셜 계정 관리 */
+.social-accounts-manager {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.social-accounts-list {
+    margin-bottom: 30px;
+}
+
+.social-account-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    margin: 12px 0;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.social-account-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #adb5bd;
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.provider-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.account-details {
+    flex: 1;
+}
+
+.provider-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #212529;
+    margin-bottom: 2px;
+}
+
+.account-email {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.account-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-badge {
+    padding: 4px 8px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.disconnect-btn {
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.disconnect-btn:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.add-social-account {
+    padding: 20px;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.add-social-account h4 {
+    margin-bottom: 16px;
+    color: #495057;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 768px) {
+    .social-login-container {
+        margin: 10px 0;
+        padding: 16px;
+    }
+
+    .social-login-btn {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+
+    .social-account-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .account-actions {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .social-accounts-manager {
+        padding: 16px;
+    }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+    .social-login-container {
+        background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+        color: #f8f9fa;
+    }
+
+    .social-login-title {
+        color: #f8f9fa;
+    }
+
+    .social-login-divider {
+        color: #adb5bd;
+    }
+
+    .social-login-divider::before,
+    .social-login-divider::after {
+        background: #6c757d;
+    }
+
+    .social-login-divider span {
+        background: #343a40;
+    }
+
+    .social-login-btn {
+        background: #495057;
+        color: #f8f9fa;
+        border-color: #6c757d;
+    }
+
+    .social-account-item {
+        background: #495057;
+        border-color: #6c757d;
+        color: #f8f9fa;
+    }
+
+    .add-social-account {
+        background: #343a40;
+        border-color: #6c757d;
+        color: #f8f9fa;
+    }
+}
+
+/* 애니메이션 효과 */
+.social-login-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.social-login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.social-login-btn:hover::before {
+    left: 100%;
+}
+
+/* 접근성 향상 */
+.social-login-btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.social-login-btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* 에러 상태 */
+.social-login-error {
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* 성공 상태 */
+.social-login-success {
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* 플렉스 레이아웃 */
+.social-login-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.social-login-inline {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.social-login-inline .social-login-btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* 소셜 로그인 아이콘만 표시 */
+.social-login-icons-only .social-login-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+}
+
+.social-login-icons-only .social-login-btn span {
+    display: none;
+}
+
+.social-login-icons-only .social-icon {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+}

@@ -1,7 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import format_html
+from django.urls import reverse
 from .models import User, UserProfile, Subscription
+
+# 소셜 인증 관리자 임포트
+try:
+    from .social_admin import *
+except ImportError:
+    # 소셜 인증 모듈이 없는 경우 스킵
+    pass
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):

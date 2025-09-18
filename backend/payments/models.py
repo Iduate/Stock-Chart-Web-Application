@@ -6,10 +6,14 @@ class PaymentMethod(models.Model):
     
     PROVIDER_CHOICES = [
         ('paypal', 'PayPal'),
+        ('stripe', 'Stripe'),
         ('coingate', 'CoinGate'),
         ('nowpayments', 'NOWPayments'),
         ('moonpay', 'MoonPay'),
         ('binance_pay', 'Binance Pay'),
+        ('wise', 'Wise (TransferWise)'),
+        ('skrill', 'Skrill'),
+        ('neteller', 'Neteller'),
     ]
     
     name = models.CharField('결제 수단명', max_length=100)
@@ -171,3 +175,138 @@ class CommissionPayment(models.Model):
         app_label = 'payments'
         verbose_name = '수수료 지급'
         verbose_name_plural = '수수료 지급들'
+
+
+class InternationalPayment(models.Model):
+    """국제 결제 거래"""
+    
+    PROVIDER_CHOICES = [
+        ('stripe', 'Stripe'),
+        ('paypal', 'PayPal'),
+        ('crypto', 'Crypto Gateway'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('pending', '대기중'),
+        ('processing', '처리중'),
+        ('completed', '완료'),
+        ('failed', '실패'),
+        ('cancelled', '취소'),
+        ('refunded', '환불'),
+    ]
+    
+    CURRENCY_CHOICES = [
+        ('USD', 'US Dollar'),
+        ('EUR', 'Euro'),
+        ('GBP', 'British Pound'),
+        ('JPY', 'Japanese Yen'),
+        ('KRW', 'Korean Won'),
+        ('BTC', 'Bitcoin'),
+        ('ETH', 'Ethereum'),
+    ]
+    
+    # 기본 정보
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='사용자')
+    provider = models.CharField('결제 제공업체', max_length=20, choices=PROVIDER_CHOICES)
+    payment_id = models.CharField('결제 ID', max_length=255, unique=True)
+    merchant_uid = models.CharField('가맹점 거래 ID', max_length=100)
+    
+    # 금액 정보
+    amount_original = models.DecimalField('원래 금액', max_digits=15, decimal_places=2)
+    currency_original = models.CharField('원래 통화', max_length=3, default='KRW')
+    amount_converted = models.DecimalField('변환 금액', max_digits=15, decimal_places=2)
+    currency_converted = models.CharField('변환 통화', max_length=3, choices=CURRENCY_CHOICES)
+    exchange_rate = models.DecimalField('환율', max_digits=15, decimal_places=6, default=1)
+    
+    # 수수료 정보
+    platform_fee = models.DecimalField('플랫폼 수수료', max_digits=10, decimal_places=2, default=0)
+    gateway_fee = models.DecimalField('게이트웨이 수수료', max_digits=10, decimal_places=2, default=0)
+    total_fee = models.DecimalField('총 수수료', max_digits=10, decimal_places=2, default=0)
+    
+    # 상태 정보
+    status = models.CharField('상태', max_length=20, choices=STATUS_CHOICES, default='pending')
+    payment_url = models.URLField('결제 URL', blank=True)
+    client_secret = models.CharField('클라이언트 시크릿', max_length=255, blank=True)
+    
+    # 구매자 정보
+    buyer_name = models.CharField('구매자명', max_length=100)
+    buyer_email = models.EmailField('구매자 이메일')
+    buyer_country = models.CharField('구매자 국가', max_length=2, blank=True)
+    
+    # 상품 정보
+    product_name = models.CharField('상품명', max_length=200)
+    product_description = models.TextField('상품 설명', blank=True)
+    
+    # 추가 데이터
+    gateway_response = models.JSONField('게이트웨이 응답', default=dict, blank=True)
+    metadata = models.JSONField('메타데이터', default=dict, blank=True)
+    
+    # 시간 정보
+    created_at = models.DateTimeField('생성일', auto_now_add=True)
+    updated_at = models.DateTimeField('수정일', auto_now=True)
+    completed_at = models.DateTimeField('완료일', null=True, blank=True)
+    failed_at = models.DateTimeField('실패일', null=True, blank=True)
+    
+    class Meta:
+        app_label = 'payments'
+        verbose_name = '국제 결제'
+        verbose_name_plural = '국제 결제들'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.provider} - {self.merchant_uid} - {self.amount_converted} {self.currency_converted}"
+    
+    @property
+    def is_completed(self):
+        return self.status == 'completed'
+    
+    @property
+    def is_pending(self):
+        return self.status == 'pending'
+    
+    @property
+    def total_amount_with_fees(self):
+        return self.amount_converted + self.total_fee
+
+
+class ExchangeRate(models.Model):
+    """환율 정보"""
+    
+    from_currency = models.CharField('기준 통화', max_length=3)
+    to_currency = models.CharField('대상 통화', max_length=3)
+    rate = models.DecimalField('환율', max_digits=15, decimal_places=6)
+    source = models.CharField('환율 소스', max_length=50, default='manual')
+    is_active = models.BooleanField('활성 상태', default=True)
+    created_at = models.DateTimeField('생성일', auto_now_add=True)
+    updated_at = models.DateTimeField('수정일', auto_now=True)
+    
+    class Meta:
+        app_label = 'payments'
+        verbose_name = '환율'
+        verbose_name_plural = '환율들'
+        unique_together = ['from_currency', 'to_currency']
+    
+    def __str__(self):
+        return f"{self.from_currency}/{self.to_currency}: {self.rate}"
+
+
+class PaymentWebhook(models.Model):
+    """결제 웹훅 로그"""
+    
+    provider = models.CharField('제공업체', max_length=20)
+    event_type = models.CharField('이벤트 유형', max_length=50)
+    payment_id = models.CharField('결제 ID', max_length=255, blank=True)
+    raw_data = models.JSONField('원본 데이터', default=dict)
+    processed = models.BooleanField('처리 완료', default=False)
+    processed_at = models.DateTimeField('처리일', null=True, blank=True)
+    error_message = models.TextField('오류 메시지', blank=True)
+    created_at = models.DateTimeField('생성일', auto_now_add=True)
+    
+    class Meta:
+        app_label = 'payments'
+        verbose_name = '결제 웹훅'
+        verbose_name_plural = '결제 웹훅들'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.provider} - {self.event_type} - {self.created_at}"

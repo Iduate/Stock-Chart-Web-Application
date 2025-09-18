@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제하기 - 주식차트 예측 플랫폼</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/payments.css">
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/" class="nav-brand-link">주식차트 예측</a>
+            </div>
+            <div class="nav-menu">
+                <a href="charts.html" class="nav-link">차트</a>
+                <a href="prediction.html" class="nav-link">예측</a>
+                <a href="ranking.html" class="nav-link">랭킹</a>
+                <a href="subscription.html" class="nav-link active">구독</a>
+            </div>
+            <div class="user-menu">
+                <div class="language-selector">
+                    <select id="languageSelect">
+                        <option value="ko" selected>한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+                <div class="user-profile" id="userProfile" style="display: none;">
+                    <span id="userName">사용자</span>
+                    <button id="logoutBtn" class="btn btn-outline">로그아웃</button>
+                </div>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="#" id="loginBtn" class="btn btn-outline">로그인</a>
+                    <a href="#" id="registerBtn" class="btn btn-primary">회원가입</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="payment-container">
+                <div class="payment-header">
+                    <h1 data-i18n="payment.title">결제하기</h1>
+                    <p data-i18n="payment.subtitle">안전하고 편리한 결제 서비스를 제공합니다</p>
+                </div>
+
+                <!-- 구독 플랜 선택 -->
+                <div class="subscription-plans" id="subscriptionPlans">
+                    <h2 data-i18n="payment.plans.title">구독 플랜 선택</h2>
+                    <div class="plans-grid">
+                        <div class="plan-card" data-plan="basic">
+                            <div class="plan-header">
+                                <h3 data-i18n="payment.plans.basic.title">베이직</h3>
+                                <div class="plan-price">
+                                    <span class="price">₩9,900</span>
+                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li data-i18n="payment.plans.basic.feature1">기본 차트 분석</li>
+                                    <li data-i18n="payment.plans.basic.feature2">일일 예측 5회</li>
+                                    <li data-i18n="payment.plans.basic.feature3">기본 알림 서비스</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary plan-select-btn" data-amount="9900" data-plan="basic">
+                                <span data-i18n="payment.plans.select">선택하기</span>
+                            </button>
+                        </div>
+
+                        <div class="plan-card premium" data-plan="premium">
+                            <div class="plan-badge" data-i18n="payment.plans.popular">인기</div>
+                            <div class="plan-header">
+                                <h3 data-i18n="payment.plans.premium.title">프리미엄</h3>
+                                <div class="plan-price">
+                                    <span class="price">₩19,900</span>
+                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li data-i18n="payment.plans.premium.feature1">고급 차트 분석</li>
+                                    <li data-i18n="payment.plans.premium.feature2">무제한 예측</li>
+                                    <li data-i18n="payment.plans.premium.feature3">실시간 알림</li>
+                                    <li data-i18n="payment.plans.premium.feature4">전문가 리포트</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary plan-select-btn" data-amount="19900" data-plan="premium">
+                                <span data-i18n="payment.plans.select">선택하기</span>
+                            </button>
+                        </div>
+
+                        <div class="plan-card" data-plan="pro">
+                            <div class="plan-header">
+                                <h3 data-i18n="payment.plans.pro.title">프로</h3>
+                                <div class="plan-price">
+                                    <span class="price">₩39,900</span>
+                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
+                                </div>
+                            </div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li data-i18n="payment.plans.pro.feature1">전문가 분석 도구</li>
+                                    <li data-i18n="payment.plans.pro.feature2">API 접근 권한</li>
+                                    <li data-i18n="payment.plans.pro.feature3">개인 컨설팅</li>
+                                    <li data-i18n="payment.plans.pro.feature4">우선 지원</li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary plan-select-btn" data-amount="39900" data-plan="pro">
+                                <span data-i18n="payment.plans.select">선택하기</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결제 방법 선택 -->
+                <div class="payment-methods" id="paymentMethods" style="display: none;">
+                    <h2 data-i18n="payment.methods.title">결제 방법 선택</h2>
+
+                    <!-- 한국 결제 수단 -->
+                    <div class="payment-category">
+                        <h3 data-i18n="payment.methods.korean">한국 결제 수단</h3>
+                        <div class="payment-options">
+                            <div class="payment-option" data-provider="iamport" data-method="card">
+                                <div class="payment-icon">💳</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.card">신용카드</h4>
+                                    <p data-i18n="payment.methods.card.desc">모든 신용카드 및 체크카드 사용 가능</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="card" id="card">
+                            </div>
+
+                            <div class="payment-option" data-provider="iamport" data-method="trans">
+                                <div class="payment-icon">🏦</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.transfer">계좌이체</h4>
+                                    <p data-i18n="payment.methods.transfer.desc">실시간 계좌이체</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="trans" id="trans">
+                            </div>
+
+                            <div class="payment-option" data-provider="iamport" data-method="vbank">
+                                <div class="payment-icon">🏛️</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.vbank">가상계좌</h4>
+                                    <p data-i18n="payment.methods.vbank.desc">가상계좌 발급 후 입금</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="vbank" id="vbank">
+                            </div>
+
+                            <div class="payment-option" data-provider="kakaopay" data-method="kakaopay">
+                                <div class="payment-icon">💬</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.kakaopay">카카오페이</h4>
+                                    <p data-i18n="payment.methods.kakaopay.desc">카카오페이로 간편결제</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="kakaopay" id="kakaopay">
+                            </div>
+
+                            <div class="payment-option" data-provider="toss" data-method="toss">
+                                <div class="payment-icon">💙</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.toss">토스페이</h4>
+                                    <p data-i18n="payment.methods.toss.desc">토스페이로 간편결제</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="toss" id="toss">
+                            </div>
+
+                            <div class="payment-option" data-provider="iamport" data-method="phone">
+                                <div class="payment-icon">📱</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.phone">휴대폰 소액결제</h4>
+                                    <p data-i18n="payment.methods.phone.desc">휴대폰 요금과 함께 결제</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="phone" id="phone">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 국제 결제 수단 -->
+                    <div class="payment-category">
+                        <h3 data-i18n="payment.methods.international">국제 결제 수단</h3>
+                        <div class="payment-options">
+                            <div class="payment-option" data-provider="paypal" data-method="paypal">
+                                <div class="payment-icon">🌐</div>
+                                <div class="payment-info">
+                                    <h4 data-i18n="payment.methods.paypal">PayPal</h4>
+                                    <p data-i18n="payment.methods.paypal.desc">전 세계 어디서나 안전한 결제</p>
+                                </div>
+                                <input type="radio" name="paymentMethod" value="paypal" id="paypal">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결제 정보 확인 -->
+                <div class="payment-summary" id="paymentSummary" style="display: none;">
+                    <h2 data-i18n="payment.summary.title">결제 정보 확인</h2>
+                    <div class="summary-content">
+                        <div class="summary-item">
+                            <span data-i18n="payment.summary.plan">선택한 플랜:</span>
+                            <span id="selectedPlan">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span data-i18n="payment.summary.method">결제 방법:</span>
+                            <span id="selectedMethod">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span data-i18n="payment.summary.amount">결제 금액:</span>
+                            <span id="paymentAmount">₩0</span>
+                        </div>
+                    </div>
+
+                    <!-- 할인 코드 -->
+                    <div class="discount-section">
+                        <label for="discountCode" data-i18n="payment.discount.label">할인 코드 (선택사항)</label>
+                        <div class="discount-input-group">
+                            <input type="text" id="discountCode" placeholder="할인 코드를 입력하세요">
+                            <button type="button" class="btn btn-outline" id="applyDiscountBtn"
+                                data-i18n="payment.discount.apply">적용</button>
+                        </div>
+                        <div class="discount-result" id="discountResult" style="display: none;"></div>
+                    </div>
+
+                    <!-- 최종 결제 버튼 -->
+                    <div class="payment-actions">
+                        <button type="button" class="btn btn-outline" id="backToMethodsBtn"
+                            data-i18n="payment.back">이전</button>
+                        <button type="button" class="btn btn-primary btn-lg" id="payNowBtn" data-i18n="payment.pay">지금
+                            결제하기</button>
+                    </div>
+                </div>
+
+                <!-- 결제 처리 중 -->
+                <div class="payment-processing" id="paymentProcessing" style="display: none;">
+                    <div class="processing-animation">
+                        <div class="spinner"></div>
+                    </div>
+                    <h2 data-i18n="payment.processing.title">결제 처리 중...</h2>
+                    <p data-i18n="payment.processing.message">잠시만 기다려주세요. 결제가 처리되고 있습니다.</p>
+                </div>
+
+                <!-- 결제 결과 -->
+                <div class="payment-result" id="paymentResult" style="display: none;">
+                    <div class="result-success" id="resultSuccess" style="display: none;">
+                        <div class="result-icon">✅</div>
+                        <h2 data-i18n="payment.result.success.title">결제 완료!</h2>
+                        <p data-i18n="payment.result.success.message">결제가 성공적으로 완료되었습니다.</p>
+                        <div class="result-details">
+                            <div class="detail-item">
+                                <span data-i18n="payment.result.transaction">거래번호:</span>
+                                <span id="transactionId">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span data-i18n="payment.result.plan">구독 플랜:</span>
+                                <span id="resultPlan">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span data-i18n="payment.result.amount">결제 금액:</span>
+                                <span id="resultAmount">₩0</span>
+                            </div>
+                        </div>
+                        <div class="result-actions">
+                            <a href="/" class="btn btn-primary" data-i18n="payment.result.home">홈으로</a>
+                            <a href="my-predictions.html" class="btn btn-outline" data-i18n="payment.result.mypage">내
+                                예측</a>
+                        </div>
+                    </div>
+
+                    <div class="result-error" id="resultError" style="display: none;">
+                        <div class="result-icon">❌</div>
+                        <h2 data-i18n="payment.result.error.title">결제 실패</h2>
+                        <p data-i18n="payment.result.error.message">결제 처리 중 오류가 발생했습니다.</p>
+                        <div class="error-details">
+                            <p id="errorMessage">알 수 없는 오류</p>
+                        </div>
+                        <div class="result-actions">
+                            <button type="button" class="btn btn-primary" id="retryPaymentBtn"
+                                data-i18n="payment.result.retry">다시 시도</button>
+                            <a href="/" class="btn btn-outline" data-i18n="payment.result.home">홈으로</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 data-i18n="footer.service">서비스</h4>
+                    <ul>
+                        <li><a href="charts.html" data-i18n="footer.charts">차트</a></li>
+                        <li><a href="prediction.html" data-i18n="footer.prediction">예측</a></li>
+                        <li><a href="ranking.html" data-i18n="footer.ranking">랭킹</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.support">고객지원</h4>
+                    <ul>
+                        <li><a href="#" data-i18n="footer.faq">FAQ</a></li>
+                        <li><a href="#" data-i18n="footer.contact">문의하기</a></li>
+                        <li><a href="#" data-i18n="footer.terms">이용약관</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4 data-i18n="footer.company">회사</h4>
+                    <ul>
+                        <li><a href="#" data-i18n="footer.about">회사소개</a></li>
+                        <li><a href="partners.html" data-i18n="footer.partners">파트너</a></li>
+                        <li><a href="#" data-i18n="footer.careers">채용</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 주식차트 예측 플랫폼. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/js/i18n.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/korean-payments.js"></script>
+    <script>
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function () {
+            // 언어 설정 초기화
+            I18n.init().then(() => {
+                I18n.applyTranslations();
+            });
+
+            // 인증 상태 확인
+            checkAuthStatus();
+
+            // 한국 결제 시스템 초기화
+            if (typeof KoreanPayments !== 'undefined') {
+                KoreanPayments.init();
+            }
+        });
+    </script>
+</body>
+
+</html>

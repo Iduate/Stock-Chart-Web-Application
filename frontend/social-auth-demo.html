@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소셜 로그인 - Stock Chart</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/social-auth.css">
+
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .demo-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+
+        .demo-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .demo-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin: 20px 0 10px 0;
+        }
+
+        .demo-description {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .status-display {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .demo-btn:hover {
+            background: #0056b3;
+        }
+
+        .demo-btn.secondary {
+            background: #6c757d;
+        }
+
+        .demo-btn.secondary:hover {
+            background: #545b62;
+        }
+
+        .user-info-display {
+            padding: 15px;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-container">
+        <div class="demo-section">
+            <h1 class="demo-title">🔐 소셜 로그인 시스템</h1>
+            <p class="demo-description">
+                Stock Chart 웹 애플리케이션의 소셜 인증 시스템을 테스트해보세요.
+                Google, Facebook, Naver, Kakao, Apple 등 다양한 소셜 제공업체를 지원합니다.
+            </p>
+        </div>
+
+        <!-- 로그인 섹션 -->
+        <div class="demo-section">
+            <h2 class="demo-subtitle">📱 소셜 로그인</h2>
+            <p class="demo-description">
+                아래 버튼을 클릭하여 소셜 로그인을 시도해보세요. 팝업 방식으로 인증이 진행됩니다.
+            </p>
+
+            <div class="social-login-container">
+                <div class="social-login-title">소셜 계정으로 로그인</div>
+                <div data-social-login-container></div>
+
+                <div class="social-login-divider">
+                    <span>또는 다른 방식으로</span>
+                </div>
+
+                <div class="btn-group">
+                    <button class="demo-btn" id="redirect-login-btn">리다이렉트 방식 로그인</button>
+                    <button class="demo-btn secondary" id="clear-tokens-btn">토큰 초기화</button>
+                </div>
+            </div>
+
+            <div id="login-status" class="status-display">
+                로그인 상태를 여기에 표시합니다...
+            </div>
+        </div>
+
+        <!-- 사용자 정보 섹션 -->
+        <div class="demo-section">
+            <h2 class="demo-subtitle">👤 사용자 정보</h2>
+            <p class="demo-description">
+                로그인 후 사용자 정보와 연결된 소셜 계정을 확인할 수 있습니다.
+            </p>
+
+            <div class="btn-group">
+                <button class="demo-btn" id="load-user-info-btn">사용자 정보 로드</button>
+                <button class="demo-btn" id="load-social-accounts-btn">소셜 계정 목록</button>
+                <button class="demo-btn secondary" id="social-logout-btn">소셜 로그아웃</button>
+            </div>
+
+            <div id="user-info-display" class="user-info-display" style="display: none;">
+                <!-- 사용자 정보가 여기에 표시됩니다 -->
+            </div>
+
+            <div id="user-status" class="status-display">
+                사용자 정보를 로드하려면 위 버튼을 클릭하세요...
+            </div>
+        </div>
+
+        <!-- 계정 관리 섹션 -->
+        <div class="demo-section">
+            <h2 class="demo-subtitle">⚙️ 소셜 계정 관리</h2>
+            <p class="demo-description">
+                연결된 소셜 계정을 관리하고 새로운 계정을 연결하거나 기존 계정을 해제할 수 있습니다.
+            </p>
+
+            <div id="social-account-manager">
+                <!-- 소셜 계정 관리 UI가 여기에 렌더링됩니다 -->
+            </div>
+        </div>
+
+        <!-- API 테스트 섹션 -->
+        <div class="demo-section">
+            <h2 class="demo-subtitle">🔧 API 테스트</h2>
+            <p class="demo-description">
+                소셜 인증 API 엔드포인트를 직접 테스트해보세요.
+            </p>
+
+            <div class="btn-group">
+                <button class="demo-btn" id="test-providers-api">제공업체 목록 API</button>
+                <button class="demo-btn" id="test-refresh-token">토큰 갱신 API</button>
+                <button class="demo-btn" id="test-auth-stats">인증 통계 API</button>
+            </div>
+
+            <div id="api-test-result" class="status-display">
+                API 테스트 결과가 여기에 표시됩니다...
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/social-auth.js"></script>
+    <script>
+        // 소셜 인증 매니저 초기화
+        const socialAuth = new SocialAuthManager({
+            baseUrl: '/api/users/auth',
+            onSuccess: (result) => {
+                updateStatus('login-status', `✅ 로그인 성공!\n${JSON.stringify(result, null, 2)}`);
+
+                // 사용자 정보 표시
+                if (result.user) {
+                    displayUserInfo(result.user);
+                }
+
+                // 소셜 계정 관리 UI 업데이트
+                loadSocialAccountManager();
+            },
+            onError: (error, provider) => {
+                updateStatus('login-status', `❌ 로그인 실패 (${provider}): ${error.message}`);
+            },
+            onStart: (provider) => {
+                updateStatus('login-status', `🔄 ${provider} 로그인 시작...`);
+            }
+        });
+
+        // 상태 표시 업데이트
+        function updateStatus(elementId, message) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            }
+        }
+
+        // 사용자 정보 표시
+        function displayUserInfo(user) {
+            const displayElement = document.getElementById('user-info-display');
+            if (displayElement) {
+                displayElement.style.display = 'block';
+                displayElement.innerHTML = `
+                    <h4>🎯 로그인된 사용자</h4>
+                    <p><strong>ID:</strong> ${user.id}</p>
+                    <p><strong>사용자명:</strong> ${user.username}</p>
+                    <p><strong>이메일:</strong> ${user.email}</p>
+                    <p><strong>이름:</strong> ${user.first_name} ${user.last_name}</p>
+                    <p><strong>사용자 타입:</strong> ${user.user_type}</p>
+                    <p><strong>언어 설정:</strong> ${user.language_preference}</p>
+                `;
+            }
+        }
+
+        // 소셜 계정 관리 UI 로드
+        async function loadSocialAccountManager() {
+            try {
+                const accounts = await socialAuth.getUserSocialAccounts();
+                createSocialAccountManager('social-account-manager', socialAuth);
+                updateStatus('user-status', `소셜 계정 관리 UI 로드 완료 (${accounts.length}개 계정)`);
+            } catch (error) {
+                updateStatus('user-status', `소셜 계정 관리 UI 로드 실패: ${error.message}`);
+            }
+        }
+
+        // 이벤트 리스너 설정
+        document.addEventListener('DOMContentLoaded', () => {
+            // 리다이렉트 방식 로그인 테스트
+            document.getElementById('redirect-login-btn').addEventListener('click', () => {
+                socialAuth.startSocialLogin('google', { redirect: true });
+            });
+
+            // 토큰 초기화
+            document.getElementById('clear-tokens-btn').addEventListener('click', () => {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('user_info');
+                updateStatus('login-status', '🗑️ 토큰이 초기화되었습니다.');
+                document.getElementById('user-info-display').style.display = 'none';
+            });
+
+            // 사용자 정보 로드
+            document.getElementById('load-user-info-btn').addEventListener('click', () => {
+                const userInfo = localStorage.getItem('user_info');
+                if (userInfo) {
+                    const user = JSON.parse(userInfo);
+                    displayUserInfo(user);
+                    updateStatus('user-status', '✅ 저장된 사용자 정보 로드');
+                } else {
+                    updateStatus('user-status', '❌ 저장된 사용자 정보가 없습니다.');
+                }
+            });
+
+            // 소셜 계정 목록 로드
+            document.getElementById('load-social-accounts-btn').addEventListener('click', async () => {
+                try {
+                    const accounts = await socialAuth.getUserSocialAccounts();
+                    updateStatus('user-status', `✅ 소셜 계정 목록 로드 성공:\n${JSON.stringify(accounts, null, 2)}`);
+                } catch (error) {
+                    updateStatus('user-status', `❌ 소셜 계정 목록 로드 실패: ${error.message}`);
+                }
+            });
+
+            // 소셜 로그아웃
+            document.getElementById('social-logout-btn').addEventListener('click', async () => {
+                const success = await socialAuth.socialLogout();
+                updateStatus('user-status', success ? '✅ 로그아웃 완료' : '❌ 로그아웃 실패');
+                if (success) {
+                    document.getElementById('user-info-display').style.display = 'none';
+                }
+            });
+
+            // API 테스트 버튼들
+            document.getElementById('test-providers-api').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/users/auth/social/providers/');
+                    const data = await response.json();
+                    updateStatus('api-test-result', `✅ 제공업체 목록:\n${JSON.stringify(data, null, 2)}`);
+                } catch (error) {
+                    updateStatus('api-test-result', `❌ API 테스트 실패: ${error.message}`);
+                }
+            });
+
+            document.getElementById('test-refresh-token').addEventListener('click', async () => {
+                try {
+                    const accessToken = localStorage.getItem('access_token');
+                    if (!accessToken) {
+                        throw new Error('액세스 토큰이 없습니다.');
+                    }
+
+                    const response = await fetch('/api/users/auth/social/token/refresh/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`,
+                            'X-CSRFToken': socialAuth.csrfToken
+                        },
+                        body: JSON.stringify({ provider: 'google' })
+                    });
+                    const data = await response.json();
+                    updateStatus('api-test-result', `토큰 갱신 결과:\n${JSON.stringify(data, null, 2)}`);
+                } catch (error) {
+                    updateStatus('api-test-result', `❌ 토큰 갱신 실패: ${error.message}`);
+                }
+            });
+
+            document.getElementById('test-auth-stats').addEventListener('click', async () => {
+                try {
+                    const accessToken = localStorage.getItem('access_token');
+                    if (!accessToken) {
+                        throw new Error('액세스 토큰이 없습니다. (관리자 권한 필요)');
+                    }
+
+                    const response = await fetch('/api/users/auth/social/stats/', {
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                    const data = await response.json();
+                    updateStatus('api-test-result', `인증 통계:\n${JSON.stringify(data, null, 2)}`);
+                } catch (error) {
+                    updateStatus('api-test-result', `❌ 통계 조회 실패: ${error.message}`);
+                }
+            });
+
+            // 페이지 로드 시 기존 로그인 상태 확인
+            const accessToken = localStorage.getItem('access_token');
+            if (accessToken) {
+                updateStatus('login-status', '🔍 기존 로그인 토큰이 발견되었습니다.');
+                document.getElementById('load-user-info-btn').click();
+                loadSocialAccountManager();
+            }
+        });
+
+        // 글로벌 에러 핸들러
+        window.addEventListener('error', (event) => {
+            updateStatus('api-test-result', `❌ JavaScript 오류: ${event.error.message}`);
+        });
+    </script>
+</body>
+
+</html>

@@ -17,7 +17,8 @@ def serve_html_page(request, page_name=None):
     allowed_pages = [
         'home.html', 'charts.html', 'prediction.html', 
         'my-predictions.html', 'ranking.html', 'events.html', 
-        'subscription.html', 'index.html'
+        'subscription.html', 'payment.html', 'partners.html', 
+        'index.html'
     ]
     
     if page_name not in allowed_pages:

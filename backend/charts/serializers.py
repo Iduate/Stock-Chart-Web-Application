@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import ChartPrediction, Event, Stock, Market
 from django.utils import timezone
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
 
 class ChartPredictionSerializer(serializers.ModelSerializer):
     """차트 예측 시리얼라이저"""
@@ -18,6 +19,10 @@ class ChartPredictionSerializer(serializers.ModelSerializer):
     stock = serializers.PrimaryKeyRelatedField(queryset=Stock.objects.all(), required=False)
     duration_days = serializers.IntegerField(required=False)
     
+    # Override price fields to handle precision properly
+    current_price = serializers.DecimalField(max_digits=20, decimal_places=8, required=True)
+    predicted_price = serializers.DecimalField(max_digits=20, decimal_places=8, required=True)
+    
     class Meta:
         model = ChartPrediction
         fields = [
@@ -28,6 +33,60 @@ class ChartPredictionSerializer(serializers.ModelSerializer):
             'comments_count', 'created_at', 'updated_at', 'user_name'
         ]
         read_only_fields = ['actual_price', 'accuracy_percentage', 'profit_rate', 'status', 'prediction_date']
+    
+    def validate_current_price(self, value):
+        """Validate and round current price based on market precision"""
+        if value is not None:
+            # Convert to Decimal for precision handling
+            if isinstance(value, (int, float)):
+                value = Decimal(str(value))
+            elif isinstance(value, str):
+                value = Decimal(value)
+            # Round to 8 decimal places max
+            return value.quantize(Decimal('0.00000001'), rounding=ROUND_HALF_UP)
+        return value
+    
+    def validate_predicted_price(self, value):
+        """Validate and round predicted price based on market precision"""
+        if value is not None:
+            # Convert to Decimal for precision handling
+            if isinstance(value, (int, float)):
+                value = Decimal(str(value))
+            elif isinstance(value, str):
+                value = Decimal(value)
+            # Round to 8 decimal places max
+            return value.quantize(Decimal('0.00000001'), rounding=ROUND_HALF_UP)
+        return value
+    
+    def to_internal_value(self, data):
+        """Convert and validate input data before serializer validation"""
+        # Handle current_price
+        if 'current_price' in data:
+            try:
+                price = data['current_price']
+                if isinstance(price, (int, float)):
+                    price = Decimal(str(price))
+                elif isinstance(price, str):
+                    price = Decimal(price)
+                # Round to 8 decimal places to ensure validation passes
+                data['current_price'] = price.quantize(Decimal('0.00000001'), rounding=ROUND_HALF_UP)
+            except (ValueError, TypeError):
+                pass  # Let the field validation handle the error
+        
+        # Handle predicted_price
+        if 'predicted_price' in data:
+            try:
+                price = data['predicted_price']
+                if isinstance(price, (int, float)):
+                    price = Decimal(str(price))
+                elif isinstance(price, str):
+                    price = Decimal(price)
+                # Round to 8 decimal places to ensure validation passes
+                data['predicted_price'] = price.quantize(Decimal('0.00000001'), rounding=ROUND_HALF_UP)
+            except (ValueError, TypeError):
+                pass  # Let the field validation handle the error
+        
+        return super().to_internal_value(data)
     
     def validate(self, data):
         """Validate that either stock or stock_symbol is provided"""

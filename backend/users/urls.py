@@ -19,4 +19,7 @@ urlpatterns = [
     path('profile/', views.CurrentUserProfileView.as_view(), name='current_profile'),
     path('subscription/', payment_views.subscription_page, name='subscription'),
     path('reset-free-visits/', payment_views.reset_free_visits, name='reset_free_visits'),
+    
+    # 소셜 인증 URL 포함
+    path('auth/', include('users.social_urls', namespace='social_auth')),
 ]
