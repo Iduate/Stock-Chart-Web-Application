@@ -16,7 +16,7 @@ urlpatterns = [
     path('api/payments/', include('payment_system.urls')),
     # path('api/korean-payments/', include('korean_payments.urls')),  # 한국 결제 게이트웨이 API - Temporarily disabled
     path('api/market-data/', include('market_data.urls')),
-    path('api/affiliates/', include('affiliates.urls')),  # 새로 추가된 홍보파트너 API
+    # path('api/affiliates/', include('affiliates.urls')),  # 새로 추가된 홍보파트너 API - Temporarily disabled for Railway deployment
     path('api/i18n/', include('i18n.urls')),  # 다국어 지원 API
     # Direct market endpoints for compatibility
     path('api/market/stocks/', views.market_stocks_redirect, name='market_stocks_redirect'),
