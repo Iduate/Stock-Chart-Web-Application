@@ -72,7 +72,7 @@ INSTALLED_APPS = [
     'market_data',
     'marketdata',
     # 'affiliates',  # 새로 추가된 홍보파트너 앱 - Temporarily disabled for Railway deployment
-    'i18n',  # 다국어 지원 앱
+    # 'i18n',  # 다국어 지원 앱 - Temporarily disabled for Railway deployment
     # 'korean_payments.apps.KoreanPaymentsConfig',  # 한국 결제 게이트웨이 앱 - Temporarily disabled
 ]
 
