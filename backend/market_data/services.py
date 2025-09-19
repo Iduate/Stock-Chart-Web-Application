@@ -13,6 +13,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 import logging
+import time
+import random
 from .precision_handler import PrecisionHandler
 
 logger = logging.getLogger(__name__)
@@ -66,6 +68,140 @@ class MarketDataService:
         self.finnhub_base = "https://finnhub.io/api/v1"
         self.polygon_base = "https://api.polygon.io"
         self.tiingo_base = "https://api.tiingo.com/tiingo"
+        self.marketstack_base = "https://api.marketstack.com/v1"
+    
+    def _make_enhanced_request(self, url: str, params: dict = None, headers: dict = None, 
+                              timeout: int = 10, max_retries: int = 3, 
+                              backoff_factor: float = 0.5) -> Optional[requests.Response]:
+        """Enhanced request method with intelligent retry logic and timeout handling"""
+        params = params or {}
+        headers = headers or {}
+        
+        for attempt in range(max_retries):
+            try:
+                # Progressive timeout increases
+                current_timeout = timeout + (attempt * 2)
+                
+                start_time = time.time()
+                response = requests.get(
+                    url, 
+                    params=params, 
+                    headers=headers, 
+                    timeout=current_timeout
+                )
+                response_time = time.time() - start_time
+                
+                # Log slow responses
+                if response_time > 5:
+                    logger.warning(f"Slow API response: {url} took {response_time:.2f}s")
+                
+                # Check for rate limiting
+                if response.status_code == 429:
+                    wait_time = self._get_rate_limit_wait_time(response, attempt)
+                    logger.warning(f"Rate limit hit for {url}, waiting {wait_time}s")
+                    time.sleep(wait_time)
+                    continue
+                
+                # Check for successful response
+                if response.status_code == 200:
+                    return response
+                elif response.status_code >= 500:
+                    # Server error - retry with backoff
+                    if attempt < max_retries - 1:
+                        wait_time = backoff_factor * (2 ** attempt) + random.uniform(0, 1)
+                        logger.warning(f"Server error {response.status_code} for {url}, retrying in {wait_time:.2f}s")
+                        time.sleep(wait_time)
+                        continue
+                else:
+                    # Client error - don't retry
+                    logger.error(f"Client error {response.status_code} for {url}")
+                    return response
+                    
+            except requests.exceptions.Timeout:
+                if attempt < max_retries - 1:
+                    wait_time = backoff_factor * (2 ** attempt)
+                    logger.warning(f"Timeout for {url} (attempt {attempt + 1}), retrying in {wait_time:.2f}s")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"Final timeout for {url} after {max_retries} attempts")
+                    raise
+                    
+            except requests.exceptions.ConnectionError:
+                if attempt < max_retries - 1:
+                    wait_time = backoff_factor * (2 ** attempt) + random.uniform(0, 2)
+                    logger.warning(f"Connection error for {url} (attempt {attempt + 1}), retrying in {wait_time:.2f}s")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"Final connection error for {url} after {max_retries} attempts")
+                    raise
+                    
+            except Exception as e:
+                logger.error(f"Unexpected error for {url}: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(backoff_factor * (2 ** attempt))
+                    continue
+                else:
+                    raise
+        
+        return None
+    
+    def _get_rate_limit_wait_time(self, response: requests.Response, attempt: int) -> float:
+        """Calculate appropriate wait time for rate limiting"""
+        # Check for Retry-After header
+        retry_after = response.headers.get('Retry-After')
+        if retry_after:
+            try:
+                return float(retry_after)
+            except ValueError:
+                pass
+        
+        # Check for X-RateLimit-Reset header (Unix timestamp)
+        reset_time = response.headers.get('X-RateLimit-Reset')
+        if reset_time:
+            try:
+                reset_timestamp = int(reset_time)
+                wait_time = reset_timestamp - int(time.time())
+                return max(1, min(wait_time, 300))  # Cap at 5 minutes
+            except ValueError:
+                pass
+        
+        # Fallback to exponential backoff
+        return min(60, 2 ** attempt + random.uniform(0, 5))
+    
+    def _handle_api_error(self, api_name: str, error: Exception, symbol: str = None) -> None:
+        """Enhanced error handling with API-specific logic"""
+        error_str = str(error).lower()
+        
+        # Rate limiting detection
+        if "429" in str(error) or "rate limit" in error_str:
+            rate_limit_key = f"rate_limit_{api_name}"
+            wait_time = 300  # 5 minutes default
+            
+            # API-specific rate limit handling
+            if api_name == 'alpha_vantage':
+                wait_time = 600  # 10 minutes for Alpha Vantage
+            elif api_name == 'twelve_data':
+                wait_time = 900  # 15 minutes for Twelve Data
+            
+            cache.set(rate_limit_key, True, timeout=wait_time)
+            logger.warning(f"{api_name} rate limited for {symbol}, disabling for {wait_time//60} minutes")
+        
+        # API-specific error logging
+        elif "unauthorized" in error_str or "invalid api key" in error_str:
+            logger.error(f"{api_name} API key invalid or expired for {symbol}")
+        elif "not found" in error_str:
+            logger.warning(f"{api_name} symbol not found: {symbol}")
+        elif "timeout" in error_str:
+            logger.warning(f"{api_name} timeout for {symbol}")
+        else:
+            logger.error(f"{api_name} API error for {symbol}: {error}")
+    
+    def _is_api_available(self, api_name: str) -> bool:
+        """Check if API is currently available (not rate limited)"""
+        rate_limit_key = f"rate_limit_{api_name}"
+        return not cache.get(rate_limit_key)
         self.marketstack_base = "https://api.marketstack.com/v1"
     
     def get_real_time_quote(self, symbol: str, market: str = 'us_stock') -> Optional[Dict[str, Any]]:

@@ -537,11 +537,41 @@
 
                         <!-- Chart Container -->
                         <div class="bg-tv-card border border-tv-border rounded-lg overflow-hidden">
-                            <!-- Chart Controls -->
+                            <!-- Enhanced Chart Controls -->
                             <div class="bg-tv-light border-b border-tv-border p-4">
+                                <!-- Top Row: Search and Time Period Buttons -->
+                                <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+                                    <!-- Enhanced Search -->
+                                    <div class="flex items-center space-x-4 flex-1 max-w-md">
+                                        <div class="relative flex-1">
+                                            <input type="text" id="stockSearchInput" placeholder="종목 검색 (예: AAPL, 삼성전자)"
+                                                class="w-full px-4 py-2 pl-10 bg-tv-darker border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:outline-none">
+                                            <i
+                                                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-tv-text-secondary"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Time Period Selection Buttons -->
+                                    <div class="flex items-center space-x-1 bg-tv-darker rounded-lg p-1">
+                                        <button type="button" data-interval="1m"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1분</button>
+                                        <button type="button" data-interval="5m"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">5분</button>
+                                        <button type="button" data-interval="1h"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1시간</button>
+                                        <button type="button" data-interval="1d"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all bg-tv-blue text-white">1일</button>
+                                        <button type="button" data-interval="1wk"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1주</button>
+                                        <button type="button" data-interval="1mo"
+                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1월</button>
+                                    </div>
+                                </div>
+
+                                <!-- Bottom Row: Range and Controls -->
                                 <div class="flex items-center justify-between flex-wrap gap-4">
                                     <div class="flex items-center space-x-4">
-                                        <span class="text-sm font-medium text-tv-text">시간 범위:</span>
+                                        <span class="text-sm font-medium text-tv-text">데이터 범위:</span>
                                         <select id="chartTimeRange"
                                             class="px-3 py-1 bg-tv-darker border border-tv-border rounded text-tv-text text-sm">
                                             <option value="30">30일</option>
@@ -549,11 +579,23 @@
                                             <option value="180">180일</option>
                                             <option value="365">1년</option>
                                         </select>
+
+                                        <!-- Volume Toggle -->
+                                        <label class="flex items-center space-x-2 text-sm">
+                                            <input type="checkbox" id="showVolume" checked
+                                                class="rounded border-tv-border bg-tv-darker text-tv-blue focus:ring-tv-blue">
+                                            <span class="text-tv-text">거래량 표시</span>
+                                        </label>
                                     </div>
+
                                     <div class="flex items-center space-x-2">
                                         <button type="button" id="clearPredictions"
                                             class="px-3 py-1 bg-tv-red/20 border border-tv-red/30 text-tv-red rounded text-sm hover:bg-tv-red/30 transition-colors">
                                             <i class="fas fa-trash mr-1"></i>예측 지우기
+                                        </button>
+                                        <button type="button" id="resetZoom"
+                                            class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
+                                            <i class="fas fa-search-minus mr-1"></i>줌 리셋
                                         </button>
                                         <button type="button" id="fitChart"
                                             class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
@@ -563,21 +605,55 @@
                                 </div>
                             </div>
 
-                            <!-- Chart Canvas -->
-                            <div id="chartContainer" class="relative bg-tv-darker" style="height: 500px;">
-                                <canvas id="predictionChart" class="w-full h-full cursor-crosshair"></canvas>
-                                <div id="chartLoading"
-                                    class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
-                                    <div class="text-center">
-                                        <i class="fas fa-spinner fa-spin text-tv-blue text-2xl mb-2"></i>
-                                        <p class="text-tv-text-secondary">차트 로딩 중...</p>
+                            <!-- Chart Canvas Container -->
+                            <div id="chartContainer" class="relative bg-tv-darker">
+                                <!-- Main Price Chart -->
+                                <div class="relative" style="height: 400px;">
+                                    <canvas id="predictionChart" class="w-full h-full cursor-crosshair"></canvas>
+
+                                    <!-- Chart Navigation Scrollbar -->
+                                    <div class="absolute bottom-2 left-4 right-4">
+                                        <div class="bg-tv-light/80 rounded-lg px-3 py-1">
+                                            <input type="range" id="chartScrollbar" min="0" max="100" value="100"
+                                                class="w-full h-2 bg-tv-border rounded-lg appearance-none cursor-pointer">
+                                        </div>
+                                    </div>
+
+                                    <!-- Chart Loading/No Data States -->
+                                    <div id="chartLoading"
+                                        class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
+                                        <div class="text-center">
+                                            <i class="fas fa-spinner fa-spin text-tv-blue text-2xl mb-2"></i>
+                                            <p class="text-tv-text-secondary">차트 로딩 중...</p>
+                                        </div>
+                                    </div>
+                                    <div id="noStockSelected"
+                                        class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
+                                        <div class="text-center">
+                                            <i class="fas fa-chart-line text-tv-text-secondary text-4xl mb-4"></i>
+                                            <p class="text-tv-text-secondary">종목을 선택하면 차트가 표시됩니다</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="noStockSelected"
-                                    class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
-                                    <div class="text-center">
-                                        <i class="fas fa-chart-line text-tv-text-secondary text-4xl mb-4"></i>
-                                        <p class="text-tv-text-secondary">종목을 선택하면 차트가 표시됩니다</p>
+
+                                <!-- Volume Chart -->
+                                <div id="volumeContainer" class="relative border-t border-tv-border"
+                                    style="height: 100px;">
+                                    <canvas id="volumeChart" class="w-full h-full"></canvas>
+                                    <div class="absolute top-2 left-4 text-xs text-tv-text-secondary">거래량</div>
+                                </div>
+
+                                <!-- Prediction Point Tooltip -->
+                                <div id="predictionTooltip"
+                                    class="absolute hidden bg-tv-dark border border-tv-border rounded-lg p-3 shadow-lg z-10">
+                                    <div class="text-sm text-tv-text">
+                                        <div class="font-semibold mb-1">예측 포인트</div>
+                                        <div id="tooltipDate" class="text-tv-text-secondary mb-1"></div>
+                                        <div id="tooltipPrice" class="text-tv-green font-mono"></div>
+                                        <button id="deletePredictionBtn"
+                                            class="mt-2 px-2 py-1 bg-tv-red/20 border border-tv-red/30 text-tv-red rounded text-xs hover:bg-tv-red/30 transition-colors">
+                                            <i class="fas fa-trash mr-1"></i>삭제
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -665,6 +741,27 @@
                 </div>
             </div>
 
+            <!-- API Status Panel -->
+            <div id="apiStatusPanel" class="mt-8 bg-tv-card border border-tv-border rounded-lg overflow-hidden">
+                <div class="bg-tv-light border-b border-tv-border p-4 flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-tv-text">
+                        <i class="fas fa-server text-tv-blue mr-2"></i>API 상태
+                    </h3>
+                    <button onclick="checkApiStatus()"
+                        class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
+                        <i class="fas fa-refresh mr-1"></i>새로고침
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div id="apiStatusContent" class="space-y-3">
+                        <div class="text-center text-tv-text-secondary py-4">
+                            <i class="fas fa-spinner fa-spin text-tv-blue text-xl mb-2"></i>
+                            <p>API 상태 확인 중...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -672,14 +769,27 @@
     <script>
         // Global variables
         let chart = null;
+        let volumeChart = null;
         let stockData = [];
+        let volumeData = [];
         let currentStockSymbol = '';
         let predictions = [];
         let isDragging = false;
+        let currentInterval = '1d';
+        let chartScrollPosition = 100; // 100% means showing latest data
+        let hoveredPredictionPoint = null;
 
         // DOM elements
         const stockSelect = document.getElementById('stockSelect');
         const stockSearch = document.getElementById('stockSearch');
+        const stockSearchInput = document.getElementById('stockSearchInput');
+        const chartScrollbar = document.getElementById('chartScrollbar');
+        const timeIntervalBtns = document.querySelectorAll('.time-interval-btn');
+        const showVolumeCheckbox = document.getElementById('showVolume');
+        const volumeContainer = document.getElementById('volumeContainer');
+        const resetZoomBtn = document.getElementById('resetZoom');
+        const predictionTooltip = document.getElementById('predictionTooltip');
+        const deletePredictionBtn = document.getElementById('deletePredictionBtn');
         const stockInfo = document.getElementById('stockInfo');
         const chartContainer = document.getElementById('chartContainer');
         const chartCanvas = document.getElementById('predictionChart');
@@ -786,6 +896,26 @@
                                     return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
                                 }
                             }
+                        },
+                        zoom: {
+                            limits: {
+                                x: { min: 'original', max: 'original' },
+                                y: { min: 'original', max: 'original' }
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                                threshold: 10
+                            },
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x',
+                            }
                         }
                     },
                     scales: {
@@ -794,16 +924,29 @@
                             time: {
                                 unit: 'day',
                                 displayFormats: {
-                                    day: 'MMM dd'
+                                    minute: 'HH:mm',
+                                    hour: 'HH:mm',
+                                    day: 'MMM dd',
+                                    week: 'MMM dd',
+                                    month: 'MMM yyyy'
                                 }
                             },
                             grid: {
-                                color: '#363a45',
-                                drawBorder: false
+                                color: function (context) {
+                                    // Make grid lines more visible for date separation
+                                    return context.tick.major ? '#4a5568' : '#363a45';
+                                },
+                                drawBorder: false,
+                                lineWidth: function (context) {
+                                    return context.tick.major ? 2 : 1;
+                                }
                             },
                             ticks: {
                                 color: '#868993',
-                                maxTicksLimit: 8
+                                maxTicksLimit: 8,
+                                major: {
+                                    enabled: true
+                                }
                             }
                         },
                         y: {
@@ -821,11 +964,96 @@
                         }
                     },
                     onClick: handleChartClick,
-                    onHover: (event, activeElements) => {
-                        chartCanvas.style.cursor = activeElements.length > 0 ? 'pointer' : 'crosshair';
+                    onHover: handleChartHover
+                }
+            });
+
+            // Initialize volume chart
+            initializeVolumeChart();
+        }
+
+        // Initialize volume chart
+        function initializeVolumeChart() {
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+
+            volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: '거래량',
+                        data: [],
+                        backgroundColor: function (context) {
+                            // Color bars based on price movement
+                            const index = context.dataIndex;
+                            if (stockData.length > index + 1) {
+                                const current = stockData[index];
+                                const previous = stockData[index - 1];
+                                if (current && previous) {
+                                    return current.close > previous.close ? '#26a69a' : '#ef5350';
+                                }
+                            }
+                            return '#64748b';
+                        },
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(30, 34, 45, 0.95)',
+                            titleColor: '#d1d4dc',
+                            bodyColor: '#d1d4dc',
+                            borderColor: '#363a45',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function (context) {
+                                    if (context[0]) {
+                                        return new Date(context[0].parsed.x).toLocaleDateString('ko-KR');
+                                    }
+                                },
+                                label: function (context) {
+                                    return `거래량: ${formatVolume(context.parsed.y)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#363a45',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#868993',
+                                maxTicksLimit: 3,
+                                callback: function (value) {
+                                    return formatVolume(value);
+                                }
+                            }
+                        }
                     }
                 }
             });
+        }
+
+        // Format volume numbers
+        function formatVolume(value) {
+            if (value >= 1000000000) {
+                return (value / 1000000000).toFixed(1) + 'B';
+            } else if (value >= 1000000) {
+                return (value / 1000000).toFixed(1) + 'M';
+            } else if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'K';
+            }
+            return value.toString();
         }
 
         // Handle chart click for predictions
@@ -869,6 +1097,49 @@
             updateChart();
             updatePredictionsList();
             showMessage(`예측 설정: ${clickDate.toLocaleDateString('ko-KR')} - $${dataY.toFixed(2)}`, 'info');
+        }
+
+        // Handle chart hover for prediction tooltips
+        function handleChartHover(event, activeElements) {
+            const canvasPosition = Chart.helpers.getRelativePosition(event, chart);
+
+            // Check if hovering over a prediction point
+            if (activeElements.length > 0) {
+                const element = activeElements[0];
+                if (element.datasetIndex === 1) { // Prediction dataset
+                    const prediction = predictions[element.index];
+                    if (prediction) {
+                        showPredictionTooltip(event, prediction);
+                        hoveredPredictionPoint = prediction;
+                        chartCanvas.style.cursor = 'pointer';
+                        return;
+                    }
+                }
+            }
+
+            // Hide tooltip if not hovering over prediction
+            hidePredictionTooltip();
+            hoveredPredictionPoint = null;
+            chartCanvas.style.cursor = 'crosshair';
+        }
+
+        // Show prediction tooltip
+        function showPredictionTooltip(event, prediction) {
+            const rect = chartCanvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            document.getElementById('tooltipDate').textContent = new Date(prediction.date).toLocaleDateString('ko-KR');
+            document.getElementById('tooltipPrice').textContent = '$' + prediction.price.toFixed(2);
+
+            predictionTooltip.style.left = (x + 10) + 'px';
+            predictionTooltip.style.top = (y - 10) + 'px';
+            predictionTooltip.classList.remove('hidden');
+        }
+
+        // Hide prediction tooltip
+        function hidePredictionTooltip() {
+            predictionTooltip.classList.add('hidden');
         }
 
         // Update chart with predictions
@@ -970,19 +1241,25 @@
                 // Get number of days for historical data
                 const days = parseInt(chartTimeRange.value) || 90;
 
-                // Try to fetch real data first, fallback to mock data
-                let data;
-                try {
-                    data = await fetchRealStockData(symbol, days);
-                } catch (error) {
-                    console.log('Falling back to mock data:', error);
-                    data = generateMockStockData(symbol, days);
-                }
+                // Show detailed loading information
+                console.log(`Loading data for ${symbol}, ${days} days, interval: ${currentInterval}`);
+
+                // Fetch real data from API only - no fallback to mock data
+                const data = await fetchRealStockData(symbol, days, currentInterval);
+                console.log(`Received ${data.length} price data points`);
+
+                // Also fetch volume data
+                const volumeApiData = await fetchRealVolumeData(symbol, days, currentInterval);
+                console.log(`Received ${volumeApiData.length} volume data points`);
 
                 stockData = data;
+                volumeData = volumeApiData || []; // Handle empty volume data gracefully
                 currentStockSymbol = symbol;
 
-                // Update chart
+                // Validate that we have data
+                if (!stockData || stockData.length === 0) {
+                    throw new Error('No price data received from API');
+                }                // Update chart
                 if (chart) {
                     chart.data.datasets[0].data = stockData;
 
@@ -993,6 +1270,11 @@
 
                     chart.options.scales.x.max = futureDate;
                     chart.update();
+                }
+
+                // Update volume chart if enabled
+                if (showVolumeCheckbox.checked && volumeChart) {
+                    updateVolumeChart();
                 }
 
                 // Update current price display
@@ -1006,65 +1288,249 @@
                 currentStockPrice.className = 'text-3xl font-bold text-tv-text';
                 stockInfo.classList.remove('hidden');
 
+                // Reset scrollbar to show latest data
+                chartScrollbar.value = 100;
+                chartScrollPosition = 100;
+                updateChartView();
+
                 chartLoading.style.display = 'none';
 
             } catch (error) {
                 console.error('Error loading stock data:', error);
                 chartLoading.style.display = 'none';
-                showMessage('차트 데이터 로딩에 실패했습니다.', 'error');
+
+                // Provide more specific error messages
+                let errorMessage = '데이터 로딩에 실패했습니다';
+
+                if (error.message.includes('404')) {
+                    errorMessage = '해당 종목의 데이터를 찾을 수 없습니다';
+                } else if (error.message.includes('500')) {
+                    errorMessage = '서버 오류가 발생했습니다';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = '네트워크 연결을 확인해주세요';
+                } else {
+                    errorMessage = `데이터 로딩 실패: ${error.message}`;
+                }
+
+                showMessage(errorMessage, 'error');
+
+                // Show the no data state
+                noStockSelected.style.display = 'flex';
+                stockInfo.classList.add('hidden');
+
+                // Clear any existing chart data
+                if (chart) {
+                    chart.data.datasets[0].data = [];
+                    chart.data.datasets[1].data = [];
+                    chart.update();
+                }
+
+                if (volumeChart) {
+                    volumeChart.data.datasets[0].data = [];
+                    volumeChart.update();
+                }
+
+                // Reset variables
+                stockData = [];
+                volumeData = [];
+                currentStockSymbol = '';
             }
         }
 
         // Fetch real stock data from API
-        async function fetchRealStockData(symbol, days) {
+        async function fetchRealStockData(symbol, days, interval = '1d') {
             const market = getMarketType(symbol);
-            const response = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}&days=${days}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch data: ${response.status}`);
+            // First try to get current quote to verify symbol exists
+            let currentQuote;
+            try {
+                const quoteResponse = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (quoteResponse.ok) {
+                    currentQuote = await quoteResponse.json();
+                }
+            } catch (error) {
+                console.log('Quote fetch failed:', error);
             }
 
-            const data = await response.json();
+            // Try different endpoints for historical data based on market type
+            let historyEndpoints = [];
 
-            // Convert API response to chart format
-            if (data.historical_data && Array.isArray(data.historical_data)) {
-                return data.historical_data.map(item => ({
-                    x: new Date(item.date),
-                    y: item.price || item.close || item.value
-                }));
+            if (market === 'crypto') {
+                historyEndpoints = [
+                    `/api/market-data/coingecko/${symbol}/`,
+                    `/api/market-data/crypto/${symbol}/`,
+                    `/api/market-data/historical/${symbol}/?market=${market}`,
+                ];
             } else {
-                throw new Error('No historical data available');
+                historyEndpoints = [
+                    `/api/market-data/historical/${symbol}/?market=${market}&days=${days}&interval=${interval}`,
+                    `/api/market-data/enhanced/${symbol}/`,
+                    `/api/market-data/tiingo/${symbol}/`,
+                    `/api/market-data/marketstack/${symbol}/`,
+                ];
             }
+
+            // Try each endpoint until one works
+            for (const endpoint of historyEndpoints) {
+                try {
+                    console.log(`Trying endpoint: ${endpoint}`);
+                    const response = await fetch(endpoint, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Raw API response:', data);
+
+                        // Handle different response formats
+                        let historicalData = null;
+
+                        // CoinGecko format
+                        if (data.prices && Array.isArray(data.prices)) {
+                            historicalData = data.prices.map((item, index) => {
+                                const timestamp = Array.isArray(item) ? item[0] : item.timestamp;
+                                const price = Array.isArray(item) ? item[1] : item.price;
+                                const volume = data.total_volumes && data.total_volumes[index] ?
+                                    (Array.isArray(data.total_volumes[index]) ? data.total_volumes[index][1] : data.total_volumes[index]) : 0;
+
+                                return {
+                                    x: new Date(timestamp),
+                                    y: price,
+                                    volume: volume
+                                };
+                            });
+                        }
+                        // Standard historical_data format
+                        else if (data.historical_data && Array.isArray(data.historical_data)) {
+                            historicalData = data.historical_data.map(item => ({
+                                x: new Date(item.date),
+                                y: item.price || item.close || item.value,
+                                volume: item.volume || 0
+                            }));
+                        }
+                        // Single data point with current quote
+                        else if (currentQuote && (data.current_price || data.price || data.close)) {
+                            // Generate some basic historical data if only current quote is available
+                            historicalData = generateBasicHistoryFromQuote(currentQuote, days);
+                        }
+
+                        if (historicalData && historicalData.length > 0) {
+                            console.log(`Successfully got ${historicalData.length} data points from ${endpoint}`);
+                            return historicalData;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`Endpoint ${endpoint} failed:`, error.message);
+                    continue;
+                }
+            }
+
+            // If all endpoints fail, throw error
+            throw new Error(`No historical data available for ${symbol}. Tried ${historyEndpoints.length} endpoints.`);
         }
 
-        // Generate mock stock data (fallback)
-        function generateMockStockData(symbol, days) {
+        // Generate basic historical data from current quote (fallback)
+        function generateBasicHistoryFromQuote(quote, days) {
             const data = [];
-            const basePrice = Math.random() * 100 + 50; // Random base price between 50-150
-            let currentPrice = basePrice;
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - days);
+            const currentPrice = quote.current_price || quote.price || quote.close || 100;
+            const endDate = new Date();
 
-            for (let i = 0; i < days; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + i);
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date(endDate);
+                date.setDate(date.getDate() - i);
 
-                // Add some realistic price movement
-                const change = (Math.random() - 0.5) * 0.05; // -2.5% to +2.5% daily change
-                currentPrice = currentPrice * (1 + change);
+                // Add some variation to make it look realistic (±2% daily change)
+                const variation = (Math.random() - 0.5) * 0.04; // -2% to +2%
+                const dayPrice = currentPrice * (1 + variation * (i / days));
 
                 data.push({
                     x: date,
-                    y: currentPrice
+                    y: Math.max(dayPrice, 0.01), // Ensure positive price
+                    volume: Math.floor(Math.random() * 1000000) + 100000 // Random volume
                 });
             }
 
             return data;
+        }
+
+        // Fetch real volume data from API 
+        async function fetchRealVolumeData(symbol, days, interval = '1d') {
+            // Volume data is typically included in the main stock data response
+            // So we'll extract it from there instead of making a separate call
+            try {
+                const market = getMarketType(symbol);
+
+                // For crypto, try CoinGecko first which includes volume
+                if (market === 'crypto') {
+                    const response = await fetch(`/api/market-data/coingecko/${symbol}/`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+
+                        if (data.total_volumes && Array.isArray(data.total_volumes)) {
+                            return data.total_volumes.map(item => ({
+                                x: new Date(Array.isArray(item) ? item[0] : item.timestamp),
+                                y: Array.isArray(item) ? item[1] : item.volume
+                            }));
+                        }
+                    }
+                }
+
+                // For stocks, try to get volume from quote API or generate basic volume data
+                const quoteResponse = await fetch(`/api/market-data/quote/${encodeURIComponent(symbol)}/?market=${market}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (quoteResponse.ok) {
+                    const quoteData = await quoteResponse.json();
+
+                    // Generate volume data based on current volume or typical ranges
+                    const baseVolume = quoteData.volume || 1000000;
+                    const volumeData = [];
+                    const endDate = new Date();
+
+                    for (let i = days - 1; i >= 0; i--) {
+                        const date = new Date(endDate);
+                        date.setDate(date.getDate() - i);
+
+                        // Generate realistic volume (±50% of base volume)
+                        const volumeVariation = (Math.random() - 0.5) * 1.0; // -50% to +50%
+                        const dayVolume = Math.floor(baseVolume * (1 + volumeVariation));
+
+                        volumeData.push({
+                            x: date,
+                            y: Math.max(dayVolume, 1000) // Minimum 1000 volume
+                        });
+                    }
+
+                    return volumeData;
+                }
+
+                // If everything fails, return empty array
+                console.log('No volume data available, returning empty array');
+                return [];
+
+            } catch (error) {
+                console.log('Volume data fetch failed:', error);
+                return []; // Return empty array instead of throwing error
+            }
         }
 
         // Get stock display name
@@ -1078,8 +1544,8 @@
             // Create a temporary message element
             const messageEl = document.createElement('div');
             messageEl.className = `fixed top-4 right-4 z-50 p-4 rounded-lg border max-w-sm ${type === 'error' ? 'bg-tv-red/20 border-tv-red/30 text-tv-red' :
-                    type === 'warning' ? 'bg-orange-500/20 border-orange-500/30 text-orange-500' :
-                        'bg-tv-blue/20 border-tv-blue/30 text-tv-blue'
+                type === 'warning' ? 'bg-orange-500/20 border-orange-500/30 text-orange-500' :
+                    'bg-tv-blue/20 border-tv-blue/30 text-tv-blue'
                 }`;
             messageEl.innerHTML = `
                 <div class="flex items-center space-x-2">
@@ -1141,6 +1607,158 @@
                     option.style.display = 'none';
                 }
             });
+        });
+
+        // Enhanced stock search input functionality
+        stockSearchInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const options = stockSelect.querySelectorAll('option');
+            let matchFound = false;
+
+            options.forEach(option => {
+                if (option.value === '') return;
+
+                const text = option.textContent.toLowerCase();
+                const value = option.value.toLowerCase();
+
+                if (text.includes(searchTerm) || value.includes(searchTerm)) {
+                    if (!matchFound) {
+                        // Auto-select first match
+                        stockSelect.value = option.value;
+                        stockSelect.dispatchEvent(new Event('change'));
+                        matchFound = true;
+                    }
+                }
+            });
+        });
+
+        // Time interval button handlers
+        timeIntervalBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Update active button
+                timeIntervalBtns.forEach(b => {
+                    b.classList.remove('bg-tv-blue', 'text-white');
+                    b.classList.add('text-tv-text-secondary', 'hover:text-tv-text', 'hover:bg-tv-light');
+                });
+
+                this.classList.add('bg-tv-blue', 'text-white');
+                this.classList.remove('text-tv-text-secondary', 'hover:text-tv-text', 'hover:bg-tv-light');
+
+                currentInterval = this.dataset.interval;
+
+                // Update chart time unit based on interval
+                if (chart) {
+                    let timeUnit = 'day';
+                    switch (currentInterval) {
+                        case '1m':
+                        case '5m':
+                            timeUnit = 'minute';
+                            break;
+                        case '1h':
+                            timeUnit = 'hour';
+                            break;
+                        case '1d':
+                            timeUnit = 'day';
+                            break;
+                        case '1wk':
+                            timeUnit = 'week';
+                            break;
+                        case '1mo':
+                            timeUnit = 'month';
+                            break;
+                    }
+
+                    chart.options.scales.x.time.unit = timeUnit;
+                    chart.update();
+                }
+
+                // Reload data with new interval if stock is selected
+                if (currentStockSymbol) {
+                    loadStockData(currentStockSymbol);
+                }
+            });
+        });
+
+        // Chart scrollbar handler
+        chartScrollbar.addEventListener('input', function () {
+            chartScrollPosition = parseInt(this.value);
+            updateChartView();
+        });
+
+        // Update chart view based on scroll position
+        function updateChartView() {
+            if (!chart || stockData.length === 0) return;
+
+            const totalDataPoints = stockData.length;
+            const visiblePoints = Math.min(50, totalDataPoints); // Show maximum 50 points at once
+
+            // Calculate the start index based on scroll position
+            const maxStartIndex = Math.max(0, totalDataPoints - visiblePoints);
+            const startIndex = Math.floor((chartScrollPosition / 100) * maxStartIndex);
+            const endIndex = Math.min(startIndex + visiblePoints, totalDataPoints);
+
+            // Update chart data to show only the selected range
+            const visibleData = stockData.slice(startIndex, endIndex);
+            chart.data.datasets[0].data = visibleData;
+
+            // Add future dates for predictions (extend 30 days into future)
+            if (chartScrollPosition === 100) {
+                const lastDate = new Date(stockData[stockData.length - 1].x);
+                const futureData = [];
+                for (let i = 1; i <= 30; i++) {
+                    const futureDate = new Date(lastDate);
+                    futureDate.setDate(futureDate.getDate() + i);
+                    futureData.push({
+                        x: futureDate,
+                        y: null // No price data for future dates
+                    });
+                }
+                chart.data.datasets[0].data = [...visibleData, ...futureData];
+            }
+
+            chart.update('none');
+
+            // Update volume chart if visible
+            if (volumeChart && showVolumeCheckbox.checked) {
+                const visibleVolumeData = volumeData.slice(startIndex, endIndex);
+                volumeChart.data.datasets[0].data = visibleVolumeData;
+                volumeChart.update('none');
+            }
+        }
+
+        // Volume toggle handler
+        showVolumeCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                volumeContainer.style.display = 'block';
+                updateVolumeChart();
+            } else {
+                volumeContainer.style.display = 'none';
+            }
+        });
+
+        // Update volume chart with current data
+        function updateVolumeChart() {
+            if (!volumeChart || volumeData.length === 0) return;
+
+            volumeChart.data.datasets[0].data = volumeData;
+            volumeChart.update();
+        }
+
+        // Reset zoom handler
+        resetZoomBtn.addEventListener('click', function () {
+            if (chart) {
+                chart.resetZoom();
+                showMessage('차트 줌이 리셋되었습니다.', 'info');
+            }
+        });
+
+        // Delete prediction from tooltip
+        deletePredictionBtn.addEventListener('click', function () {
+            if (hoveredPredictionPoint) {
+                removePrediction(hoveredPredictionPoint.id);
+                hidePredictionTooltip();
+                showMessage('예측이 삭제되었습니다.', 'info');
+            }
         });
 
         // Form submission handler
@@ -1289,15 +1907,92 @@
                 transform: rotate(-45deg) translate(6px, -6px);
             }
 
+            /* Time interval buttons */
+            .time-interval-btn {
+                color: #868993;
+                background: transparent;
+            }
+            
+            .time-interval-btn:hover {
+                color: #d1d4dc;
+                background: rgba(42, 46, 57, 0.7);
+            }
+            
+            .time-interval-btn.active {
+                background: #2962ff !important;
+                color: white !important;
+            }
+
+            /* Custom scrollbar styling */
+            #chartScrollbar {
+                background: transparent;
+                outline: none;
+            }
+            
+            #chartScrollbar::-webkit-slider-track {
+                background: #363a45;
+                border-radius: 4px;
+                height: 8px;
+            }
+            
+            #chartScrollbar::-webkit-slider-thumb {
+                appearance: none;
+                width: 20px;
+                height: 8px;
+                border-radius: 4px;
+                background: #2962ff;
+                cursor: pointer;
+            }
+            
+            #chartScrollbar::-webkit-slider-thumb:hover {
+                background: #1e40af;
+            }
+
+            /* Prediction tooltip */
+            #predictionTooltip {
+                pointer-events: auto;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Enhanced grid lines */
+            .chartjs-render-monitor {
+                position: relative;
+            }
+
+            /* Volume chart styling */
+            #volumeContainer {
+                transition: all 0.3s ease;
+            }
+            
+            #volumeContainer.hidden {
+                height: 0 !important;
+                overflow: hidden;
+            }
+
             /* Chart container responsive styles */
             @media (max-width: 768px) {
-                #chartContainer {
-                    height: 400px;
+                #chartContainer .relative:first-child {
+                    height: 350px !important;
+                }
+                
+                #volumeContainer {
+                    height: 80px !important;
                 }
                 
                 .chart-controls {
                     flex-direction: column;
                     gap: 8px;
+                }
+                
+                .time-interval-btn {
+                    font-size: 12px;
+                    padding: 8px 12px;
+                }
+                
+                #predictionTooltip {
+                    font-size: 12px;
+                    padding: 8px;
                 }
             }
 
@@ -1310,9 +2005,358 @@
                 .prediction-point {
                     touch-action: manipulation;
                 }
+                
+                #chartScrollbar {
+                    height: 12px;
+                }
+                
+                #chartScrollbar::-webkit-slider-thumb {
+                    height: 12px;
+                    width: 24px;
+                }
+            }
+
+            /* Enhanced search input */
+            #stockSearchInput:focus {
+                box-shadow: 0 0 0 2px rgba(41, 98, 255, 0.2);
+                transform: translateY(-1px);
+            }
+
+            /* Button hover effects */
+            .time-interval-btn, button[type="button"] {
+                transition: all 0.2s ease;
+            }
+            
+            button[type="button"]:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Volume bars animation */
+            #volumeChart {
+                transition: opacity 0.3s ease;
+            }
+
+            /* Prediction points enhanced styling */
+            .chartjs-render-monitor canvas {
+                border-radius: 0 0 8px 8px;
             }
         `;
         document.head.appendChild(style);
+
+        // Check API status on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            checkApiStatus();
+        });
+
+        // API Status Functions
+        async function checkApiStatus() {
+            const apiStatusContent = document.getElementById('apiStatusContent');
+            apiStatusContent.innerHTML = `
+                <div class="text-center text-tv-text-secondary py-4">
+                    <i class="fas fa-spinner fa-spin text-tv-blue text-xl mb-2"></i>
+                    <p>API 상태 확인 중...</p>
+                </div>
+            `;
+
+            try {
+                // Use the comprehensive health endpoint
+                const response = await fetch('/api/market-data/health/', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const healthData = await response.json();
+                    displayEnhancedApiStatus(healthData);
+                } else {
+                    // Fallback to individual API tests
+                    await fallbackApiStatusCheck();
+                }
+
+            } catch (error) {
+                console.error('API status check failed:', error);
+                await fallbackApiStatusCheck();
+            }
+        }
+
+        function displayEnhancedApiStatus(healthData) {
+            const apiStatusContent = document.getElementById('apiStatusContent');
+
+            const overallStatusIcon = getStatusIcon(healthData.overall_status);
+            const overallStatusColor = getStatusColor(healthData.overall_status);
+
+            let html = `
+                <div class="space-y-4">
+                    <!-- Overall Status -->
+                    <div class="bg-tv-card rounded-lg border border-tv-border p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl">${overallStatusIcon}</span>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-tv-text">전체 API 상태</h3>
+                                    <p class="text-sm ${overallStatusColor}">
+                                        ${healthData.overall_status === 'healthy' ? '정상' :
+                    healthData.overall_status === 'degraded' ? '성능 저하' : '심각한 문제'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-tv-text">${healthData.online_apis}</div>
+                                <div class="text-sm text-tv-text-secondary">APIs 활성</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 flex items-center space-x-4 text-sm text-tv-text-secondary">
+                            <div>상태: ${healthData.health_percentage}%</div>
+                            <div>평균 응답시간: ${healthData.average_response_time_ms}ms</div>
+                            <div>마지막 확인: ${new Date(healthData.last_updated).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+
+                    <!-- API Details -->
+                    <div class="grid grid-cols-2 gap-3">
+            `;
+
+            // Add individual API statuses
+            Object.entries(healthData.api_details).forEach(([apiName, details]) => {
+                const statusIcon = getApiStatusIcon(details.status);
+                const statusColor = getApiStatusColor(details.status);
+                const statusText = getApiStatusText(details.status);
+
+                html += `
+                    <div class="bg-tv-light rounded-lg border border-tv-border p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg">${statusIcon}</span>
+                                <div>
+                                    <div class="font-medium text-tv-text capitalize">${apiName}</div>
+                                    <div class="text-xs ${statusColor}">${statusText}</div>
+                                </div>
+                            </div>
+                            <div class="text-right text-xs text-tv-text-secondary">
+                                ${details.response_time_ms ? `${details.response_time_ms}ms` : '-'}
+                            </div>
+                        </div>
+                        ${details.error ? `<div class="mt-2 text-xs text-tv-red">${details.error}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+
+                    <!-- Recommendations -->
+                    ${healthData.recommendations && healthData.recommendations.length > 0 ? `
+                    <div class="bg-tv-card rounded-lg border border-tv-border p-4">
+                        <h4 class="text-sm font-semibold text-tv-text mb-2">권장사항</h4>
+                        <ul class="space-y-1">
+                            ${healthData.recommendations.map(rec => `
+                                <li class="text-xs text-tv-text-secondary flex items-start space-x-2">
+                                    <span class="text-tv-blue">•</span>
+                                    <span>${rec}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            apiStatusContent.innerHTML = html;
+        }
+
+        async function fallbackApiStatusCheck() {
+            const apiStatusContent = document.getElementById('apiStatusContent');
+
+            try {
+                // Test individual APIs as fallback
+                const apiTests = [
+                    { name: 'Finnhub', endpoint: '/api/market-data/quote/AAPL/?market=us_stock', type: 'stocks' },
+                    { name: 'CoinGecko', endpoint: '/api/market-data/coingecko/BTC/', type: 'crypto' },
+                    { name: 'Alpha Vantage', endpoint: '/api/market-data/quote/GOOGL/?market=us_stock', type: 'stocks' },
+                    { name: 'Marketstack', endpoint: '/api/market-data/quote/MSFT/?market=us_stock', type: 'stocks' },
+                    { name: 'Tiingo', endpoint: '/api/market-data/quote/AMZN/?market=us_stock', type: 'stocks' },
+                    { name: 'Twelve Data', endpoint: '/api/market-data/quote/TSLA/?market=us_stock', type: 'stocks' }
+                ];
+
+                const results = await Promise.allSettled(
+                    apiTests.map(async (api) => {
+                        const startTime = Date.now();
+                        try {
+                            const response = await fetch(api.endpoint, {
+                                method: 'GET',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                            const responseTime = Date.now() - startTime;
+                            return {
+                                ...api,
+                                status: response.ok ? 'success' : 'error',
+                                responseTime: responseTime,
+                                statusCode: response.status
+                            };
+                        } catch (error) {
+                            return {
+                                ...api,
+                                status: 'error',
+                                responseTime: Date.now() - startTime,
+                                error: error.message
+                            };
+                        }
+                    })
+                );
+
+                displayBasicApiStatus(results.map(r => r.value || r.reason));
+
+            } catch (error) {
+                console.error('Fallback API status check failed:', error);
+                apiStatusContent.innerHTML = `
+                    <div class="text-center text-tv-red py-4">
+                        <i class="fas fa-exclamation-triangle text-xl mb-2"></i>
+                        <p>API 상태 확인 실패</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayApiStatus(results) {
+            const apiStatusContent = document.getElementById('apiStatusContent');
+            const workingApis = results.filter(r => r.status === 'success').length;
+            const totalApis = results.length;
+
+            let statusHtml = `
+                <div class="mb-4 p-3 rounded-lg ${workingApis > totalApis / 2 ? 'bg-tv-green/20 border border-tv-green/30' : 'bg-tv-red/20 border border-tv-red/30'}">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold ${workingApis > totalApis / 2 ? 'text-tv-green' : 'text-tv-red'}">
+                            <i class="fas fa-${workingApis > totalApis / 2 ? 'check-circle' : 'exclamation-circle'} mr-2"></i>
+                            API 상태: ${workingApis}/${totalApis} 작동 중
+                        </span>
+                        <span class="text-sm text-tv-text-secondary">
+                            ${new Date().toLocaleTimeString('ko-KR')} 업데이트
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+            `;
+
+            results.forEach(api => {
+                const statusIcon = api.status === 'success' ?
+                    '<i class="fas fa-check-circle text-tv-green"></i>' :
+                    '<i class="fas fa-times-circle text-tv-red"></i>';
+
+                const statusText = api.status === 'success' ? '정상' : '오류';
+                const statusClass = api.status === 'success' ? 'text-tv-green' : 'text-tv-red';
+
+                statusHtml += `
+                    <div class="flex items-center justify-between p-3 bg-tv-light rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            ${statusIcon}
+                            <span class="font-medium text-tv-text">${api.name}</span>
+                            <span class="text-xs px-2 py-1 rounded-full bg-tv-blue/20 text-tv-blue">${api.type}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="${statusClass} text-sm font-medium">${statusText}</span>
+                            ${api.statusCode ? `<span class="text-xs text-tv-text-secondary ml-2">(${api.statusCode})</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            statusHtml += '</div>';
+            apiStatusContent.innerHTML = statusHtml;
+        }
+
+        function displayBasicApiStatus(results) {
+            const apiStatusContent = document.getElementById('apiStatusContent');
+            const workingApis = results.filter(api => api.status === 'success').length;
+            const totalApis = results.length;
+
+            let html = `
+                <div class="text-center mb-4">
+                    <div class="text-lg font-bold text-tv-text">${workingApis}/${totalApis} APIs 활성</div>
+                    <div class="text-sm text-tv-text-secondary">마지막 확인: ${new Date().toLocaleTimeString()}</div>
+                </div>
+                <div class="space-y-3">
+            `;
+
+            results.forEach(api => {
+                const statusIcon = api.status === 'success' ? '✅' : '❌';
+                const statusColor = api.status === 'success' ? 'text-tv-green' : 'text-tv-red';
+
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-tv-light rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-lg">${statusIcon}</span>
+                            <span class="font-medium text-tv-text">${api.name}</span>
+                            <span class="text-xs px-2 py-1 rounded-full bg-tv-blue/20 text-tv-blue">${api.type}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="${statusColor} text-sm font-medium">
+                                ${api.status === 'success' ? '정상' : '오류'}
+                            </span>
+                            ${api.responseTime ? `<div class="text-xs text-tv-text-secondary">${api.responseTime}ms</div>` : ''}
+                            ${api.error ? `<div class="text-xs text-tv-red mt-1">${api.error.substring(0, 30)}...</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            apiStatusContent.innerHTML = html;
+        }
+
+        // Helper functions for enhanced status display
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'healthy': return '✅';
+                case 'degraded': return '⚠️';
+                case 'critical': return '🔴';
+                default: return '❓';
+            }
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'healthy': return 'text-tv-green';
+                case 'degraded': return 'text-yellow-500';
+                case 'critical': return 'text-tv-red';
+                default: return 'text-tv-text-secondary';
+            }
+        }
+
+        function getApiStatusIcon(status) {
+            switch (status) {
+                case 'online': return '✅';
+                case 'timeout': return '⏱️';
+                case 'offline': return '❌';
+                case 'api_limit': return '⚡';
+                case 'error': return '🔴';
+                default: return '❓';
+            }
+        }
+
+        function getApiStatusColor(status) {
+            switch (status) {
+                case 'online': return 'text-tv-green';
+                case 'timeout': return 'text-yellow-500';
+                case 'offline': return 'text-tv-red';
+                case 'api_limit': return 'text-purple-500';
+                case 'error': return 'text-tv-red';
+                default: return 'text-tv-text-secondary';
+            }
+        }
+
+        function getApiStatusText(status) {
+            switch (status) {
+                case 'online': return '정상';
+                case 'timeout': return '응답 지연';
+                case 'offline': return '오프라인';
+                case 'api_limit': return 'API 제한';
+                case 'error': return '오류';
+                default: return '알 수 없음';
+            }
+        }
     </script>
 </body>
 

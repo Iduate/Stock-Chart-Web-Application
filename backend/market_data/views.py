@@ -15,6 +15,9 @@ from .serializers import MarketDataSerializer, PriceHistorySerializer
 from .precision_handler import PrecisionHandler
 import json
 import logging
+import time
+import requests
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -644,3 +647,315 @@ def generate_sample_historical_data(symbol):
         current_date += timedelta(days=1)
     
     return data
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_comprehensive_api_status(request):
+    """Comprehensive API health check with response times and detailed status"""
+    try:
+        api_tests = {}
+        
+        # Test each API with real endpoints
+        api_configs = {
+            'finnhub': {
+                'url': 'https://finnhub.io/api/v1/quote?symbol=AAPL',
+                'headers': {'X-Finnhub-Token': getattr(settings, 'FINNHUB_API_KEY', '')},
+                'test_symbol': 'AAPL'
+            },
+            'alpha_vantage': {
+                'url': 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL',
+                'params': {'apikey': getattr(settings, 'ALPHA_VANTAGE_API_KEY', '')},
+                'test_symbol': 'AAPL'
+            },
+            'twelve_data': {
+                'url': 'https://api.twelvedata.com/quote?symbol=AAPL',
+                'params': {'apikey': getattr(settings, 'TWELVE_DATA_API_KEY', '')},
+                'test_symbol': 'AAPL'
+            },
+            'coingecko': {
+                'url': 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+                'headers': {},
+                'test_symbol': 'BTC'
+            },
+            'tiingo': {
+                'url': 'https://api.tiingo.com/tiingo/daily/AAPL/prices',
+                'headers': {'Authorization': f'Token {getattr(settings, "TIINGO_API_KEY", "")}'},
+                'test_symbol': 'AAPL'
+            },
+            'marketstack': {
+                'url': 'https://api.marketstack.com/v1/eod/latest?symbols=AAPL',
+                'params': {'access_key': getattr(settings, 'MARKETSTACK_API_KEY', '')},
+                'test_symbol': 'AAPL'
+            }
+        }
+        
+        for api_name, config in api_configs.items():
+            start_time = time.time()
+            try:
+                # Test API with timeout
+                response = requests.get(
+                    config['url'],
+                    headers=config.get('headers', {}),
+                    params=config.get('params', {}),
+                    timeout=10
+                )
+                response_time = round((time.time() - start_time) * 1000, 2)
+                
+                api_tests[api_name] = {
+                    'status': 'online' if response.status_code == 200 else 'error',
+                    'response_time_ms': response_time,
+                    'status_code': response.status_code,
+                    'has_api_key': bool(config.get('headers', {}).get('X-Finnhub-Token') or 
+                                       config.get('headers', {}).get('Authorization') or
+                                       config.get('params', {}).get('apikey') or
+                                       config.get('params', {}).get('access_key') or
+                                       api_name == 'coingecko'),
+                    'test_symbol': config['test_symbol'],
+                    'last_tested': timezone.now().isoformat()
+                }
+                
+                # Additional error checking for specific response content
+                if response.status_code == 200:
+                    try:
+                        data = response.json()
+                        if api_name == 'alpha_vantage' and 'Error Message' in str(data):
+                            api_tests[api_name]['status'] = 'api_limit'
+                        elif api_name == 'twelve_data' and 'status' in data and data['status'] == 'error':
+                            api_tests[api_name]['status'] = 'api_error'
+                        elif api_name == 'finnhub' and 'error' in data:
+                            api_tests[api_name]['status'] = 'api_error'
+                    except:
+                        pass
+                        
+            except requests.exceptions.Timeout:
+                api_tests[api_name] = {
+                    'status': 'timeout',
+                    'response_time_ms': 10000,
+                    'error': 'Request timed out after 10 seconds',
+                    'has_api_key': bool(config.get('headers', {}) or config.get('params', {})),
+                    'test_symbol': config['test_symbol'],
+                    'last_tested': timezone.now().isoformat()
+                }
+            except requests.exceptions.ConnectionError:
+                api_tests[api_name] = {
+                    'status': 'offline',
+                    'response_time_ms': round((time.time() - start_time) * 1000, 2),
+                    'error': 'Connection failed',
+                    'has_api_key': bool(config.get('headers', {}) or config.get('params', {})),
+                    'test_symbol': config['test_symbol'],
+                    'last_tested': timezone.now().isoformat()
+                }
+            except Exception as e:
+                api_tests[api_name] = {
+                    'status': 'error',
+                    'response_time_ms': round((time.time() - start_time) * 1000, 2),
+                    'error': str(e),
+                    'has_api_key': bool(config.get('headers', {}) or config.get('params', {})),
+                    'test_symbol': config['test_symbol'],
+                    'last_tested': timezone.now().isoformat()
+                }
+        
+        # Calculate overall health
+        online_apis = sum(1 for api in api_tests.values() if api['status'] == 'online')
+        total_apis = len(api_tests)
+        health_percentage = round((online_apis / total_apis) * 100, 1)
+        
+        # Average response time for online APIs
+        online_response_times = [api['response_time_ms'] for api in api_tests.values() 
+                               if api['status'] == 'online']
+        avg_response_time = round(sum(online_response_times) / len(online_response_times), 2) if online_response_times else 0
+        
+        return Response({
+            'overall_status': 'healthy' if health_percentage >= 66 else 'degraded' if health_percentage >= 33 else 'critical',
+            'health_percentage': health_percentage,
+            'online_apis': f"{online_apis}/{total_apis}",
+            'average_response_time_ms': avg_response_time,
+            'api_details': api_tests,
+            'recommendations': _get_api_recommendations(api_tests),
+            'last_updated': timezone.now().isoformat()
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        logger.error(f"API health check failed: {e}")
+        return Response({
+            'overall_status': 'error',
+            'error': 'Health check system error',
+            'message': str(e),
+            'last_updated': timezone.now().isoformat()
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def _get_api_recommendations(api_tests):
+    """Generate recommendations based on API test results"""
+    recommendations = []
+    
+    for api_name, result in api_tests.items():
+        if result['status'] == 'offline':
+            recommendations.append(f"{api_name}: Check internet connectivity or service status")
+        elif result['status'] == 'timeout':
+            recommendations.append(f"{api_name}: Experiencing slow response times, consider increasing timeout")
+        elif result['status'] == 'api_limit':
+            recommendations.append(f"{api_name}: API rate limit reached, implement caching or upgrade plan")
+        elif result['status'] == 'error' and not result.get('has_api_key'):
+            recommendations.append(f"{api_name}: API key missing or invalid")
+        elif result['status'] == 'online' and result.get('response_time_ms', 0) > 5000:
+            recommendations.append(f"{api_name}: Slow response time ({result['response_time_ms']}ms)")
+    
+    if not recommendations:
+        recommendations.append("All APIs are functioning normally")
+    
+    return recommendations
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_api_performance_metrics(request):
+    """Get API performance metrics and optimization suggestions"""
+    try:
+        service = get_market_service()
+        
+        # Test different types of requests
+        performance_tests = {
+            'stock_quote': _test_stock_quote_performance(),
+            'crypto_data': _test_crypto_data_performance(),
+            'historical_data': _test_historical_data_performance()
+        }
+        
+        return Response({
+            'performance_tests': performance_tests,
+            'optimization_suggestions': _get_optimization_suggestions(performance_tests),
+            'cache_status': _get_cache_status(),
+            'last_updated': timezone.now().isoformat()
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        logger.error(f"Performance metrics failed: {e}")
+        return Response({
+            'error': 'Performance metrics error',
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def _test_stock_quote_performance():
+    """Test stock quote API performance"""
+    test_symbols = ['AAPL', 'GOOGL', 'MSFT']
+    results = {}
+    
+    for symbol in test_symbols:
+        start_time = time.time()
+        try:
+            service = get_market_service()
+            data = service.get_real_time_quote(symbol, 'us_stock')
+            response_time = round((time.time() - start_time) * 1000, 2)
+            
+            results[symbol] = {
+                'success': bool(data),
+                'response_time_ms': response_time,
+                'data_source': data.get('source') if data else None
+            }
+        except Exception as e:
+            results[symbol] = {
+                'success': False,
+                'response_time_ms': round((time.time() - start_time) * 1000, 2),
+                'error': str(e)
+            }
+    
+    return results
+
+
+def _test_crypto_data_performance():
+    """Test crypto data API performance"""
+    test_symbols = ['BTC', 'ETH']
+    results = {}
+    
+    for symbol in test_symbols:
+        start_time = time.time()
+        try:
+            service = get_market_service()
+            data = service.get_coingecko_primary_data(symbol, '7', 'usd')
+            response_time = round((time.time() - start_time) * 1000, 2)
+            
+            results[symbol] = {
+                'success': bool(data and len(data) > 0),
+                'response_time_ms': response_time,
+                'data_points': len(data) if data else 0
+            }
+        except Exception as e:
+            results[symbol] = {
+                'success': False,
+                'response_time_ms': round((time.time() - start_time) * 1000, 2),
+                'error': str(e)
+            }
+    
+    return results
+
+
+def _test_historical_data_performance():
+    """Test historical data API performance"""
+    start_time = time.time()
+    try:
+        service = get_market_service()
+        data = service.get_historical_data('AAPL', '1month', '1day', 'us_stock')
+        response_time = round((time.time() - start_time) * 1000, 2)
+        
+        return {
+            'success': bool(data and len(data) > 0),
+            'response_time_ms': response_time,
+            'data_points': len(data) if data else 0,
+            'symbol': 'AAPL'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'response_time_ms': round((time.time() - start_time) * 1000, 2),
+            'error': str(e),
+            'symbol': 'AAPL'
+        }
+
+
+def _get_optimization_suggestions(performance_tests):
+    """Generate optimization suggestions based on performance tests"""
+    suggestions = []
+    
+    # Check stock quote performance
+    stock_times = [result.get('response_time_ms', 0) for result in performance_tests.get('stock_quote', {}).values()]
+    if stock_times and max(stock_times) > 3000:
+        suggestions.append("Stock quote APIs are slow - consider implementing caching")
+    
+    # Check crypto performance
+    crypto_test = performance_tests.get('crypto_data', {})
+    if any(not result.get('success', False) for result in crypto_test.values()):
+        suggestions.append("Crypto APIs experiencing issues - implement fallback strategies")
+    
+    # Check historical data
+    historical_test = performance_tests.get('historical_data', {})
+    if historical_test.get('response_time_ms', 0) > 5000:
+        suggestions.append("Historical data queries are slow - implement background processing")
+    
+    if not suggestions:
+        suggestions.append("All APIs are performing well")
+    
+    return suggestions
+
+
+def _get_cache_status():
+    """Get cache performance status"""
+    try:
+        # Test cache performance
+        start_time = time.time()
+        cache.set('test_key', 'test_value', 60)
+        cached_value = cache.get('test_key')
+        cache_time = round((time.time() - start_time) * 1000, 2)
+        
+        return {
+            'cache_working': cached_value == 'test_value',
+            'cache_response_time_ms': cache_time,
+            'cache_backend': str(cache.__class__.__name__)
+        }
+    except Exception as e:
+        return {
+            'cache_working': False,
+            'error': str(e),
+            'cache_backend': 'unknown'
+        }
