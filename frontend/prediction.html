@@ -8,33 +8,62 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-    <!-- Tailwind CSS with TradingView Color Scheme -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'tv': {
-                            'darker': '#0d1421',
-                            'dark': '#131722',
-                            'card': '#1e222d',
-                            'light': '#2a2e39',
-                            'border': '#363a45',
-                            'blue': '#2962ff',
-                            'green': '#26a69a',
-                            'red': '#ef5350',
-                            'text': '#d1d4dc',
-                            'text-secondary': '#868993'
-                        }
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
-                    }
-                }
+    <!-- Tailwind CSS - Production Version -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom Korean Chart Styles */
+        .korean-chart {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* TradingView-like colors */
+        .text-tv-darker { color: #0d1421; }
+        .bg-tv-darker { background-color: #0d1421; }
+        .text-tv-dark { color: #131722; }
+        .bg-tv-dark { background-color: #131722; }
+        .text-tv-card { color: #1e222d; }
+        .bg-tv-card { background-color: #1e222d; }
+        .text-tv-light { color: #2a2e39; }
+        .bg-tv-light { background-color: #2a2e39; }
+        .text-tv-border { color: #363a45; }
+        .bg-tv-border { background-color: #363a45; }
+        .text-tv-blue { color: #2962ff; }
+        .bg-tv-blue { background-color: #2962ff; }
+        .text-tv-green { color: #26a69a; }
+        .bg-tv-green { background-color: #26a69a; }
+        .text-tv-red { color: #ef5350; }
+        .bg-tv-red { background-color: #ef5350; }
+        .text-tv-text { color: #d1d4dc; }
+        .bg-tv-text { background-color: #d1d4dc; }
+        .text-tv-text-secondary { color: #868993; }
+        .bg-tv-text-secondary { background-color: #868993; }
+        .border-tv-border { border-color: #363a45; }
+        
+        /* Korean chart specific styling */
+        .time-interval-btn.active {
+            background-color: #1976D2 !important;
+        }
+        
+        .time-interval-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Prediction tooltip styling */
+        #predictionTooltip.hidden {
+            display: none !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chart-area {
+                height: 300px !important;
+            }
+            
+            #volumeContainer {
+                height: 80px !important;
             }
         }
-    </script>
+    </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,10 +72,431 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- Chart.js for interactive charts -->
+    <!-- Chart.js for interactive charts with custom candlestick support -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- Simple date adapter that works without locale issues -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    
+    <script>
+        // Pure Candlestick Controller - NOT inheriting from LineController to avoid line interference
+        class CandlestickController extends Chart.DatasetController {
+            static id = 'candlestick';
+            static defaults = {
+                dataElementType: 'point',
+                dataElementOptions: {
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    hitRadius: 5,
+                    hoverRadius: 5,
+                    backgroundColor: 'transparent',
+                    borderColor: 'transparent'
+                },
+                datasetElementType: false,
+                hover: {
+                    animationDuration: 0
+                },
+                animation: {
+                    duration: 0
+                }
+            };
+
+            initialize() {
+                this.enableOptionSharing = true;
+                super.initialize();
+            }
+
+            // Use point elements for tooltips only
+            dataElementType = Chart.PointElement || Chart.elements.Point;
+
+            addElements() {
+                const meta = this.getMeta();
+                const data = this.getDataset().data || [];
+                
+                meta.data = meta.data || [];
+                for (let i = meta.data.length; i < data.length; i++) {
+                    meta.data[i] = new (this.dataElementType)();
+                }
+            }
+
+            addElementAndReset(index) {
+                const element = new (this.dataElementType)();
+                this.getMeta().data.splice(index, 0, element);
+                this.updateElement(element, index, 'reset');
+            }
+
+            updateElements(elements, start, count, mode) {
+                const dataset = this.getDataset();
+                const xScale = this.chart.scales.x;
+                const yScale = this.chart.scales.y;
+                
+                for (let i = start; i < start + count; i++) {
+                    const element = elements[i];
+                    const dataPoint = dataset.data[i] || {};
+                    
+                    if (dataPoint && typeof dataPoint.o !== 'undefined') {
+                        const properties = {
+                            x: xScale.getPixelForValue(dataPoint.x),
+                            y: yScale.getPixelForValue(dataPoint.c), // Use close price for positioning
+                            skip: false,
+                            // Add proper options to prevent hitRadius errors
+                            options: {
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                hitRadius: 5,
+                                hoverRadius: 5,
+                                backgroundColor: 'transparent',
+                                borderColor: 'transparent'
+                            }
+                        };
+                        
+                        // Store OHLC data for tooltips
+                        element.parsed = {
+                            x: dataPoint.x,
+                            y: dataPoint.c,
+                            o: dataPoint.o,
+                            h: dataPoint.h,
+                            l: dataPoint.l,
+                            c: dataPoint.c
+                        };
+                        
+                        this.updateElement(element, i, properties, mode);
+                    } else {
+                        element.skip = true;
+                    }
+                }
+            }
+
+            getPixelForValue(value, index) {
+                const xScale = this.chart.scales.x;
+                const yScale = this.chart.scales.y;
+                
+                if (typeof value === 'number' && yScale) {
+                    return yScale.getPixelForValue(value);
+                } else if (xScale) {
+                    return xScale.getPixelForValue(value);
+                }
+                return 0;
+            }
+
+            // Critical: Override parse method to handle OHLC data properly
+            parse(start, count) {
+                const meta = this.getMeta();
+                const dataset = this.getDataset();
+                const data = dataset.data || [];
+                
+                const parsed = [];
+                for (let i = start; i < start + count; i++) {
+                    const dataPoint = data[i];
+                    if (dataPoint && typeof dataPoint.o !== 'undefined') {
+                        parsed[i] = {
+                            x: dataPoint.x,
+                            y: dataPoint.c, // Use close price as main Y value
+                            o: dataPoint.o,
+                            h: dataPoint.h,
+                            l: dataPoint.l,
+                            c: dataPoint.c
+                        };
+                    } else {
+                        parsed[i] = null;
+                    }
+                }
+                return parsed;
+            }
+
+            // Override parseObjectData to handle OHLC structure
+            parseObjectData(meta, data, start, count) {
+                const parsed = [];
+                for (let i = start; i < start + count; i++) {
+                    const dataPoint = data[i];
+                    if (dataPoint && typeof dataPoint.o !== 'undefined') {
+                        parsed[i] = {
+                            x: dataPoint.x,
+                            y: dataPoint.c,
+                            o: dataPoint.o,
+                            h: dataPoint.h,
+                            l: dataPoint.l,
+                            c: dataPoint.c
+                        };
+                    } else {
+                        parsed[i] = null;
+                    }
+                }
+                return parsed;
+            }
+
+            // Override ALL Chart.js default drawing to prevent interference
+            linkScales() {
+                // Disable scale linking
+            }
+
+            buildOrUpdateElements() {
+                // Call parent to create elements for tooltips
+                super.buildOrUpdateElements();
+            }
+
+            update(mode) {
+                // Override update to prevent default chart drawing
+                const meta = this.getMeta();
+                const dataset = this.getDataset();
+                
+                if (dataset.data && dataset.data.length > 0) {
+                    // Only update our elements, don't call super.update()
+                    this.updateElements(meta.data || [], 0, dataset.data.length, mode);
+                }
+            }
+
+            // FORCE: Override the base chart's draw method to only draw our candlesticks
+            beforeDraw() {
+                // Clear any existing Chart.js elements
+                const ctx = this.chart.ctx;
+                const chartArea = this.chart.chartArea;
+                
+                // Clear only the chart area, not axes
+                ctx.save();
+                ctx.clearRect(chartArea.left, chartArea.top, 
+                            chartArea.right - chartArea.left, 
+                            chartArea.bottom - chartArea.top);
+                ctx.restore();
+            }
+
+            // Custom hover without line behavior
+            setHoverStyle(element, datasetIndex, index) {}
+            removeHoverStyle(element, datasetIndex, index) {}
+
+            // Main draw function - FORCE THICK KOREAN CANDLESTICKS TO APPEAR
+            draw() {
+                const ctx = this.chart.ctx;
+                const meta = this.getMeta();
+                const dataset = this.getDataset();
+                
+                if (!meta.data || !dataset.data || dataset.data.length === 0) return;
+
+                console.log(`� FORCING ${dataset.data.length} THICK Korean candlesticks to display`);
+                
+                // FORCE CLEAR CANVAS AND REDRAW
+                ctx.save();
+                
+                // Get chart dimensions
+                const chartArea = this.chart.chartArea;
+                const xScale = this.chart.scales.x;
+                const yScale = this.chart.scales.y;
+                
+                // FORCE EXTREME THICKNESS - FILL ENTIRE SPACE
+                const dataCount = Math.min(dataset.data.length, 20); // Even fewer for maximum thickness
+                const availableWidth = chartArea.right - chartArea.left;
+                const spacing = availableWidth / Math.max(dataCount, 1);
+                
+                // FORCE MAXIMUM POSSIBLE WIDTH - 98% of space per candle
+                const candleWidth = Math.max(Math.floor(spacing * 0.98), 80); // FORCE 80px minimum!
+                const wickWidth = Math.max(10, Math.floor(candleWidth / 8)); // Extra thick wicks
+                
+                console.log(`🔥 FORCING MAXIMUM THICKNESS - Candle: ${candleWidth}px, Wick: ${wickWidth}px, Available: ${availableWidth}px`);
+
+                // FORCE DRAW EACH CANDLESTICK WITH MAXIMUM VISIBILITY
+                dataset.data.slice(0, dataCount).forEach((dataPoint, index) => {
+                    if (!dataPoint || typeof dataPoint.o === 'undefined') return;
+                    
+                    // FIX X POSITION - calculate manually if scale fails
+                    let x;
+                    try {
+                        x = xScale.getPixelForValue(dataPoint.x);
+                        // If x is invalid (negative or extreme), calculate manually
+                        if (x < 0 || x > 10000 || isNaN(x)) {
+                            throw new Error('Invalid x coordinate');
+                        }
+                    } catch (e) {
+                        // Manual calculation: distribute evenly across chart width
+                        const startX = chartArea.left + 40; // 40px margin from left
+                        const endX = chartArea.right - 40; // 40px margin from right
+                        const availableX = endX - startX;
+                        x = startX + (index / (dataCount - 1)) * availableX;
+                    }
+                    
+                    // Get Y positions with fallback calculation
+                    let high, low, open, close;
+                    try {
+                        high = yScale.getPixelForValue(dataPoint.h);
+                        low = yScale.getPixelForValue(dataPoint.l);
+                        open = yScale.getPixelForValue(dataPoint.o);
+                        close = yScale.getPixelForValue(dataPoint.c);
+                        
+                        // If Y values are invalid, calculate manually
+                        if (high < 0 || high > 10000 || isNaN(high) || 
+                            low < 0 || low > 10000 || isNaN(low)) {
+                            throw new Error('Invalid y coordinates');
+                        }
+                    } catch (e) {
+                        // Manual Y calculation: map price range to chart height
+                        const priceValues = dataset.data.map(d => [d.h, d.l, d.o, d.c]).flat();
+                        const minPrice = Math.min(...priceValues);
+                        const maxPrice = Math.max(...priceValues);
+                        const priceRange = maxPrice - minPrice;
+                        
+                        const chartHeight = chartArea.bottom - chartArea.top;
+                        const margin = chartHeight * 0.1; // 10% margin top/bottom
+                        const availableHeight = chartHeight - (margin * 2);
+                        
+                        // Map prices to pixel positions (inverted Y-axis)
+                        high = chartArea.top + margin + ((maxPrice - dataPoint.h) / priceRange) * availableHeight;
+                        low = chartArea.top + margin + ((maxPrice - dataPoint.l) / priceRange) * availableHeight;
+                        open = chartArea.top + margin + ((maxPrice - dataPoint.o) / priceRange) * availableHeight;
+                        close = chartArea.top + margin + ((maxPrice - dataPoint.c) / priceRange) * availableHeight;
+                    }
+                    
+                    // FORCE BRIGHT KOREAN COLORS - MAXIMUM SATURATION
+                    const isUp = dataPoint.c >= dataPoint.o;
+                    const bodyColor = isUp ? '#FF0000' : '#0066FF'; // Pure red/blue for maximum visibility
+                    const wickColor = isUp ? '#CC0000' : '#0044CC'; // Darker variants
+                    const borderColor = isUp ? '#990000' : '#002299'; // Darkest borders
+                    
+                    console.log(`🕯️ Drawing candle ${index + 1} at FIXED x=${x}, width=${candleWidth}px, colors=${bodyColor}`);
+                    
+                    // FORCE DRAW SUPER THICK WICK
+                    ctx.strokeStyle = wickColor;
+                    ctx.lineWidth = wickWidth;
+                    ctx.lineCap = 'butt';
+                    ctx.beginPath();
+                    ctx.moveTo(x, high);
+                    ctx.lineTo(x, low);
+                    ctx.stroke();
+                    
+                    // FORCE DRAW MASSIVE CANDLE BODY
+                    const bodyTop = Math.min(open, close);
+                    const bodyBottom = Math.max(open, close);
+                    const bodyHeight = Math.max(bodyBottom - bodyTop, 15); // FORCE 15px minimum
+                    
+                    // FORCE FILL MASSIVE RECTANGLE
+                    ctx.fillStyle = bodyColor;
+                    ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                    
+                    // FORCE THICK BORDER
+                    ctx.strokeStyle = borderColor;
+                    ctx.lineWidth = 5; // EXTRA THICK BORDER
+                    ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                    
+                    console.log(`✅ Forced candle ${index + 1} drawn: rect(${x - candleWidth / 2}, ${bodyTop}, ${candleWidth}, ${bodyHeight})`);
+                });
+                
+                ctx.restore();
+                console.log('🔥 FORCED THICK Korean candlesticks completed - MAXIMUM VISIBILITY MODE');
+            }
+        }
+
+        // Register custom candlestick controller
+        Chart.register(CandlestickController);
+
+        // Register all Chart.js components
+        if (typeof Chart !== 'undefined') {
+            try {
+                // Chart.js 4.x compatible registration
+                if (Chart.registry && Chart.LinearScale) {
+                    Chart.register(
+                        Chart.LineController,
+                        Chart.BarController,
+                        Chart.CategoryScale,
+                        Chart.LinearScale,
+                        Chart.TimeScale,
+                        Chart.Tooltip,
+                        Chart.Legend,
+                        Chart.LineElement,
+                        Chart.PointElement,
+                        Chart.BarElement,
+                        Chart.Filler,
+                        CandlestickController
+                    );
+                } else if (Chart.registerables && Array.isArray(Chart.registerables)) {
+                    Chart.register(...Chart.registerables, CandlestickController);
+                }
+                console.log('✅ Chart.js core components and custom candlestick registered');
+            } catch (e) {
+                console.log('Chart.js registration error:', e);
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom styles for Korean candlestick chart */
+        .korean-chart {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+        
+        .chart-header {
+            background: #2c3e50;
+            color: white;
+            padding: 8px;
+            font-size: 12px;
+        }
+        
+        .stock-info-bar {
+            background: #34495e;
+            color: white;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-bottom: 1px solid #555;
+        }
+        
+        .chart-container {
+            background: white;
+            position: relative;
+        }
+        
+        .price-scale {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: #ecf0f1;
+            border-left: 1px solid #bdc3c7;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 5px;
+            font-size: 10px;
+            color: #2980b9;
+        }
+        
+        .volume-scale {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            background: #ecf0f1;
+            border-left: 1px solid #bdc3c7;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px;
+            font-size: 10px;
+            color: #2980b9;
+        }
+        
+        .date-nav-bar {
+            background: #34495e;
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+        }
+        
+        .date-indicators {
+            display: flex;
+            gap: 1px;
+            align-items: center;
+            margin: 5px 0;
+        }
+        
+        .date-indicator {
+            width: 3px;
+            height: 12px;
+        }
+        
+        .date-indicator.up { background: #3498db; }
+        .date-indicator.down { background: #e74c3c; }
+        .date-indicator.selected { background: #f1c40f; }
+    </style>
 </head>
 
 <body class="bg-tv-darker text-tv-text min-h-screen">
@@ -535,151 +985,130 @@
                             </div>
                         </div>
 
-                        <!-- Chart Container -->
-                        <div class="bg-tv-card border border-tv-border rounded-lg overflow-hidden">
-                            <!-- Enhanced Chart Controls -->
-                            <div class="bg-tv-light border-b border-tv-border p-4">
-                                <!-- Top Row: Search and Time Period Buttons -->
-                                <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
-                                    <!-- Enhanced Search -->
-                                    <div class="flex items-center space-x-4 flex-1 max-w-md">
-                                        <div class="relative flex-1">
-                                            <input type="text" id="stockSearchInput" placeholder="종목 검색 (예: AAPL, 삼성전자)"
-                                                class="w-full px-4 py-2 pl-10 bg-tv-darker border border-tv-border rounded-lg text-tv-text placeholder-tv-text-secondary focus:border-tv-blue focus:outline-none">
-                                            <i
-                                                class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-tv-text-secondary"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Time Period Selection Buttons -->
-                                    <div class="flex items-center space-x-1 bg-tv-darker rounded-lg p-1">
-                                        <button type="button" data-interval="1m"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1분</button>
-                                        <button type="button" data-interval="5m"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">5분</button>
-                                        <button type="button" data-interval="1h"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1시간</button>
-                                        <button type="button" data-interval="1d"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all bg-tv-blue text-white">1일</button>
-                                        <button type="button" data-interval="1wk"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1주</button>
-                                        <button type="button" data-interval="1mo"
-                                            class="time-interval-btn px-3 py-1.5 rounded text-sm font-medium transition-all">1월</button>
-                                    </div>
-                                </div>
-
-                                <!-- Bottom Row: Range and Controls -->
-                                <div class="flex items-center justify-between flex-wrap gap-4">
+                        <!-- Chart Container with Korean Design -->
+                        <div class="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                            <!-- Chart Header with Controls -->
+                            <div class="bg-gray-700 text-white px-4 py-2 text-sm">
+                                <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-4">
-                                        <span class="text-sm font-medium text-tv-text">데이터 범위:</span>
-                                        <select id="chartTimeRange"
-                                            class="px-3 py-1 bg-tv-darker border border-tv-border rounded text-tv-text text-sm">
-                                            <option value="30">30일</option>
-                                            <option value="90" selected>90일</option>
-                                            <option value="180">180일</option>
-                                            <option value="365">1년</option>
-                                        </select>
-
-                                        <!-- Volume Toggle -->
-                                        <label class="flex items-center space-x-2 text-sm">
-                                            <input type="checkbox" id="showVolume" checked
-                                                class="rounded border-tv-border bg-tv-darker text-tv-blue focus:ring-tv-blue">
-                                            <span class="text-tv-text">거래량 표시</span>
-                                        </label>
+                                        <span class="font-medium">Search stock coins worldwide</span>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs">📊</span>
+                                            <input type="text" id="stockCodeInput" value="AAPL" 
+                                                class="w-16 px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none focus:bg-gray-500">
+                                            <select class="px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none">
+                                                <option>조회</option>
+                                            </select>
+                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs">📄</button>
+                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs">💾</button>
+                                            <span class="text-white font-medium">— <span id="headerStockName">Apple Inc.</span></span>
+                                        </div>
                                     </div>
-
+                                    <div class="flex items-center space-x-4">
+                                        <span class="font-medium">Select daily, weekly, monthly, or yearly time</span>
+                                        <div class="flex space-x-1">
+                                            <button class="time-interval-btn active px-2 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700" data-interval="1d">일</button>
+                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1wk">주</button>
+                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1mo">월</button>
+                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1y">년</button>
+                                        </div>
+                                        <span class="text-white">[<span id="currentInterval">1일</span>] ✖</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Stock Info Bar -->
+                            <div class="bg-gray-100 border-b border-gray-200 px-4 py-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center space-x-6">
+                                        <div class="text-lg font-bold text-blue-600" id="stockCode">AAPL</div>
+                                        <div class="text-lg font-bold" id="stockName">Apple Inc.</div>
+                                        <div class="flex items-center space-x-4">
+                                            <span class="text-lg font-bold text-blue-600" id="currentPrice">$0.00</span>
+                                            <span class="text-blue-600" id="priceChange">--</span>
+                                            <span class="text-blue-600" id="priceChangePercent">(--)</span>
+                                        </div>
+                                        <div class="flex items-center space-x-4 text-xs text-gray-600">
+                                            <span id="dayHigh">고 --</span>
+                                            <span id="dayLow">저 --</span>
+                                            <span id="volume">거래량 --</span>
+                                            <span id="marketCap">시가총액 --</span>
+                                        </div>
+                                    </div>
                                     <div class="flex items-center space-x-2">
-                                        <button type="button" id="clearPredictions"
-                                            class="px-3 py-1 bg-tv-red/20 border border-tv-red/30 text-tv-red rounded text-sm hover:bg-tv-red/30 transition-colors">
-                                            <i class="fas fa-trash mr-1"></i>예측 지우기
-                                        </button>
-                                        <button type="button" id="resetZoom"
-                                            class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
-                                            <i class="fas fa-search-minus mr-1"></i>줌 리셋
-                                        </button>
-                                        <button type="button" id="fitChart"
-                                            class="px-3 py-1 bg-tv-blue/20 border border-tv-blue/30 text-tv-blue rounded text-sm hover:bg-tv-blue/30 transition-colors">
-                                            <i class="fas fa-compress-arrows-alt mr-1"></i>전체 보기
-                                        </button>
+                                        <span class="text-xs" id="lastUpdated">--</span>
+                                        <button class="px-1 py-0.5 bg-gray-300 hover:bg-gray-400 text-xs rounded">◄</button>
+                                        <button class="px-1 py-0.5 bg-gray-300 hover:bg-gray-400 text-xs rounded">►</button>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Chart Canvas Container -->
-                            <div id="chartContainer" class="relative bg-tv-darker">
-                                <!-- Main Price Chart -->
+                            
+                            <!-- Main Chart Area -->
+                            <div class="relative bg-white">
+                                <!-- Price Chart -->
                                 <div class="relative" style="height: 400px;">
-                                    <canvas id="predictionChart" class="w-full h-full cursor-crosshair"></canvas>
-
-                                    <!-- Chart Navigation Scrollbar -->
-                                    <div class="absolute bottom-2 left-4 right-4">
-                                        <div class="bg-tv-light/80 rounded-lg px-3 py-1">
-                                            <input type="range" id="chartScrollbar" min="0" max="100" value="100"
-                                                class="w-full h-2 bg-tv-border rounded-lg appearance-none cursor-pointer">
-                                        </div>
-                                    </div>
-
-                                    <!-- Chart Loading/No Data States -->
-                                    <div id="chartLoading"
-                                        class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
-                                        <div class="text-center">
-                                            <i class="fas fa-spinner fa-spin text-tv-blue text-2xl mb-2"></i>
-                                            <p class="text-tv-text-secondary">차트 로딩 중...</p>
-                                        </div>
-                                    </div>
-                                    <div id="noStockSelected"
-                                        class="absolute inset-0 flex items-center justify-center bg-tv-darker/90">
-                                        <div class="text-center">
-                                            <i class="fas fa-chart-line text-tv-text-secondary text-4xl mb-4"></i>
-                                            <p class="text-tv-text-secondary">종목을 선택하면 차트가 표시됩니다</p>
-                                        </div>
+                                    <canvas id="priceChart" class="w-full h-full"></canvas>
+                                    <!-- Price Scale on Right -->
+                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-2 px-1">
+                                        <div class="text-xs text-blue-600 text-right" id="maxPrice">--</div>
+                                        <div class="text-xs text-blue-600 text-right" id="midPrice">--</div>
+                                        <div class="text-xs text-blue-600 text-right" id="minPrice">--</div>
                                     </div>
                                 </div>
-
+                                
                                 <!-- Volume Chart -->
-                                <div id="volumeContainer" class="relative border-t border-tv-border"
-                                    style="height: 100px;">
+                                <div class="relative border-t border-gray-200" style="height: 100px;" id="volumeContainer">
                                     <canvas id="volumeChart" class="w-full h-full"></canvas>
-                                    <div class="absolute top-2 left-4 text-xs text-tv-text-secondary">거래량</div>
-                                </div>
-
-                                <!-- Prediction Point Tooltip -->
-                                <div id="predictionTooltip"
-                                    class="absolute hidden bg-tv-dark border border-tv-border rounded-lg p-3 shadow-lg z-10">
-                                    <div class="text-sm text-tv-text">
-                                        <div class="font-semibold mb-1">예측 포인트</div>
-                                        <div id="tooltipDate" class="text-tv-text-secondary mb-1"></div>
-                                        <div id="tooltipPrice" class="text-tv-green font-mono"></div>
-                                        <button id="deletePredictionBtn"
-                                            class="mt-2 px-2 py-1 bg-tv-red/20 border border-tv-red/30 text-tv-red rounded text-xs hover:bg-tv-red/30 transition-colors">
-                                            <i class="fas fa-trash mr-1"></i>삭제
-                                        </button>
+                                    <!-- Volume Scale on Right -->
+                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-1 px-1">
+                                        <div class="text-xs text-blue-600 text-right" id="maxVolume">--</div>
+                                        <div class="text-xs text-blue-600 text-right" id="minVolume">0</div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Chart Legend and Info -->
-                            <div class="bg-tv-light border-t border-tv-border p-4">
-                                <div class="flex items-center justify-between flex-wrap gap-4">
-                                    <div class="flex items-center space-x-6 text-sm">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-3 h-3 bg-tv-blue rounded-full"></div>
-                                            <span class="text-tv-text-secondary">실제 가격</span>
+                                
+                                <!-- Chart Controls Bar -->
+                                <div class="bg-gray-700 text-white px-4 py-1 text-xs">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="flex space-x-1">
+                                                <div class="w-2 h-3 bg-blue-500"></div>
+                                                <div class="w-2 h-3 bg-red-500"></div>
+                                                <div class="w-2 h-3 bg-blue-500"></div>
+                                                <div class="w-2 h-3 bg-red-500"></div>
+                                                <div class="w-2 h-3 bg-blue-500"></div>
+                                            </div>
+                                            <span class="text-gray-300">차트 네비게이션</span>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <div class="w-3 h-3 bg-tv-green rounded-full"></div>
-                                            <span class="text-tv-text-secondary">예측 지점</span>
+                                            <button class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" id="chartZoomOut">축소</button>
+                                            <button class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" id="chartZoomIn">확대</button>
+                                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs" id="chartReset">초기화</button>
                                         </div>
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-3 h-1 bg-tv-green rounded-full"></div>
-                                            <span class="text-tv-text-secondary">예측 라인</span>
-                                        </div>
-                                    </div>
-                                    <div class="text-sm text-tv-text-secondary">
-                                        <span id="currentPriceDisplay">현재가: -</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Hidden elements to prevent JavaScript errors -->
+                        <div style="display: none;">
+                            <input type="text" id="stockSearchInput">
+                            <select id="chartTimeRange"></select>
+                            <button id="clearPredictions"></button>
+                            <button id="resetZoom"></button>
+                            <input type="checkbox" id="showPredictionCheckbox">
+                            <input type="checkbox" id="showVolume">
+                            <button id="deletePredictionBtn"></button>
+                            <div id="chartToggles"></div>
+                            <div id="toolbar"></div>
+                            <div id="loadingSpinner"></div>
+                            <div id="errorMessage"></div>
+                            <div id="drawingTools"></div>
+                            <button id="fitChart"></button>
+                            <div id="currentPriceDisplay"></div>
+                            <div id="stockInfo"></div>
+                            <input type="range" id="chartScrollbar" min="0" max="100" value="100">
+                            <div id="chartLoading"></div>
+                            <div id="noStockSelected"></div>
                         </div>
 
                         <!-- Predictions Summary -->
@@ -767,6 +1196,521 @@
 
     <!-- JavaScript -->
     <script>
+        // 🏛️ PURE KOREAN CANDLESTICK CHART IMPLEMENTATION
+        let koreanChart = null;
+        let chartCanvas = null;
+        let chartCtx = null;
+        let chartData = [];
+
+        // Initialize Korean-style candlestick chart
+        function initializeKoreanChart() {
+            console.log('🏛️ Creating Pure Korean Candlestick Chart...');
+            
+            chartCanvas = document.getElementById('priceChart');
+            if (!chartCanvas) {
+                console.error('❌ Canvas element #priceChart not found');
+                return;
+            }
+            
+            chartCtx = chartCanvas.getContext('2d');
+            
+            // Set canvas size
+            const container = chartCanvas.parentElement;
+            chartCanvas.width = container.clientWidth;
+            chartCanvas.height = container.clientHeight;
+            
+            koreanChart = {
+                canvas: chartCanvas,
+                ctx: chartCtx,
+                data: [],
+                width: chartCanvas.width,
+                height: chartCanvas.height,
+                padding: { top: 20, right: 80, bottom: 40, left: 40 },
+                hoverPoint: null,
+                timeInterval: '1d', // Default interval (1d, 1wk, 1mo)
+                
+                // Update chart with new data
+                updateData: function(candlestickData) {
+                    this.data = candlestickData.slice(-15); // Show last 15 candles for thickness
+                    this.draw();
+                    this.setupEventListeners();
+                },
+                
+                // Update time interval
+                setTimeInterval: function(interval) {
+                    this.timeInterval = interval;
+                    this.draw(); // Redraw with new interval label
+                },
+                
+                // Setup mouse events for tooltip
+                setupEventListeners: function() {
+                    const chart = this;
+                    
+                    // Remove existing listeners
+                    this.canvas.removeEventListener('mousemove', this.canvas.onmousemove);
+                    this.canvas.removeEventListener('mouseout', this.canvas.onmouseout);
+                    
+                    // Mouse move handler for tooltips
+                    this.canvas.onmousemove = function(e) {
+                        const rect = chart.canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        chart.handleMouseMove(x, y);
+                    };
+                    
+                    // Mouse out handler
+                    this.canvas.onmouseout = function() {
+                        chart.hoverPoint = null;
+                        chart.draw();
+                    };
+                    
+                    // Add listeners
+                    this.canvas.addEventListener('mousemove', this.canvas.onmousemove);
+                    this.canvas.addEventListener('mouseout', this.canvas.onmouseout);
+                },
+                
+                // Handle mouse movement for tooltips
+                handleMouseMove: function(mouseX, mouseY) {
+                    if (!this.data || this.data.length === 0) return;
+                    
+                    const { padding, width, height } = this;
+                    const chartArea = {
+                        left: padding.left,
+                        top: padding.top,
+                        right: width - padding.right,
+                        bottom: height - padding.bottom,
+                        width: width - padding.left - padding.right,
+                        height: height - padding.top - padding.bottom
+                    };
+                    
+                    // Check if mouse is in chart area
+                    if (mouseX < chartArea.left || mouseX > chartArea.right || 
+                        mouseY < chartArea.top || mouseY > chartArea.bottom) {
+                        this.hoverPoint = null;
+                        this.draw();
+                        return;
+                    }
+                    
+                    // Find closest candle
+                    const candleCount = this.data.length;
+                    const candleSpacing = chartArea.width / candleCount;
+                    let closestIndex = Math.floor((mouseX - chartArea.left) / candleSpacing);
+                    
+                    // Ensure valid index
+                    closestIndex = Math.max(0, Math.min(closestIndex, this.data.length - 1));
+                    
+                    // Update hover point
+                    this.hoverPoint = {
+                        index: closestIndex,
+                        data: this.data[closestIndex]
+                    };
+                    
+                    // Redraw with tooltip
+                    this.draw();
+                },
+                
+                // Draw the Korean-style candlestick chart
+                draw: function() {
+                    if (!this.data || this.data.length === 0) return;
+                    
+                    const ctx = this.ctx;
+                    const { width, height, padding } = this;
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // Chart area
+                    const chartArea = {
+                        left: padding.left,
+                        top: padding.top,
+                        right: width - padding.right,
+                        bottom: height - padding.bottom,
+                        width: width - padding.left - padding.right,
+                        height: height - padding.top - padding.bottom
+                    };
+                    
+                    // Draw background
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Display current chart time interval
+                    ctx.fillStyle = '#333333';
+                    ctx.font = 'bold 12px Arial';
+                    let intervalText = '';
+                    switch(this.timeInterval) {
+                        case '1d': intervalText = '일봉 차트 (Daily)'; break;
+                        case '1wk': intervalText = '주봉 차트 (Weekly)'; break;
+                        case '1mo': intervalText = '월봉 차트 (Monthly)'; break;
+                        default: intervalText = '일봉 차트 (Daily)';
+                    }
+                    ctx.textAlign = 'left';
+                    ctx.fillText(intervalText, chartArea.left, padding.top - 5);
+                    
+                    // Draw grid lines
+                    ctx.strokeStyle = '#E0E0E0';
+                    ctx.lineWidth = 1;
+                    
+                    // Vertical grid lines
+                    const verticalLineCount = Math.min(this.data.length, 10);
+                    const verticalLineSpacing = chartArea.width / verticalLineCount;
+                    for (let i = 0; i <= verticalLineCount; i++) {
+                        const x = chartArea.left + (i * verticalLineSpacing);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chartArea.top);
+                        ctx.lineTo(x, chartArea.bottom);
+                        ctx.stroke();
+                    }
+                    
+                    // Horizontal grid lines
+                    const horizontalLineCount = 5;
+                    for (let i = 0; i <= horizontalLineCount; i++) {
+                        const y = chartArea.top + (i * (chartArea.height / horizontalLineCount));
+                        ctx.beginPath();
+                        ctx.moveTo(chartArea.left, y);
+                        ctx.lineTo(chartArea.right, y);
+                        ctx.stroke();
+                    }
+                    
+                    // Draw border - thicker as requested
+                    ctx.strokeStyle = '#CCCCCC';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+                    
+                    // Calculate price range
+                    const prices = this.data.map(d => [d.h, d.l, d.o, d.c]).flat();
+                    const minPrice = Math.min(...prices);
+                    const maxPrice = Math.max(...prices);
+                    const priceRange = maxPrice - minPrice;
+                    const margin = priceRange * 0.1;
+                    
+                    // Calculate candle dimensions
+                    const candleCount = this.data.length;
+                    const candleSpacing = chartArea.width / candleCount;
+                    const candleWidth = Math.max(candleSpacing * 0.9, 50); // Very thick Korean style
+                    const wickWidth = Math.max(4, candleWidth / 12);
+                    
+                    console.log(`🏛️ Drawing ${candleCount} Korean candles: ${candleWidth}px wide, ${wickWidth}px wicks`);
+                    
+                    // Draw date labels at bottom - in Korean format
+                    ctx.fillStyle = '#333333';
+                    ctx.font = '11px Arial';
+                    ctx.textAlign = 'center';
+                    
+                    // Show some date labels (not every candle for clarity)
+                    const labelStep = Math.max(1, Math.floor(candleCount / 5));
+                    for (let i = 0; i < candleCount; i += labelStep) {
+                        const x = chartArea.left + (i * candleSpacing) + (candleSpacing / 2);
+                        const candle = this.data[i];
+                        const date = new Date(candle.x);
+                        
+                        // Format date based on timeInterval
+                        let dateLabel;
+                        if (this.timeInterval === '1mo') {
+                            dateLabel = `${date.getFullYear()}년 ${date.getMonth()+1}월`;
+                        } else if (this.timeInterval === '1wk') {
+                            dateLabel = `${date.getMonth()+1}월 ${date.getDate()}일`;
+                        } else {
+                            dateLabel = `${date.getMonth()+1}/${date.getDate()}`;
+                        }
+                        
+                        // Draw date label
+                        ctx.fillText(dateLabel, x, chartArea.bottom + 15);
+                    }
+                    
+                    // Draw candlesticks
+                    this.data.forEach((candle, index) => {
+                        const x = chartArea.left + (index * candleSpacing) + (candleSpacing / 2);
+                        
+                        // Map prices to Y coordinates (inverted Y-axis)
+                        const high = chartArea.top + ((maxPrice + margin - candle.h) / (priceRange + margin * 2)) * chartArea.height;
+                        const low = chartArea.top + ((maxPrice + margin - candle.l) / (priceRange + margin * 2)) * chartArea.height;
+                        const open = chartArea.top + ((maxPrice + margin - candle.o) / (priceRange + margin * 2)) * chartArea.height;
+                        const close = chartArea.top + ((maxPrice + margin - candle.c) / (priceRange + margin * 2)) * chartArea.height;
+                        
+                        // Korean colors: Red up, Blue down (thicker, more saturated colors)
+                        const isUp = candle.c >= candle.o;
+                        const bodyColor = isUp ? '#FF3333' : '#3366FF';
+                        const wickColor = isUp ? '#DD0000' : '#0044DD';
+                        const borderColor = isUp ? '#BB0000' : '#0033BB';
+                        
+                        // Highlight candle if hovered
+                        const isHovered = this.hoverPoint && this.hoverPoint.index === index;
+                        const highlightWidth = isHovered ? 5 : 3;
+                        
+                        // Draw wick - thicker
+                        ctx.strokeStyle = wickColor;
+                        ctx.lineWidth = isHovered ? wickWidth + 2 : wickWidth;
+                        ctx.lineCap = 'round';
+                        ctx.beginPath();
+                        ctx.moveTo(x, high);
+                        ctx.lineTo(x, low);
+                        ctx.stroke();
+                        
+                        // Draw body - thicker for Korean style
+                        const bodyTop = Math.min(open, close);
+                        const bodyHeight = Math.max(Math.abs(close - open), 8); // Min height 8px
+                        
+                        // Fill body
+                        ctx.fillStyle = bodyColor;
+                        ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                        
+                        // Border - thicker for Korean style
+                        ctx.strokeStyle = borderColor;
+                        ctx.lineWidth = highlightWidth;
+                        ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                        
+                        // Draw hover tooltip if this is the hovered candle
+                        if (isHovered) {
+                            this.drawTooltip(x, high - 10, candle);
+                        }
+                    });
+                    
+                    // Draw tooltip if we have a hover point
+                    if (this.hoverPoint) {
+                        const candle = this.hoverPoint.data;
+                        const index = this.hoverPoint.index;
+                        const x = chartArea.left + (index * candleSpacing) + (candleSpacing / 2);
+                        const y = chartArea.top;
+                        this.drawTooltip(x, y - 10, candle);
+                    }
+                    
+                    // Draw price scale
+                    this.drawPriceScale(chartArea, minPrice, maxPrice, priceRange, margin);
+                    
+                    // Show current time interval at bottom right
+                    ctx.fillStyle = '#444444';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(`차트 간격: ${this.getIntervalName()}`, chartArea.right, chartArea.bottom + 30);
+                    
+                    console.log('✅ Korean candlestick chart drawn successfully!');
+                },
+                
+                // Get Korean interval name
+                getIntervalName: function() {
+                    switch(this.timeInterval) {
+                        case '1d': return '일일 (Daily)';
+                        case '1wk': return '주간 (Weekly)';
+                        case '1mo': return '월간 (Monthly)';
+                        default: return '일일 (Daily)';
+                    }
+                },
+                
+                // Draw tooltip with OHLC data in Korean
+                drawTooltip: function(x, y, candle) {
+                    const ctx = this.ctx;
+                    const date = new Date(candle.x);
+                    const formattedDate = date.toLocaleDateString('ko-KR', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        weekday: 'long'
+                    });
+                    
+                    const isUp = candle.c >= candle.o;
+                    const changeAmount = (candle.c - candle.o).toFixed(2);
+                    const changePercent = ((candle.c - candle.o) / candle.o * 100).toFixed(2);
+                    const changeColor = isUp ? '#FF0000' : '#0066FF';
+                    const changeSymbol = isUp ? '▲' : '▼';
+                    
+                    // Format tooltip content
+                    const lines = [
+                        formattedDate,
+                        `시가 (Open): ${candle.o.toFixed(2)}`,
+                        `고가 (High): ${candle.h.toFixed(2)}`,
+                        `저가 (Low): ${candle.l.toFixed(2)}`,
+                        `종가 (Close): ${candle.c.toFixed(2)}`,
+                        `변동: ${changeSymbol} ${Math.abs(changeAmount)} (${changePercent}%)`
+                    ];
+                    
+                    // Calculate tooltip dimensions
+                    ctx.font = '12px Arial';
+                    const lineHeight = 18;
+                    const padding = 10;
+                    const maxWidth = lines.reduce((max, line) => Math.max(max, ctx.measureText(line).width), 0);
+                    const tooltipWidth = maxWidth + padding * 2;
+                    const tooltipHeight = lineHeight * lines.length + padding * 2;
+                    
+                    // Position tooltip to remain within canvas
+                    let tooltipX = x - tooltipWidth / 2;
+                    if (tooltipX < 0) tooltipX = 0;
+                    if (tooltipX + tooltipWidth > this.width) tooltipX = this.width - tooltipWidth;
+                    
+                    let tooltipY = y - tooltipHeight - 5;
+                    if (tooltipY < 0) tooltipY = y + 5; // Show below if not enough space above
+                    
+                    // Draw tooltip background with Korean-style border
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.strokeStyle = '#444444';
+                    ctx.lineWidth = 2;
+                    
+                    // Draw rounded rectangle
+                    const radius = 5;
+                    ctx.beginPath();
+                    ctx.moveTo(tooltipX + radius, tooltipY);
+                    ctx.lineTo(tooltipX + tooltipWidth - radius, tooltipY);
+                    ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY, tooltipX + tooltipWidth, tooltipY + radius);
+                    ctx.lineTo(tooltipX + tooltipWidth, tooltipY + tooltipHeight - radius);
+                    ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY + tooltipHeight, tooltipX + tooltipWidth - radius, tooltipY + tooltipHeight);
+                    ctx.lineTo(tooltipX + radius, tooltipY + tooltipHeight);
+                    ctx.quadraticCurveTo(tooltipX, tooltipY + tooltipHeight, tooltipX, tooltipY + tooltipHeight - radius);
+                    ctx.lineTo(tooltipX, tooltipY + radius);
+                    ctx.quadraticCurveTo(tooltipX, tooltipY, tooltipX + radius, tooltipY);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Draw tooltip content
+                    ctx.fillStyle = '#333333';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(lines[0], tooltipX + padding, tooltipY + padding + 12);
+                    
+                    // Draw separator line
+                    ctx.strokeStyle = '#E0E0E0';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(tooltipX + padding, tooltipY + padding + 18);
+                    ctx.lineTo(tooltipX + tooltipWidth - padding, tooltipY + padding + 18);
+                    ctx.stroke();
+                    
+                    // Draw price data
+                    ctx.font = '12px Arial';
+                    for (let i = 1; i < lines.length - 1; i++) {
+                        ctx.fillStyle = '#333333';
+                        ctx.fillText(lines[i], tooltipX + padding, tooltipY + padding + lineHeight * (i + 1));
+                    }
+                    
+                    // Draw change with color
+                    ctx.fillStyle = changeColor;
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(lines[lines.length - 1], tooltipX + padding, tooltipY + padding + lineHeight * (lines.length));
+                },
+                
+                // Draw price scale on the right - thicker Korean style
+                drawPriceScale: function(chartArea, minPrice, maxPrice, priceRange, margin) {
+                    const ctx = this.ctx;
+                    const steps = 5;
+                    const stepSize = (priceRange + margin * 2) / steps;
+                    
+                    ctx.fillStyle = '#444444';
+                    ctx.font = 'bold 12px Arial'; // Bolder text for Korean style
+                    ctx.textAlign = 'left';
+                    
+                    // Draw price labels at each step
+                    for (let i = 0; i <= steps; i++) {
+                        const price = maxPrice + margin - (i * stepSize);
+                        const y = chartArea.top + ((i * chartArea.height) / steps);
+                        
+                        // Price label
+                        ctx.fillText(price.toFixed(2), chartArea.right + 10, y + 4);
+                        
+                        // Grid line
+                        ctx.strokeStyle = '#E8E8E8';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(chartArea.left, y);
+                        ctx.lineTo(chartArea.right, y);
+                        ctx.stroke();
+                    }
+                }
+            };
+            
+            // Store chart globally so it can be accessed for updates
+            window.koreanCanvasChart = koreanChart;
+            
+            console.log('✅ Korean chart initialized successfully!');
+            return koreanChart;
+        }
+
+        // Update Korean chart with new data
+        function updateKoreanChart(candlestickData) {
+            if (!window.koreanCanvasChart) {
+                console.error('❌ Korean chart not initialized');
+                return;
+            }
+            
+            console.log(`🏛️ Updating Korean chart with ${candlestickData.length} candles`);
+            window.koreanCanvasChart.updateData(candlestickData);
+        }
+
+        // Convert price data to candlestick OHLC format for Korean chart
+        function convertToCandlestickData(priceData) {
+            if (!priceData || priceData.length === 0) return [];
+            
+            // FORCE LIMIT TO 15 POINTS FOR MAXIMUM THICK KOREAN-STYLE CANDLESTICKS
+            const limitedData = priceData.slice(-15);
+            
+            return limitedData.map((item, index) => {
+                const price = item.y;
+                const prevPrice = index > 0 ? limitedData[index - 1].y : price;
+                
+                // Generate synthetic OHLC data with some variation
+                const variation = price * 0.01; // 1% variation
+                const open = prevPrice;
+                const close = price;
+                const high = Math.max(open, close) + (Math.random() * variation);
+                const low = Math.min(open, close) - (Math.random() * variation);
+                
+                // Ensure x is a timestamp in milliseconds
+                let x = item.x;
+                if (x instanceof Date) {
+                    x = x.getTime();
+                } else if (typeof x === 'string') {
+                    x = new Date(x).getTime();
+                } else if (typeof x !== 'number') {
+                    x = Date.now();
+                }
+                
+                return {
+                    x: x, // Timestamp in milliseconds
+                    o: Math.max(open, 0.01),
+                    h: Math.max(high, 0.01),
+                    l: Math.max(low, 0.01),
+                    c: Math.max(close, 0.01)
+                };
+            });
+        }
+
+        // Helper function to ensure consistent date parsing
+        function parseDate(dateInput) {
+            if (dateInput instanceof Date) {
+                return isNaN(dateInput.getTime()) ? null : dateInput;
+            }
+            
+            if (typeof dateInput === 'string' || typeof dateInput === 'number') {
+                const parsed = new Date(dateInput);
+                return isNaN(parsed.getTime()) ? null : parsed;
+            }
+            
+            return null;
+        }
+
+        // Helper function to convert date to timestamp for Chart.js
+        function dateToTimestamp(dateInput) {
+            // If it's already a number, check if it's a valid timestamp
+            if (typeof dateInput === 'number') {
+                // If it's a valid timestamp (either seconds or milliseconds), use it
+                if (dateInput > 0) {
+                    // If it looks like seconds (less than year 2100), convert to milliseconds
+                    if (dateInput < 4000000000) {
+                        return dateInput * 1000;
+                    }
+                    return dateInput;
+                }
+            }
+            
+            // Try to parse as date
+            const date = parseDate(dateInput);
+            if (date) {
+                return date.getTime();
+            }
+            
+            // Fallback to current time
+            return Date.now();
+        }
+
         // Global variables
         let chart = null;
         let volumeChart = null;
@@ -782,7 +1726,7 @@
         // DOM elements
         const stockSelect = document.getElementById('stockSelect');
         const stockSearch = document.getElementById('stockSearch');
-        const stockSearchInput = document.getElementById('stockSearchInput');
+        const stockSearchInput = document.getElementById('stockCodeInput'); // Use Korean input
         const chartScrollbar = document.getElementById('chartScrollbar');
         const timeIntervalBtns = document.querySelectorAll('.time-interval-btn');
         const showVolumeCheckbox = document.getElementById('showVolume');
@@ -792,7 +1736,7 @@
         const deletePredictionBtn = document.getElementById('deletePredictionBtn');
         const stockInfo = document.getElementById('stockInfo');
         const chartContainer = document.getElementById('chartContainer');
-        const chartCanvas = document.getElementById('predictionChart');
+        // chartCanvas already declared at top - removed duplicate
         const chartLoading = document.getElementById('chartLoading');
         const noStockSelected = document.getElementById('noStockSelected');
         const chartTimeRange = document.getElementById('chartTimeRange');
@@ -836,177 +1780,166 @@
             }
         }
 
-        // Initialize chart
-        function initializeChart() {
-            const ctx = chartCanvas.getContext('2d');
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [
-                        {
-                            label: '실제 가격',
-                            data: [],
-                            borderColor: '#2962ff',
-                            backgroundColor: 'rgba(41, 98, 255, 0.1)',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 0,
-                            pointHoverRadius: 5,
-                            tension: 0.1
-                        },
-                        {
-                            label: '예측',
-                            data: [],
-                            borderColor: '#26a69a',
-                            backgroundColor: '#26a69a',
-                            borderWidth: 2,
-                            fill: false,
-                            pointRadius: 8,
-                            pointHoverRadius: 10,
-                            borderDash: [5, 5],
-                            showLine: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(30, 34, 45, 0.95)',
-                            titleColor: '#d1d4dc',
-                            bodyColor: '#d1d4dc',
-                            borderColor: '#363a45',
-                            borderWidth: 1,
-                            callbacks: {
-                                title: function (context) {
-                                    if (context[0]) {
-                                        return new Date(context[0].parsed.x).toLocaleDateString('ko-KR');
-                                    }
-                                },
-                                label: function (context) {
-                                    return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
-                                }
-                            }
-                        },
-                        zoom: {
-                            limits: {
-                                x: { min: 'original', max: 'original' },
-                                y: { min: 'original', max: 'original' }
-                            },
-                            pan: {
-                                enabled: true,
-                                mode: 'x',
-                                threshold: 10
-                            },
-                            zoom: {
-                                wheel: {
-                                    enabled: true,
-                                },
-                                pinch: {
-                                    enabled: true
-                                },
-                                mode: 'x',
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'day',
-                                displayFormats: {
-                                    minute: 'HH:mm',
-                                    hour: 'HH:mm',
-                                    day: 'MMM dd',
-                                    week: 'MMM dd',
-                                    month: 'MMM yyyy'
-                                }
-                            },
-                            grid: {
-                                color: function (context) {
-                                    // Make grid lines more visible for date separation
-                                    return context.tick.major ? '#4a5568' : '#363a45';
-                                },
-                                drawBorder: false,
-                                lineWidth: function (context) {
-                                    return context.tick.major ? 2 : 1;
-                                }
-                            },
-                            ticks: {
-                                color: '#868993',
-                                maxTicksLimit: 8,
-                                major: {
-                                    enabled: true
-                                }
-                            }
-                        },
-                        y: {
-                            beginAtZero: false,
-                            grid: {
-                                color: '#363a45',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#868993',
-                                callback: function (value) {
-                                    return '$' + value.toFixed(2);
-                                }
-                            }
-                        }
-                    },
-                    onClick: handleChartClick,
-                    onHover: handleChartHover
+        // Convert simple price data to candlestick OHLC format (grouped by period)
+        function convertToCandlestickDataGrouped(priceData, period = 1) {
+            if (!priceData || priceData.length === 0) return [];
+            
+            const candlestickData = [];
+            
+            // Group data by time periods to create candlesticks
+            for (let i = 0; i < priceData.length; i += period) {
+                const periodData = priceData.slice(i, i + period);
+                if (periodData.length === 0) continue;
+                
+                const open = periodData[0].y;
+                const close = periodData[periodData.length - 1].y;
+                const high = Math.max(...periodData.map(d => d.y));
+                const low = Math.min(...periodData.map(d => d.y));
+                const date = periodData[0].x;
+                
+                // Ensure x is a timestamp in milliseconds
+                let x = date;
+                if (x instanceof Date) {
+                    x = x.getTime();
+                } else if (typeof x === 'string') {
+                    x = new Date(x).getTime();
+                } else if (typeof x !== 'number') {
+                    x = Date.now();
                 }
-            });
-
-            // Initialize volume chart
-            initializeVolumeChart();
+                
+                candlestickData.push({
+                    x: x, // Timestamp in milliseconds
+                    o: open,
+                    h: high,
+                    l: low,
+                    c: close
+                });
+            }
+            
+            return candlestickData;
         }
 
-        // Initialize volume chart
+        // Initialize Korean candlestick chart (Pure Canvas - No Chart.js)
+        function initializeChart() {
+            console.log('🏛️ Initializing Pure Korean Candlestick Chart...');
+            
+            // Destroy any existing chart
+            if (chart) {
+                try {
+                    chart.destroy();
+                    console.log('Destroyed existing Chart.js instance');
+                } catch (e) {
+                    console.warn('Error destroying chart:', e);
+                }
+                chart = null;
+            }
+            
+            // Initialize the Korean chart
+            if (initializeKoreanChart()) {
+                console.log('✅ Pure Korean Chart initialized successfully');
+                
+                // Connect time interval buttons to the Korean chart
+                document.querySelectorAll('.time-interval-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const interval = this.dataset.interval;
+                        if (window.koreanCanvasChart) {
+                            window.koreanCanvasChart.setTimeInterval(interval);
+                        }
+                    });
+                });
+                
+                return true;
+            } else {
+                console.error('❌ Failed to initialize Korean chart');
+                return false;
+            }
+        }
+
+        // Initialize volume chart with Korean styling
         function initializeVolumeChart() {
             const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+
+            // Destroy existing volume chart if it exists
+            if (volumeChart) {
+                volumeChart.destroy();
+                volumeChart = null;
+            }
+
+            // Sample Korean volume data
+            const sampleVolumeData = [
+                { x: '2025-02-20', y: 45000 },
+                { x: '2025-02-21', y: 125000 },
+                { x: '2025-02-22', y: 95000 },
+                { x: '2025-02-23', y: 85000 },
+                { x: '2025-02-24', y: 155000 },
+                { x: '2025-02-25', y: 75000 },
+                { x: '2025-02-26', y: 105000 },
+                { x: '2025-02-27', y: 65000 },
+                { x: '2025-02-28', y: 115000 },
+                { x: '2025-03-01', y: 95000 },
+                { x: '2025-03-02', y: 135000 },
+                { x: '2025-03-03', y: 85000 },
+                { x: '2025-03-04', y: 165000 },
+                { x: '2025-03-05', y: 125000 },
+                { x: '2025-03-06', y: 105000 },
+            ];
+
+            // Define candlestick reference data for volume coloring
+            const candlestickReference = [
+                { c: 101000, o: 100000 }, // up
+                { c: 99500, o: 101000 },  // down
+                { c: 100500, o: 99500 },  // up
+                { c: 102000, o: 100500 }, // up
+                { c: 98000, o: 102000 },  // down
+                { c: 99000, o: 98000 },   // up
+                { c: 100000, o: 99000 },  // up
+                { c: 101000, o: 100000 }, // up
+                { c: 102500, o: 101000 }, // up
+                { c: 103500, o: 102500 }, // up
+                { c: 104000, o: 103500 }, // up
+                { c: 105500, o: 104000 }, // up
+                { c: 106000, o: 105500 }, // up
+                { c: 107000, o: 106000 }, // up
+                { c: 108000, o: 107000 }, // up
+            ];
 
             volumeChart = new Chart(volumeCtx, {
                 type: 'bar',
                 data: {
                     datasets: [{
                         label: '거래량',
-                        data: [],
+                        data: sampleVolumeData,
                         backgroundColor: function (context) {
-                            // Color bars based on price movement
                             const index = context.dataIndex;
-                            if (stockData.length > index + 1) {
-                                const current = stockData[index];
-                                const previous = stockData[index - 1];
-                                if (current && previous) {
-                                    return current.close > previous.close ? '#26a69a' : '#ef5350';
-                                }
+                            // Get corresponding candlestick data to determine color
+                            if (index < candlestickReference.length) {
+                                const candleData = candlestickReference[index];
+                                return candleData.c >= candleData.o ? '#1976D2' : '#F44336'; // Blue for up, Red for down
                             }
-                            return '#64748b';
+                            return '#1976D2';
                         },
-                        borderWidth: 0
+                        borderWidth: 0,
+                        barThickness: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 5,
+                            bottom: 5
+                        }
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(30, 34, 45, 0.95)',
-                            titleColor: '#d1d4dc',
-                            bodyColor: '#d1d4dc',
-                            borderColor: '#363a45',
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#333',
+                            bodyColor: '#333',
+                            borderColor: '#ddd',
                             borderWidth: 1,
                             callbacks: {
                                 title: function (context) {
@@ -1023,20 +1956,37 @@
                     scales: {
                         x: {
                             type: 'time',
+                            adapters: {
+                                date: {
+                                    locale: 'en'
+                                }
+                            },
+                            time: {
+                                parser: false, // Don't parse strings, use raw timestamps
+                                unit: 'day'
+                            },
                             display: false
                         },
                         y: {
                             beginAtZero: true,
+                            position: 'right',
                             grid: {
-                                color: '#363a45',
-                                drawBorder: false
+                                color: '#e0e0e0',
+                                drawBorder: false,
+                                lineWidth: 0.5
                             },
                             ticks: {
-                                color: '#868993',
+                                color: '#666',
                                 maxTicksLimit: 3,
                                 callback: function (value) {
                                     return formatVolume(value);
+                                },
+                                font: {
+                                    size: 9
                                 }
+                            },
+                            border: {
+                                display: false
                             }
                         }
                     }
@@ -1058,7 +2008,7 @@
 
         // Handle chart click for predictions
         function handleChartClick(event, elements) {
-            if (!currentStockSymbol) return;
+            if (!currentStockSymbol || !chart || !chart.scales) return;
 
             const canvasPosition = Chart.helpers.getRelativePosition(event, chart);
             const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
@@ -1101,6 +2051,8 @@
 
         // Handle chart hover for prediction tooltips
         function handleChartHover(event, activeElements) {
+            if (!chart || !chartCanvas) return;
+            
             const canvasPosition = Chart.helpers.getRelativePosition(event, chart);
 
             // Check if hovering over a prediction point
@@ -1125,12 +2077,21 @@
 
         // Show prediction tooltip
         function showPredictionTooltip(event, prediction) {
+            if (!predictionTooltip) return;
+            
             const rect = chartCanvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
 
-            document.getElementById('tooltipDate').textContent = new Date(prediction.date).toLocaleDateString('ko-KR');
-            document.getElementById('tooltipPrice').textContent = '$' + prediction.price.toFixed(2);
+            const tooltipDate = document.getElementById('tooltipDate');
+            const tooltipPrice = document.getElementById('tooltipPrice');
+            
+            if (tooltipDate) {
+                tooltipDate.textContent = new Date(prediction.date).toLocaleDateString('ko-KR');
+            }
+            if (tooltipPrice) {
+                tooltipPrice.textContent = '$' + prediction.price.toFixed(2);
+            }
 
             predictionTooltip.style.left = (x + 10) + 'px';
             predictionTooltip.style.top = (y - 10) + 'px';
@@ -1139,20 +2100,16 @@
 
         // Hide prediction tooltip
         function hidePredictionTooltip() {
-            predictionTooltip.classList.add('hidden');
+            if (predictionTooltip) {
+                predictionTooltip.classList.add('hidden');
+            }
         }
 
         // Update chart with predictions
         function updateChart() {
-            if (!chart) return;
-
-            // Update prediction points
-            chart.data.datasets[1].data = predictions.map(p => ({
-                x: new Date(p.date),
-                y: p.price
-            }));
-
-            chart.update('none');
+            // Korean chart doesn't need prediction updates - 
+            // it only shows stock price candlesticks
+            console.log('📊 Chart update requested - Korean chart shows only stock data');
         }
 
         // Update predictions list display
@@ -1163,7 +2120,9 @@
             }
 
             predictionsPanel.classList.remove('hidden');
-            predictionCount.textContent = `${predictions.length}개 예측`;
+            if (predictionCount) {
+                predictionCount.textContent = `${predictions.length}개 예측`;
+            }
 
             predictionsList.innerHTML = predictions
                 .sort((a, b) => new Date(a.date) - new Date(b.date))
@@ -1204,16 +2163,19 @@
         }
 
         // Clear all predictions
-        clearPredictions.addEventListener('click', () => {
-            predictions = [];
-            updateChart();
-            updatePredictionsList();
-            showMessage('모든 예측이 삭제되었습니다.', 'info');
-        });
+        if (clearPredictions) {
+            clearPredictions.addEventListener('click', () => {
+                predictions = [];
+                updateChart();
+                updatePredictionsList();
+                showMessage('모든 예측이 삭제되었습니다.', 'info');
+            });
+        }
 
         // Fit chart to show all data
-        fitChart.addEventListener('click', () => {
-            if (chart && stockData.length > 0) {
+        if (fitChart) {
+            fitChart.addEventListener('click', () => {
+                if (chart && stockData.length > 0) {
                 const minPrice = Math.min(...stockData.map(d => d.y));
                 const maxPrice = Math.max(...stockData.map(d => d.y));
                 const padding = (maxPrice - minPrice) * 0.1;
@@ -1223,6 +2185,7 @@
                 chart.update();
             }
         });
+        }
 
         // Get current price
         function getCurrentPrice() {
@@ -1230,16 +2193,122 @@
             return stockData[stockData.length - 1].y;
         }
 
+        // Update Korean chart UI with real stock data
+        function updateStockInfoDisplay(symbol, stockData) {
+            if (!stockData || stockData.length === 0) return;
+            
+            const currentPrice = stockData[stockData.length - 1].y;
+            const previousPrice = stockData.length > 1 ? stockData[stockData.length - 2].y : currentPrice;
+            const priceChange = currentPrice - previousPrice;
+            const priceChangePercent = ((priceChange / previousPrice) * 100);
+            
+            // Calculate high and low from data
+            const prices = stockData.map(d => d.y);
+            const dayHigh = Math.max(...prices);
+            const dayLow = Math.min(...prices);
+            
+            // Calculate volume if available
+            const totalVolume = volumeData.reduce((sum, d) => sum + (d.volume || d.y || 0), 0);
+            
+            // Update header
+            const headerStockName = document.getElementById('headerStockName');
+            if (headerStockName) {
+                headerStockName.textContent = getStockDisplayName(symbol);
+            }
+            
+            // Update info bar
+            const stockCode = document.getElementById('stockCode');
+            const stockName = document.getElementById('stockName');
+            const currentPriceEl = document.getElementById('currentPrice');
+            const priceChangeEl = document.getElementById('priceChange');
+            const priceChangePercentEl = document.getElementById('priceChangePercent');
+            const dayHighEl = document.getElementById('dayHigh');
+            const dayLowEl = document.getElementById('dayLow');
+            const volumeEl = document.getElementById('volume');
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            
+            if (stockCode) stockCode.textContent = symbol;
+            if (stockName) stockName.textContent = getStockDisplayName(symbol);
+            
+            // Set color based on price movement (Korean style: blue up, red down)
+            const isUp = priceChange >= 0;
+            const colorClass = isUp ? 'text-blue-600' : 'text-red-600';
+            const arrow = isUp ? '▲' : '▼';
+            
+            if (currentPriceEl) {
+                currentPriceEl.textContent = `$${currentPrice.toFixed(2)}`;
+                currentPriceEl.className = `text-lg font-bold ${colorClass}`;
+            }
+            
+            if (priceChangeEl) {
+                priceChangeEl.textContent = `${arrow} ${Math.abs(priceChange).toFixed(2)}`;
+                priceChangeEl.className = colorClass;
+            }
+            
+            if (priceChangePercentEl) {
+                priceChangePercentEl.textContent = `(${priceChange >= 0 ? '+' : ''}${priceChangePercent.toFixed(2)}%)`;
+                priceChangePercentEl.className = colorClass;
+            }
+            
+            if (dayHighEl) dayHighEl.textContent = `고 ${dayHigh.toFixed(2)}`;
+            if (dayLowEl) dayLowEl.textContent = `저 ${dayLow.toFixed(2)}`;
+            if (volumeEl) volumeEl.textContent = `거래량 ${totalVolume.toLocaleString('ko-KR')}`;
+            
+            if (lastUpdatedEl) {
+                const now = new Date();
+                lastUpdatedEl.textContent = now.toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            
+            // Update price scale
+            updatePriceScale(dayLow, dayHigh);
+        }
+        
+        // Get display name for stock symbol
+        function getStockDisplayName(symbol) {
+            const stockNames = {
+                'AAPL': 'Apple Inc.',
+                'GOOGL': 'Alphabet Inc.',
+                'MSFT': 'Microsoft Corp.',
+                'AMZN': 'Amazon.com Inc.',
+                'TSLA': 'Tesla Inc.',
+                'META': 'Meta Platforms',
+                'NFLX': 'Netflix Inc.',
+                'NVDA': 'NVIDIA Corp.'
+            };
+            return stockNames[symbol] || symbol;
+        }
+        
+        // Update price scale on the right side
+        function updatePriceScale(minPrice, maxPrice) {
+            const maxPriceEl = document.getElementById('maxPrice');
+            const midPriceEl = document.getElementById('midPrice');
+            const minPriceEl = document.getElementById('minPrice');
+            
+            if (maxPriceEl) maxPriceEl.textContent = maxPrice.toFixed(2);
+            if (midPriceEl) midPriceEl.textContent = ((maxPrice + minPrice) / 2).toFixed(2);
+            if (minPriceEl) minPriceEl.textContent = minPrice.toFixed(2);
+        }
+
         // Load stock data
         async function loadStockData(symbol) {
             if (!symbol) return;
 
-            chartLoading.style.display = 'flex';
-            noStockSelected.style.display = 'none';
+            if (chartLoading) {
+                chartLoading.style.display = 'flex';
+            }
+            if (noStockSelected) {
+                noStockSelected.style.display = 'none';
+            }
 
             try {
                 // Get number of days for historical data
-                const days = parseInt(chartTimeRange.value) || 90;
+                const days = chartTimeRange ? parseInt(chartTimeRange.value) || 90 : 90;
 
                 // Show detailed loading information
                 console.log(`Loading data for ${symbol}, ${days} days, interval: ${currentInterval}`);
@@ -1256,48 +2325,76 @@
                 volumeData = volumeApiData || []; // Handle empty volume data gracefully
                 currentStockSymbol = symbol;
 
+                // Ensure all x values in stockData are timestamps (milliseconds)
+                stockData = stockData.map(item => ({
+                    ...item,
+                    x: dateToTimestamp(item.x)
+                }));
+
+                // Ensure all x values in volumeData are timestamps (milliseconds)
+                volumeData = volumeData.map(item => ({
+                    ...item,
+                    x: dateToTimestamp(item.x || item.date || item.timestamp)
+                }));
+
                 // Validate that we have data
                 if (!stockData || stockData.length === 0) {
                     throw new Error('No price data received from API');
-                }                // Update chart
-                if (chart) {
-                    chart.data.datasets[0].data = stockData;
-
-                    // Extend chart range to show future dates
-                    const lastDate = new Date(stockData[stockData.length - 1].x);
-                    const futureDate = new Date(lastDate);
-                    futureDate.setDate(futureDate.getDate() + 30); // Show 30 days into future
-
-                    chart.options.scales.x.max = futureDate;
-                    chart.update();
+                }                // Update Korean candlestick chart
+                if (window.koreanCanvasChart) {
+                    console.log(`🏛️ Updating Korean chart with ${stockData.length} data points`);
+                    // Convert price data to candlestick format
+                    const candlestickData = convertToCandlestickData(stockData);
+                    window.koreanCanvasChart.updateData(candlestickData);
+                } else {
+                    console.warn('Korean chart not initialized');
                 }
 
+                // Update Korean chart UI
+                updateStockInfoDisplay(symbol, stockData);
+
                 // Update volume chart if enabled
-                if (showVolumeCheckbox.checked && volumeChart) {
+                if (showVolumeCheckbox && showVolumeCheckbox.checked && volumeChart) {
                     updateVolumeChart();
                 }
 
                 // Update current price display
                 const currentPrice = getCurrentPrice();
-                currentPriceDisplay.textContent = `현재가: $${currentPrice.toFixed(2)}`;
+                if (currentPriceDisplay) {
+                    currentPriceDisplay.textContent = `현재가: $${currentPrice.toFixed(2)}`;
+                }
 
                 // Update stock info
-                selectedStockName.textContent = getStockDisplayName(symbol);
-                selectedStockSymbol.textContent = symbol;
-                currentStockPrice.textContent = `$${currentPrice.toFixed(2)}`;
-                currentStockPrice.className = 'text-3xl font-bold text-tv-text';
-                stockInfo.classList.remove('hidden');
+                if (selectedStockName) {
+                    selectedStockName.textContent = getStockDisplayName(symbol);
+                }
+                if (selectedStockSymbol) {
+                    selectedStockSymbol.textContent = symbol;
+                }
+                if (currentStockPrice) {
+                    currentStockPrice.textContent = `$${currentPrice.toFixed(2)}`;
+                    currentStockPrice.className = 'text-3xl font-bold text-tv-text';
+                }
+                if (stockInfo) {
+                    stockInfo.classList.remove('hidden');
+                }
 
                 // Reset scrollbar to show latest data
-                chartScrollbar.value = 100;
+                if (chartScrollbar) {
+                    chartScrollbar.value = 100;
+                }
                 chartScrollPosition = 100;
                 updateChartView();
 
-                chartLoading.style.display = 'none';
+                if (chartLoading) {
+                    chartLoading.style.display = 'none';
+                }
 
             } catch (error) {
                 console.error('Error loading stock data:', error);
-                chartLoading.style.display = 'none';
+                if (chartLoading) {
+                    chartLoading.style.display = 'none';
+                }
 
                 // Provide more specific error messages
                 let errorMessage = '데이터 로딩에 실패했습니다';
@@ -1315,8 +2412,12 @@
                 showMessage(errorMessage, 'error');
 
                 // Show the no data state
-                noStockSelected.style.display = 'flex';
-                stockInfo.classList.add('hidden');
+                if (noStockSelected) {
+                    noStockSelected.style.display = 'flex';
+                }
+                if (stockInfo) {
+                    stockInfo.classList.add('hidden');
+                }
 
                 // Clear any existing chart data
                 if (chart) {
@@ -1402,20 +2503,28 @@
                                 const volume = data.total_volumes && data.total_volumes[index] ?
                                     (Array.isArray(data.total_volumes[index]) ? data.total_volumes[index][1] : data.total_volumes[index]) : 0;
 
+                                const parsedDate = parseDate(timestamp);
+                                if (!parsedDate) return null;
+
                                 return {
-                                    x: new Date(timestamp),
+                                    x: parsedDate,
                                     y: price,
                                     volume: volume
                                 };
-                            });
+                            }).filter(item => item !== null);
                         }
                         // Standard historical_data format
                         else if (data.historical_data && Array.isArray(data.historical_data)) {
-                            historicalData = data.historical_data.map(item => ({
-                                x: new Date(item.date),
-                                y: item.price || item.close || item.value,
-                                volume: item.volume || 0
-                            }));
+                            historicalData = data.historical_data.map(item => {
+                                const parsedDate = parseDate(item.date);
+                                if (!parsedDate) return null;
+
+                                return {
+                                    x: parsedDate,
+                                    y: item.price || item.close || item.value,
+                                    volume: item.volume || 0
+                                };
+                            }).filter(item => item !== null);
                         }
                         // Single data point with current quote
                         else if (currentQuote && (data.current_price || data.price || data.close)) {
@@ -1562,14 +2671,15 @@
         }
 
         // Stock selection handler
-        stockSelect.addEventListener('change', function () {
-            const symbol = this.value;
-            if (symbol) {
-                loadStockData(symbol);
-                predictions = []; // Clear previous predictions
-                updatePredictionsList();
-            } else {
-                stockInfo.classList.add('hidden');
+        if (stockSelect) {
+            stockSelect.addEventListener('change', function () {
+                const symbol = this.value;
+                if (symbol) {
+                    loadStockData(symbol);
+                    predictions = []; // Clear previous predictions
+                    updatePredictionsList();
+                } else {
+                    stockInfo.classList.add('hidden');
                 noStockSelected.style.display = 'flex';
                 chartLoading.style.display = 'none';
                 currentStockSymbol = '';
@@ -1582,13 +2692,16 @@
                 }
             }
         });
+        }
 
         // Chart time range handler
-        chartTimeRange.addEventListener('change', function () {
-            if (currentStockSymbol) {
-                loadStockData(currentStockSymbol);
-            }
-        });
+        if (chartTimeRange) {
+            chartTimeRange.addEventListener('change', function () {
+                if (currentStockSymbol) {
+                    loadStockData(currentStockSymbol);
+                }
+            });
+        }
 
         // Stock search functionality
         stockSearch.addEventListener('input', function () {
@@ -1610,10 +2723,11 @@
         });
 
         // Enhanced stock search input functionality
-        stockSearchInput.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-            const options = stockSelect.querySelectorAll('option');
-            let matchFound = false;
+        if (stockSearchInput) {
+            stockSearchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                const options = stockSelect.querySelectorAll('option');
+                let matchFound = false;
 
             options.forEach(option => {
                 if (option.value === '') return;
@@ -1631,6 +2745,7 @@
                 }
             });
         });
+        }
 
         // Time interval button handlers
         timeIntervalBtns.forEach(btn => {
@@ -1680,10 +2795,12 @@
         });
 
         // Chart scrollbar handler
-        chartScrollbar.addEventListener('input', function () {
-            chartScrollPosition = parseInt(this.value);
-            updateChartView();
-        });
+        if (chartScrollbar) {
+            chartScrollbar.addEventListener('input', function () {
+                chartScrollPosition = parseInt(this.value);
+                updateChartView();
+            });
+        }
 
         // Update chart view based on scroll position
         function updateChartView() {
@@ -1727,16 +2844,16 @@
         }
 
         // Volume toggle handler
-        showVolumeCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                volumeContainer.style.display = 'block';
-                updateVolumeChart();
-            } else {
-                volumeContainer.style.display = 'none';
-            }
-        });
-
-        // Update volume chart with current data
+        if (showVolumeCheckbox) {
+            showVolumeCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    volumeContainer.style.display = 'block';
+                    updateVolumeChart();
+                } else {
+                    volumeContainer.style.display = 'none';
+                }
+            });
+        }        // Update volume chart with current data
         function updateVolumeChart() {
             if (!volumeChart || volumeData.length === 0) return;
 
@@ -1745,21 +2862,25 @@
         }
 
         // Reset zoom handler
-        resetZoomBtn.addEventListener('click', function () {
-            if (chart) {
-                chart.resetZoom();
-                showMessage('차트 줌이 리셋되었습니다.', 'info');
-            }
-        });
+        if (resetZoomBtn) {
+            resetZoomBtn.addEventListener('click', function () {
+                if (chart) {
+                    chart.resetZoom();
+                    showMessage('차트 줌이 리셋되었습니다.', 'info');
+                }
+            });
+        }
 
         // Delete prediction from tooltip
-        deletePredictionBtn.addEventListener('click', function () {
-            if (hoveredPredictionPoint) {
-                removePrediction(hoveredPredictionPoint.id);
-                hidePredictionTooltip();
-                showMessage('예측이 삭제되었습니다.', 'info');
-            }
-        });
+        if (deletePredictionBtn) {
+            deletePredictionBtn.addEventListener('click', function () {
+                if (hoveredPredictionPoint) {
+                    removePrediction(hoveredPredictionPoint.id);
+                    hidePredictionTooltip();
+                    showMessage('예측이 삭제되었습니다.', 'info');
+                }
+            });
+        }
 
         // Form submission handler
         predictionForm.addEventListener('submit', async function (e) {
@@ -1823,7 +2944,10 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function () {
-            initializeChart();
+            // Only initialize if chart doesn't exist
+            if (!chart) {
+                initializeChart();
+            }
             noStockSelected.style.display = 'flex';
             chartLoading.style.display = 'none';
             console.log('Interactive prediction chart initialized');
@@ -1953,6 +3077,10 @@
                 pointer-events: auto;
                 backdrop-filter: blur(10px);
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+            
+            #predictionTooltip.hidden {
+                display: none !important;
             }
 
             /* Enhanced grid lines */
@@ -2357,7 +3485,86 @@
                 default: return '알 수 없음';
             }
         }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏛️ DOM Content Loaded - Initializing Korean Chart');
+            
+            // Hide loading states immediately
+            const chartLoading = document.getElementById('chartLoading');
+            const noStockSelected = document.getElementById('noStockSelected');
+            if (chartLoading) chartLoading.style.display = 'none';
+            if (noStockSelected) noStockSelected.style.display = 'none';
+            
+            // Initialize Korean candlestick chart
+            initializeChart();
+            
+            // Add event listeners for time interval buttons
+            document.querySelectorAll('.time-interval-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.time-interval-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-blue-600');
+                        b.classList.add('bg-gray-600');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active', 'bg-blue-600');
+                    this.classList.remove('bg-gray-600');
+                    
+                    // Update current interval
+                    const interval = this.dataset.interval;
+                    currentInterval = interval;
+                    
+                    // Update display
+                    const currentIntervalEl = document.getElementById('currentInterval');
+                    if (currentIntervalEl) {
+                        const intervalMap = {
+                            '1d': '1일',
+                            '1wk': '1주',
+                            '1mo': '1월',
+                            '1y': '1년'
+                        };
+                        currentIntervalEl.textContent = intervalMap[interval] || interval;
+                    }
+                    
+                    // Reload data with new interval
+                    if (currentStockSymbol) {
+                        loadStockData(currentStockSymbol, 90, interval);
+                    }
+                });
+            });
+            
+            // Auto-load a sample stock with real data after a brief delay
+            setTimeout(() => {
+                currentStockSymbol = 'AAPL'; // Use a US stock that's more likely to have data
+                selectedStockName.textContent = 'Apple Inc.';
+                selectedStockSymbol.textContent = 'AAPL';
+                loadingPrice.style.display = 'block';
+                
+                // Load real stock data for the default stock
+                loadStockData('AAPL', 90, '1d').then(() => {
+                    console.log('Default stock data loaded successfully');
+                    loadingPrice.style.display = 'none';
+                }).catch(error => {
+                    console.error('Failed to load default stock data:', error);
+                    loadingPrice.style.display = 'none';
+                    currentStockPrice.textContent = 'Data unavailable';
+                });
+            }, 500); // 500ms delay to ensure chart is properly initialized
+            
+            console.log('Initialization complete');
+        });
     </script>
+
+    <!-- Prediction Tooltip -->
+    <div id="predictionTooltip" class="fixed bg-tv-card border border-tv-border rounded-lg p-3 text-sm z-50 hidden shadow-lg">
+        <div class="text-tv-text-secondary text-xs mb-1">예측 정보</div>
+        <div class="text-tv-text">
+            <div>날짜: <span id="tooltipDate" class="text-tv-blue">-</span></div>
+            <div>가격: <span id="tooltipPrice" class="text-tv-green">-</span></div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Chart Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="p-4">
+        <h1 class="text-2xl mb-4">Korean Style Chart Test</h1>
+        
+        <!-- Korean-style Chart Header -->
+        <div class="bg-gray-800 border border-gray-600 rounded-t-lg p-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <span class="text-white font-medium">Search stock coins worldwide</span>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" value="011790" 
+                            class="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm">
+                        <span class="text-white font-medium">— SKC</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-white font-medium">Select daily, weekly, monthly, or yearly time</span>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-500">일</button>
+                        <button class="px-3 py-1 bg-gray-700 text-white text-sm rounded hover:bg-gray-600">주</button>
+                        <button class="px-3 py-1 bg-gray-700 text-white text-sm rounded hover:bg-gray-600">월</button>
+                        <button class="px-3 py-1 bg-gray-700 text-white text-sm rounded hover:bg-gray-600">년</button>
+                        <button class="px-3 py-1 bg-gray-700 text-white text-sm rounded hover:bg-gray-600">시</button>
+                    </div>
+                    <span class="text-white">[1일] ✖</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Information Bar -->
+        <div class="flex items-center justify-between p-2 bg-gray-700 text-xs text-white border-x border-gray-600">
+            <span class="flex items-center"><span class="text-gray-300 mr-1">▶</span> 종합(수정)</span>
+            <div class="flex space-x-6">
+                <span>시가 <span class="text-blue-400">109,600</span></span>
+                <span class="text-gray-300">2025/09/19</span>
+                <span>고가 <span class="text-blue-400">-</span></span>
+                <span>저가 <span class="text-blue-400">-</span></span>
+                <span>종가 <span class="text-blue-400">108,000</span></span>
+                <span class="text-blue-400 font-bold">108,000</span>
+                <span class="text-blue-400">106,000</span>
+                <span class="text-blue-400">0.00%</span>
+                <span class="text-blue-400">104,000</span>
+            </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="relative bg-gray-800 border border-gray-600 border-t-0">
+            <!-- Main Chart Area -->
+            <div class="flex">
+                <!-- Price Chart -->
+                <div class="flex-1 relative" style="height: 400px;">
+                    <canvas id="priceChart" class="w-full h-full cursor-crosshair"></canvas>
+                    
+                    <!-- Price Scale on Right -->
+                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-700 border-l border-gray-600 flex flex-col justify-between py-2 text-xs text-blue-400">
+                        <span class="text-center">108,000</span>
+                        <span class="text-center">106,000</span>
+                        <span class="text-center">104,000</span>
+                        <span class="text-center">102,000</span>
+                        <span class="text-center">100,000</span>
+                        <span class="text-center">98,000</span>
+                        <span class="text-center">96,000</span>
+                        <span class="text-center">94,000</span>
+                        <span class="text-center">92,000</span>
+                        <span class="text-center">90,000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volume Chart Below -->
+            <div class="relative border-t border-gray-600" style="height: 120px;">
+                <canvas id="volumeChart" class="w-full h-full"></canvas>
+                <div class="absolute top-2 left-4 text-xs text-white flex items-center">
+                    <span class="text-gray-300 mr-1">▶</span> 거래량
+                </div>
+                
+                <!-- Volume Scale on Right -->
+                <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-700 border-l border-gray-600 flex flex-col justify-between py-2 text-xs text-blue-400">
+                    <span class="text-center">200,000</span>
+                    <span class="text-center">100,000</span>
+                    <span class="text-center">× 10</span>
+                </div>
+            </div>
+
+            <!-- Time Navigation Bar -->
+            <div class="bg-gray-700 border-t border-gray-600 p-2">
+                <div class="flex items-center justify-between text-xs text-white">
+                    <span>Scroll left and right to see past dates and future dates</span>
+                    <span>Select the number of days at the bottom. The selected date color has changed.</span>
+                </div>
+                
+                <!-- Date Selection Bar -->
+                <div class="flex justify-between items-center mt-2 bg-gray-800 rounded p-1">
+                    <span class="text-xs text-white">2025/02/20</span>
+                    <div class="flex space-x-1">
+                        <!-- Date indicators with Korean styling -->
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <!-- Current selected date -->
+                        <div class="w-2 h-4 bg-yellow-400"></div>
+                        <div class="w-2 h-4 bg-yellow-400"></div>
+                        <div class="w-2 h-4 bg-yellow-400"></div>
+                        <div class="w-2 h-4 bg-blue-500"></div>
+                        <div class="w-2 h-4 bg-red-500"></div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-yellow-400 text-xs">11 12 13 14 15</span>
+                        <span class="text-xs text-white">20</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Korean candlestick data
+        const sampleData = [
+            { x: '2025-02-20', o: 100000, h: 102000, l: 99000, c: 101000 },
+            { x: '2025-02-21', o: 101000, h: 103000, l: 100000, c: 99500 },
+            { x: '2025-02-22', o: 99500, h: 101000, l: 98000, c: 100500 },
+            { x: '2025-02-23', o: 100500, h: 102500, l: 100000, c: 102000 },
+            { x: '2025-02-24', o: 102000, h: 104000, l: 101000, c: 98000 },
+            { x: '2025-02-25', o: 98000, h: 99500, l: 97000, c: 99000 },
+            { x: '2025-02-26', o: 99000, h: 101000, l: 98500, c: 100000 },
+            { x: '2025-02-27', o: 100000, h: 101500, l: 99000, c: 101000 },
+            { x: '2025-02-28', o: 101000, h: 103000, l: 100500, c: 102500 },
+            { x: '2025-03-01', o: 102500, h: 104000, l: 102000, c: 103500 },
+            { x: '2025-03-02', o: 103500, h: 105000, l: 103000, c: 104000 },
+            { x: '2025-03-03', o: 104000, h: 106000, l: 103500, c: 105500 },
+            { x: '2025-03-04', o: 105500, h: 107000, l: 105000, c: 106000 },
+            { x: '2025-03-05', o: 106000, h: 108000, l: 105500, c: 107000 },
+            { x: '2025-03-06', o: 107000, h: 109000, l: 106500, c: 108000 },
+        ];
+
+        // Sample volume data
+        const volumeData = [
+            { x: '2025-02-20', y: 45000 },
+            { x: '2025-02-21', y: 125000 },
+            { x: '2025-02-22', y: 95000 },
+            { x: '2025-02-23', y: 85000 },
+            { x: '2025-02-24', y: 155000 },
+            { x: '2025-02-25', y: 75000 },
+            { x: '2025-02-26', y: 105000 },
+            { x: '2025-02-27', y: 65000 },
+            { x: '2025-02-28', y: 115000 },
+            { x: '2025-03-01', y: 95000 },
+            { x: '2025-03-02', y: 135000 },
+            { x: '2025-03-03', y: 85000 },
+            { x: '2025-03-04', y: 165000 },
+            { x: '2025-03-05', y: 125000 },
+            { x: '2025-03-06', y: 105000 },
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Price Chart
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            const priceChart = new Chart(priceCtx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'SKC Price',
+                        data: sampleData.map(item => ({
+                            x: item.x,
+                            y: item.c
+                        })),
+                        borderColor: '#1565C0',
+                        backgroundColor: 'rgba(21, 101, 192, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MM/dd'
+                                }
+                            },
+                            grid: {
+                                color: '#4a5568',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#87CEEB',
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            position: 'left',
+                            min: 90000,
+                            max: 110000,
+                            grid: {
+                                color: '#4a5568',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#87CEEB',
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Volume Chart
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            const volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: 'Volume',
+                        data: volumeData,
+                        backgroundColor: function(context) {
+                            const index = context.dataIndex;
+                            if (index < sampleData.length) {
+                                const candleData = sampleData[index];
+                                return candleData.c >= candleData.o ? '#1565C0' : '#D32F2F';
+                            }
+                            return '#1565C0';
+                        },
+                        borderWidth: 0,
+                        barThickness: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            display: false
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#4a5568',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#87CEEB',
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
