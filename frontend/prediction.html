@@ -1507,11 +1507,11 @@
                     const priceRange = maxPrice - minPrice;
                     const margin = priceRange * 0.1;
                     
-                    // Calculate candle dimensions
+                    // Calculate candle dimensions - adjusted for more proportional size
                     const candleCount = this.data.length;
                     const candleSpacing = chartArea.width / candleCount;
-                    const candleWidth = Math.max(candleSpacing * 0.9, 50); // Very thick Korean style
-                    const wickWidth = Math.max(4, candleWidth / 12);
+                    const candleWidth = Math.max(candleSpacing * 0.6, 8); // Reduced from 0.9 to 0.6, min 8px
+                    const wickWidth = Math.max(2, candleWidth / 10); // Reduced wick thickness
                     
                     // Draw grid lines with vertical date separators
                     ctx.strokeStyle = '#E0E0E0';
