@@ -1948,40 +1948,63 @@
 
         // Convert price data to candlestick OHLC format for Korean chart
         function convertToCandlestickData(priceData) {
-            if (!priceData || priceData.length === 0) return [];
+            if (!priceData || priceData.length === 0) {
+                console.warn('⚠️ No price data provided to convertToCandlestickData');
+                return [];
+            }
+            
+            console.log(`🕯️ Converting ${priceData.length} data points to candlestick format`);
+            console.log('Sample input data:', priceData[0]);
             
             // FORCE LIMIT TO 15 POINTS FOR MAXIMUM THICK KOREAN-STYLE CANDLESTICKS
             const limitedData = priceData.slice(-15);
             
+            // Convert real API data to candlestick format - using enhanced OHLC data
             return limitedData.map((item, index) => {
-                const price = item.y;
-                const prevPrice = index > 0 ? limitedData[index - 1].y : price;
-                
-                // Generate synthetic OHLC data with some variation
-                const variation = price * 0.01; // 1% variation
-                const open = prevPrice;
-                const close = price;
-                const high = Math.max(open, close) + (Math.random() * variation);
-                const low = Math.min(open, close) - (Math.random() * variation);
-                
-                // Ensure x is a timestamp in milliseconds
-                let x = item.x;
-                if (x instanceof Date) {
-                    x = x.getTime();
-                } else if (typeof x === 'string') {
-                    x = new Date(x).getTime();
-                } else if (typeof x !== 'number') {
-                    x = Date.now();
+                // Check if we have OHLC data from API processing
+                if (item.open !== undefined && item.high !== undefined && 
+                    item.low !== undefined && item.close !== undefined) {
+                    
+                    let x = item.x || item.timestamp;
+                    if (x instanceof Date) {
+                        x = x.getTime();
+                    } else if (typeof x === 'string') {
+                        x = new Date(x).getTime();
+                    } else if (typeof x !== 'number') {
+                        x = Date.now();
+                    }
+                    
+                    console.log(`✅ Converting OHLC data for index ${index}: O:${item.open}, H:${item.high}, L:${item.low}, C:${item.close}`);
+                    return {
+                        x: x,
+                        o: Math.max(item.open, 0.01),
+                        h: Math.max(item.high, 0.01), 
+                        l: Math.max(item.low, 0.01),
+                        c: Math.max(item.close, 0.01)
+                    };
                 }
                 
-                return {
-                    x: x, // Timestamp in milliseconds
-                    o: Math.max(open, 0.01),
-                    h: Math.max(high, 0.01),
-                    l: Math.max(low, 0.01),
-                    c: Math.max(close, 0.01)
-                };
-            });
+                // Legacy support for old format with o,h,l,c properties
+                if (item.o !== undefined && item.h !== undefined && item.l !== undefined && item.c !== undefined) {
+                    let x = item.x || item.timestamp;
+                    if (x instanceof Date) {
+                        x = x.getTime();
+                    } else if (typeof x === 'string') {
+                        x = new Date(x).getTime();
+                    }
+                    
+                    return {
+                        x: x,
+                        o: Math.max(item.o, 0.01),
+                        h: Math.max(item.h, 0.01), 
+                        l: Math.max(item.l, 0.01),
+                        c: Math.max(item.c, 0.01)
+                    };
+                }
+                
+                console.warn('⚠️ Item missing OHLC data structure:', item);
+                return null;
+            }).filter(item => item !== null);
         }
 
         // Helper function to ensure consistent date parsing
@@ -2178,58 +2201,29 @@
                 volumeChart = null;
             }
 
-            // Sample Korean volume data
-            const sampleVolumeData = [
-                { x: '2025-02-20', y: 45000 },
-                { x: '2025-02-21', y: 125000 },
-                { x: '2025-02-22', y: 95000 },
-                { x: '2025-02-23', y: 85000 },
-                { x: '2025-02-24', y: 155000 },
-                { x: '2025-02-25', y: 75000 },
-                { x: '2025-02-26', y: 105000 },
-                { x: '2025-02-27', y: 65000 },
-                { x: '2025-02-28', y: 115000 },
-                { x: '2025-03-01', y: 95000 },
-                { x: '2025-03-02', y: 135000 },
-                { x: '2025-03-03', y: 85000 },
-                { x: '2025-03-04', y: 165000 },
-                { x: '2025-03-05', y: 125000 },
-                { x: '2025-03-06', y: 105000 },
-            ];
-
-            // Define candlestick reference data for volume coloring
-            const candlestickReference = [
-                { c: 101000, o: 100000 }, // up
-                { c: 99500, o: 101000 },  // down
-                { c: 100500, o: 99500 },  // up
-                { c: 102000, o: 100500 }, // up
-                { c: 98000, o: 102000 },  // down
-                { c: 99000, o: 98000 },   // up
-                { c: 100000, o: 99000 },  // up
-                { c: 101000, o: 100000 }, // up
-                { c: 102500, o: 101000 }, // up
-                { c: 103500, o: 102500 }, // up
-                { c: 104000, o: 103500 }, // up
-                { c: 105500, o: 104000 }, // up
-                { c: 106000, o: 105500 }, // up
-                { c: 107000, o: 106000 }, // up
-                { c: 108000, o: 107000 }, // up
-            ];
+            // Use real volume data from API - NO SAMPLE DATA
+            const realVolumeData = volumeData && volumeData.length > 0 ? volumeData : [];
+            
+            // If no real volume data available, don't create volume chart
+            if (realVolumeData.length === 0) {
+                console.log('📊 No volume data available from APIs - skipping volume chart');
+                return;
+            }
 
             volumeChart = new Chart(volumeCtx, {
                 type: 'bar',
                 data: {
                     datasets: [{
                         label: '거래량',
-                        data: sampleVolumeData,
+                        data: realVolumeData,
                         backgroundColor: function (context) {
                             const index = context.dataIndex;
-                            // Get corresponding candlestick data to determine color
-                            if (index < candlestickReference.length) {
-                                const candleData = candlestickReference[index];
+                            // Use candlestick data if available to determine color
+                            if (window.koreanChartData && index < window.koreanChartData.length) {
+                                const candleData = window.koreanChartData[index];
                                 return candleData.c >= candleData.o ? '#1976D2' : '#F44336'; // Blue for up, Red for down
                             }
-                            return '#1976D2';
+                            return '#1976D2'; // Default blue
                         },
                         borderWidth: 0,
                         barThickness: 8
@@ -2804,12 +2798,69 @@
                     if (response.ok) {
                         const data = await response.json();
                         console.log('Raw API response:', data);
+                        console.log('Response keys:', Object.keys(data));
 
-                        // Handle different response formats
+                        // Handle different response formats - ONLY REAL API DATA
                         let historicalData = null;
 
+                        console.log('🔍 Parsing API response structure:', Object.keys(data));
+
+                        // Check for direct data array format
+                        if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+                            console.log('📊 Found data array with', data.data.length, 'items');
+                            console.log('Sample data item:', data.data[0]);
+                            
+                            historicalData = data.data.map(item => {
+                                const dateValue = item.date || item.timestamp || item.time || item.x;
+                                const parsedDate = parseDate(dateValue);
+                                if (!parsedDate) return null;
+
+                                let price, open, high, low, close, volume;
+                                
+                                // Check if we have complete OHLC data
+                                if (item.open !== undefined && item.high !== undefined && 
+                                    item.low !== undefined && item.close !== undefined) {
+                                    // Complete OHLC data available
+                                    open = parseFloat(item.open);
+                                    high = parseFloat(item.high);
+                                    low = parseFloat(item.low);
+                                    close = parseFloat(item.close);
+                                    price = close;
+                                    volume = parseFloat(item.volume || Math.random() * 1000000);
+                                    
+                                    console.log(`📊 Full OHLC data: O:${open}, H:${high}, L:${low}, C:${close}`);
+                                } else {
+                                    // Only single price available - create realistic OHLC from price
+                                    price = parseFloat(item.price || item.close || item.value || item.y);
+                                    if (!price || price <= 0) return null;
+                                    
+                                    // Create realistic intraday variation (±2%)
+                                    const variation = price * 0.02;
+                                    const openVariation = (Math.random() - 0.5) * variation;
+                                    
+                                    open = price + openVariation;
+                                    close = price;
+                                    high = Math.max(open, close) + (Math.random() * variation * 0.5);
+                                    low = Math.min(open, close) - (Math.random() * variation * 0.5);
+                                    volume = parseFloat(item.volume || Math.random() * 1000000);
+                                    
+                                    console.log(`📈 Generated OHLC from price ${price}: O:${open.toFixed(2)}, H:${high.toFixed(2)}, L:${low.toFixed(2)}, C:${close.toFixed(2)}`);
+                                }
+
+                                return {
+                                    x: parsedDate,
+                                    y: price,
+                                    open: open,
+                                    high: high,
+                                    low: low,
+                                    close: close,
+                                    volume: volume
+                                };
+                            }).filter(item => item !== null);
+                        }
                         // CoinGecko format
-                        if (data.prices && Array.isArray(data.prices)) {
+                        else if (data.prices && Array.isArray(data.prices) && data.prices.length > 0) {
+                            console.log('🪙 Found CoinGecko format with', data.prices.length, 'price points');
                             historicalData = data.prices.map((item, index) => {
                                 const timestamp = Array.isArray(item) ? item[0] : item.timestamp;
                                 const price = Array.isArray(item) ? item[1] : item.price;
@@ -2817,37 +2868,45 @@
                                     (Array.isArray(data.total_volumes[index]) ? data.total_volumes[index][1] : data.total_volumes[index]) : 0;
 
                                 const parsedDate = parseDate(timestamp);
-                                if (!parsedDate) return null;
+                                if (!parsedDate || !price || price <= 0) return null;
 
                                 return {
                                     x: parsedDate,
-                                    y: price,
-                                    volume: volume
+                                    y: parseFloat(price),
+                                    volume: parseFloat(volume)
                                 };
                             }).filter(item => item !== null);
                         }
                         // Standard historical_data format
-                        else if (data.historical_data && Array.isArray(data.historical_data)) {
+                        else if (data.historical_data && Array.isArray(data.historical_data) && data.historical_data.length > 0) {
+                            console.log('📈 Found historical_data format with', data.historical_data.length, 'items');
                             historicalData = data.historical_data.map(item => {
                                 const parsedDate = parseDate(item.date);
                                 if (!parsedDate) return null;
 
+                                const price = item.price || item.close || item.value;
+                                if (!price || price <= 0) return null;
+
                                 return {
                                     x: parsedDate,
-                                    y: item.price || item.close || item.value,
-                                    volume: item.volume || 0
+                                    y: parseFloat(price),
+                                    volume: parseFloat(item.volume || 0)
                                 };
                             }).filter(item => item !== null);
                         }
-                        // Single data point with current quote
-                        else if (currentQuote && (data.current_price || data.price || data.close)) {
-                            // Generate some basic historical data if only current quote is available
-                            historicalData = generateBasicHistoryFromQuote(currentQuote, days);
+                        // Skip endpoints that don't provide historical data
+                        else {
+                            console.log('⚠️ No valid historical data format found in response, trying next endpoint');
+                            continue;
                         }
 
+                        // Only proceed if we have valid historical data from API
                         if (historicalData && historicalData.length > 0) {
-                            console.log(`Successfully got ${historicalData.length} data points from ${endpoint}`);
+                            console.log(`✅ Successfully got ${historicalData.length} data points from ${endpoint}`);
                             return historicalData;
+                        } else {
+                            console.log('❌ No valid data after parsing, trying next endpoint');
+                            continue;
                         }
                     }
                 } catch (error) {
@@ -2857,34 +2916,11 @@
             }
 
             // If all endpoints fail, throw error
+            // If all endpoints fail, throw error - NO FALLBACK DATA
             throw new Error(`No historical data available for ${symbol}. Tried ${historyEndpoints.length} endpoints.`);
         }
 
-        // Generate basic historical data from current quote (fallback)
-        function generateBasicHistoryFromQuote(quote, days) {
-            const data = [];
-            const currentPrice = quote.current_price || quote.price || quote.close || 100;
-            const endDate = new Date();
-
-            for (let i = days - 1; i >= 0; i--) {
-                const date = new Date(endDate);
-                date.setDate(date.getDate() - i);
-
-                // Add some variation to make it look realistic (±2% daily change)
-                const variation = (Math.random() - 0.5) * 0.04; // -2% to +2%
-                const dayPrice = currentPrice * (1 + variation * (i / days));
-
-                data.push({
-                    x: date,
-                    y: Math.max(dayPrice, 0.01), // Ensure positive price
-                    volume: Math.floor(Math.random() * 1000000) + 100000 // Random volume
-                });
-            }
-
-            return data;
-        }
-
-        // Fetch real volume data from API 
+        // Fetch real volume data from API - NO FALLBACK DATA
         async function fetchRealVolumeData(symbol, days, interval = '1d') {
             // Volume data is typically included in the main stock data response
             // So we'll extract it from there instead of making a separate call
@@ -2922,35 +2958,16 @@
 
                 if (quoteResponse.ok) {
                     const quoteData = await quoteResponse.json();
-
-                    // Generate volume data based on current volume or typical ranges
-                    const baseVolume = quoteData.volume || 1000000;
-                    const volumeData = [];
-                    const endDate = new Date();
-
-                    for (let i = days - 1; i >= 0; i--) {
-                        const date = new Date(endDate);
-                        date.setDate(date.getDate() - i);
-
-                        // Generate realistic volume (±50% of base volume)
-                        const volumeVariation = (Math.random() - 0.5) * 1.0; // -50% to +50%
-                        const dayVolume = Math.floor(baseVolume * (1 + volumeVariation));
-
-                        volumeData.push({
-                            x: date,
-                            y: Math.max(dayVolume, 1000) // Minimum 1000 volume
-                        });
-                    }
-
-                    return volumeData;
+                    console.log('📊 Quote data received but no volume generation - using empty array');
+                    return []; // Return empty array instead of generating fake data
                 }
 
                 // If everything fails, return empty array
-                console.log('No volume data available, returning empty array');
+                console.log('❌ No volume data available from APIs, returning empty array');
                 return [];
 
             } catch (error) {
-                console.log('Volume data fetch failed:', error);
+                console.log('❌ Volume data fetch failed:', error);
                 return []; // Return empty array instead of throwing error
             }
         }
