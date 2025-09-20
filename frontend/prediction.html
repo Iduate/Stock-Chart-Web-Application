@@ -985,91 +985,90 @@
                             </div>
                         </div>
 
-                        <!-- Chart Container with Korean Design -->
+                        <!-- Chart Container with Korean Design - Mobile Optimized -->
                         <div class="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <!-- Chart Header with Controls -->
-                            <div class="bg-gray-700 text-white px-4 py-2 text-sm">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-4">
-                                        <span class="font-medium">Search stock coins worldwide</span>
-                                        <div class="flex items-center space-x-2">
+                            <!-- Chart Header with Controls - Mobile Responsive -->
+                            <div class="bg-gray-700 text-white px-2 sm:px-4 py-2 text-xs sm:text-sm">
+                                <div class="flex items-center justify-between flex-wrap gap-2">
+                                    <div class="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+                                        <span class="font-medium text-xs sm:text-sm truncate">Search stock coins worldwide</span>
+                                        <div class="flex items-center space-x-1 sm:space-x-2">
                                             <span class="text-xs">📊</span>
                                             <input type="text" id="stockCodeInput" value="AAPL" 
-                                                class="w-16 px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none focus:bg-gray-500">
-                                            <select class="px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none">
+                                                class="w-12 sm:w-16 px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none focus:bg-gray-500">
+                                            <select class="px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none hidden sm:block">
                                                 <option>조회</option>
                                             </select>
-                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs">📄</button>
-                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs">💾</button>
-                                            <span class="text-white font-medium">— <span id="headerStockName">Apple Inc.</span></span>
+                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs hidden sm:block">📄</button>
+                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs hidden sm:block">💾</button>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-4">
-                                        <span class="font-medium">Select daily, weekly, monthly, or yearly time</span>
+                                    <div class="flex items-center space-x-1 sm:space-x-4 min-w-0">
+                                        <span class="font-medium text-xs hidden sm:inline">Select daily, weekly, monthly, or yearly time</span>
                                         <div class="flex space-x-1">
-                                            <button class="time-interval-btn active px-2 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700" data-interval="1d">일</button>
-                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1wk">주</button>
-                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1mo">월</button>
-                                            <button class="time-interval-btn px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1y">년</button>
+                                            <button class="time-interval-btn active px-1 sm:px-2 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700" data-interval="1d">일</button>
+                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1wk">주</button>
+                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1mo">월</button>
+                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1y">년</button>
                                         </div>
-                                        <span class="text-white">[<span id="currentInterval">1일</span>] ✖</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Stock Info Bar -->
-                            <div class="bg-gray-100 border-b border-gray-200 px-4 py-2">
-                                <div class="flex items-center justify-between text-sm">
-                                    <div class="flex items-center space-x-6">
-                                        <div class="text-lg font-bold text-blue-600" id="stockCode">AAPL</div>
-                                        <div class="text-lg font-bold" id="stockName">Apple Inc.</div>
-                                        <div class="flex items-center space-x-4">
-                                            <span class="text-lg font-bold text-blue-600" id="currentPrice">$0.00</span>
-                                            <span class="text-blue-600" id="priceChange">--</span>
-                                            <span class="text-blue-600" id="priceChangePercent">(--)</span>
-                                        </div>
-                                        <div class="flex items-center space-x-4 text-xs text-gray-600">
-                                            <span id="dayHigh">고 --</span>
-                                            <span id="dayLow">저 --</span>
-                                            <span id="volume">거래량 --</span>
-                                            <span id="marketCap">시가총액 --</span>
+                            <!-- Stock Info Bar - Mobile Optimized -->
+                            <div class="bg-gray-100 border-b border-gray-200 px-2 sm:px-4 py-2">
+                                <div class="flex items-center justify-between text-xs sm:text-sm flex-wrap gap-2">
+                                    <div class="flex items-center space-x-2 sm:space-x-6 min-w-0 flex-1">
+                                        <div class="text-sm sm:text-lg font-bold text-blue-600" id="stockCode">AAPL</div>
+                                        <div class="text-sm sm:text-lg font-bold truncate" id="stockName">Apple Inc.</div>
+                                        <div class="flex items-center space-x-2 sm:space-x-4">
+                                            <span class="text-sm sm:text-lg font-bold text-blue-600" id="currentPrice">$0.00</span>
+                                            <span class="text-blue-600 text-xs sm:text-sm" id="priceChange">--</span>
+                                            <span class="text-blue-600 text-xs sm:text-sm" id="priceChangePercent">(--)</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-xs" id="lastUpdated">--</span>
-                                        <button class="px-1 py-0.5 bg-gray-300 hover:bg-gray-400 text-xs rounded">◄</button>
-                                        <button class="px-1 py-0.5 bg-gray-300 hover:bg-gray-400 text-xs rounded">►</button>
+                                    <div class="flex items-center space-x-1 sm:space-x-4 text-xs text-gray-600 flex-wrap">
+                                        <span id="dayHigh" class="whitespace-nowrap">고 --</span>
+                                        <span id="dayLow" class="whitespace-nowrap">저 --</span>
+                                        <span id="volume" class="hidden sm:inline whitespace-nowrap">거래량 --</span>
+                                        <span id="marketCap" class="hidden md:inline whitespace-nowrap">시가총액 --</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between mt-1 sm:hidden">
+                                    <div class="flex items-center space-x-2 text-xs text-gray-600">
+                                        <span id="volume-mobile">거래량 --</span>
+                                        <span id="lastUpdated" class="text-xs">--</span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Main Chart Area -->
+                            <!-- Main Chart Area - Mobile Optimized -->
                             <div class="relative bg-white">
                                 <!-- Price Chart -->
-                                <div class="relative" style="height: 400px;">
-                                    <canvas id="priceChart" class="w-full h-full"></canvas>
-                                    <!-- Price Scale on Right -->
-                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-2 px-1">
-                                        <div class="text-xs text-blue-600 text-right" id="maxPrice">--</div>
-                                        <div class="text-xs text-blue-600 text-right" id="midPrice">--</div>
-                                        <div class="text-xs text-blue-600 text-right" id="minPrice">--</div>
+                                <div class="relative touch-manipulation" style="height: 350px; min-height: 300px;">
+                                    <canvas id="priceChart" class="w-full h-full touch-manipulation" style="touch-action: pan-x pan-y;"></canvas>
+                                    <!-- Price Scale on Right - Mobile Responsive -->
+                                    <div class="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-1 sm:py-2 px-0.5 sm:px-1">
+                                        <div class="text-xs text-blue-600 text-right font-medium" id="maxPrice">--</div>
+                                        <div class="text-xs text-blue-600 text-right font-medium" id="midPrice">--</div>
+                                        <div class="text-xs text-blue-600 text-right font-medium" id="minPrice">--</div>
                                     </div>
                                 </div>
                                 
-                                <!-- Volume Chart -->
-                                <div class="relative border-t border-gray-200" style="height: 100px;" id="volumeContainer">
-                                    <canvas id="volumeChart" class="w-full h-full"></canvas>
+                                <!-- Volume Chart - Mobile Responsive -->
+                                <div class="relative border-t border-gray-200 touch-manipulation" style="height: 80px; min-height: 60px;" id="volumeContainer">
+                                    <canvas id="volumeChart" class="w-full h-full touch-manipulation" style="touch-action: pan-x pan-y;"></canvas>
                                     <!-- Volume Scale on Right -->
-                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-1 px-1">
-                                        <div class="text-xs text-blue-600 text-right" id="maxVolume">--</div>
-                                        <div class="text-xs text-blue-600 text-right" id="minVolume">0</div>
+                                    <div class="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-0.5 sm:py-1 px-0.5 sm:px-1">
+                                        <div class="text-xs text-blue-600 text-right font-medium" id="maxVolume">--</div>
+                                        <div class="text-xs text-blue-600 text-right font-medium" id="minVolume">0</div>
                                     </div>
                                 </div>
                                 
-                                <!-- Chart Controls Bar -->
-                                <div class="bg-gray-700 text-white px-4 py-1 text-xs">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center space-x-4">
+                                <!-- Chart Controls Bar - Mobile Optimized -->
+                                <div class="bg-gray-700 text-white px-2 sm:px-4 py-1 text-xs">
+                                    <div class="flex items-center justify-between flex-wrap gap-2">
+                                        <div class="flex items-center space-x-2 sm:space-x-4">
                                             <div class="flex space-x-1">
                                                 <div class="w-2 h-3 bg-blue-500"></div>
                                                 <div class="w-2 h-3 bg-red-500"></div>
@@ -1077,7 +1076,7 @@
                                                 <div class="w-2 h-3 bg-red-500"></div>
                                                 <div class="w-2 h-3 bg-blue-500"></div>
                                             </div>
-                                            <span class="text-gray-300">차트 네비게이션</span>
+                                            <span class="text-gray-300 text-xs sm:text-sm">차트 네비게이션</span>
                                         </div>
                                         <div class="flex items-center space-x-2">
                                             <button class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" id="chartZoomOut">축소</button>
@@ -1219,9 +1218,9 @@
         let chartCtx = null;
         let chartData = [];
 
-        // Initialize Korean-style candlestick chart
+        // Initialize Korean-style candlestick chart with mobile optimization
         function initializeKoreanChart() {
-            console.log('🏛️ Creating Pure Korean Candlestick Chart...');
+            console.log('🏛️ Creating Pure Korean Candlestick Chart with Mobile Support...');
             
             chartCanvas = document.getElementById('priceChart');
             if (!chartCanvas) {
@@ -1231,10 +1230,18 @@
             
             chartCtx = chartCanvas.getContext('2d');
             
-            // Set canvas size
+            // Mobile-responsive canvas sizing
             const container = chartCanvas.parentElement;
+            const isMobile = window.innerWidth <= 640; // Tailwind 'sm' breakpoint
+            
+            // Set canvas size with mobile considerations
             chartCanvas.width = container.clientWidth;
             chartCanvas.height = container.clientHeight;
+            
+            // Dynamic padding based on screen size
+            const padding = isMobile 
+                ? { top: 15, right: 50, bottom: 30, left: 30 }
+                : { top: 20, right: 80, bottom: 40, left: 40 };
             
             koreanChart = {
                 canvas: chartCanvas,
@@ -1242,9 +1249,10 @@
                 data: [],
                 width: chartCanvas.width,
                 height: chartCanvas.height,
-                padding: { top: 20, right: 80, bottom: 40, left: 40 },
+                padding: padding,
                 hoverPoint: null,
                 timeInterval: '1d', // Default interval (1d, 1wk, 1mo)
+                isMobile: isMobile,
                 
                 // Update chart with new data
                 updateData: function(candlestickData) {
@@ -1294,10 +1302,40 @@
                         chart.handleChartClick(x, y);
                     };
                     
-                    // Add listeners
+                    // Add mouse and touch listeners for mobile support
                     this.canvas.addEventListener('mousemove', this.canvas.onmousemove);
                     this.canvas.addEventListener('mouseout', this.canvas.onmouseout);
                     this.canvas.addEventListener('click', this.canvas.onclick);
+                    
+                    // Touch event handlers for mobile
+                    this.canvas.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const rect = this.canvas.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+                        this.handleMouseMove(x, y);
+                    });
+                    
+                    this.canvas.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const rect = this.canvas.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const y = touch.clientY - rect.top;
+                        this.handleMouseMove(x, y);
+                    });
+                    
+                    this.canvas.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        if (e.changedTouches.length > 0) {
+                            const touch = e.changedTouches[0];
+                            const rect = this.canvas.getBoundingClientRect();
+                            const x = touch.clientX - rect.left;
+                            const y = touch.clientY - rect.top;
+                            this.handleChartClick(x, y);
+                        }
+                    });
                 },
                 
                 // Handle mouse movement for tooltips and prediction hover
@@ -1507,11 +1545,20 @@
                     const priceRange = maxPrice - minPrice;
                     const margin = priceRange * 0.1;
                     
-                    // Calculate candle dimensions - adjusted for more proportional size
+                    // Calculate candle dimensions - responsive for mobile and desktop
                     const candleCount = this.data.length;
                     const candleSpacing = chartArea.width / candleCount;
-                    const candleWidth = Math.max(candleSpacing * 0.6, 8); // Reduced from 0.9 to 0.6, min 8px
-                    const wickWidth = Math.max(2, candleWidth / 10); // Reduced wick thickness
+                    
+                    // Mobile-responsive candle sizing
+                    const isMobile = window.innerWidth <= 768;
+                    const baseWidthRatio = isMobile ? 0.7 : 0.6;
+                    const minCandleWidth = isMobile ? 6 : 8;
+                    const maxCandleWidth = isMobile ? 20 : 30;
+                    
+                    let candleWidth = Math.max(candleSpacing * baseWidthRatio, minCandleWidth);
+                    candleWidth = Math.min(candleWidth, maxCandleWidth); // Cap maximum width
+                    
+                    const wickWidth = Math.max(1, Math.min(candleWidth / 8, isMobile ? 2 : 3));
                     
                     // Draw grid lines with vertical date separators
                     ctx.strokeStyle = '#E0E0E0';
@@ -3558,8 +3605,53 @@
                 overflow: hidden;
             }
 
-            /* Chart container responsive styles */
-            @media (max-width: 768px) {
+            /* Chart container responsive styles - Enhanced for mobile */
+            @media (max-width: 640px) {
+                #chartContainer .relative:first-child {
+                    height: 300px !important;
+                    min-height: 250px !important;
+                }
+                
+                #volumeContainer {
+                    height: 60px !important;
+                    min-height: 50px !important;
+                }
+                
+                .chart-controls {
+                    flex-direction: column;
+                    gap: 4px;
+                }
+                
+                .time-interval-btn {
+                    font-size: 10px;
+                    padding: 4px 8px;
+                    min-width: 24px;
+                }
+                
+                #predictionTooltip {
+                    font-size: 11px;
+                    padding: 6px;
+                    max-width: 200px;
+                }
+                
+                /* Mobile-specific chart optimizations */
+                canvas {
+                    touch-action: pan-x pan-y;
+                }
+                
+                /* Ensure buttons are touch-friendly */
+                button {
+                    min-height: 32px;
+                    touch-action: manipulation;
+                }
+                
+                /* Scrollbar touch optimization */
+                #scrollbarThumb {
+                    min-height: 16px;
+                }
+            }
+            
+            @media (min-width: 641px) and (max-width: 768px) {
                 #chartContainer .relative:first-child {
                     height: 350px !important;
                 }
@@ -3584,10 +3676,11 @@
                 }
             }
 
-            /* Touch-friendly interactions on mobile */
+            /* Touch-friendly interactions on mobile devices */
             @media (hover: none) and (pointer: coarse) {
-                #predictionChart {
+                canvas {
                     cursor: default !important;
+                    touch-action: pan-x pan-y;
                 }
                 
                 .prediction-point {
@@ -4012,6 +4105,33 @@
                     currentStockPrice.textContent = 'Data unavailable';
                 });
             }, 500); // 500ms delay to ensure chart is properly initialized
+            
+            // Window resize handler for mobile orientation changes
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    if (koreanChart && koreanChart.canvas) {
+                        const container = koreanChart.canvas.parentElement;
+                        const isMobile = window.innerWidth <= 640;
+                        
+                        // Update canvas size
+                        koreanChart.canvas.width = container.clientWidth;
+                        koreanChart.canvas.height = container.clientHeight;
+                        koreanChart.width = koreanChart.canvas.width;
+                        koreanChart.height = koreanChart.canvas.height;
+                        
+                        // Update padding for mobile
+                        koreanChart.padding = isMobile 
+                            ? { top: 15, right: 50, bottom: 30, left: 30 }
+                            : { top: 20, right: 80, bottom: 40, left: 40 };
+                        koreanChart.isMobile = isMobile;
+                        
+                        // Redraw chart
+                        koreanChart.draw();
+                    }
+                }, 250);
+            });
             
             console.log('Initialization complete');
         });
