@@ -1254,9 +1254,9 @@
                 timeInterval: '1d', // Default interval (1d, 1wk, 1mo)
                 isMobile: isMobile,
                 
-                // Update chart with new data
+                // Update chart with new data - show more candles for proper spacing like reference
                 updateData: function(candlestickData) {
-                    this.data = candlestickData.slice(-15); // Show last 15 candles for thickness
+                    this.data = candlestickData.slice(-30); // Show last 30 candles for proper spacing
                     this.draw();
                     this.setupEventListeners();
                 },
@@ -1418,13 +1418,13 @@
                     return null;
                 },
                 
-                // Get prediction point position on chart
+                // Get prediction point position on chart with extended future area
                 getPredictionPosition: function(date, price, chartArea) {
-                    // For future dates, estimate position based on data range
+                    // For future dates, calculate position based on extended time range
                     const dataStartTime = this.data[0] ? new Date(this.data[0].x).getTime() : Date.now();
                     const dataEndTime = this.data[this.data.length - 1] ? new Date(this.data[this.data.length - 1].x).getTime() : Date.now();
                     const totalTimeRange = dataEndTime - dataStartTime;
-                    const extendedTimeRange = totalTimeRange * 1.5; // Extend 50% into future
+                    const extendedTimeRange = totalTimeRange * 2.0; // Match the click conversion
                     
                     const predictionTime = date.getTime();
                     const timeRatio = (predictionTime - dataStartTime) / extendedTimeRange;
@@ -1463,12 +1463,14 @@
                     // Convert click position to date and price
                     const { date, price } = this.convertClickToDatePrice(mouseX, mouseY, chartArea);
                     
-                    // Only allow predictions for future dates
+                    // Allow predictions for current and future dates (Korean style - more permissive)
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+                    const clickDate = new Date(date);
+                    clickDate.setHours(0, 0, 0, 0);
                     
-                    if (date <= today) {
-                        showMessage('미래 날짜에만 예측을 설정할 수 있습니다.', 'warning');
+                    if (clickDate < today) {
+                        showMessage('오늘 또는 미래 날짜에 예측을 설정할 수 있습니다.', 'warning');
                         return;
                     }
                     
@@ -1476,13 +1478,16 @@
                     createOrUpdatePrediction(date, price);
                 },
                 
-                // Convert mouse click to date and price
+                // Convert mouse click to date and price with proper future date extension
                 convertClickToDatePrice: function(mouseX, mouseY, chartArea) {
-                    // Calculate date based on extended time range
+                    // Calculate date based on extended time range for future predictions
                     const dataStartTime = this.data[0] ? new Date(this.data[0].x).getTime() : Date.now();
                     const dataEndTime = this.data[this.data.length - 1] ? new Date(this.data[this.data.length - 1].x).getTime() : Date.now();
                     const totalTimeRange = dataEndTime - dataStartTime;
-                    const extendedTimeRange = totalTimeRange * 1.5; // Extend 50% into future
+                    
+                    // Extend chart area significantly for future dates (like Korean charts)
+                    const futureExtensionRatio = 2.0; // Show 100% more time into future
+                    const extendedTimeRange = totalTimeRange * futureExtensionRatio;
                     
                     const timeRatio = (mouseX - chartArea.left) / chartArea.width;
                     const clickTime = dataStartTime + (timeRatio * extendedTimeRange);
@@ -1525,9 +1530,9 @@
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, width, height);
                     
-                    // Display current chart time interval
+                    // Display current time and chart interval at top
                     ctx.fillStyle = '#333333';
-                    ctx.font = 'bold 12px Arial';
+                    ctx.font = 'bold 14px Arial';
                     let intervalText = '';
                     switch(this.timeInterval) {
                         case '1d': intervalText = '일봉 차트 (Daily)'; break;
@@ -1535,8 +1540,20 @@
                         case '1mo': intervalText = '월봉 차트 (Monthly)'; break;
                         default: intervalText = '일봉 차트 (Daily)';
                     }
+                    
+                    // Show current time like in Korean charts
+                    const now = new Date();
+                    const timeString = now.toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit', 
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    
                     ctx.textAlign = 'left';
-                    ctx.fillText(intervalText, chartArea.left, padding.top - 5);
+                    ctx.fillText(`${intervalText} - ${timeString}`, chartArea.left, padding.top - 8);
                     
                     // Calculate price range and candle dimensions early
                     const prices = this.data.map(d => [d.h, d.l, d.o, d.c]).flat();
@@ -1549,23 +1566,23 @@
                     const candleCount = this.data.length;
                     const candleSpacing = chartArea.width / candleCount;
                     
-                    // Mobile-responsive candle sizing
+                    // Korean-style candlesticks - exact sizing like reference image
                     const isMobile = window.innerWidth <= 768;
-                    const baseWidthRatio = isMobile ? 0.7 : 0.6;
+                    const baseWidthRatio = isMobile ? 0.6 : 0.5; // Much thinner like reference
                     const minCandleWidth = isMobile ? 6 : 8;
-                    const maxCandleWidth = isMobile ? 20 : 30;
+                    const maxCandleWidth = isMobile ? 18 : 20;
                     
                     let candleWidth = Math.max(candleSpacing * baseWidthRatio, minCandleWidth);
-                    candleWidth = Math.min(candleWidth, maxCandleWidth); // Cap maximum width
+                    candleWidth = Math.min(candleWidth, maxCandleWidth);
                     
-                    const wickWidth = Math.max(1, Math.min(candleWidth / 8, isMobile ? 2 : 3));
+                    const wickWidth = Math.max(1, Math.min(candleWidth / 8, isMobile ? 2 : 2));
                     
-                    // Draw grid lines with vertical date separators
+                    // Draw minimal grid lines for Korean style
                     ctx.strokeStyle = '#E0E0E0';
                     ctx.lineWidth = 1;
                     
-                    // Vertical grid lines - enhanced to show date separators
-                    const verticalLineCount = Math.min(this.data.length, 10);
+                    // Only major vertical grid lines (no separators between candles)
+                    const verticalLineCount = 5; // Fewer lines for cleaner look
                     const verticalLineSpacing = chartArea.width / verticalLineCount;
                     for (let i = 0; i <= verticalLineCount; i++) {
                         const x = chartArea.left + (i * verticalLineSpacing);
@@ -1574,19 +1591,6 @@
                         ctx.lineTo(x, chartArea.bottom);
                         ctx.stroke();
                     }
-                    
-                    // Add faint vertical date separator lines between each candle
-                    ctx.strokeStyle = 'rgba(200, 200, 200, 0.3)'; // Very faint lines
-                    ctx.lineWidth = 1;
-                    this.data.forEach((candle, index) => {
-                        const x = chartArea.left + (index * candleSpacing) + (candleSpacing / 2);
-                        
-                        // Draw faint vertical line at each date
-                        ctx.beginPath();
-                        ctx.moveTo(x, chartArea.top);
-                        ctx.lineTo(x, chartArea.bottom);
-                        ctx.stroke();
-                    });
                     
                     // Horizontal grid lines
                     const horizontalLineCount = 5;
@@ -1605,25 +1609,26 @@
                     
                     console.log(`🏛️ Drawing ${candleCount} Korean candles: ${candleWidth}px wide, ${wickWidth}px wicks`);
                     
-                    // Draw date labels at bottom - in Korean format
-                    ctx.fillStyle = '#333333';
-                    ctx.font = '11px Arial';
+                    // Draw date labels at bottom - Korean style like reference image
+                    ctx.fillStyle = '#666666';
+                    ctx.font = 'bold 10px Arial';
                     ctx.textAlign = 'center';
                     
-                    // Show some date labels (not every candle for clarity)
-                    const labelStep = Math.max(1, Math.floor(candleCount / 5));
+                    // Show date labels for better visibility (like reference image)
+                    const labelStep = Math.max(1, Math.floor(candleCount / 6));
                     for (let i = 0; i < candleCount; i += labelStep) {
                         const x = chartArea.left + (i * candleSpacing) + (candleSpacing / 2);
                         const candle = this.data[i];
                         const date = new Date(candle.x);
                         
-                        // Format date based on timeInterval
+                        // Format date based on timeInterval - Korean style
                         let dateLabel;
                         if (this.timeInterval === '1mo') {
-                            dateLabel = `${date.getFullYear()}년 ${date.getMonth()+1}월`;
+                            dateLabel = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2, '0')}`;
                         } else if (this.timeInterval === '1wk') {
-                            dateLabel = `${date.getMonth()+1}월 ${date.getDate()}일`;
+                            dateLabel = `${date.getMonth()+1}.${date.getDate()}`;
                         } else {
+                            // Daily format like reference: 8/29, 9/4, etc.
                             dateLabel = `${date.getMonth()+1}/${date.getDate()}`;
                         }
                         
@@ -1651,26 +1656,26 @@
                         const isHovered = this.hoverPoint && this.hoverPoint.index === index;
                         const highlightWidth = isHovered ? 5 : 3;
                         
-                        // Draw wick - thicker
+                        // Draw wick - thinner like reference image
                         ctx.strokeStyle = wickColor;
-                        ctx.lineWidth = isHovered ? wickWidth + 2 : wickWidth;
+                        ctx.lineWidth = isHovered ? wickWidth + 1 : wickWidth;
                         ctx.lineCap = 'round';
                         ctx.beginPath();
                         ctx.moveTo(x, high);
                         ctx.lineTo(x, low);
                         ctx.stroke();
                         
-                        // Draw body - thicker for Korean style
+                        // Draw body - thinner for exact Korean style like reference
                         const bodyTop = Math.min(open, close);
-                        const bodyHeight = Math.max(Math.abs(close - open), 8); // Min height 8px
+                        const bodyHeight = Math.max(Math.abs(close - open), 6); // Minimum height 6px like reference
                         
-                        // Fill body
+                        // Fill body with proper spacing
                         ctx.fillStyle = bodyColor;
                         ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
                         
-                        // Border - thicker for Korean style
+                        // Thinner border for Korean style
                         ctx.strokeStyle = borderColor;
-                        ctx.lineWidth = highlightWidth;
+                        ctx.lineWidth = isHovered ? 2 : 1; // Much thinner borders
                         ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
                         
                         // Draw hover tooltip if this is the hovered candle
@@ -1880,32 +1885,34 @@
                     ctx.fillText(lines[lines.length - 1], tooltipX + padding, tooltipY + padding + lineHeight * (lines.length));
                 },
                 
-                // Draw price scale on the right - thicker Korean style
+                // Draw price scale on the right - exactly like Korean reference image
                 drawPriceScale: function(chartArea, minPrice, maxPrice, priceRange, margin) {
                     const ctx = this.ctx;
-                    const steps = 5;
-                    const stepSize = (priceRange + margin * 2) / steps;
+                    const steps = 10; // More price levels like in reference
+                    const adjustedMinPrice = minPrice - margin;
+                    const adjustedMaxPrice = maxPrice + margin;
+                    const totalPriceRange = adjustedMaxPrice - adjustedMinPrice;
                     
-                    ctx.fillStyle = '#444444';
-                    ctx.font = 'bold 12px Arial'; // Bolder text for Korean style
-                    ctx.textAlign = 'left';
+                    ctx.fillStyle = '#1565C0'; // Blue color like reference image
+                    ctx.font = 'bold 11px Arial';
+                    ctx.textAlign = 'right';
                     
-                    // Draw price labels at each step
+                    // Draw price labels at each step - exactly like reference
                     for (let i = 0; i <= steps; i++) {
-                        const price = maxPrice + margin - (i * stepSize);
+                        const price = adjustedMaxPrice - (i * totalPriceRange / steps);
                         const y = chartArea.top + ((i * chartArea.height) / steps);
                         
-                        // Price label
-                        ctx.fillText(price.toFixed(2), chartArea.right + 10, y + 4);
+                        // Format price to thousands with commas
+                        const formattedPrice = Math.round(price).toLocaleString();
                         
-                        // Grid line
-                        ctx.strokeStyle = '#E8E8E8';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(chartArea.left, y);
-                        ctx.lineTo(chartArea.right, y);
-                        ctx.stroke();
+                        // Price label positioned like in reference image
+                        ctx.fillText(formattedPrice, this.width - 5, y + 4);
                     }
+                    
+                    // Update the static price display elements
+                    document.getElementById('maxPrice').textContent = Math.round(adjustedMaxPrice).toLocaleString();
+                    document.getElementById('midPrice').textContent = Math.round((adjustedMaxPrice + adjustedMinPrice) / 2).toLocaleString();
+                    document.getElementById('minPrice').textContent = Math.round(adjustedMinPrice).toLocaleString();
                 }
             };
             
@@ -2273,7 +2280,9 @@
                             return '#1976D2'; // Default blue
                         },
                         borderWidth: 0,
-                        barThickness: 8
+                        barThickness: 'flex', // Make volume bars thicker like reference image
+                        categoryPercentage: 0.95,
+                        barPercentage: 0.95
                     }]
                 },
                 options: {
