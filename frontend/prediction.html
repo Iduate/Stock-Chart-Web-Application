@@ -72,11 +72,8 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- Chart.js for interactive charts with custom candlestick support -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <!-- Simple date adapter that works without locale issues -->
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+    <!-- TradingView-style lightweight chart engine -->
+    <script src="js/tradingview-chart-engine.js"></script>
     
     <script>
         // Pure Candlestick Controller - NOT inheriting from LineController to avoid line interference
@@ -622,7 +619,13 @@
             <!-- Page Header -->
             <div class="mb-8 text-center">
                 <h1 class="text-4xl font-bold text-tv-text mb-4">주식 예측하기</h1>
-                <p class="text-lg text-tv-text-secondary">종목을 선택하고 예측 정보를 입력하여 예측을 발행하세요</p>
+                <p class="text-lg text-tv-text-secondary">심볼 입력 → 차트 클릭 → 완료 (2단계)</p>
+                <div class="mt-4">
+                    <a href="simple-prediction.html" class="inline-flex items-center px-6 py-3 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-zap mr-2"></i>
+                        간단 버전 사용하기
+                    </a>
+                </div>
             </div>
 
             <!-- Main Form -->

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAPL - Apple Inc. | StockChart</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .chart-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #161b22;
+        }
+        
+        /* Header */
+        .chart-header {
+            background: #21262d;
+            border-bottom: 1px solid #30363d;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 60px;
+        }
+        
+        .search-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+        
+        .search-input {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #e6edf3;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2f81f7;
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.1);
+        }
+        
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .symbol {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e6edf3;
+        }
+        
+        .price {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e6edf3;
+        }
+        
+        .change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .change.positive {
+            color: #3fb950;
+        }
+        
+        .change.negative {
+            color: #f85149;
+        }
+        
+        .time-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Chart Area */
+        .chart-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .chart-controls {
+            background: #21262d;
+            border-bottom: 1px solid #30363d;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .time-intervals {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .interval-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #7d8590;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .interval-btn:hover {
+            background: #30363d;
+            color: #e6edf3;
+        }
+        
+        .interval-btn.active {
+            background: #2f81f7;
+            border-color: #2f81f7;
+            color: white;
+        }
+        
+        .chart-tools {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .tool-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #7d8590;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .tool-btn:hover {
+            background: #30363d;
+            color: #e6edf3;
+        }
+        
+        /* Chart Canvas Area */
+        .chart-canvas-area {
+            flex: 1;
+            position: relative;
+            background: #0d1117;
+        }
+        
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        /* Volume Chart */
+        .volume-area {
+            height: 100px;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            position: relative;
+        }
+        
+        .volume-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            background: #21262d;
+            border-top: 1px solid #30363d;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #7d8590;
+        }
+        
+        .crosshair-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .prediction-mode {
+            color: #2f81f7;
+            font-weight: 500;
+        }
+        
+        /* Prediction Points */
+        .prediction-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #f7931e;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            cursor: pointer;
+        }
+        
+        .prediction-line {
+            position: absolute;
+            border-left: 2px dashed #f7931e;
+            z-index: 5;
+        }
+        
+        /* Tooltip */
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(33, 38, 45, 0.95);
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tooltip-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .tooltip-data {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 8px 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chart-header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+            
+            .search-section {
+                order: 2;
+                width: 100%;
+            }
+            
+            .stock-info {
+                order: 1;
+                justify-content: center;
+            }
+            
+            .time-selector {
+                order: 3;
+            }
+            
+            .chart-controls {
+                padding: 8px 16px;
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+            
+            .time-intervals {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #7d8590;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #30363d;
+            border-top: 3px solid #2f81f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <!-- Header -->
+        <div class="chart-header">
+            <div class="search-section">
+                <input type="text" class="search-input" placeholder="Search stock..." value="AAPL">
+                <select class="search-input" style="width: auto;">
+                    <option>주식</option>
+                    <option>선물</option>
+                    <option>외환</option>
+                </select>
+            </div>
+            
+            <div class="stock-info">
+                <div class="symbol">AAPL</div>
+                <div class="price">$256.08</div>
+                <div class="change positive">
+                    <i class="fas fa-caret-up"></i>
+                    10.58 (+4.31%)
+                </div>
+            </div>
+            
+            <div class="time-selector">
+                <select class="search-input" style="width: auto;">
+                    <option>Select daily, weekly, monthly, or yearly time</option>
+                    <option>1분</option>
+                    <option>5분</option>
+                    <option>15분</option>
+                    <option>1시간</option>
+                    <option selected>일봉</option>
+                    <option>주봉</option>
+                    <option>월봉</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Chart Controls -->
+        <div class="chart-controls">
+            <div class="time-intervals">
+                <button class="interval-btn">1D</button>
+                <button class="interval-btn">5D</button>
+                <button class="interval-btn">1M</button>
+                <button class="interval-btn">3M</button>
+                <button class="interval-btn">6M</button>
+                <button class="interval-btn">YTD</button>
+                <button class="interval-btn">1Y</button>
+                <button class="interval-btn active">5Y</button>
+                <button class="interval-btn">MAX</button>
+            </div>
+            
+            <div class="chart-tools">
+                <button class="tool-btn" title="확대">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="tool-btn" title="축소">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="tool-btn" title="초기화">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="tool-btn prediction-mode" title="예측 모드">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Chart -->
+        <div class="chart-main">
+            <div class="chart-canvas-area">
+                <canvas class="chart-canvas" id="mainChart"></canvas>
+                
+                <!-- Loading -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div>차트를 불러오는 중...</div>
+                </div>
+            </div>
+            
+            <!-- Volume Chart -->
+            <div class="volume-area">
+                <canvas class="volume-canvas" id="volumeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="crosshair-info">
+                <span>일봉 차트 • 일일 (Daily) - 2025. 09. 23. 오전 09:48:33</span>
+            </div>
+            <div>
+                <span>시간 이동: ←→ 또는 클릭</span>
+                <span class="prediction-mode">예측: 차트 클릭으로 추가</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart Engine -->
+    <script src="js/tradingview-chart-engine.js"></script>
+    <script>
+        class KoreanChartInterface {
+            constructor() {
+                this.chart = null;
+                this.predictions = [];
+                this.isLoading = true;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupChart();
+                this.setupEventListeners();
+                this.loadInitialData();
+            }
+            
+            setupChart() {
+                const canvas = document.getElementById('mainChart');
+                this.chart = new TradingViewChart(canvas);
+                
+                // Hide loading after chart is ready
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    this.isLoading = false;
+                }, 1500);
+            }
+            
+            setupEventListeners() {
+                // Interval buttons
+                document.querySelectorAll('.interval-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelector('.interval-btn.active')?.classList.remove('active');
+                        e.target.classList.add('active');
+                        this.loadDataForInterval(e.target.textContent);
+                    });
+                });
+                
+                // Chart click for predictions
+                const canvas = document.getElementById('mainChart');
+                canvas.addEventListener('click', (e) => {
+                    if (this.isLoading) return;
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    this.addPrediction(x, y);
+                });
+                
+                // Search input
+                const searchInput = document.querySelector('.search-input');
+                searchInput.addEventListener('change', (e) => {
+                    this.loadSymbol(e.target.value);
+                });
+            }
+            
+            loadInitialData() {
+                // Generate AAPL-like data
+                const data = this.generateAppleData();
+                this.chart.setData(data);
+                this.chart.draw();
+                
+                this.updateVolumeChart(data);
+            }
+            
+            generateAppleData() {
+                const data = [];
+                let currentPrice = 245.50; // Starting price
+                const today = new Date();
+                
+                for (let i = 30; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    
+                    // Simulate Apple's recent uptrend
+                    const change = (Math.random() - 0.4) * 5; // Slight upward bias
+                    currentPrice = Math.max(200, currentPrice + change);
+                    
+                    const high = currentPrice + Math.random() * 3;
+                    const low = currentPrice - Math.random() * 3;
+                    const open = currentPrice + (Math.random() - 0.5) * 2;
+                    const close = currentPrice;
+                    
+                    data.push({
+                        timestamp: date.getTime(),
+                        open: open,
+                        high: high,
+                        low: low,
+                        close: close,
+                        volume: Math.random() * 50000000 + 30000000 // 30-80M volume
+                    });
+                }
+                
+                // Final candle should be current price
+                const lastCandle = data[data.length - 1];
+                lastCandle.close = 256.08;
+                lastCandle.high = Math.max(lastCandle.high, 256.08);
+                
+                return data;
+            }
+            
+            updateVolumeChart(data) {
+                const canvas = document.getElementById('volumeChart');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                const maxVolume = Math.max(...data.map(d => d.volume));
+                const barWidth = canvas.width / data.length;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                data.forEach((candle, i) => {
+                    const height = (candle.volume / maxVolume) * canvas.height;
+                    const x = i * barWidth;
+                    const y = canvas.height - height;
+                    
+                    // Color based on price change
+                    const isUp = candle.close >= candle.open;
+                    ctx.fillStyle = isUp ? '#3fb950' : '#f85149';
+                    
+                    ctx.fillRect(x, y, barWidth - 1, height);
+                });
+            }
+            
+            addPrediction(x, y) {
+                // Convert screen coordinates to chart coordinates
+                const rect = document.getElementById('mainChart').getBoundingClientRect();
+                const { date, price } = this.chart.screenToData(x, y);
+                
+                if (date && price) {
+                    const prediction = {
+                        id: Date.now(),
+                        date: date,
+                        price: price,
+                        x: x,
+                        y: y
+                    };
+                    
+                    this.predictions.push(prediction);
+                    this.chart.addPrediction(date, price);
+                    this.chart.draw();
+                    
+                    console.log(`Prediction added: $${price.toFixed(2)} on ${new Date(date).toLocaleDateString('ko-KR')}`);
+                }
+            }
+            
+            loadSymbol(symbol) {
+                this.isLoading = true;
+                document.getElementById('loading').style.display = 'block';
+                
+                // Update header
+                document.querySelector('.symbol').textContent = symbol;
+                
+                // Simulate loading new data
+                setTimeout(() => {
+                    const data = this.generateAppleData(); // Could be different data based on symbol
+                    this.chart.setData(data);
+                    this.chart.draw();
+                    this.updateVolumeChart(data);
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    this.isLoading = false;
+                }, 800);
+            }
+            
+            loadDataForInterval(interval) {
+                console.log(`Loading ${interval} data...`);
+                // Could implement different timeframes here
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new KoreanChartInterface();
+        });
+    </script>
+</body>
+</html>

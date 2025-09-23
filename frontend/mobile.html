@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StockChart">
+    <meta name="theme-color" content="#1e222d">
+    
+    <title>StockChart - Mobile</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1e222d;
+            color: #d1d4dc;
+        }
+        
+        /* Disable zoom on input focus */
+        input {
+            font-size: 16px !important;
+        }
+        
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e222d 0%, #2a2e39 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .loading-screen.hide {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            font-size: 48px;
+            color: #2962ff;
+            margin-bottom: 24px;
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-text {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .loading-subtitle {
+            color: #868993;
+            font-size: 16px;
+            margin-bottom: 48px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #363a45;
+            border-top: 3px solid #2962ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* App Container */
+        #app {
+            height: 100vh;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        #app.loaded {
+            opacity: 1;
+        }
+        
+        /* Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #2a2e39;
+            border: 1px solid #363a45;
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            z-index: 1000;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .install-prompt.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+        
+        .install-icon {
+            font-size: 32px;
+            color: #2962ff;
+        }
+        
+        .install-content {
+            flex: 1;
+        }
+        
+        .install-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .install-description {
+            font-size: 14px;
+            color: #868993;
+        }
+        
+        .install-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .install-btn, .dismiss-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .install-btn {
+            background: #2962ff;
+            color: white;
+            border: none;
+        }
+        
+        .install-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .dismiss-btn {
+            background: transparent;
+            color: #868993;
+            border: 1px solid #363a45;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="loading-text">StockChart</div>
+        <div class="loading-subtitle">터치로 쉽게 예측하세요</div>
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="app"></div>
+    
+    <!-- Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <div class="install-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="install-content">
+            <div class="install-title">앱으로 설치</div>
+            <div class="install-description">더 빠르고 편리하게 사용하세요</div>
+        </div>
+        <div class="install-buttons">
+            <button class="install-btn" id="installBtn">설치</button>
+            <button class="dismiss-btn" id="dismissBtn">나중에</button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/tradingview-chart-engine.js"></script>
+    <script src="js/mobile-chart-interface.js"></script>
+    
+    <script>
+        class MobileApp {
+            constructor() {
+                this.deferredPrompt = null;
+                this.isInstalled = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupPWA();
+                this.loadApp();
+                this.setupPerformanceOptimizations();
+            }
+            
+            setupPWA() {
+                // Register service worker
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            console.log('SW registered:', registration);
+                        })
+                        .catch(error => {
+                            console.log('SW registration failed:', error);
+                        });
+                }
+                
+                // Handle install prompt
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.deferredPrompt = e;
+                    this.showInstallPrompt();
+                });
+                
+                // Check if already installed
+                window.addEventListener('appinstalled', () => {
+                    this.isInstalled = true;
+                    this.hideInstallPrompt();
+                });
+                
+                // Setup install prompt handlers
+                document.getElementById('installBtn').addEventListener('click', () => {
+                    this.installApp();
+                });
+                
+                document.getElementById('dismissBtn').addEventListener('click', () => {
+                    this.hideInstallPrompt();
+                });
+            }
+            
+            loadApp() {
+                // Simulate loading time for better UX
+                setTimeout(() => {
+                    this.initializeApp();
+                }, 1500);
+            }
+            
+            initializeApp() {
+                const app = document.getElementById('app');
+                const loadingScreen = document.getElementById('loadingScreen');
+                
+                // Initialize mobile chart interface
+                this.chartInterface = new MobileChartInterface(app);
+                
+                // Hide loading screen and show app
+                loadingScreen.classList.add('hide');
+                app.classList.add('loaded');
+                
+                // Remove loading screen after animation
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+                
+                // Show install prompt after delay
+                if (!this.isInstalled) {
+                    setTimeout(() => {
+                        this.showInstallPrompt();
+                    }, 3000);
+                }
+            }
+            
+            setupPerformanceOptimizations() {
+                // Preload critical resources
+                this.preloadResources();
+                
+                // Setup viewport optimization
+                this.optimizeViewport();
+                
+                // Handle orientation changes
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(() => {
+                        if (this.chartInterface && this.chartInterface.chart) {
+                            this.chartInterface.chart.resize();
+                        }
+                    }, 100);
+                });
+                
+                // Prevent scrolling on document
+                document.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
+                
+                // Handle back button on Android
+                window.addEventListener('popstate', (e) => {
+                    e.preventDefault();
+                    // Handle navigation within app
+                });
+            }
+            
+            preloadResources() {
+                // Preload critical images/fonts
+                const preloadLinks = [
+                    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+                ];
+                
+                preloadLinks.forEach(href => {
+                    const link = document.createElement('link');
+                    link.rel = 'preload';
+                    link.as = 'style';
+                    link.href = href;
+                    document.head.appendChild(link);
+                });
+            }
+            
+            optimizeViewport() {
+                // Dynamic viewport height handling
+                const setVH = () => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                };
+                
+                setVH();
+                window.addEventListener('resize', setVH);
+                window.addEventListener('orientationchange', () => {
+                    setTimeout(setVH, 100);
+                });
+            }
+            
+            showInstallPrompt() {
+                if (this.deferredPrompt && !this.isInstalled) {
+                    const prompt = document.getElementById('installPrompt');
+                    prompt.classList.add('show');
+                }
+            }
+            
+            hideInstallPrompt() {
+                const prompt = document.getElementById('installPrompt');
+                prompt.classList.remove('show');
+            }
+            
+            async installApp() {
+                if (!this.deferredPrompt) return;
+                
+                this.deferredPrompt.prompt();
+                const result = await this.deferredPrompt.userChoice;
+                
+                if (result.outcome === 'accepted') {
+                    console.log('User accepted install');
+                    this.isInstalled = true;
+                }
+                
+                this.deferredPrompt = null;
+                this.hideInstallPrompt();
+            }
+        }
+        
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new MobileApp();
+        });
+        
+        // Handle critical errors
+        window.addEventListener('error', (e) => {
+            console.error('Critical error:', e.error);
+            // Show user-friendly error message
+        });
+        
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('Unhandled promise rejection:', e.reason);
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단 예측 - StockChart</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* TradingView-inspired colors */
+        :root {
+            --tv-bg: #1e222d;
+            --tv-card: #2a2e39;
+            --tv-border: #363a45;
+            --tv-text: #d1d4dc;
+            --tv-text-secondary: #868993;
+            --tv-blue: #2962ff;
+            --tv-green: #26a69a;
+            --tv-red: #ef5350;
+        }
+
+        body {
+            background: var(--tv-bg);
+            color: var(--tv-text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-container {
+            position: relative;
+            background: var(--tv-card);
+            border: 2px solid var(--tv-border);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--tv-blue);
+            box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.1);
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--tv-text);
+            font-size: 18px;
+            font-weight: 600;
+            padding: 16px 20px;
+            width: 100%;
+        }
+
+        .search-input::placeholder {
+            color: var(--tv-text-secondary);
+            font-weight: 400;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--tv-card);
+            border: 1px solid var(--tv-border);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--tv-border);
+            transition: background 0.1s ease;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: var(--tv-border);
+        }
+
+        .suggestion-symbol {
+            font-weight: 600;
+            color: var(--tv-blue);
+        }
+
+        .suggestion-name {
+            color: var(--tv-text-secondary);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .chart-container {
+            background: var(--tv-card);
+            border: 1px solid var(--tv-border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-header {
+            background: linear-gradient(90deg, var(--tv-card) 0%, var(--tv-border) 100%);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tv-border);
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stock-symbol {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--tv-blue);
+        }
+
+        .stock-price {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .price-up {
+            color: var(--tv-green);
+        }
+
+        .price-down {
+            color: var(--tv-red);
+        }
+
+        .chart-canvas {
+            cursor: crosshair;
+            display: block;
+            width: 100%;
+        }
+
+        .instruction-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .instruction-text {
+            background: rgba(42, 46, 57, 0.9);
+            color: var(--tv-text);
+            padding: 20px 30px;
+            border-radius: 12px;
+            border: 1px solid var(--tv-border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .predictions-panel {
+            background: var(--tv-card);
+            border: 1px solid var(--tv-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .prediction-item {
+            background: var(--tv-bg);
+            border: 1px solid var(--tv-border);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .prediction-item:hover {
+            border-color: var(--tv-blue);
+            transform: translateY(-1px);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: var(--tv-card);
+            border: 1px solid var(--tv-border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            color: var(--tv-text);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--tv-green);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--tv-red);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--tv-blue);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .search-input {
+                font-size: 16px;
+                padding: 14px 16px;
+            }
+
+            .stock-symbol {
+                font-size: 20px;
+            }
+
+            .stock-price {
+                font-size: 18px;
+            }
+
+            .chart-header {
+                padding: 12px 16px;
+            }
+
+            .instruction-text {
+                padding: 16px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            border: 3px solid var(--tv-border);
+            border-top: 3px solid var(--tv-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pulse animation for search */
+        .search-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(41, 98, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(41, 98, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(41, 98, 255, 0); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Container -->
+    <div class="min-h-screen p-4 md:p-8">
+        <div class="max-w-6xl mx-auto">
+            
+            <!-- Header with Logo -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                    <i class="fas fa-chart-line text-blue-500 mr-3"></i>
+                    StockChart
+                </h1>
+                <p class="text-gray-400">심볼 입력 → 차트 클릭 → 완료</p>
+            </div>
+
+            <!-- Simple Search Bar -->
+            <div class="mb-8">
+                <div class="search-container search-pulse max-w-md mx-auto">
+                    <div class="flex items-center">
+                        <i class="fas fa-search text-gray-400 ml-4"></i>
+                        <input 
+                            type="text" 
+                            id="stockSearch" 
+                            class="search-input" 
+                            placeholder="AAPL, TSLA, BTC..." 
+                            autocomplete="off"
+                        >
+                        <div id="searchLoader" class="mr-4 hidden">
+                            <div class="loading-spinner w-6 h-6"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto-complete suggestions -->
+                    <div id="searchSuggestions" class="search-suggestions hidden"></div>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="chart-container mb-8">
+                <!-- Chart Header -->
+                <div id="chartHeader" class="chart-header hidden">
+                    <div class="stock-info">
+                        <span id="stockSymbol" class="stock-symbol">-</span>
+                        <span id="stockName" class="text-gray-300">-</span>
+                        <span id="stockPrice" class="stock-price">$0.00</span>
+                        <span id="priceChange" class="text-gray-400">-</span>
+                    </div>
+                </div>
+
+                <!-- Chart Canvas -->
+                <div class="relative" style="height: 500px;">
+                    <canvas id="chartCanvas" class="chart-canvas" width="800" height="500"></canvas>
+                    
+                    <!-- Instruction Overlay -->
+                    <div id="instructionOverlay" class="instruction-overlay">
+                        <div class="instruction-text">
+                            <i class="fas fa-search text-blue-500 text-2xl mb-3 block"></i>
+                            <h3 class="text-lg font-semibold mb-2">심볼을 검색하세요</h3>
+                            <p class="text-gray-400">위 검색창에 주식/암호화폐 심볼을 입력하세요</p>
+                        </div>
+                    </div>
+
+                    <!-- Loading Overlay -->
+                    <div id="loadingOverlay" class="instruction-overlay hidden">
+                        <div class="instruction-text">
+                            <div class="loading-spinner mb-4"></div>
+                            <p class="text-gray-400">차트 로딩 중...</p>
+                        </div>
+                    </div>
+
+                    <!-- Prediction Instruction -->
+                    <div id="predictionInstruction" class="instruction-overlay hidden">
+                        <div class="instruction-text">
+                            <i class="fas fa-mouse-pointer text-orange-500 text-2xl mb-3 block"></i>
+                            <h3 class="text-lg font-semibold mb-2">차트를 클릭하여 예측하세요</h3>
+                            <p class="text-gray-400">미래 날짜와 예상 가격을 클릭/터치하세요</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Predictions Panel -->
+            <div id="predictionsPanel" class="predictions-panel hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">
+                        <i class="fas fa-lightbulb text-orange-500 mr-2"></i>
+                        내 예측
+                    </h3>
+                    <button id="clearPredictions" class="text-red-400 hover:text-red-300 text-sm">
+                        <i class="fas fa-trash mr-1"></i>모두 삭제
+                    </button>
+                </div>
+                <div id="predictionsList" class="space-y-3"></div>
+                
+                <!-- Share Button -->
+                <div class="mt-6 text-center">
+                    <button id="sharePredictions" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-share-alt mr-2"></i>
+                        예측 공유하기
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/tradingview-chart-engine.js"></script>
+    <script>
+        // Global variables
+        let chart = null;
+        let currentStock = null;
+        let searchTimeout = null;
+
+        // Stock symbols database (simplified)
+        const POPULAR_STOCKS = [
+            { symbol: 'AAPL', name: 'Apple Inc.' },
+            { symbol: 'TSLA', name: 'Tesla Inc.' },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+            { symbol: 'MSFT', name: 'Microsoft Corp.' },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.' },
+            { symbol: 'META', name: 'Meta Platforms' },
+            { symbol: 'NFLX', name: 'Netflix Inc.' },
+            { symbol: 'BTC-USD', name: 'Bitcoin' },
+            { symbol: 'ETH-USD', name: 'Ethereum' },
+            { symbol: 'DOGE-USD', name: 'Dogecoin' },
+            { symbol: '005930.KS', name: '삼성전자' },
+            { symbol: '000660.KS', name: 'SK하이닉스' },
+            { symbol: '035420.KS', name: '네이버' }
+        ];
+
+        // DOM elements
+        const stockSearch = document.getElementById('stockSearch');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        const searchLoader = document.getElementById('searchLoader');
+        const chartCanvas = document.getElementById('chartCanvas');
+        const instructionOverlay = document.getElementById('instructionOverlay');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const predictionInstruction = document.getElementById('predictionInstruction');
+        const chartHeader = document.getElementById('chartHeader');
+        const stockSymbol = document.getElementById('stockSymbol');
+        const stockName = document.getElementById('stockName');
+        const stockPrice = document.getElementById('stockPrice');
+        const priceChange = document.getElementById('priceChange');
+        const predictionsPanel = document.getElementById('predictionsPanel');
+        const predictionsList = document.getElementById('predictionsList');
+        const clearPredictions = document.getElementById('clearPredictions');
+        const sharePredictions = document.getElementById('sharePredictions');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            setupEventListeners();
+            initChart();
+            showToast('심볼을 검색하여 시작하세요!', 'info');
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            stockSearch.addEventListener('input', handleSearchInput);
+            stockSearch.addEventListener('focus', handleSearchFocus);
+            stockSearch.addEventListener('blur', handleSearchBlur);
+
+            // Prediction management
+            clearPredictions.addEventListener('click', handleClearPredictions);
+            sharePredictions.addEventListener('click', handleSharePredictions);
+
+            // Click outside to close suggestions
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    hideSuggestions();
+                }
+            });
+        }
+
+        function initChart() {
+            chart = new TradingViewChart(chartCanvas);
+            
+            // Listen for prediction events
+            chartCanvas.addEventListener('prediction', (e) => {
+                const { date, price } = e.detail;
+                handlePredictionCreated(date, price);
+            });
+        }
+
+        function handleSearchInput(e) {
+            const query = e.target.value.trim();
+            
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            if (query.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            if (query.length >= 1) {
+                searchTimeout = setTimeout(() => {
+                    searchStocks(query);
+                }, 300);
+            }
+        }
+
+        function handleSearchFocus() {
+            if (stockSearch.value.trim().length > 0) {
+                searchStocks(stockSearch.value.trim());
+            }
+        }
+
+        function handleSearchBlur() {
+            // Delay hiding to allow click on suggestions
+            setTimeout(() => {
+                if (!document.activeElement?.closest('.search-suggestions')) {
+                    hideSuggestions();
+                }
+            }, 200);
+        }
+
+        function searchStocks(query) {
+            const filtered = POPULAR_STOCKS.filter(stock => 
+                stock.symbol.toLowerCase().includes(query.toLowerCase()) ||
+                stock.name.toLowerCase().includes(query.toLowerCase())
+            );
+
+            showSuggestions(filtered);
+        }
+
+        function showSuggestions(stocks) {
+            if (stocks.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            const html = stocks.map(stock => `
+                <div class="suggestion-item" onclick="selectStock('${stock.symbol}')">
+                    <div class="suggestion-symbol">${stock.symbol}</div>
+                    <div class="suggestion-name">${stock.name}</div>
+                </div>
+            `).join('');
+
+            searchSuggestions.innerHTML = html;
+            searchSuggestions.classList.remove('hidden');
+        }
+
+        function hideSuggestions() {
+            searchSuggestions.classList.add('hidden');
+        }
+
+        async function selectStock(symbol) {
+            hideSuggestions();
+            stockSearch.value = symbol;
+            
+            showLoader();
+            
+            try {
+                await loadStockData(symbol);
+                showChart();
+            } catch (error) {
+                showToast('데이터 로딩 실패: ' + error.message, 'error');
+                showInstruction();
+            }
+        }
+
+        function showLoader() {
+            instructionOverlay.classList.add('hidden');
+            predictionInstruction.classList.add('hidden');
+            loadingOverlay.classList.remove('hidden');
+            searchLoader.classList.remove('hidden');
+        }
+
+        function hideLoader() {
+            loadingOverlay.classList.add('hidden');
+            searchLoader.classList.add('hidden');
+        }
+
+        function showInstruction() {
+            instructionOverlay.classList.remove('hidden');
+            predictionInstruction.classList.add('hidden');
+            loadingOverlay.classList.add('hidden');
+            chartHeader.classList.add('hidden');
+        }
+
+        function showChart() {
+            instructionOverlay.classList.add('hidden');
+            loadingOverlay.classList.add('hidden');
+            predictionInstruction.classList.remove('hidden');
+            chartHeader.classList.remove('hidden');
+        }
+
+        async function loadStockData(symbol) {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Generate sample candlestick data
+            const data = generateSampleData(symbol);
+            
+            // Update chart
+            chart.setData(data);
+            
+            // Update UI
+            updateStockInfo(symbol, data);
+            
+            currentStock = symbol;
+            hideLoader();
+            
+            showToast(`${symbol} 차트가 로드되었습니다. 클릭하여 예측하세요!`, 'success');
+        }
+
+        function generateSampleData(symbol) {
+            const data = [];
+            const startPrice = 100 + Math.random() * 100;
+            let currentPrice = startPrice;
+            
+            for (let i = 0; i < 60; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - (60 - i));
+                
+                const change = (Math.random() - 0.5) * 5;
+                currentPrice = Math.max(10, currentPrice + change);
+                
+                const high = currentPrice + Math.random() * 3;
+                const low = currentPrice - Math.random() * 3;
+                const open = currentPrice + (Math.random() - 0.5) * 2;
+                const close = currentPrice;
+                
+                data.push({
+                    timestamp: date.getTime(),
+                    open: open,
+                    high: high,
+                    low: low,
+                    close: close,
+                    volume: Math.random() * 1000000
+                });
+            }
+            
+            return data;
+        }
+
+        function updateStockInfo(symbol, data) {
+            const lastCandle = data[data.length - 1];
+            const prevCandle = data[data.length - 2];
+            
+            const currentPrice = lastCandle.close;
+            const changeAmount = currentPrice - prevCandle.close;
+            const changePercent = (changeAmount / prevCandle.close) * 100;
+            
+            stockSymbol.textContent = symbol;
+            stockName.textContent = getStockName(symbol);
+            stockPrice.textContent = `$${currentPrice.toFixed(2)}`;
+            
+            const isUp = changeAmount >= 0;
+            const changeClass = isUp ? 'price-up' : 'price-down';
+            const changeSymbol = isUp ? '▲' : '▼';
+            
+            stockPrice.className = `stock-price ${changeClass}`;
+            priceChange.textContent = `${changeSymbol} ${Math.abs(changeAmount).toFixed(2)} (${changePercent.toFixed(2)}%)`;
+            priceChange.className = changeClass;
+        }
+
+        function getStockName(symbol) {
+            const stock = POPULAR_STOCKS.find(s => s.symbol === symbol);
+            return stock ? stock.name : symbol;
+        }
+
+        function handlePredictionCreated(date, price) {
+            showToast(`예측 추가: ${date.toLocaleDateString('ko-KR')} - $${price.toFixed(2)}`, 'success');
+            updatePredictionsList();
+        }
+
+        function updatePredictionsList() {
+            const predictions = chart.predictions;
+            
+            if (predictions.length === 0) {
+                predictionsPanel.classList.add('hidden');
+                return;
+            }
+
+            predictionsPanel.classList.remove('hidden');
+            
+            const html = predictions.map((pred, index) => {
+                const date = new Date(pred.date);
+                const currentPrice = getCurrentPrice();
+                const change = currentPrice ? ((pred.price - currentPrice) / currentPrice * 100) : 0;
+                const changeClass = change >= 0 ? 'text-green-400' : 'text-red-400';
+                const changeIcon = change >= 0 ? '📈' : '📉';
+                
+                return `
+                    <div class="prediction-item">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold">${date.toLocaleDateString('ko-KR')}</span>
+                                <span class="text-sm text-gray-400">${date.toLocaleDateString('ko-KR', { weekday: 'short' })}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg font-bold">$${pred.price.toFixed(2)}</span>
+                                <span class="${changeClass} text-sm font-medium">
+                                    ${changeIcon} ${change >= 0 ? '+' : ''}${change.toFixed(1)}%
+                                </span>
+                            </div>
+                        </div>
+                        <button onclick="removePrediction(${pred.id})" class="text-red-400 hover:text-red-300 p-2">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            
+            predictionsList.innerHTML = html;
+        }
+
+        function getCurrentPrice() {
+            if (!chart.data || chart.data.length === 0) return 0;
+            return chart.data[chart.data.length - 1].close;
+        }
+
+        function removePrediction(id) {
+            chart.removePrediction(id);
+            updatePredictionsList();
+            showToast('예측이 삭제되었습니다', 'info');
+        }
+
+        function handleClearPredictions() {
+            if (chart.predictions.length === 0) return;
+            
+            chart.predictions = [];
+            chart.draw();
+            updatePredictionsList();
+            showToast('모든 예측이 삭제되었습니다', 'info');
+        }
+
+        function handleSharePredictions() {
+            if (chart.predictions.length === 0) {
+                showToast('공유할 예측이 없습니다', 'error');
+                return;
+            }
+            
+            // Simulate sharing
+            const predictions = chart.predictions;
+            const message = `${currentStock} 예측 ${predictions.length}개를 공유했습니다!`;
+            
+            showToast(message, 'success');
+            
+            // In real app, this would save to database and generate share link
+            console.log('Sharing predictions:', predictions);
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Hide and remove toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Global functions for onclick handlers
+        window.selectStock = selectStock;
+        window.removePrediction = removePrediction;
+    </script>
+</body>
+
+</html>
