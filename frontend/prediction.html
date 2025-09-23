@@ -39,13 +39,67 @@
         .bg-tv-text-secondary { background-color: #868993; }
         .border-tv-border { border-color: #363a45; }
         
+        
+        /* TradingView-style chart specific styling */
+        .tradingview-chart {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .tradingview-header {
+            background: #2a2d3a;
+            border-bottom: 1px solid #3a3d4a;
+        }
+        
+        .tradingview-price-bar {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tradingview-controls {
+            background: #f1f3f4;
+            border-top: 1px solid #dadce0;
+        }
+        
         /* Korean chart specific styling */
         .time-interval-btn.active {
             background-color: #1976D2 !important;
+            color: white !important;
         }
         
         .time-interval-btn:hover {
             opacity: 0.8;
+        }
+        
+        /* TradingView-style time interval buttons (EXACT MATCH) */
+        .time-interval-btn {
+            transition: all 0.2s ease;
+            font-weight: 500;
+            min-width: 32px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .time-interval-btn.active {
+            background-color: #1976D2 !important;
+            color: white !important;
+            font-weight: 600;
+        }
+        
+        .chart-type-btn {
+            transition: all 0.2s ease;
+            min-width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chart-type-btn.active {
+            background-color: #e3f2fd;
+            color: #1976D2;
         }
         
         /* Prediction tooltip styling */
@@ -56,11 +110,11 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .chart-area {
-                height: 300px !important;
+                height: 450px !important;
             }
             
             #volumeContainer {
-                height: 80px !important;
+                height: 120px !important;
             }
         }
     </style>
@@ -279,18 +333,20 @@
                 const xScale = this.chart.scales.x;
                 const yScale = this.chart.scales.y;
                 
-                // FORCE EXTREME THICKNESS - FILL ENTIRE SPACE
-                const dataCount = Math.min(dataset.data.length, 20); // Even fewer for maximum thickness
+                // EXACT REFERENCE IMAGE MATCH - PRECISE SPACING
+                const dataCount = Math.min(dataset.data.length, 25); // Good number like reference
                 const availableWidth = chartArea.right - chartArea.left;
                 const spacing = availableWidth / Math.max(dataCount, 1);
                 
-                // FORCE MAXIMUM POSSIBLE WIDTH - 98% of space per candle
-                const candleWidth = Math.max(Math.floor(spacing * 0.98), 80); // FORCE 80px minimum!
-                const wickWidth = Math.max(10, Math.floor(candleWidth / 8)); // Extra thick wicks
+                // REFERENCE IMAGE PROPORTIONS - 75% candle, 25% gap (tighter spacing)
+                const candleWidth = Math.max(Math.floor(spacing * 0.75), 20); // Slightly thicker with less gap
+                const wickWidth = Math.max(2, Math.floor(candleWidth / 10)); // Thin wicks like reference
                 
-                console.log(`🔥 FORCING MAXIMUM THICKNESS - Candle: ${candleWidth}px, Wick: ${wickWidth}px, Available: ${availableWidth}px`);
+                console.log(`EXACT SPACING MATCH - Candle: ${candleWidth}px, Wick: ${wickWidth}px, Count: ${dataCount}`);
+                
+                console.log(`� TradingView Style - Candle: ${candleWidth}px, Wick: ${wickWidth}px, Spacing: ${spacing}px, Count: ${dataCount}`);
 
-                // FORCE DRAW EACH CANDLESTICK WITH MAXIMUM VISIBILITY
+                // DRAW EACH CANDLESTICK WITH PROPER TRADINGVIEW PROPORTIONS
                 dataset.data.slice(0, dataCount).forEach((dataPoint, index) => {
                     if (!dataPoint || typeof dataPoint.o === 'undefined') return;
                     
@@ -303,11 +359,11 @@
                             throw new Error('Invalid x coordinate');
                         }
                     } catch (e) {
-                        // Manual calculation: distribute evenly across chart width
-                        const startX = chartArea.left + 40; // 40px margin from left
-                        const endX = chartArea.right - 40; // 40px margin from right
+                        // Manual calculation: Extra thick candles with minimal gaps
+                        const startX = chartArea.left + 10; // Minimal margins for maximum width
+                        const endX = chartArea.right - 10; // Minimal margins for maximum width  
                         const availableX = endX - startX;
-                        x = startX + (index / (dataCount - 1)) * availableX;
+                        x = startX + (index * spacing) + (spacing / 2); // Center each very thick candle
                     }
                     
                     // Get Y positions with fallback calculation
@@ -353,30 +409,38 @@
                     ctx.strokeStyle = wickColor;
                     ctx.lineWidth = wickWidth;
                     ctx.lineCap = 'butt';
+                    // Draw normal thickness wick like reference
+                    ctx.lineWidth = wickWidth; // Normal wick thickness
+                    
+                    // Draw the main wick - simple line like reference
                     ctx.beginPath();
                     ctx.moveTo(x, high);
                     ctx.lineTo(x, low);
                     ctx.stroke();
                     
-                    // FORCE DRAW MASSIVE CANDLE BODY
+                    // REFERENCE IMAGE STYLE CANDLE BODY
                     const bodyTop = Math.min(open, close);
                     const bodyBottom = Math.max(open, close);
-                    const bodyHeight = Math.max(bodyBottom - bodyTop, 15); // FORCE 15px minimum
                     
-                    // FORCE FILL MASSIVE RECTANGLE
+                    // Good proportions like reference - not too thick, not too thin
+                    const minHeight = 3; // Small minimum height
+                    const bodyHeight = Math.max(bodyBottom - bodyTop, minHeight);
+                    const adjustedBodyTop = bodyBottom === bodyTop ? bodyTop - minHeight/2 : bodyTop;
+                    
+                    // Fill body like reference
                     ctx.fillStyle = bodyColor;
-                    ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                    ctx.fillRect(x - candleWidth / 2, adjustedBodyTop, candleWidth, bodyHeight);
                     
-                    // FORCE THICK BORDER
+                    // Clean border like reference
                     ctx.strokeStyle = borderColor;
-                    ctx.lineWidth = 5; // EXTRA THICK BORDER
-                    ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+                    ctx.lineWidth = 1; // Clean 1px border
+                    ctx.strokeRect(x - candleWidth / 2, adjustedBodyTop, candleWidth, bodyHeight);
                     
                     console.log(`✅ Forced candle ${index + 1} drawn: rect(${x - candleWidth / 2}, ${bodyTop}, ${candleWidth}, ${bodyHeight})`);
                 });
                 
                 ctx.restore();
-                console.log('🔥 FORCED THICK Korean candlesticks completed - MAXIMUM VISIBILITY MODE');
+                console.log('PERFECT REFERENCE MATCH - EXACT PROPORTIONS ACHIEVED');
             }
         }
 
@@ -437,6 +501,8 @@
         .chart-container {
             background: white;
             position: relative;
+            border-radius: 8px;
+            overflow: hidden;
         }
         
         .price-scale {
@@ -615,7 +681,7 @@
 
     <!-- Main Content -->
     <main class="py-8 bg-tv-darker min-h-screen">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Page Header -->
             <div class="mb-8 text-center">
                 <h1 class="text-4xl font-bold text-tv-text mb-4">주식 예측하기</h1>
@@ -988,121 +1054,184 @@
                             </div>
                         </div>
 
-                        <!-- Chart Container with Korean Design - Mobile Optimized -->
-                        <div class="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                            <!-- Chart Header with Controls - Mobile Responsive -->
-                            <div class="bg-gray-700 text-white px-2 sm:px-4 py-2 text-xs sm:text-sm">
-                                <div class="flex items-center justify-between flex-wrap gap-2">
-                                    <div class="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-                                        <span class="font-medium text-xs sm:text-sm truncate">Search stock coins worldwide</span>
-                                        <div class="flex items-center space-x-1 sm:space-x-2">
-                                            <span class="text-xs">📊</span>
-                                            <input type="text" id="stockCodeInput" value="AAPL" 
-                                                class="w-12 sm:w-16 px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none focus:bg-gray-500">
-                                            <select class="px-1 py-0.5 bg-gray-600 border border-gray-500 rounded text-white text-xs focus:outline-none hidden sm:block">
-                                                <option>조회</option>
-                                            </select>
-                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs hidden sm:block">📄</button>
-                                            <button class="px-1 py-0.5 bg-gray-600 hover:bg-gray-500 border border-gray-500 rounded text-white text-xs hidden sm:block">💾</button>
+                        <!-- Real TradingView Style Chart Container -->
+                        <div class="tradingview-chart bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                            <!-- Real TradingView Style Toolbar -->
+                            <div class="bg-white border-b border-gray-200 px-4 py-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-lg font-bold">🔍 USDKRW</span>
+                                            <button class="w-6 h-6 border border-gray-300 rounded flex items-center justify-center">+</button>
+                                        </div>
+                                        <div class="flex items-center space-x-2 text-gray-600">
+                                            <button class="px-2 py-1 text-sm">날</button>
+                                            <button class="p-1">📊</button>
+                                            <button class="p-1">📈</button>
+                                            <button class="p-1">지표</button>
+                                            <button class="p-1">⚙️</button>
+                                            <button class="p-1">🔔</button>
+                                            <button class="p-1">알러트</button>
+                                            <button class="p-1">⏪</button>
+                                            <button class="p-1">리플레이</button>
+                                            <button class="p-1">↶</button>
+                                            <button class="p-1">↷</button>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-1 sm:space-x-4 min-w-0">
-                                        <span class="font-medium text-xs hidden sm:inline">Select daily, weekly, monthly, or yearly time</span>
-                                        <div class="flex space-x-1">
-                                            <button class="time-interval-btn active px-1 sm:px-2 py-1 bg-blue-600 text-white text-xs rounded font-medium hover:bg-blue-700" data-interval="1d">일</button>
-                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1wk">주</button>
-                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1mo">월</button>
-                                            <button class="time-interval-btn px-1 sm:px-2 py-1 bg-gray-600 text-white text-xs rounded hover:bg-gray-500" data-interval="1y">년</button>
-                                        </div>
-                                    </div>
+                                    <button class="border border-gray-300 p-1">⬜</button>
                                 </div>
                             </div>
                             
-                            <!-- Stock Info Bar - Mobile Optimized -->
-                            <div class="bg-gray-100 border-b border-gray-200 px-2 sm:px-4 py-2">
-                                <div class="flex items-center justify-between text-xs sm:text-sm flex-wrap gap-2">
-                                    <div class="flex items-center space-x-2 sm:space-x-6 min-w-0 flex-1">
-                                        <div class="text-sm sm:text-lg font-bold text-blue-600" id="stockCode">AAPL</div>
-                                        <div class="text-sm sm:text-lg font-bold truncate" id="stockName">Apple Inc.</div>
-                                        <div class="flex items-center space-x-2 sm:space-x-4">
-                                            <span class="text-sm sm:text-lg font-bold text-blue-600" id="currentPrice">$0.00</span>
-                                            <span class="text-blue-600 text-xs sm:text-sm" id="priceChange">--</span>
-                                            <span class="text-blue-600 text-xs sm:text-sm" id="priceChangePercent">(--)</span>
+                            <!-- Real TradingView Style Price Header -->
+                            <div class="bg-white px-4 py-3 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs">🇺🇸</span>
+                                            <span class="font-medium">미국 달러 / 대한민국 원</span>
+                                            <span class="text-xs">• 1분</span>
+                                            <span class="text-xs">• ICE</span>
+                                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                            <span class="text-xs">~</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-1 sm:space-x-4 text-xs text-gray-600 flex-wrap">
-                                        <span id="dayHigh" class="whitespace-nowrap">고 --</span>
-                                        <span id="dayLow" class="whitespace-nowrap">저 --</span>
-                                        <span id="volume" class="hidden sm:inline whitespace-nowrap">거래량 --</span>
-                                        <span id="marketCap" class="hidden md:inline whitespace-nowrap">시가총액 --</span>
+                                    <span class="text-right text-sm font-bold">1,500.00</span>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <div class="flex items-center space-x-6 text-sm">
+                                        <span>시 1,390.21</span>
+                                        <span>고 1,395.57</span>
+                                        <span>저 1,390.21</span>
+                                        <span>종 1,393.82</span>
+                                        <span class="text-green-600">+3.60 (+0.26%)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="text-xs">
+                                            <span class="bg-red-100 text-red-700 px-2 py-1 rounded">1,393.82 셀</span>
+                                            <span class="text-gray-500 mx-1">100</span>
+                                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded">1,394.82 바이</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-between mt-1 sm:hidden">
-                                    <div class="flex items-center space-x-2 text-xs text-gray-600">
-                                        <span id="volume-mobile">거래량 --</span>
-                                        <span id="lastUpdated" class="text-xs">--</span>
-                                    </div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span class="text-xs text-gray-500">볼륨 0</span>
+                                    <span class="text-xs text-gray-500">1,480.00</span>
                                 </div>
                             </div>
                             
-                            <!-- Main Chart Area - Mobile Optimized -->
+                            <!-- TradingView Style Main Chart Area -->
                             <div class="relative bg-white">
-                                <!-- Price Chart -->
-                                <div class="relative touch-manipulation" style="height: 350px; min-height: 300px;">
+                                <!-- Main Price Chart -->
+                                <div class="relative touch-manipulation overflow-hidden" style="height: 600px; width: 100%">
                                     <canvas id="priceChart" class="w-full h-full touch-manipulation" style="touch-action: pan-x pan-y;"></canvas>
-                                    <!-- Price Scale on Right - Mobile Responsive -->
-                                    <div class="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-1 sm:py-2 px-0.5 sm:px-1">
-                                        <div class="text-xs text-blue-600 text-right font-medium" id="maxPrice">--</div>
-                                        <div class="text-xs text-blue-600 text-right font-medium" id="midPrice">--</div>
-                                        <div class="text-xs text-blue-600 text-right font-medium" id="minPrice">--</div>
+                                    <!-- TradingView Style Price Scale on Right (MANY LEVELS LIKE REFERENCE) -->
+                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-white border-l border-gray-200 flex flex-col justify-between py-2 px-2" id="priceScaleContainer">
+                                        <!-- Price levels will be dynamically populated by JavaScript -->
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_15">1398.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_14">1396.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_13">1394.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_12">1392.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_11">1390.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_10">1388.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_9">1386.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_8">1384.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_7">1382.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_6">1380.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_5">1378.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_4">1376.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_3">1374.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_2">1372.00</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="priceLevel_1">1370.00</div>
                                     </div>
                                 </div>
                                 
-                                <!-- Volume Chart - Mobile Responsive -->
-                                <div class="relative border-t border-gray-200 touch-manipulation" style="height: 80px; min-height: 60px;" id="volumeContainer">
+                                <!-- TradingView Style Volume Chart -->
+                                <div class="relative border-t border-gray-200 bg-white" style="height: 150px;">
+                                    <div class="absolute top-2 left-3 text-xs text-gray-600 font-medium">볼륨</div>
                                     <canvas id="volumeChart" class="w-full h-full touch-manipulation" style="touch-action: pan-x pan-y;"></canvas>
                                     <!-- Volume Scale on Right -->
-                                    <div class="absolute right-0 top-0 bottom-0 w-12 sm:w-16 bg-gray-50 border-l border-gray-200 flex flex-col justify-between py-0.5 sm:py-1 px-0.5 sm:px-1">
-                                        <div class="text-xs text-blue-600 text-right font-medium" id="maxVolume">--</div>
-                                        <div class="text-xs text-blue-600 text-right font-medium" id="minVolume">0</div>
+                                    <div class="absolute right-0 top-0 bottom-0 w-16 bg-white border-l border-gray-200 flex flex-col justify-between py-2 px-2">
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="maxVolume">1000</div>
+                                        <div class="text-xs text-gray-700 text-right font-medium" id="minVolume">0</div>
                                     </div>
                                 </div>
                                 
-                                <!-- Chart Controls Bar - Mobile Optimized -->
-                                <div class="bg-gray-700 text-white px-2 sm:px-4 py-1 text-xs">
-                                    <div class="flex items-center justify-between flex-wrap gap-2">
-                                        <div class="flex items-center space-x-2 sm:space-x-4">
+                                <!-- TradingView Style Bottom Control Bar -->
+                                <div class="tradingview-controls bg-gray-100 border-t border-gray-200 px-3 py-2">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
                                             <div class="flex space-x-1">
-                                                <div class="w-2 h-3 bg-blue-500"></div>
-                                                <div class="w-2 h-3 bg-red-500"></div>
-                                                <div class="w-2 h-3 bg-blue-500"></div>
-                                                <div class="w-2 h-3 bg-red-500"></div>
-                                                <div class="w-2 h-3 bg-blue-500"></div>
+                                                <div class="w-3 h-2 bg-blue-500"></div>
+                                                <div class="w-3 h-2 bg-red-500"></div>
+                                                <div class="w-3 h-2 bg-blue-500"></div>
+                                                <div class="w-3 h-2 bg-red-500"></div>
                                             </div>
-                                            <span class="text-gray-300 text-xs sm:text-sm">차트 네비게이션</span>
+                                            <span class="text-gray-600 text-sm">차트 네비게이션</span>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <button class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" id="chartZoomOut">축소</button>
-                                            <button class="px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" id="chartZoomIn">확대</button>
-                                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs" id="chartReset">초기화</button>
+                                            <button class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700" id="chartZoomOut">축소</button>
+                                            <button class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-sm text-gray-700" id="chartZoomIn">확대</button>
+                                            <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm" id="chartReset">초기화</button>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Horizontal Time Navigation Scrollbar -->
-                                <div class="bg-gray-600 px-4 py-3 border-t border-gray-500">
-                                    <div class="flex items-center space-x-3">
-                                        <span class="text-white text-xs font-medium">시간 이동:</span>
-                                        <button id="scrollToPast" class="px-2 py-1 bg-gray-500 hover:bg-gray-400 text-white rounded text-xs">◄ 과거</button>
-                                        <div class="flex-1 flex items-center space-x-2">
-                                            <span class="text-gray-300 text-xs">과거</span>
-                                            <input type="range" id="chartTimeScrollbar" 
-                                                   class="flex-1 h-2 bg-gray-500 rounded-lg appearance-none cursor-pointer"
-                                                   min="0" max="100" value="70" step="1">
-                                            <span class="text-gray-300 text-xs">미래</span>
+                                <!-- TradingView Style Date Labels Row (TOP - EXACT LIKE REFERENCE) -->
+                                <div class="bg-white border-t border-gray-200 px-3 py-1">
+                                    <div class="flex items-center justify-between relative">
+                                        <!-- Date labels will be populated by JavaScript -->
+                                        <div id="chartDateLabels" class="flex items-center justify-between w-full text-xs text-gray-600">
+                                            <!-- Individual date numbers (2, 3, 4, 5, 8, 9, etc.) will appear here -->
                                         </div>
-                                        <button id="scrollToFuture" class="px-2 py-1 bg-gray-500 hover:bg-gray-400 text-white rounded text-xs">미래 ►</button>
-                                        <div id="timePosition" class="text-gray-300 text-xs min-w-16 text-center">현재</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- TradingView Style Time Interval Buttons (BOTTOM - EXACT LIKE REFERENCE) -->
+                                <div class="bg-white border-t border-gray-300 px-3 py-2">
+                                    <div class="flex items-center justify-between">
+                                        <!-- Left: Time Interval Buttons -->
+                                        <div class="flex items-center space-x-1">
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="1D">1D</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="5D">5D</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="1M">1M</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="3M">3M</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="6M">6M</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="YTD">YTD</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="1Y">1Y</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded" data-interval="5Y">5Y</button>
+                                            <button class="time-interval-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded active" data-interval="전체">전체</button>
+                                            
+                                            <!-- Chart Type Selector -->
+                                            <div class="border-l border-gray-300 ml-2 pl-2">
+                                                <button class="chart-type-btn px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded active" data-type="candlestick" title="캔들스틱 차트">
+                                                    🕯️
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Right: Real-time Clock (EXACT LIKE REFERENCE) -->
+                                        <div class="flex items-center space-x-2 text-xs text-gray-600">
+                                            <span id="currentTime">15:30:05 UTC+9</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- TradingView Style Time Controls -->
+                                <div class="bg-gray-200 border-t border-gray-300 px-3 py-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-gray-700 text-sm font-medium">시간 이동:</span>
+                                        <div class="flex items-center space-x-3 flex-1 mx-4">
+                                            <button id="scrollToPast" class="px-2 py-1 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded text-sm">← 과거</button>
+                                            <div class="flex-1 flex items-center space-x-2">
+                                                <span class="text-gray-600 text-xs">과거</span>
+                                                <input type="range" id="chartTimeScrollbar" 
+                                                       class="flex-1 h-2 bg-gray-400 rounded-lg appearance-none cursor-pointer"
+                                                       min="0" max="100" value="70" step="1">
+                                                <span class="text-gray-600 text-xs">미래</span>
+                                            </div>
+                                            <button id="scrollToFuture" class="px-2 py-1 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded text-sm">미래 →</button>
+                                        </div>
+                                        <div id="timePosition" class="text-gray-700 text-sm font-medium min-w-16 text-center">현재</div>
                                     </div>
                                 </div>
                             </div>
@@ -1529,9 +1658,13 @@
                         height: height - padding.top - padding.bottom
                     };
                     
-                    // Draw background
+                    // TradingView-style background
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, width, height);
+                    
+                    // TradingView chart area background
+                    ctx.fillStyle = '#FAFAFA';
+                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
                     
                     // Display current time and chart interval at top
                     ctx.fillStyle = '#333333';
@@ -1544,16 +1677,16 @@
                         default: intervalText = '일봉 차트 (Daily)';
                     }
                     
-                    // Show current time like in Korean charts
+                    // Show current time like in Korean charts - exact format like image
                     const now = new Date();
-                    const timeString = now.toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit', 
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    });
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    const ampm = now.getHours() >= 12 ? '오후' : '오전';
+                    const timeString = `${year}. ${month}. ${day}. ${ampm} ${hours}:${minutes}:${seconds}`;
                     
                     ctx.textAlign = 'left';
                     ctx.fillText(`${intervalText} - ${timeString}`, chartArea.left, padding.top - 8);
@@ -1565,39 +1698,39 @@
                     const priceRange = maxPrice - minPrice;
                     const margin = priceRange * 0.1;
                     
-                    // Calculate candle dimensions - responsive for mobile and desktop
-                    const candleCount = this.data.length;
+                    // Calculate candle dimensions - EXACT REFERENCE MATCH
+                    const maxCandles = 25; // Good number like reference image
+                    const limitedData = this.data.slice(-maxCandles); // Show last 25 candles
+                    const candleCount = limitedData.length;
                     const candleSpacing = chartArea.width / candleCount;
                     
-                    // Korean-style candlesticks - exact sizing like reference image
+                    // ABSOLUTE FINAL MATCH - EXACTLY like TradingView reference
                     const isMobile = window.innerWidth <= 768;
-                    const baseWidthRatio = isMobile ? 0.6 : 0.5; // Much thinner like reference
-                    const minCandleWidth = isMobile ? 6 : 8;
-                    const maxCandleWidth = isMobile ? 18 : 20;
                     
-                    let candleWidth = Math.max(candleSpacing * baseWidthRatio, minCandleWidth);
+                    // REFERENCE IMAGE PROPORTIONS - tighter spacing like reference
+                    const gapRatio = 0.75; // 75% candle width, 25% spacing - tighter like reference
+                    let candleWidth = Math.max(candleSpacing * gapRatio, 20); // Good thickness like reference
+                    
+                    // REFERENCE IMAGE limits - substantial candlesticks
+                    const minCandleWidth = 20;   // Good minimum width
+                    const maxCandleWidth = 40;   // Good maximum width
+                    
+                    candleWidth = Math.max(candleWidth, minCandleWidth);
                     candleWidth = Math.min(candleWidth, maxCandleWidth);
                     
-                    const wickWidth = Math.max(1, Math.min(candleWidth / 8, isMobile ? 2 : 2));
+                    const wickWidth = Math.max(2, Math.floor(candleWidth / 10)); // Proportional thin wicks
                     
-                    // Draw minimal grid lines for Korean style
-                    ctx.strokeStyle = '#E0E0E0';
+                    // Clear canvas with EXACT TradingView background color
+                    ctx.fillStyle = '#FFFFFF'; // Pure white background like reference
+                    ctx.fillRect(0, 0, this.width, this.height);
+                    
+                    // TradingView-style grid lines (EXACT match)
+                    ctx.strokeStyle = '#F0F0F0';  // Very light gray grid like reference
                     ctx.lineWidth = 1;
                     
-                    // Only major vertical grid lines (no separators between candles)
-                    const verticalLineCount = 5; // Fewer lines for cleaner look
-                    const verticalLineSpacing = chartArea.width / verticalLineCount;
-                    for (let i = 0; i <= verticalLineCount; i++) {
-                        const x = chartArea.left + (i * verticalLineSpacing);
-                        ctx.beginPath();
-                        ctx.moveTo(x, chartArea.top);
-                        ctx.lineTo(x, chartArea.bottom);
-                        ctx.stroke();
-                    }
-                    
-                    // Horizontal grid lines
-                    const horizontalLineCount = 5;
-                    for (let i = 0; i <= horizontalLineCount; i++) {
+                    // Horizontal grid lines (price levels)
+                    const horizontalLineCount = 6; // More lines like real TradingView
+                    for (let i = 1; i < horizontalLineCount; i++) { // Skip edges
                         const y = chartArea.top + (i * (chartArea.height / horizontalLineCount));
                         ctx.beginPath();
                         ctx.moveTo(chartArea.left, y);
@@ -1605,42 +1738,44 @@
                         ctx.stroke();
                     }
                     
-                    // Draw border - thicker as requested
-                    ctx.strokeStyle = '#CCCCCC';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
-                    
-                    console.log(`🏛️ Drawing ${candleCount} Korean candles: ${candleWidth}px wide, ${wickWidth}px wicks`);
-                    
-                    // Draw date labels at bottom - Korean style like reference image
-                    ctx.fillStyle = '#666666';
-                    ctx.font = 'bold 10px Arial';
-                    ctx.textAlign = 'center';
-                    
-                    // Show date labels for better visibility (like reference image)
-                    const labelStep = Math.max(1, Math.floor(candleCount / 6));
-                    for (let i = 0; i < candleCount; i += labelStep) {
-                        const x = chartArea.left + (i * candleSpacing) + (candleSpacing / 2);
-                        const candle = this.data[i];
-                        const date = new Date(candle.x);
-                        
-                        // Format date based on timeInterval - Korean style
-                        let dateLabel;
-                        if (this.timeInterval === '1mo') {
-                            dateLabel = `${date.getFullYear()}.${String(date.getMonth()+1).padStart(2, '0')}`;
-                        } else if (this.timeInterval === '1wk') {
-                            dateLabel = `${date.getMonth()+1}.${date.getDate()}`;
-                        } else {
-                            // Daily format like reference: 8/29, 9/4, etc.
-                            dateLabel = `${date.getMonth()+1}/${date.getDate()}`;
-                        }
-                        
-                        // Draw date label
-                        ctx.fillText(dateLabel, x, chartArea.bottom + 15);
+                    // Minimal vertical grid lines (time intervals)
+                    const verticalLineCount = 8; // More vertical lines for time precision
+                    for (let i = 1; i < verticalLineCount; i++) { // Skip edges
+                        const x = chartArea.left + (i * (chartArea.width / verticalLineCount));
+                        ctx.beginPath();
+                        ctx.moveTo(x, chartArea.top);
+                        ctx.lineTo(x, chartArea.bottom);
+                        ctx.stroke();
                     }
                     
-                    // Draw candlesticks
-                    this.data.forEach((candle, index) => {
+                    // TradingView-style chart border
+                    ctx.strokeStyle = '#E0E0E0';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+                    
+                    console.log(`� REFERENCE MATCH: ${candleCount} candlesticks: ${candleWidth}px wide, ${wickWidth}px wicks - Spacing: ${candleSpacing}px`);
+                    
+                    // Draw date labels in HTML (NOT on canvas) - EXACT like TradingView reference
+                    this.updateDateLabelsHTML();
+                    
+                    console.log(`📅 Updated date labels in HTML for ${candleCount} candles`);
+                    
+                    // Add month indicator at the end like reference image shows "10월"
+                    if (this.data.length > 0) {
+                        const lastCandle = this.data[this.data.length - 1];
+                        const lastDate = new Date(lastCandle.x);
+                        const lastX = chartArea.left + ((this.data.length - 1) * candleSpacing) + (candleSpacing / 2);
+                        
+                        // Show month in Korean like reference: "10월"
+                        const monthLabel = `${lastDate.getMonth() + 1}월`;
+                        ctx.fillStyle = '#444444';
+                        ctx.font = 'bold 11px Arial';
+                        ctx.fillText(monthLabel, lastX + 20, chartArea.bottom + 15);
+                    }
+                    
+                    // Draw candlesticks with ULTRA THICK width - matching our first function
+                    limitedData.forEach((candle, index) => {
+                        // Position candlesticks to FILL space with NO GAPS
                         const x = chartArea.left + (index * candleSpacing) + (candleSpacing / 2);
                         
                         // Map prices to Y coordinates (inverted Y-axis)
@@ -1649,36 +1784,36 @@
                         const open = chartArea.top + ((maxPrice + margin - candle.o) / (priceRange + margin * 2)) * chartArea.height;
                         const close = chartArea.top + ((maxPrice + margin - candle.c) / (priceRange + margin * 2)) * chartArea.height;
                         
-                        // Korean colors: Red up, Blue down (thicker, more saturated colors)
+                        // EXACT TradingView colors from reference image (second photo)
                         const isUp = candle.c >= candle.o;
-                        const bodyColor = isUp ? '#FF3333' : '#3366FF';
-                        const wickColor = isUp ? '#DD0000' : '#0044DD';
-                        const borderColor = isUp ? '#BB0000' : '#0033BB';
+                        const bodyColor = isUp ? '#26A69A' : '#EF5350';  // EXACT TradingView green/red
+                        const wickColor = isUp ? '#26A69A' : '#EF5350';  // Same color for wicks
+                        const borderColor = isUp ? '#26A69A' : '#EF5350'; // Same color for borders
                         
                         // Highlight candle if hovered
                         const isHovered = this.hoverPoint && this.hoverPoint.index === index;
                         const highlightWidth = isHovered ? 5 : 3;
                         
-                        // Draw wick - thinner like reference image
+                        // Draw normal wick - simple like reference
                         ctx.strokeStyle = wickColor;
-                        ctx.lineWidth = isHovered ? wickWidth + 1 : wickWidth;
-                        ctx.lineCap = 'round';
+                        ctx.lineWidth = wickWidth; // Normal wick thickness
+                        ctx.lineCap = 'butt';
                         ctx.beginPath();
                         ctx.moveTo(x, high);
                         ctx.lineTo(x, low);
                         ctx.stroke();
                         
-                        // Draw body - thinner for exact Korean style like reference
+                        // Draw body - REFERENCE IMAGE style
                         const bodyTop = Math.min(open, close);
-                        const bodyHeight = Math.max(Math.abs(close - open), 6); // Minimum height 6px like reference
+                        const bodyHeight = Math.max(Math.abs(close - open), 3); // Small minimum like reference
                         
-                        // Fill body with proper spacing
+                        // Fill body with good proportions
                         ctx.fillStyle = bodyColor;
                         ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
                         
-                        // Thinner border for Korean style
-                        ctx.strokeStyle = borderColor;
-                        ctx.lineWidth = isHovered ? 2 : 1; // Much thinner borders
+                        // Clean border like reference
+                        ctx.strokeStyle = bodyColor;
+                        ctx.lineWidth = 1;
                         ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
                         
                         // Draw hover tooltip if this is the hovered candle
@@ -1797,6 +1932,56 @@
                     }
                 },
                 
+                // Update date labels in HTML (EXACT like TradingView reference)
+                updateDateLabelsHTML: function() {
+                    const dateLabelsContainer = document.getElementById('chartDateLabels');
+                    if (!dateLabelsContainer || !this.data || this.data.length === 0) return;
+                    
+                    // Clear existing labels
+                    dateLabelsContainer.innerHTML = '';
+                    
+                    // Create date labels for each candlestick
+                    const fragment = document.createDocumentFragment();
+                    
+                    this.data.forEach((candle, index) => {
+                        const date = new Date(candle.x);
+                        
+                        // Format date EXACTLY like reference: just day numbers (2, 3, 4, 5, 8, 9, etc.)
+                        let dateLabel;
+                        if (this.timeInterval === '1mo') {
+                            dateLabel = `${date.getMonth()+1}.${date.getFullYear().toString().slice(-2)}`;
+                        } else if (this.timeInterval === '1wk') {
+                            dateLabel = `${date.getMonth()+1}/${date.getDate()}`;
+                        } else {
+                            // Daily format EXACTLY like reference: just the day number (2, 3, 4, 5, etc.)
+                            dateLabel = `${date.getDate()}`;
+                        }
+                        
+                        // Create span element for each date
+                        const dateSpan = document.createElement('span');
+                        dateSpan.textContent = dateLabel;
+                        dateSpan.className = 'text-gray-600 text-xs font-medium';
+                        
+                        fragment.appendChild(dateSpan);
+                    });
+                    
+                    // Add month indicator at the end like reference: "10월"
+                    if (this.data.length > 0) {
+                        const lastCandle = this.data[this.data.length - 1];
+                        const lastDate = new Date(lastCandle.x);
+                        
+                        const monthSpan = document.createElement('span');
+                        monthSpan.textContent = `${lastDate.getMonth() + 1}월`;
+                        monthSpan.className = 'text-gray-700 text-xs font-bold ml-2';
+                        
+                        fragment.appendChild(monthSpan);
+                    }
+                    
+                    dateLabelsContainer.appendChild(fragment);
+                    
+                    console.log(`✅ Updated ${this.data.length} date labels in HTML: ${this.data.map(d => new Date(d.x).getDate()).join(', ')}`);
+                },
+                
                 // Draw tooltip with OHLC data in Korean
                 drawTooltip: function(x, y, candle) {
                     const ctx = this.ctx;
@@ -1888,34 +2073,58 @@
                     ctx.fillText(lines[lines.length - 1], tooltipX + padding, tooltipY + padding + lineHeight * (lines.length));
                 },
                 
-                // Draw price scale on the right - exactly like Korean reference image
+                // Draw price scale on the right - MANY LEVELS like TradingView reference
                 drawPriceScale: function(chartArea, minPrice, maxPrice, priceRange, margin) {
                     const ctx = this.ctx;
-                    const steps = 10; // More price levels like in reference
+                    
+                    // Update HTML price scale with many levels (like TradingView reference)
+                    this.updateHTMLPriceScale(minPrice, maxPrice, margin);
+                    
+                    // Also draw on canvas for consistency
+                    const steps = 15; // Many more price levels like reference (15 levels)
                     const adjustedMinPrice = minPrice - margin;
                     const adjustedMaxPrice = maxPrice + margin;
                     const totalPriceRange = adjustedMaxPrice - adjustedMinPrice;
                     
-                    ctx.fillStyle = '#1565C0'; // Blue color like reference image
-                    ctx.font = 'bold 11px Arial';
+                    ctx.fillStyle = '#666666'; // Gray color like reference
+                    ctx.font = '10px Arial';
                     ctx.textAlign = 'right';
                     
-                    // Draw price labels at each step - exactly like reference
+                    // Draw price labels at each step
                     for (let i = 0; i <= steps; i++) {
                         const price = adjustedMaxPrice - (i * totalPriceRange / steps);
                         const y = chartArea.top + ((i * chartArea.height) / steps);
                         
-                        // Format price to thousands with commas
-                        const formattedPrice = Math.round(price).toLocaleString();
+                        // Format price like TradingView: 1,398.00 format
+                        const formattedPrice = price.toFixed(2);
                         
-                        // Price label positioned like in reference image
-                        ctx.fillText(formattedPrice, this.width - 5, y + 4);
+                        // Price label positioned on canvas
+                        ctx.fillText(formattedPrice, this.width - 20, y + 3);
+                    }
+                },
+                
+                // Update HTML price scale with many levels (EXACT like TradingView reference)
+                updateHTMLPriceScale: function(minPrice, maxPrice, margin) {
+                    const adjustedMinPrice = minPrice - margin;
+                    const adjustedMaxPrice = maxPrice + margin;
+                    const totalPriceRange = adjustedMaxPrice - adjustedMinPrice;
+                    const steps = 15; // 15 price levels like reference
+                    
+                    // Update each price level element
+                    for (let i = 1; i <= 15; i++) {
+                        const priceElement = document.getElementById(`priceLevel_${i}`);
+                        if (priceElement) {
+                            // Calculate price for this level (from top to bottom)
+                            const levelIndex = i - 1;
+                            const price = adjustedMaxPrice - (levelIndex * totalPriceRange / (steps - 1));
+                            
+                            // Format like TradingView: 1,398.00 format
+                            const formattedPrice = price.toFixed(2);
+                            priceElement.textContent = formattedPrice;
+                        }
                     }
                     
-                    // Update the static price display elements
-                    document.getElementById('maxPrice').textContent = Math.round(adjustedMaxPrice).toLocaleString();
-                    document.getElementById('midPrice').textContent = Math.round((adjustedMaxPrice + adjustedMinPrice) / 2).toLocaleString();
-                    document.getElementById('minPrice').textContent = Math.round(adjustedMinPrice).toLocaleString();
+                    console.log(`📊 Updated price scale: ${adjustedMaxPrice.toFixed(2)} to ${adjustedMinPrice.toFixed(2)}`);
                 }
             };
             
@@ -2001,6 +2210,28 @@
             if (deleteBtn) {
                 deleteBtn.style.display = 'none';
             }
+        }
+
+        // Korean stock names mapping
+        const koreanStockNames = {
+            'AAPL': '애플',
+            'MSFT': '마이크로소프트', 
+            'GOOGL': '구글',
+            'AMZN': '아마존',
+            'TSLA': '테슬라',
+            'NVDA': '엔비디아',
+            'META': '메타',
+            'NFLX': '넷플릭스',
+            'BTC-USD': '비트코인',
+            'ETH-USD': '이더리움',
+            '005930.KS': '삼성전자',
+            '000660.KS': 'SK하이닉스',
+            '035420.KS': '네이버'
+        };
+
+        // Function to get Korean name for stock
+        function getKoreanStockName(symbol) {
+            return koreanStockNames[symbol] || symbol;
         }
 
         // Convert price data to candlestick OHLC format for Korean chart
@@ -2584,17 +2815,17 @@
             
             // Update info bar
             const stockCode = document.getElementById('stockCode');
-            const stockName = document.getElementById('stockName');
+            const stockNameKorean = document.getElementById('stockNameKorean');
             const currentPriceEl = document.getElementById('currentPrice');
             const priceChangeEl = document.getElementById('priceChange');
             const priceChangePercentEl = document.getElementById('priceChangePercent');
             const dayHighEl = document.getElementById('dayHigh');
             const dayLowEl = document.getElementById('dayLow');
             const volumeEl = document.getElementById('volume');
-            const lastUpdatedEl = document.getElementById('lastUpdated');
+            const marketCapEl = document.getElementById('marketCap');
             
             if (stockCode) stockCode.textContent = symbol;
-            if (stockName) stockName.textContent = getStockDisplayName(symbol);
+            if (stockNameKorean) stockNameKorean.textContent = getKoreanStockName(symbol);
             
             // Set color based on price movement (Korean style: blue up, red down)
             const isUp = priceChange >= 0;
@@ -2619,17 +2850,7 @@
             if (dayHighEl) dayHighEl.textContent = `고 ${dayHigh.toFixed(2)}`;
             if (dayLowEl) dayLowEl.textContent = `저 ${dayLow.toFixed(2)}`;
             if (volumeEl) volumeEl.textContent = `거래량 ${totalVolume.toLocaleString('ko-KR')}`;
-            
-            if (lastUpdatedEl) {
-                const now = new Date();
-                lastUpdatedEl.textContent = now.toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
+            if (marketCapEl) marketCapEl.textContent = `시가총액 --`;
             
             // Update price scale
             updatePriceScale(dayLow, dayHigh);
@@ -4146,6 +4367,91 @@
             });
             
             console.log('Initialization complete');
+        });
+        
+        // TradingView-style Time Interval Button Handlers (EXACT LIKE REFERENCE)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize time interval buttons
+            const timeIntervalButtons = document.querySelectorAll('.time-interval-btn');
+            const chartTypeButtons = document.querySelectorAll('.chart-type-btn');
+            
+            // Time interval button click handlers
+            timeIntervalButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all time interval buttons
+                    timeIntervalButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get interval value
+                    const interval = this.dataset.interval;
+                    console.log(`Selected time interval: ${interval}`);
+                    
+                    // Update chart with new interval (if chart exists)
+                    if (koreanChart) {
+                        // Map TradingView intervals to our internal format
+                        let internalInterval = '1d';
+                        switch(interval) {
+                            case '1D': internalInterval = '1d'; break;
+                            case '5D': internalInterval = '5d'; break;
+                            case '1M': internalInterval = '1mo'; break;
+                            case '3M': internalInterval = '3mo'; break;
+                            case '6M': internalInterval = '6mo'; break;
+                            case 'YTD': internalInterval = 'ytd'; break;
+                            case '1Y': internalInterval = '1y'; break;
+                            case '5Y': internalInterval = '5y'; break;
+                            case '전체': internalInterval = 'max'; break;
+                        }
+                        
+                        koreanChart.setTimeInterval(internalInterval);
+                        
+                        // Reload data with new interval if stock is selected
+                        if (currentStockSymbol) {
+                            loadStockData(currentStockSymbol, 90, internalInterval);
+                        }
+                    }
+                });
+            });
+            
+            // Chart type button click handlers
+            chartTypeButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all chart type buttons
+                    chartTypeButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const chartType = this.dataset.type;
+                    console.log(`Selected chart type: ${chartType}`);
+                    
+                    // Update chart type (currently only candlestick supported)
+                    if (koreanChart) {
+                        koreanChart.draw(); // Redraw with current type
+                    }
+                });
+            });
+            
+            // Real-time clock update (EXACT LIKE REFERENCE: 22:55:33 UTC+9)
+            function updateClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const timeString = `${hours}:${minutes}:${seconds} UTC+9`;
+                
+                const clockElement = document.getElementById('currentTime');
+                if (clockElement) {
+                    clockElement.textContent = timeString;
+                }
+            }
+            
+            // Update clock every second
+            updateClock(); // Initial update
+            setInterval(updateClock, 1000);
+            
+            console.log('TradingView-style time controls initialized');
         });
     </script>
 
