@@ -333,10 +333,10 @@
                 const xScale = this.chart.scales.x;
                 const yScale = this.chart.scales.y;
                 
-                // BOSS REQUIREMENT: EXTREMELY CLOSE SPACING - ALMOST TOUCHING
-                const dataCount = Math.min(dataset.data.length, 25); // Good number like reference
+                // BOSS REQUIREMENT: FIXED SPACING - NO GAPS WHEN SCROLLING
+                const dataCount = 25; // FIXED - always 25 candlesticks for consistent spacing
                 const availableWidth = chartArea.right - chartArea.left;
-                const spacing = availableWidth / Math.max(dataCount, 1);
+                const spacing = availableWidth / dataCount; // Fixed calculation
                 
                 // NO GAP AT ALL - CANDLESTICKS TOUCHING
                 const candleWidth = Math.floor(spacing); // 100% width - TOUCHING each other
@@ -1706,11 +1706,11 @@
                     const priceRange = maxPrice - minPrice;
                     const margin = priceRange * 0.1;
                     
-                    // Calculate candle dimensions - EXACT REFERENCE MATCH
-                    const maxCandles = 25; // Good number like reference image
+                    // Calculate candle dimensions - FIXED COUNT FOR CONSISTENT SPACING
+                    const maxCandles = 25; // FIXED - always 25 candlesticks
                     const limitedData = this.data.slice(-maxCandles); // Show last 25 candles
-                    const candleCount = limitedData.length;
-                    const candleSpacing = chartArea.width / candleCount;
+                    const candleCount = maxCandles; // ALWAYS 25 for consistent spacing
+                    const candleSpacing = chartArea.width / candleCount; // Fixed spacing calculation
                     
                     // ABSOLUTE FINAL MATCH - EXACTLY like TradingView reference
                     const isMobile = window.innerWidth <= 768;
@@ -3469,7 +3469,7 @@
             // Combine historical and future data
             const allData = [...stockData, ...futureData];
             const totalDataPoints = allData.length;
-            const visiblePoints = Math.min(15, totalDataPoints); // Keep thick candles
+            const visiblePoints = 25; // FIXED NUMBER - ALWAYS 25 candlesticks for consistent spacing
             
             // Calculate visible range based on scroll position
             let startIndex, endIndex;
@@ -3486,6 +3486,13 @@
                 
                 startIndex = Math.max(0, stockData.length - pastPoints);
                 endIndex = Math.min(startIndex + visiblePoints, totalDataPoints);
+            }
+            
+            // BOSS REQUIREMENT: Ensure we always show exactly 25 candlesticks
+            if (endIndex - startIndex < visiblePoints && startIndex > 0) {
+                startIndex = Math.max(0, endIndex - visiblePoints);
+            } else if (endIndex - startIndex < visiblePoints) {
+                endIndex = Math.min(totalDataPoints, startIndex + visiblePoints);
             }
             
             // Get visible data range
