@@ -94,6 +94,38 @@
             font-weight: 600;
         }
         
+        /* BOSS REQUIREMENT: EXACTLY 5 SIMPLE BUTTONS */
+        .simple-time-btn {
+            padding: 8px 16px !important;
+            margin: 0 3px !important;
+            background: white !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            min-width: 60px !important;
+            text-align: center !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+        
+        .simple-time-btn:hover {
+            background: #f3f4f6 !important;
+            border-color: #9ca3af !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .simple-time-btn.active {
+            background: #2563eb !important;
+            color: white !important;
+            border-color: #2563eb !important;
+            font-weight: 600 !important;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3) !important;
+        }
+        
         .chart-type-btn {
             transition: all 0.2s ease;
             min-width: 24px;
@@ -1062,29 +1094,20 @@
 
                         <!-- Real TradingView Style Chart Container -->
                         <div class="tradingview-chart bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                            <!-- Real TradingView Style Toolbar -->
-                            <div class="bg-white border-b border-gray-200 px-4 py-2">
+                            <!-- BOSS REQUIREMENT: SIMPLE KOREAN STYLE TOOLBAR -->
+                            <div class="bg-white border-b border-gray-200 px-4 py-3">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-lg font-bold">🔍 USDKRW</span>
-                                            <button class="w-6 h-6 border border-gray-300 rounded flex items-center justify-center">+</button>
-                                        </div>
-                                        <div class="flex items-center space-x-2 text-gray-600">
-                                            <button class="px-2 py-1 text-sm">날</button>
-                                            <button class="p-1">📊</button>
-                                            <button class="p-1">📈</button>
-                                            <button class="p-1">지표</button>
-                                            <button class="p-1">⚙️</button>
-                                            <button class="p-1">🔔</button>
-                                            <button class="p-1">알러트</button>
-                                            <button class="p-1">⏪</button>
-                                            <button class="p-1">리플레이</button>
-                                            <button class="p-1">↶</button>
-                                            <button class="p-1">↷</button>
-                                        </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-lg font-bold text-gray-800">� 주식차트</span>
                                     </div>
-                                    <button class="border border-gray-300 p-1">⬜</button>
+                                    <!-- BOSS REQUIREMENT: EXACTLY 5 BUTTONS ONLY -->
+                                    <div class="flex items-center space-x-2">
+                                        <button class="simple-time-btn px-4 py-2 text-sm border rounded hover:bg-blue-50" data-period="hourly" data-interval="1h">1시간</button>
+                                        <button class="simple-time-btn px-4 py-2 text-sm border rounded hover:bg-blue-50" data-period="daily" data-interval="1d">일일</button>
+                                        <button class="simple-time-btn px-4 py-2 text-sm border rounded hover:bg-blue-50" data-period="weekly" data-interval="1w">주간</button>
+                                        <button class="simple-time-btn px-4 py-2 text-sm border rounded hover:bg-blue-50 active" data-period="monthly" data-interval="1M">월간</button>
+                                        <button class="simple-time-btn px-4 py-2 text-sm border rounded hover:bg-blue-50" data-period="yearly" data-interval="1Y">년간</button>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1192,8 +1215,8 @@
                                     </div>
                                 </div>
                                 
-                                <!-- BOSS REQUIREMENT: PROMINENT TIME INTERVAL BUTTONS SECTION -->
-                                <div class="bg-gray-50 border-t border-gray-300 px-4 py-3 shadow-sm">
+                                <!-- BOSS REQUIREMENT: HIDDEN COMPLEX BUTTONS (TOO COMPLEX FOR USERS) -->
+                                <div class="bg-gray-50 border-t border-gray-300 px-4 py-3 shadow-sm" style="display: none;">
                                     <div class="flex items-center justify-between">
                                         <!-- BOSS REQUIREMENT: PROMINENT TIME INTERVAL BUTTONS -->
                                         <div class="flex items-center space-x-2">
@@ -3415,6 +3438,64 @@
                 if (currentStockSymbol) {
                     loadStockData(currentStockSymbol);
                 }
+            });
+        });
+
+        // BOSS REQUIREMENT: SIMPLE KOREAN BUTTONS FUNCTIONALITY
+        const simpleTimeBtns = document.querySelectorAll('.simple-time-btn');
+        simpleTimeBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Remove active class from all simple time buttons
+                simpleTimeBtns.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const period = this.dataset.period;
+                const interval = this.dataset.interval;
+                console.log('Boss 5-button clicked:', period, interval);
+                
+                // BOSS REQUIREMENT: Exact 5 intervals only
+                let newInterval = interval;
+                let timeUnit = 'day';
+                
+                switch (period) {
+                    case 'hourly': // 1시간 - One bar = 1 hour
+                        newInterval = '1h';
+                        timeUnit = 'hour';
+                        break;
+                    case 'daily': // 일일 - One bar = 1 day  
+                        newInterval = '1d';
+                        timeUnit = 'day';
+                        break;
+                    case 'weekly': // 주간 - One bar = 7 days (1 week)
+                        newInterval = '1w';
+                        timeUnit = 'week';
+                        break;
+                    case 'monthly': // 월간 - One bar = 1 month
+                        newInterval = '1M';
+                        timeUnit = 'month';
+                        break;
+                    case 'yearly': // 년간 - One bar = 1 year
+                        newInterval = '1Y';
+                        timeUnit = 'year';
+                        break;
+                }
+                
+                // Update current interval and chart time unit
+                currentInterval = newInterval;
+                
+                // Update chart time unit immediately
+                if (chart) {
+                    chart.options.scales.x.time.unit = timeUnit;
+                    chart.update();
+                }
+                
+                if (currentStockSymbol) {
+                    loadStockData(currentStockSymbol);
+                }
+                
+                console.log(`Boss requirement: ${period} selected - Chart bars now represent ${timeUnit}s`);
             });
         });
 
