@@ -126,6 +126,67 @@
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3) !important;
         }
         
+        /* TradingView-style Mouse Wheel Interactions */
+        .chart-container {
+            cursor: crosshair;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-container:hover {
+            cursor: crosshair;
+        }
+        
+        .chart-container.zooming {
+            cursor: zoom-in;
+        }
+        
+        .chart-container.scrolling {
+            cursor: grab;
+        }
+        
+        .chart-container.scrolling:active {
+            cursor: grabbing;
+        }
+        
+        /* TradingView-style zoom indicator */
+        .tv-zoom-indicator {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* TradingView-style wheel control buttons */
+        .wheel-controls .btn {
+            min-width: 32px !important;
+            height: 32px !important;
+            padding: 4px !important;
+            margin: 0 2px !important;
+            background: #f8f9fa !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 4px !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .wheel-controls .btn:hover {
+            background: #e9ecef !important;
+            transform: scale(1.05) !important;
+        }
+        
+        .wheel-controls .btn:active {
+            transform: scale(0.95) !important;
+        }
+        
+        /* Prevent text selection during wheel interactions */
+        .chart-container * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
         .chart-type-btn {
             transition: all 0.2s ease;
             min-width: 24px;
@@ -164,6 +225,12 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <!-- Enhanced Chart Manager -->
+    <script src="js/enhanced-chart-manager.js"></script>
+    
+    <!-- TradingView-style Mouse Wheel Controller -->
+    <script src="js/tradingview-wheel-controller.js"></script>
+    
     <!-- TradingView-style lightweight chart engine -->
     <script src="js/tradingview-chart-engine.js"></script>
     
@@ -1145,7 +1212,7 @@
                             <!-- TradingView Style Main Chart Area -->
                             <div class="relative bg-white">
                                 <!-- Main Price Chart -->
-                                <div class="relative touch-manipulation overflow-hidden" style="height: 600px; width: 100%">
+                                <div class="relative touch-manipulation overflow-hidden chart-container" style="height: 600px; width: 100%">
                                     <canvas id="priceChart" class="w-full h-full touch-manipulation" style="touch-action: pan-x pan-y;"></canvas>
                                     <!-- TradingView Style Price Scale on Right (MANY LEVELS LIKE REFERENCE) -->
                                     <div class="absolute right-0 top-0 bottom-0 w-16 bg-white border-l border-gray-200 flex flex-col justify-between py-2 px-2" id="priceScaleContainer">
@@ -1380,7 +1447,7 @@
             chartCanvas = document.getElementById('priceChart');
             if (!chartCanvas) {
                 console.error('❌ Canvas element #priceChart not found');
-                return;
+                return false;
             }
             
             chartCtx = chartCanvas.getContext('2d');
@@ -1398,6 +1465,7 @@
                 ? { top: 15, right: 50, bottom: 30, left: 30 }
                 : { top: 20, right: 80, bottom: 40, left: 40 };
             
+            // BOSS REQUIREMENT: Make Korean chart globally accessible for zoom functionality
             koreanChart = {
                 canvas: chartCanvas,
                 ctx: chartCtx,
@@ -1408,6 +1476,8 @@
                 hoverPoint: null,
                 timeInterval: '1d', // Default interval (1d, 1wk, 1mo)
                 isMobile: isMobile,
+                zoomLevel: 1.0, // Add zoom level to Korean chart
+                scrollOffset: 0, // Add scroll offset to Korean chart
                 
                 // Update chart with new data - show more candles for proper spacing like reference
                 updateData: function(candlestickData) {
@@ -1681,176 +1751,69 @@
                         height: height - padding.top - padding.bottom
                     };
                     
-                    // TradingView-style background
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, width, height);
+                    // INSTANT ZOOM CALCULATIONS
+                    const currentZoom = globalZoomLevel || this.zoomLevel || 1.0;
+                    const currentScroll = globalScrollOffset || this.scrollOffset || 0;
                     
-                    // TradingView chart area background
-                    ctx.fillStyle = '#FAFAFA';
-                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+                    const baseCandles = 25;
+                    const maxCandles = Math.max(5, Math.min(50, Math.floor(baseCandles / currentZoom)));
+                    const limitedData = this.data.slice(-maxCandles - currentScroll, this.data.length - currentScroll);
+                    const candleCount = limitedData.length;
+                    const candleSpacing = chartArea.width / candleCount;
                     
-                    // Display current time and chart interval at top
-                    ctx.fillStyle = '#333333';
-                    ctx.font = 'bold 14px Arial';
-                    let intervalText = '';
-                    switch(this.timeInterval) {
-                        case '1d': intervalText = '일봉 차트 (Daily)'; break;
-                        case '1wk': intervalText = '주봉 차트 (Weekly)'; break;
-                        case '1mo': intervalText = '월봉 차트 (Monthly)'; break;
-                        default: intervalText = '일봉 차트 (Daily)';
-                    }
+                    // INSTANT CANDLE WIDTH CALCULATION  
+                    let candleWidth = Math.floor(candleSpacing * currentZoom);
+                    const minCandleWidth = Math.max(3, 15 * currentZoom);
+                    const maxCandleWidth = Math.max(8, 60 * currentZoom);
                     
-                    // Show current time like in Korean charts - exact format like image
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = String(now.getMonth() + 1).padStart(2, '0');
-                    const day = String(now.getDate()).padStart(2, '0');
-                    const hours = String(now.getHours()).padStart(2, '0');
-                    const minutes = String(now.getMinutes()).padStart(2, '0');
-                    const seconds = String(now.getSeconds()).padStart(2, '0');
-                    const ampm = now.getHours() >= 12 ? '오후' : '오전';
-                    const timeString = `${year}. ${month}. ${day}. ${ampm} ${hours}:${minutes}:${seconds}`;
+                    candleWidth = Math.max(candleWidth, minCandleWidth);
+                    candleWidth = Math.min(candleWidth, maxCandleWidth);
+                    const wickWidth = Math.max(1, Math.floor(candleWidth / 8));
                     
-                    // BOSS REQUIREMENT: 날짜가 정확하게 표시 되어야 한다 (dates should be displayed accurately)
-                    const dateAccuracyText = "날짜가 정확하게 표시 되어야 한다";
-                    
-                    ctx.textAlign = 'left';
-                    ctx.fillText(`${intervalText} - ${timeString}`, chartArea.left, padding.top - 8);
-                    
-                    // Display boss requirement text
-                    ctx.font = '12px Arial';
-                    ctx.fillStyle = '#0066FF';
-                    ctx.fillText(dateAccuracyText, chartArea.left, padding.top + 20);
-                    
-                    // Calculate price range and candle dimensions early
+                    // Calculate price range for positioning
                     const prices = this.data.map(d => [d.h, d.l, d.o, d.c]).flat();
                     const minPrice = Math.min(...prices);
                     const maxPrice = Math.max(...prices);
                     const priceRange = maxPrice - minPrice;
                     const margin = priceRange * 0.1;
                     
-                    // Calculate candle dimensions - FIXED COUNT FOR CONSISTENT SPACING
-                    const maxCandles = 25; // FIXED - always 25 candlesticks
-                    const limitedData = this.data.slice(-maxCandles); // Show last 25 candles
-                    const candleCount = maxCandles; // ALWAYS 25 for consistent spacing
-                    const candleSpacing = chartArea.width / candleCount; // Fixed spacing calculation
+                    // White background
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
                     
-                    // ABSOLUTE FINAL MATCH - EXACTLY like TradingView reference
-                    const isMobile = window.innerWidth <= 768;
-                    
-                    // BOSS REQUIREMENT: Much closer spacing - almost touching candlesticks
-                    const gapRatio = 1.0; // 100% candle width, 0% spacing - TOUCHING
-                    let candleWidth = Math.floor(candleSpacing * gapRatio); // Full width - no gap at all
-                    
-                    // REFERENCE IMAGE limits - substantial candlesticks
-                    const minCandleWidth = 20;   // Good minimum width
-                    const maxCandleWidth = 40;   // Good maximum width
-                    
-                    candleWidth = Math.max(candleWidth, minCandleWidth);
-                    candleWidth = Math.min(candleWidth, maxCandleWidth);
-                    
-                    const wickWidth = Math.max(2, Math.floor(candleWidth / 10)); // Proportional thin wicks
-                    
-                    // Clear canvas with EXACT TradingView background color
-                    ctx.fillStyle = '#FFFFFF'; // Pure white background like reference
-                    ctx.fillRect(0, 0, this.width, this.height);
-                    
-                    // TradingView-style grid lines (EXACT match)
-                    ctx.strokeStyle = '#F0F0F0';  // Very light gray grid like reference
-                    ctx.lineWidth = 1;
-                    
-                    // Horizontal grid lines (price levels)
-                    const horizontalLineCount = 6; // More lines like real TradingView
-                    for (let i = 1; i < horizontalLineCount; i++) { // Skip edges
-                        const y = chartArea.top + (i * (chartArea.height / horizontalLineCount));
-                        ctx.beginPath();
-                        ctx.moveTo(chartArea.left, y);
-                        ctx.lineTo(chartArea.right, y);
-                        ctx.stroke();
-                    }
-                    
-                    // Minimal vertical grid lines (time intervals)
-                    const verticalLineCount = 8; // More vertical lines for time precision
-                    for (let i = 1; i < verticalLineCount; i++) { // Skip edges
-                        const x = chartArea.left + (i * (chartArea.width / verticalLineCount));
-                        ctx.beginPath();
-                        ctx.moveTo(x, chartArea.top);
-                        ctx.lineTo(x, chartArea.bottom);
-                        ctx.stroke();
-                    }
-                    
-                    // TradingView-style chart border
-                    ctx.strokeStyle = '#E0E0E0';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
-                    
-                    console.log(`� REFERENCE MATCH: ${candleCount} candlesticks: ${candleWidth}px wide, ${wickWidth}px wicks - Spacing: ${candleSpacing}px`);
-                    
-                    // Draw date labels in HTML (NOT on canvas) - EXACT like TradingView reference
-                    this.updateDateLabelsHTML();
-                    
-                    console.log(`📅 Updated date labels in HTML for ${candleCount} candles`);
-                    
-                    // Add month indicator at the end like reference image shows "10월"
-                    if (this.data.length > 0) {
-                        const lastCandle = this.data[this.data.length - 1];
-                        const lastDate = new Date(lastCandle.x);
-                        const lastX = chartArea.left + ((this.data.length - 1) * candleSpacing) + (candleSpacing / 2);
-                        
-                        // Show month in Korean like reference: "10월"
-                        const monthLabel = `${lastDate.getMonth() + 1}월`;
-                        ctx.fillStyle = '#444444';
-                        ctx.font = 'bold 11px Arial';
-                        ctx.fillText(monthLabel, lastX + 20, chartArea.bottom + 15);
-                    }
-                    
-                    // Draw candlesticks with ULTRA THICK width - matching our first function
+                    // INSTANT CANDLESTICK DRAWING
                     limitedData.forEach((candle, index) => {
-                        // Position candlesticks to FILL space with NO GAPS
                         const x = chartArea.left + (index * candleSpacing) + (candleSpacing / 2);
                         
-                        // Map prices to Y coordinates (inverted Y-axis)
+                        // Map prices to Y coordinates
                         const high = chartArea.top + ((maxPrice + margin - candle.h) / (priceRange + margin * 2)) * chartArea.height;
                         const low = chartArea.top + ((maxPrice + margin - candle.l) / (priceRange + margin * 2)) * chartArea.height;
                         const open = chartArea.top + ((maxPrice + margin - candle.o) / (priceRange + margin * 2)) * chartArea.height;
                         const close = chartArea.top + ((maxPrice + margin - candle.c) / (priceRange + margin * 2)) * chartArea.height;
                         
-                        // BOSS REQUIREMENT: Exact colors from reference image
+                        // Colors
                         const isUp = candle.c >= candle.o;
-                        const bodyColor = isUp ? '#FF0000' : '#0066FF';  // Traditional Red/Blue like reference image
-                        const wickColor = isUp ? '#CC0000' : '#0044CC';  // Darker wicks
-                        const borderColor = isUp ? '#990000' : '#002299'; // Darkest borders
+                        const bodyColor = isUp ? '#FF0000' : '#0066FF';
+                        const wickColor = isUp ? '#CC0000' : '#0044CC';
                         
-                        // Highlight candle if hovered
-                        const isHovered = this.hoverPoint && this.hoverPoint.index === index;
-                        const highlightWidth = isHovered ? 5 : 3;
-                        
-                        // Draw normal wick - simple like reference
+                        // Draw wick
                         ctx.strokeStyle = wickColor;
-                        ctx.lineWidth = wickWidth; // Normal wick thickness
-                        ctx.lineCap = 'butt';
+                        ctx.lineWidth = wickWidth;
                         ctx.beginPath();
                         ctx.moveTo(x, high);
                         ctx.lineTo(x, low);
                         ctx.stroke();
                         
-                        // Draw body - REFERENCE IMAGE style
+                        // Draw body
                         const bodyTop = Math.min(open, close);
-                        const bodyHeight = Math.max(Math.abs(close - open), 3); // Small minimum like reference
+                        const bodyHeight = Math.max(Math.abs(close - open), 3);
                         
-                        // Fill body with good proportions
                         ctx.fillStyle = bodyColor;
                         ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
                         
-                        // Clean border like reference
                         ctx.strokeStyle = bodyColor;
                         ctx.lineWidth = 1;
                         ctx.strokeRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
-                        
-                        // Draw hover tooltip if this is the hovered candle
-                        if (isHovered) {
-                            this.drawTooltip(x, high - 10, candle);
-                        }
                     });
                     
                     // Draw prediction points on top of candlesticks
@@ -1872,14 +1835,6 @@
                     
                     // Draw price scale
                     this.drawPriceScale(chartArea, minPrice, maxPrice, priceRange, margin);
-                    
-                    // Show current time interval at bottom right
-                    ctx.fillStyle = '#444444';
-                    ctx.font = 'bold 12px Arial';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(`차트 간격: ${this.getIntervalName()}`, chartArea.right, chartArea.bottom + 30);
-                    
-                    console.log('✅ Korean candlestick chart drawn successfully!');
                 },
                 
                 // Draw prediction points
@@ -1961,6 +1916,20 @@
                         case '1mo': return '월간 (Monthly)';
                         default: return '일일 (Daily)';
                     }
+                },
+                
+                // BOSS REQUIREMENT: Add zoom functionality to Korean chart
+                setZoom: function(newZoomLevel) {
+                    this.zoomLevel = Math.max(0.1, Math.min(5.0, newZoomLevel));
+                    console.log(`🔍 Korean Chart Zoom Updated: ${this.zoomLevel.toFixed(2)}`);
+                    this.draw(); // Redraw with new zoom
+                },
+                
+                // BOSS REQUIREMENT: Add scroll functionality to Korean chart
+                setScroll: function(newScrollOffset) {
+                    this.scrollOffset = Math.max(0, Math.min(this.data.length - 10, newScrollOffset));
+                    console.log(`📜 Korean Chart Scroll Updated: ${this.scrollOffset}`);
+                    this.draw(); // Redraw with new scroll
                 },
                 
                 // Update date labels in HTML (EXACT like TradingView reference)
@@ -2377,6 +2346,10 @@
         let hoveredPredictionPoint = null;
         let totalChartDays = 90; // Total days to show
         let futureData = []; // Store future dates for navigation
+        
+        // BOSS REQUIREMENT: Global zoom variables for direct chart control
+        let globalZoomLevel = 1.0;
+        let globalScrollOffset = 0;
 
         // DOM elements
         const stockSelect = document.getElementById('stockSelect');
@@ -2502,6 +2475,10 @@
                         }
                     });
                 });
+                
+                // BOSS REQUIREMENT: Make Korean chart globally accessible for zoom
+                window.koreanCanvasChart = koreanChart;
+                console.log('🔧 Korean chart made globally accessible for zoom functionality');
                 
                 return true;
             } else {
@@ -2733,11 +2710,47 @@
             }
         }
 
-        // Update chart with predictions
+        // BOSS FIX: Enhanced Chart Update Function
         function updateChart() {
-            // Korean chart doesn't need prediction updates - 
-            // it only shows stock price candlesticks
-            console.log('📊 Chart update requested - Korean chart shows only stock data');
+            console.log('🔄 BOSS FIX: Forcing chart update...');
+            
+            // Validate required data
+            if (!stockData || stockData.length === 0) {
+                console.warn('⚠️ BOSS FIX: No stock data available for chart update');
+                return;
+            }
+            
+            // Force update Korean chart
+            if (window.koreanCanvasChart) {
+                console.log('📊 BOSS FIX: Updating Korean canvas chart');
+                const candlestickData = convertToCandlestickData(stockData);
+                window.koreanCanvasChart.updateData(candlestickData);
+                window.koreanCanvasChart.draw(); // Force redraw
+            } else {
+                console.warn('⚠️ BOSS FIX: Korean chart not initialized, creating new one');
+                initializeKoreanChart();
+            }
+            
+            // Update volume chart if it exists
+            if (volumeChart && volumeData.length > 0) {
+                console.log('📊 BOSS FIX: Updating volume chart');
+                volumeChart.data.datasets[0].data = volumeData;
+                volumeChart.update('none'); // Update without animation
+            }
+            
+            // Update price info display
+            if (stockData.length > 0) {
+                updateStockInfoDisplay(currentStockSymbol, stockData);
+                console.log('✅ BOSS FIX: Stock info display updated');
+            }
+            
+            // Force update chart time view
+            updateChartView();
+            
+            // Update predictions list
+            updatePredictionsList();
+            
+            console.log('✅ BOSS FIX: Chart update completed successfully');
         }
 
         // Update predictions list display
@@ -2815,10 +2828,739 @@
         });
         }
 
-        // Get current price
+        // BOSS FIX: Configuration Maker and Output Reader Functions
+        
+        // Enhanced configuration maker
+        function saveChartConfiguration() {
+            const config = {
+                stockSymbol: currentStockSymbol,
+                timeInterval: currentInterval,
+                chartType: 'candlestick',
+                showVolume: showVolumeCheckbox ? showVolumeCheckbox.checked : false,
+                timeRange: chartTimeRange ? chartTimeRange.value : '90',
+                predictions: predictions,
+                timestamp: Date.now()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('chartConfig_' + currentStockSymbol, JSON.stringify(config));
+            localStorage.setItem('lastChartConfig', JSON.stringify(config));
+            
+            console.log('✅ BOSS FIX: Chart configuration saved:', config);
+            showMessage('차트 설정이 저장되었습니다', 'success');
+            
+            return config;
+        }
+        
+        // Enhanced output reader
+        function loadChartConfiguration(symbol) {
+            let config = null;
+            
+            try {
+                // Try to load specific symbol configuration
+                if (symbol) {
+                    const savedConfig = localStorage.getItem('chartConfig_' + symbol);
+                    if (savedConfig) {
+                        config = JSON.parse(savedConfig);
+                        console.log('📖 BOSS FIX: Loaded configuration for', symbol, ':', config);
+                    }
+                }
+                
+                // Fallback to last configuration
+                if (!config) {
+                    const lastConfig = localStorage.getItem('lastChartConfig');
+                    if (lastConfig) {
+                        config = JSON.parse(lastConfig);
+                        console.log('📖 BOSS FIX: Loaded last configuration:', config);
+                    }
+                }
+                
+                // Apply configuration if found
+                if (config) {
+                    applyChartConfiguration(config);
+                    showMessage('저장된 설정을 불러왔습니다', 'info');
+                    return config;
+                }
+            } catch (error) {
+                console.error('❌ BOSS FIX: Configuration loading failed:', error);
+                showMessage('설정을 불러오는데 실패했습니다', 'error');
+            }
+            
+            return null;
+        }
+        
+        // Apply loaded configuration
+        function applyChartConfiguration(config) {
+            console.log('🔧 BOSS FIX: Applying configuration:', config);
+            
+            // Apply stock symbol
+            if (config.stockSymbol && stockSelect) {
+                stockSelect.value = config.stockSymbol;
+                currentStockSymbol = config.stockSymbol;
+            }
+            
+            // Apply time interval
+            if (config.timeInterval) {
+                currentInterval = config.timeInterval;
+                // Update interval buttons
+                document.querySelectorAll('.time-interval-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.interval === config.timeInterval);
+                });
+            }
+            
+            // Apply time range
+            if (config.timeRange && chartTimeRange) {
+                chartTimeRange.value = config.timeRange;
+            }
+            
+            // Apply volume display
+            if (config.showVolume !== undefined && showVolumeCheckbox) {
+                showVolumeCheckbox.checked = config.showVolume;
+            }
+            
+            // Apply predictions
+            if (config.predictions && Array.isArray(config.predictions)) {
+                predictions = config.predictions;
+                updatePredictionsList();
+            }
+            
+            console.log('✅ BOSS FIX: Configuration applied successfully');
+        }
+        
+        // Auto-save configuration on changes
+        function setupAutoSave() {
+            // Save when stock changes
+            if (stockSelect) {
+                stockSelect.addEventListener('change', () => {
+                    setTimeout(saveChartConfiguration, 500);
+                });
+            }
+            
+            // Save when time interval changes
+            document.querySelectorAll('.time-interval-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setTimeout(saveChartConfiguration, 500);
+                });
+            });
+            
+            // Save when volume setting changes
+            if (showVolumeCheckbox) {
+                showVolumeCheckbox.addEventListener('change', () => {
+                    setTimeout(saveChartConfiguration, 500);
+                });
+            }
+            
+            console.log('✅ BOSS FIX: Auto-save configuration setup completed');
+        }
+        
+        // Enhanced output read function with retry mechanism
+        async function readChartOutput(retryCount = 3) {
+            console.log('📊 BOSS FIX: Reading chart output...');
+            
+            const output = {
+                stockData: stockData,
+                volumeData: volumeData,
+                predictions: predictions,
+                currentSymbol: currentStockSymbol,
+                configuration: loadChartConfiguration(currentStockSymbol),
+                chartState: {
+                    isLoaded: !!window.koreanCanvasChart,
+                    dataPoints: stockData.length,
+                    hasVolume: volumeData.length > 0,
+                    hasPredictions: predictions.length > 0
+                },
+                timestamp: Date.now()
+            };
+            
+            // Validate output
+            if (!output.stockData || output.stockData.length === 0) {
+                if (retryCount > 0) {
+                    console.warn(`⚠️ BOSS FIX: Chart output incomplete, retrying... (${retryCount} attempts left)`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return readChartOutput(retryCount - 1);
+                } else {
+                    console.error('❌ BOSS FIX: Chart output failed after all retries');
+                    showMessage('차트 출력을 읽는데 실패했습니다', 'error');
+                    return null;
+                }
+            }
+            
+            console.log('✅ BOSS FIX: Chart output read successfully:', output);
+            return output;
+        }
+
+        // Get current price - restored function
         function getCurrentPrice() {
             if (stockData.length === 0) return 0;
-            return stockData[stockData.length - 1].y;
+            return stockData[stockData.length - 1].y || stockData[stockData.length - 1].c || 0;
+        }
+
+        // BOSS FIX: TradingView-style Mouse Wheel Implementation
+        function initializeTradingViewWheel() {
+            console.log('🔄 Initializing TradingView-style mouse wheel...');
+            
+            const chartCanvas = document.getElementById('priceChart');
+            const chartContainer = chartCanvas ? chartCanvas.parentElement : null;
+            
+            if (!chartContainer) {
+                console.error('❌ Chart container not found for TradingView wheel');
+                return;
+            }
+            
+            console.log('✅ Found chart container:', chartContainer);
+            
+            // Remove any existing wheel listeners to prevent duplicates
+            const existingHandler = chartContainer._wheelHandler;
+            if (existingHandler) {
+                chartContainer.removeEventListener('wheel', existingHandler);
+            }
+            
+            let isZooming = false;
+            let zoomLevel = 1.0;
+            let scrollPosition = 0;
+            const zoomSensitivity = 0.15;
+            const scrollSensitivity = 50;
+            
+            // Add TradingView-style cursor and styling
+            chartContainer.style.cursor = 'crosshair';
+            chartContainer.style.userSelect = 'none';
+            chartContainer.style.position = 'relative';
+            
+            // Main wheel event handler with better detection
+            function wheelHandler(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isCtrlPressed = e.ctrlKey || e.metaKey;
+                
+                if (isCtrlPressed) {
+                    // INSTANT ZOOM - DIRECT EXECUTION
+                    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                    globalZoomLevel = Math.max(0.1, Math.min(5.0, globalZoomLevel * zoomFactor));
+                    zoomLevel = globalZoomLevel;
+                    
+                    // Update display instantly
+                    document.getElementById('zoomDisplay').textContent = `Zoom: ${Math.round(globalZoomLevel * 100)}%`;
+                    
+                    // Instant redraw
+                    if (window.koreanCanvasChart && window.koreanCanvasChart.draw) {
+                        window.koreanCanvasChart.draw();
+                    }
+                } else {
+                    // INSTANT SCROLL
+                    globalScrollOffset = Math.max(0, globalScrollOffset + (e.deltaY > 0 ? 1 : -1));
+                    
+                    if (window.koreanCanvasChart && window.koreanCanvasChart.draw) {
+                        window.koreanCanvasChart.draw();
+                    }
+                }
+            }
+            
+            // Attach the wheel handler
+            chartContainer.addEventListener('wheel', wheelHandler, { passive: false });
+            chartContainer._wheelHandler = wheelHandler; // Store reference for cleanup
+            
+            // Also attach to the canvas directly for better coverage
+            if (chartCanvas) {
+                chartCanvas.addEventListener('wheel', wheelHandler, { passive: false });
+                console.log('✅ Wheel handler attached to canvas');
+            }
+            
+            // Zoom function
+            function handleTradingViewZoom(delta, mouseX, mouseY) {
+                const zoomFactor = delta > 0 ? (1 - zoomSensitivity) : (1 + zoomSensitivity);
+                const newZoom = Math.max(0.1, Math.min(5.0, zoomLevel * zoomFactor));
+                
+                if (newZoom === zoomLevel) return;
+                
+                zoomLevel = newZoom;
+                
+                // BOSS REQUIREMENT: Sync with global zoom level immediately
+                globalZoomLevel = zoomLevel;
+                
+                // Apply zoom to Korean chart
+                applyTradingViewZoom(newZoom);
+                
+                // Show zoom indicator
+                showTradingViewZoomIndicator(newZoom);
+            }
+            
+            // Scroll function
+            function handleTradingViewScroll(delta) {
+                const scrollAmount = delta > 0 ? scrollSensitivity : -scrollSensitivity;
+                scrollPosition = Math.max(0, scrollPosition + scrollAmount);
+                
+                console.log(`📜 TradingView Scroll: ${scrollPosition}`);
+                
+                // Apply scroll to Korean chart
+                applyTradingViewScroll(scrollPosition);
+                
+                // Show scroll feedback
+                showScrollFeedback(scrollPosition);
+            }
+            
+            // Apply zoom to the Korean chart
+            function applyTradingViewZoom(zoom) {
+                // Update global zoom level directly - NO LOGGING TO AVOID DELAY
+                globalZoomLevel = zoom;
+                
+                // Update zoom display
+                document.getElementById('zoomDisplay').textContent = `Zoom: ${Math.round(zoom * 100)}%`;
+                
+                // BOSS REQUIREMENT: INSTANT chart redraw - NO DELAYS
+                if (window.koreanCanvasChart && typeof window.koreanCanvasChart.draw === 'function') {
+                    // Skip canvas clearing for speed - draw function handles it
+                    window.koreanCanvasChart.draw();
+                }
+            }
+            
+            // Apply scroll to the Korean chart
+            function applyTradingViewScroll(scroll) {
+                // Update global scroll offset directly - NO LOGGING
+                globalScrollOffset = Math.max(0, Math.floor(scroll / 20));
+                
+                // Update scroll display
+                document.getElementById('scrollDisplay').textContent = `Scroll: ${scroll}`;
+                
+                // BOSS REQUIREMENT: INSTANT chart redraw
+                if (window.koreanCanvasChart && typeof window.koreanCanvasChart.draw === 'function') {
+                    window.koreanCanvasChart.draw();
+                }
+            }
+            
+            // Show zoom indicator like TradingView
+            function showTradingViewZoomIndicator(zoom) {
+                // Use existing zoom display for instant response - no DOM creation
+                const zoomDisplay = document.getElementById('zoomDisplay');
+                if (zoomDisplay) {
+                    zoomDisplay.textContent = `Zoom: ${Math.round(zoom * 100)}%`;
+                }
+            }
+            
+            // Show scroll feedback
+            function showScrollFeedback(scroll) {
+                // Remove existing feedback
+                const existing = document.querySelector('.tv-scroll-indicator');
+                if (existing) existing.remove();
+                
+                // Create new feedback
+                const indicator = document.createElement('div');
+                indicator.className = 'tv-scroll-indicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    top: 60px;
+                    right: 20px;
+                    background: rgba(0, 100, 200, 0.9);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    z-index: 10000;
+                    pointer-events: none;
+                `;
+                indicator.textContent = `Scroll: ${scroll.toFixed(0)}px`;
+                
+                document.body.appendChild(indicator);
+                
+                // Auto-remove quickly
+                setTimeout(() => {
+                    if (indicator.parentElement) {
+                        indicator.remove();
+                    }
+                }, 1000);
+            }
+            
+            // Keyboard shortcuts like TradingView
+            function keyboardHandler(e) {
+                if (!chartContainer.matches(':hover')) return;
+                
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.code) {
+                        case 'Equal':
+                        case 'NumpadAdd':
+                            e.preventDefault();
+                            handleTradingViewZoom(-100, 0, 0);
+                            break;
+                        case 'Minus':
+                        case 'NumpadSubtract':
+                            e.preventDefault();
+                            handleTradingViewZoom(100, 0, 0);
+                            break;
+                        case 'Digit0':
+                        case 'Numpad0':
+                            e.preventDefault();
+                            zoomLevel = 1.0;
+                            
+                            // BOSS REQUIREMENT: Sync with global zoom level
+                            globalZoomLevel = zoomLevel;
+                            scrollPosition = stockData.length * 5; // Show recent data
+                            applyTradingViewZoom(1.0);
+                            applyTradingViewScroll(scrollPosition);
+                            showTradingViewZoomIndicator(1.0);
+                            break;
+                    }
+                }
+            }
+            
+            document.addEventListener('keydown', keyboardHandler);
+            
+            // Add control buttons
+            addTradingViewControlButtons();
+            
+            console.log('✅ TradingView-style mouse wheel initialized successfully');
+            
+            // Test the setup
+            console.log('📊 Chart setup test:', {
+                chartContainer: !!chartContainer,
+                chartCanvas: !!chartCanvas,
+                koreanChart: !!window.koreanCanvasChart,
+                stockDataLength: stockData ? stockData.length : 0
+            });
+        }
+        
+        // Add TradingView control buttons
+        function addTradingViewControlButtons() {
+            const controlsContainer = document.querySelector('.chart-controls, .prediction-controls, .time-controls');
+            if (!controlsContainer) return;
+            
+            const wheelControls = document.createElement('div');
+            wheelControls.className = 'wheel-controls';
+            wheelControls.style.cssText = 'margin: 10px 0; display: flex; gap: 5px; align-items: center; background: #f0f8ff; padding: 10px; border-radius: 8px; border: 2px solid #007bff;';
+            
+            // Add debug info
+            const debugInfo = document.createElement('div');
+            debugInfo.id = 'wheel-debug-info';
+            debugInfo.style.cssText = 'margin-right: 15px; font-size: 11px; color: #333; font-family: monospace;';
+            debugInfo.innerHTML = `
+                <div>마우스 휠 상태: <span id="wheel-status">대기중</span></div>
+                <div>마지막 동작: <span id="last-action">없음</span></div>
+            `;
+            wheelControls.appendChild(debugInfo);
+            
+            // Test button
+            const testBtn = createControlButton('�', 'Test Wheel', () => {
+                document.getElementById('wheel-status').textContent = '테스트중...';
+                document.getElementById('last-action').textContent = 'Manual Test';
+                console.log('🔧 Manual wheel test triggered');
+                
+                // Simulate a zoom event
+                const fakeEvent = {
+                    deltaY: -100,
+                    clientX: 400,
+                    clientY: 300,
+                    ctrlKey: true,
+                    preventDefault: () => {},
+                    stopPropagation: () => {}
+                };
+                
+                // Try to trigger wheel handler directly
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer && chartContainer._wheelHandler) {
+                    chartContainer._wheelHandler(fakeEvent);
+                    document.getElementById('wheel-status').textContent = '테스트 완료';
+                } else {
+                    document.getElementById('wheel-status').textContent = '핸들러 없음';
+                }
+            });
+            
+            // Zoom controls
+            const zoomInBtn = createControlButton('🔍+', 'Zoom In', () => {
+                document.getElementById('last-action').textContent = 'Zoom In Button';
+                const event = { deltaY: -100, clientX: 0, clientY: 0, ctrlKey: true, preventDefault: () => {}, stopPropagation: () => {} };
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer && chartContainer._wheelHandler) {
+                    chartContainer._wheelHandler(event);
+                }
+            });
+            
+            const zoomOutBtn = createControlButton('🔍-', 'Zoom Out', () => {
+                document.getElementById('last-action').textContent = 'Zoom Out Button';
+                const event = { deltaY: 100, clientX: 0, clientY: 0, ctrlKey: true, preventDefault: () => {}, stopPropagation: () => {} };
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer && chartContainer._wheelHandler) {
+                    chartContainer._wheelHandler(event);
+                }
+            });
+            
+            const scrollLeftBtn = createControlButton('⬅️', 'Scroll Left', () => {
+                document.getElementById('last-action').textContent = 'Scroll Left';
+                const event = { deltaY: -100, clientX: 0, clientY: 0, ctrlKey: false, preventDefault: () => {}, stopPropagation: () => {} };
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer && chartContainer._wheelHandler) {
+                    chartContainer._wheelHandler(event);
+                }
+            });
+            
+            const scrollRightBtn = createControlButton('➡️', 'Scroll Right', () => {
+                document.getElementById('last-action').textContent = 'Scroll Right';
+                const event = { deltaY: 100, clientX: 0, clientY: 0, ctrlKey: false, preventDefault: () => {}, stopPropagation: () => {} };
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer && chartContainer._wheelHandler) {
+                    chartContainer._wheelHandler(event);
+                }
+            });
+            
+            const resetBtn = createControlButton('🔄', 'Reset Zoom', () => {
+                document.getElementById('last-action').textContent = 'Reset';
+                const keyEvent = { ctrlKey: true, code: 'Digit0', preventDefault: () => {} };
+                document.dispatchEvent(new KeyboardEvent('keydown', keyEvent));
+            });
+            
+            wheelControls.appendChild(testBtn);
+            wheelControls.appendChild(zoomInBtn);
+            wheelControls.appendChild(zoomOutBtn);
+            wheelControls.appendChild(scrollLeftBtn);
+            wheelControls.appendChild(scrollRightBtn);
+            wheelControls.appendChild(resetBtn);
+            
+            const label = document.createElement('div');
+            label.innerHTML = '<strong>🖱️ TradingView 휠 컨트롤</strong>';
+            label.style.cssText = 'width: 100%; margin-bottom: 5px; color: #007bff; font-size: 14px;';
+            wheelControls.insertBefore(label, wheelControls.firstChild);
+            
+            controlsContainer.appendChild(wheelControls);
+            
+            console.log('✅ TradingView control buttons with debug info added');
+        }
+        
+        function createControlButton(text, title, onClick) {
+            const btn = document.createElement('button');
+            btn.textContent = text;
+            btn.title = title;
+            btn.className = 'btn btn-sm';
+            btn.style.cssText = `
+                min-width: 32px;
+                height: 32px;
+                padding: 4px;
+                margin: 0 2px;
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+            btn.addEventListener('click', onClick);
+            btn.addEventListener('mouseenter', () => {
+                btn.style.background = '#e9ecef';
+                btn.style.transform = 'scale(1.05)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.background = '#f8f9fa';
+                btn.style.transform = 'scale(1)';
+            });
+            return btn;
+        }
+
+        // BOSS FIX: Enhanced Chart Click Handler with Persistent X-Axis Icons
+        
+        let xAxisIcons = []; // Store all X-axis icons
+        let chartClickEnabled = true;
+        
+        // Main chart click handler
+        function setupChartClickHandler() {
+            const chartContainers = [
+                '#priceChart',
+                '.chart-container',
+                '#koreanChartContainer'
+            ];
+            
+            chartContainers.forEach(selector => {
+                const container = document.querySelector(selector);
+                if (container) {
+                    container.addEventListener('click', handleChartClick);
+                    container.style.position = 'relative'; // Ensure proper positioning
+                    console.log('✅ BOSS FIX: Chart click handler setup for', selector);
+                }
+            });
+        }
+        
+        function handleChartClick(event) {
+            if (!chartClickEnabled) return;
+            
+            console.log('🖱️ BOSS FIX: Chart clicked at:', event.offsetX, event.offsetY);
+            
+            // Get click position relative to chart
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Create persistent X-axis icon
+            createPersistentXAxisIcon(event.currentTarget, x, y);
+            
+            // Prevent event bubbling
+            event.stopPropagation();
+        }
+        
+        function createPersistentXAxisIcon(container, x, y) {
+            console.log('📍 BOSS FIX: Creating persistent X-axis icon at', x, y);
+            
+            // Create icon element
+            const icon = document.createElement('div');
+            icon.className = 'x-axis-stock-icon';
+            icon.setAttribute('data-icon-id', Date.now());
+            
+            // Icon styling - make it very visible and persistent
+            icon.style.cssText = `
+                position: absolute !important;
+                left: ${x - 12}px !important;
+                top: ${y - 12}px !important;
+                width: 24px !important;
+                height: 24px !important;
+                background: linear-gradient(135deg, #2962ff, #1976d2) !important;
+                border: 2px solid white !important;
+                border-radius: 50% !important;
+                cursor: pointer !important;
+                z-index: 9999 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: white !important;
+                font-size: 10px !important;
+                font-weight: bold !important;
+                box-shadow: 0 3px 12px rgba(41, 98, 255, 0.4) !important;
+                transition: all 0.2s ease !important;
+                user-select: none !important;
+                pointer-events: all !important;
+            `;
+            
+            // Icon content
+            icon.innerHTML = '📊';
+            
+            // BOSS REQUIREMENT: Icon must persist when clicked
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                console.log('🔒 BOSS FIX: X-axis icon clicked - STAYING VISIBLE');
+                
+                // Add click effect without removing
+                icon.style.transform = 'scale(1.2)';
+                icon.style.boxShadow = '0 4px 16px rgba(41, 98, 255, 0.6)';
+                
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                    icon.style.boxShadow = '0 3px 12px rgba(41, 98, 255, 0.4)';
+                }, 150);
+                
+                // Show stock info tooltip
+                showStockIconTooltip(icon, x, y);
+                
+                return false; // Prevent any default behavior
+            });
+            
+            // Hover effects
+            icon.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 4px 16px rgba(41, 98, 255, 0.6)';
+            });
+            
+            icon.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 3px 12px rgba(41, 98, 255, 0.4)';
+            });
+            
+            // Add to container and store reference
+            container.appendChild(icon);
+            xAxisIcons.push(icon);
+            
+            console.log('✅ BOSS FIX: X-axis icon created and made persistent');
+            
+            // Show confirmation message
+            showMessage(`X축 아이콘이 생성되었습니다 (${xAxisIcons.length}개)`, 'success');
+            
+            return icon;
+        }
+        
+        function showStockIconTooltip(icon, x, y) {
+            // Remove existing tooltip
+            const existingTooltip = document.querySelector('.stock-icon-tooltip');
+            if (existingTooltip) {
+                existingTooltip.remove();
+            }
+            
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'stock-icon-tooltip';
+            tooltip.style.cssText = `
+                position: absolute !important;
+                left: ${x + 30}px !important;
+                top: ${y - 30}px !important;
+                background: rgba(0, 0, 0, 0.9) !important;
+                color: white !important;
+                padding: 8px 12px !important;
+                border-radius: 6px !important;
+                font-size: 12px !important;
+                z-index: 10000 !important;
+                pointer-events: none !important;
+                white-space: nowrap !important;
+            `;
+            
+            const currentPrice = getCurrentPrice();
+            tooltip.innerHTML = `
+                <div>종목: ${currentStockSymbol || 'N/A'}</div>
+                <div>현재가: $${currentPrice.toFixed(2)}</div>
+                <div>시간: ${new Date().toLocaleTimeString()}</div>
+            `;
+            
+            icon.parentElement.appendChild(tooltip);
+            
+            // Auto-remove tooltip after 3 seconds
+            setTimeout(() => {
+                if (tooltip.parentElement) {
+                    tooltip.parentElement.removeChild(tooltip);
+                }
+            }, 3000);
+        }
+        
+        // Clear all X-axis icons
+        function clearAllXAxisIcons() {
+            console.log('🧹 BOSS FIX: Clearing all X-axis icons');
+            
+            xAxisIcons.forEach(icon => {
+                if (icon.parentElement) {
+                    icon.parentElement.removeChild(icon);
+                }
+            });
+            
+            xAxisIcons = [];
+            showMessage('모든 X축 아이콘이 제거되었습니다', 'info');
+        }
+        
+        // Toggle chart click functionality
+        function toggleChartClick(enabled = !chartClickEnabled) {
+            chartClickEnabled = enabled;
+            console.log('🔧 BOSS FIX: Chart click', enabled ? 'enabled' : 'disabled');
+            showMessage(`차트 클릭 기능이 ${enabled ? '활성화' : '비활성화'}되었습니다`, 'info');
+        }
+        
+        // Add control buttons for icon management
+        function addIconControlButtons() {
+            const controlsContainer = document.querySelector('.chart-controls, .prediction-controls');
+            if (!controlsContainer) return;
+            
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'icon-controls';
+            buttonContainer.style.cssText = 'margin: 10px 0; display: flex; gap: 10px; flex-wrap: wrap;';
+            
+            // Clear icons button
+            const clearButton = document.createElement('button');
+            clearButton.textContent = '아이콘 모두 제거';
+            clearButton.className = 'btn btn-sm';
+            clearButton.onclick = clearAllXAxisIcons;
+            
+            // Toggle click button
+            const toggleButton = document.createElement('button');
+            toggleButton.textContent = '클릭 기능 토글';
+            toggleButton.className = 'btn btn-sm';
+            toggleButton.onclick = () => toggleChartClick();
+            
+            buttonContainer.appendChild(clearButton);
+            buttonContainer.appendChild(toggleButton);
+            controlsContainer.appendChild(buttonContainer);
+            
+            console.log('✅ BOSS FIX: Icon control buttons added');
         }
 
         // Update Korean chart UI with real stock data
@@ -3311,28 +4053,63 @@
             }, 3000);
         }
 
-        // Stock selection handler
+        // BOSS FIX: Enhanced Stock Selection Handler
         if (stockSelect) {
             stockSelect.addEventListener('change', function () {
                 const symbol = this.value;
+                console.log('📊 BOSS FIX: Stock selection changed to:', symbol);
+                
                 if (symbol) {
-                    loadStockData(symbol);
-                    predictions = []; // Clear previous predictions
+                    // Clear previous state immediately
+                    predictions = [];
                     updatePredictionsList();
+                    
+                    // Show loading state
+                    if (chartLoading) chartLoading.style.display = 'flex';
+                    if (noStockSelected) noStockSelected.style.display = 'none';
+                    
+                    // Load data with error handling
+                    loadStockData(symbol).then(() => {
+                        console.log('✅ BOSS FIX: Stock data loaded successfully');
+                        
+                        // Force chart update
+                        if (window.koreanCanvasChart) {
+                            window.koreanCanvasChart.updateData(convertToCandlestickData(stockData));
+                        }
+                        
+                        // Update stock info display
+                        updateStockInfoDisplay(symbol, stockData);
+                        
+                        // Show confirmation to user
+                        showMessage('주식이 성공적으로 선택되었습니다: ' + symbol, 'success');
+                        
+                    }).catch(error => {
+                        console.error('❌ BOSS FIX: Stock loading failed:', error);
+                        showMessage('주식 데이터를 불러오는데 실패했습니다', 'error');
+                    });
                 } else {
-                    stockInfo.classList.add('hidden');
-                noStockSelected.style.display = 'flex';
-                chartLoading.style.display = 'none';
-                currentStockSymbol = '';
-                predictions = [];
-                updatePredictionsList();
-                if (chart) {
-                    chart.data.datasets[0].data = [];
-                    chart.data.datasets[1].data = [];
-                    chart.update();
+                    // Clear everything when no stock selected
+                    if (stockInfo) stockInfo.classList.add('hidden');
+                    if (noStockSelected) noStockSelected.style.display = 'flex';
+                    if (chartLoading) chartLoading.style.display = 'none';
+                    
+                    currentStockSymbol = '';
+                    predictions = [];
+                    updatePredictionsList();
+                    
+                    // Clear chart data
+                    if (window.koreanCanvasChart) {
+                        window.koreanCanvasChart.updateData([]);
+                    }
+                    
+                    console.log('📊 BOSS FIX: Stock selection cleared');
                 }
-            }
-        });
+            });
+            
+            // Also add click handler for stock options
+            stockSelect.addEventListener('click', function() {
+                console.log('📊 BOSS FIX: Stock dropdown clicked');
+            });
         }
 
         // Chart time range handler
@@ -3760,11 +4537,46 @@
         });
 
         // Initialize when page loads
+        // BOSS REQUIREMENT: INSTANT ZOOM - SIMPLE AND FAST
+        function setupInstantZoom() {
+            const chartContainer = document.getElementById('chartContainer');
+            if (!chartContainer) return;
+            
+            // Remove any existing wheel listeners to avoid conflicts
+            const oldHandler = chartContainer.onwheel;
+            if (oldHandler) chartContainer.removeEventListener('wheel', oldHandler);
+            
+            // Add super simple, instant wheel handler
+            chartContainer.addEventListener('wheel', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    
+                    // INSTANT ZOOM CALCULATION
+                    const factor = e.deltaY > 0 ? 0.9 : 1.1;
+                    globalZoomLevel = Math.max(0.1, Math.min(5.0, globalZoomLevel * factor));
+                    
+                    // Update display instantly
+                    const zoomDisplay = document.getElementById('zoomDisplay');
+                    if (zoomDisplay) zoomDisplay.textContent = `Zoom: ${Math.round(globalZoomLevel * 100)}%`;
+                    
+                    // Instant chart redraw
+                    if (window.koreanCanvasChart && typeof window.koreanCanvasChart.draw === 'function') {
+                        window.koreanCanvasChart.draw();
+                    }
+                }
+            }, { passive: false });
+        }
+
+        // Initialize chart and setup instant zoom
         document.addEventListener('DOMContentLoaded', function () {
             // Only initialize if chart doesn't exist
             if (!chart) {
                 initializeChart();
             }
+            
+            // BOSS REQUIREMENT: Setup instant zoom
+            setupInstantZoom();
+            
             noStockSelected.style.display = 'flex';
             chartLoading.style.display = 'none';
             console.log('Interactive prediction chart initialized');
@@ -4462,10 +5274,31 @@
                 }, 250);
             });
             
-            console.log('Initialization complete');
-        });
-        
-        // TradingView-style Time Interval Button Handlers (EXACT LIKE REFERENCE)
+    console.log('Initialization complete');
+    
+    // BOSS FIX: Initialize all enhanced features
+    setupChartClickHandler();
+    setupAutoSave();
+    addIconControlButtons();
+    
+    // BOSS FIX: Initialize TradingView-style mouse wheel functionality
+    initializeTradingViewWheel();
+    
+    // BOSS FIX: Also initialize after a delay to ensure chart is ready
+    setTimeout(() => {
+        console.log('🔄 Delayed TradingView wheel initialization...');
+        initializeTradingViewWheel();
+    }, 2000);
+    
+    // Load saved configuration if available
+    const savedConfig = loadChartConfiguration();
+    if (savedConfig && savedConfig.stockSymbol) {
+        console.log('🔄 BOSS FIX: Auto-loading saved configuration');
+        loadStockData(savedConfig.stockSymbol);
+    }
+    
+    console.log('✅ BOSS FIX: All enhancements initialized successfully');
+});        // TradingView-style Time Interval Button Handlers (EXACT LIKE REFERENCE)
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize time interval buttons
             const timeIntervalButtons = document.querySelectorAll('.time-interval-btn');
