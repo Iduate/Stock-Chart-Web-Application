@@ -2189,22 +2189,15 @@
                 
                 // BOSS REQUIREMENT: Fix X delete icon movement bug
                 // "차트에 마우스 클릭하면 엑스박스 삭제 아이콘이 뜨는데 그걸 클릭하려면 아이콘이 움직여서 삭제 안된다"
-                // Only position the button when first created, not on every hover
+                // Position the button only when first created - it will NEVER move after this
                 const chartRect = window.koreanCanvasChart.canvas.getBoundingClientRect();
                 deleteBtn.style.left = (chartRect.left + mouseX + 15) + 'px';
                 deleteBtn.style.top = (chartRect.top + mouseY - 15) + 'px';
-                console.log('🎯 Boss requirement: Delete button positioned and locked at:', deleteBtn.style.left, deleteBtn.style.top);
+                deleteBtn._isPositioned = true; // Mark as positioned
+                console.log('🎯 Boss requirement: Delete button positioned and LOCKED at:', deleteBtn.style.left, deleteBtn.style.top);
             }
             
-            // Always show the button but don't reposition it if already visible
-            if (deleteBtn.style.display === 'none') {
-                // Only reposition if button was hidden and is being shown again
-                const chartRect = window.koreanCanvasChart.canvas.getBoundingClientRect();
-                deleteBtn.style.left = (chartRect.left + mouseX + 15) + 'px';
-                deleteBtn.style.top = (chartRect.top + mouseY - 15) + 'px';
-                console.log('🔄 Delete button repositioned on show:', deleteBtn.style.left, deleteBtn.style.top);
-            }
-            
+            // Simply show the button - NEVER reposition it once created
             deleteBtn.style.display = 'flex';
             
             // Remove existing click handler and add new one
@@ -2368,7 +2361,7 @@
         // DOM elements
         const stockSelect = document.getElementById('stockSelect');
         const stockSearch = document.getElementById('stockSearch');
-        const stockSearchInput = document.getElementById('stockCodeInput'); // Use Korean input
+        const stockSearchInput = document.getElementById('stockSearchInput'); // Fixed: Use correct ID
         const chartScrollbar = document.getElementById('chartScrollbar');
         const timeIntervalBtns = document.querySelectorAll('.time-interval-btn');
         const showVolumeCheckbox = document.getElementById('showVolume');
