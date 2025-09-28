@@ -2186,12 +2186,25 @@
                 deleteBtn.innerHTML = '<i class="fas fa-times text-sm"></i>';
                 deleteBtn.title = '예측 삭제';
                 document.body.appendChild(deleteBtn);
+                
+                // BOSS REQUIREMENT: Fix X delete icon movement bug
+                // "차트에 마우스 클릭하면 엑스박스 삭제 아이콘이 뜨는데 그걸 클릭하려면 아이콘이 움직여서 삭제 안된다"
+                // Only position the button when first created, not on every hover
+                const chartRect = window.koreanCanvasChart.canvas.getBoundingClientRect();
+                deleteBtn.style.left = (chartRect.left + mouseX + 15) + 'px';
+                deleteBtn.style.top = (chartRect.top + mouseY - 15) + 'px';
+                console.log('🎯 Boss requirement: Delete button positioned and locked at:', deleteBtn.style.left, deleteBtn.style.top);
             }
             
-            // Position the delete button near the prediction point
-            const chartRect = window.koreanCanvasChart.canvas.getBoundingClientRect();
-            deleteBtn.style.left = (chartRect.left + mouseX + 15) + 'px';
-            deleteBtn.style.top = (chartRect.top + mouseY - 15) + 'px';
+            // Always show the button but don't reposition it if already visible
+            if (deleteBtn.style.display === 'none') {
+                // Only reposition if button was hidden and is being shown again
+                const chartRect = window.koreanCanvasChart.canvas.getBoundingClientRect();
+                deleteBtn.style.left = (chartRect.left + mouseX + 15) + 'px';
+                deleteBtn.style.top = (chartRect.top + mouseY - 15) + 'px';
+                console.log('🔄 Delete button repositioned on show:', deleteBtn.style.left, deleteBtn.style.top);
+            }
+            
             deleteBtn.style.display = 'flex';
             
             // Remove existing click handler and add new one
@@ -2201,6 +2214,7 @@
                 removePrediction(prediction.id);
                 hidePredictionDeleteButton();
                 showMessage('예측이 삭제되었습니다.', 'info');
+                console.log('✅ Boss requirement: Prediction deleted successfully');
             };
         }
 
@@ -4163,6 +4177,28 @@
                 }
             });
         });
+
+            // BOSS REQUIREMENT: Add Enter key handler for duplicate stock selection refresh
+            // "삼성전자라고 중복을 입력하고 엔터키를 눌려도 중복이 변하지 않는다"
+            stockSearchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    console.log('🔄 Boss requirement: Enter key pressed, forcing chart refresh for duplicate stock');
+                    
+                    // Force refresh even with same stock selection
+                    const currentValue = stockSelect.value;
+                    if (currentValue) {
+                        // Clear and reset to trigger change event
+                        stockSelect.value = '';
+                        stockSelect.value = currentValue;
+                        stockSelect.dispatchEvent(new Event('change'));
+                        
+                        console.log('✅ Chart refreshed for stock:', currentValue);
+                    } else {
+                        console.log('⚠️ No stock selected to refresh');
+                    }
+                }
+            });
         }
 
         // Time interval button handlers
@@ -4228,27 +4264,33 @@
                 
                 // BOSS REQUIREMENT: Exact 5 intervals only
                 let newInterval = interval;
+                let koreanChartInterval = interval; // For Korean chart compatibility
                 let timeUnit = 'day';
                 
                 switch (period) {
                     case 'hourly': // 1시간 - One bar = 1 hour
                         newInterval = '1h';
+                        koreanChartInterval = '1h';
                         timeUnit = 'hour';
                         break;
                     case 'daily': // 일일 - One bar = 1 day  
                         newInterval = '1d';
+                        koreanChartInterval = '1d';
                         timeUnit = 'day';
                         break;
                     case 'weekly': // 주간 - One bar = 7 days (1 week)
                         newInterval = '1w';
+                        koreanChartInterval = '1wk'; // Korean chart expects '1wk'
                         timeUnit = 'week';
                         break;
                     case 'monthly': // 월간 - One bar = 1 month
                         newInterval = '1M';
+                        koreanChartInterval = '1mo'; // Korean chart expects '1mo'
                         timeUnit = 'month';
                         break;
                     case 'yearly': // 년간 - One bar = 1 year
                         newInterval = '1Y';
+                        koreanChartInterval = '1y';
                         timeUnit = 'year';
                         break;
                 }
@@ -4256,7 +4298,13 @@
                 // Update current interval and chart time unit
                 currentInterval = newInterval;
                 
-                // Update chart time unit immediately
+                // BOSS FIX: Update Korean chart with proper interval
+                if (window.koreanCanvasChart && typeof window.koreanCanvasChart.setTimeInterval === 'function') {
+                    window.koreanCanvasChart.setTimeInterval(koreanChartInterval);
+                    console.log(`✅ Korean chart time interval updated to: ${koreanChartInterval}`);
+                }
+                
+                // Update Chart.js chart time unit immediately
                 if (chart) {
                     chart.options.scales.x.time.unit = timeUnit;
                     chart.update();
