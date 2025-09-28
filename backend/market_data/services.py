@@ -70,6 +70,156 @@ class MarketDataService:
         self.tiingo_base = "https://api.tiingo.com/tiingo"
         self.marketstack_base = "https://api.marketstack.com/v1"
     
+    def _aggregate_daily_data(self, daily_data: List[Dict], target_interval: str) -> List[Dict]:
+        """Convert daily OHLC data to weekly or monthly intervals - OPTIMIZED"""
+        if not daily_data or target_interval == '1d' or target_interval == '1day':
+            return daily_data
+        
+        try:
+            # 🚀 OPTIMIZATION: Pre-sort data once and use efficient grouping
+            sorted_data = sorted(daily_data, key=lambda x: x['timestamp'])
+            aggregated = []
+            
+            if target_interval in ['1w', '1wk', '1week']:
+                # 🚀 FAST Weekly aggregation using date grouping
+                week_groups = {}
+                for item in sorted_data:
+                    item_date = self._parse_timestamp(item['timestamp'])
+                    if not item_date:
+                        continue
+                    
+                    # Get Monday of the week (ISO week start)
+                    week_start = item_date - timedelta(days=item_date.weekday())
+                    week_key = week_start.strftime('%Y-%W')
+                    
+                    if week_key not in week_groups:
+                        week_groups[week_key] = []
+                    week_groups[week_key].append(item)
+                
+                # Process each week group
+                for week_key in sorted(week_groups.keys()):
+                    week_ohlc = self._calculate_ohlc_fast(week_groups[week_key])
+                    if week_ohlc:
+                        aggregated.append(week_ohlc)
+            
+            elif target_interval in ['1M', '1mo', '1month']:
+                # 🚀 FAST Monthly aggregation using date grouping
+                month_groups = {}
+                for item in sorted_data:
+                    item_date = self._parse_timestamp(item['timestamp'])
+                    if not item_date:
+                        continue
+                    
+                    month_key = item_date.strftime('%Y-%m')
+                    
+                    if month_key not in month_groups:
+                        month_groups[month_key] = []
+                    month_groups[month_key].append(item)
+                
+                # Process each month group
+                for month_key in sorted(month_groups.keys()):
+                    month_ohlc = self._calculate_ohlc_fast(month_groups[month_key])
+                    if month_ohlc:
+                        aggregated.append(month_ohlc)
+            
+            logger.info(f"⚡ FAST aggregation: {len(daily_data)} daily → {len(aggregated)} {target_interval} records")
+            return aggregated
+            
+        except Exception as e:
+            logger.error(f"Fast aggregation error for {target_interval}: {e}")
+            return daily_data  # Return original data if aggregation fails
+    
+    def _calculate_ohlc_fast(self, period_data: List[Dict]) -> Optional[Dict]:
+        """OPTIMIZED OHLC calculation for faster processing"""
+        if not period_data:
+            return None
+        
+        try:
+            # 🚀 OPTIMIZATION: Use list comprehensions for speed
+            opens = [item['open'] for item in period_data]
+            highs = [item['high'] for item in period_data]
+            lows = [item['low'] for item in period_data]
+            closes = [item['close'] for item in period_data]
+            volumes = [item.get('volume', 0) for item in period_data]
+            
+            # Use first and last for open/close, min/max for high/low
+            return {
+                'timestamp': period_data[-1]['timestamp'],  # Last timestamp
+                'open': opens[0],          # First open
+                'high': max(highs),        # Highest high
+                'low': min(lows),          # Lowest low  
+                'close': closes[-1],       # Last close
+                'volume': sum(volumes)     # Total volume
+            }
+        except Exception as e:
+            logger.error(f"Fast OHLC calculation error: {e}")
+            return None
+    
+    def _parse_timestamp(self, timestamp_str: str) -> Optional[datetime]:
+        """Parse various timestamp formats to datetime object"""
+        if not timestamp_str:
+            return None
+        
+        try:
+            # Try common formats
+            formats = [
+                '%Y-%m-%d',                    # 2024-01-15
+                '%Y-%m-%d %H:%M:%S',          # 2024-01-15 16:00:00
+                '%Y-%m-%dT%H:%M:%S',          # 2024-01-15T16:00:00
+                '%Y-%m-%dT%H:%M:%SZ',         # 2024-01-15T16:00:00Z
+                '%Y-%m-%dT%H:%M:%S.%fZ',      # 2024-01-15T16:00:00.000Z
+                '%d/%m/%Y',                    # 15/01/2024
+                '%m/%d/%Y',                    # 01/15/2024
+            ]
+            
+            for fmt in formats:
+                try:
+                    return datetime.strptime(timestamp_str, fmt)
+                except ValueError:
+                    continue
+            
+            # If none of the formats work, try ISO parsing
+            if 'T' in timestamp_str:
+                timestamp_str = timestamp_str.replace('Z', '+00:00')
+                return datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+            
+            logger.warning(f"Unable to parse timestamp: {timestamp_str}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Timestamp parsing error: {e}")
+            return None
+    
+    def _calculate_ohlc(self, period_data: List[Dict]) -> Optional[Dict]:
+        """Calculate OHLC values for a period from daily data"""
+        if not period_data:
+            return None
+        
+        try:
+            # Sort by timestamp to ensure proper order
+            sorted_period_data = sorted(period_data, key=lambda x: x['timestamp'])
+            
+            open_price = sorted_period_data[0]['open']  # First day's open
+            close_price = sorted_period_data[-1]['close']  # Last day's close
+            high_price = max(item['high'] for item in period_data)  # Highest high
+            low_price = min(item['low'] for item in period_data)  # Lowest low
+            total_volume = sum(item.get('volume', 0) for item in period_data)
+            
+            # Use the last day's timestamp as the period timestamp
+            period_timestamp = sorted_period_data[-1]['timestamp']
+            
+            return {
+                'timestamp': period_timestamp,
+                'open': open_price,
+                'high': high_price,
+                'low': low_price,
+                'close': close_price,
+                'volume': total_volume
+            }
+        except Exception as e:
+            logger.error(f"OHLC calculation error: {e}")
+            return None
+
     def _make_enhanced_request(self, url: str, params: dict = None, headers: dict = None, 
                               timeout: int = 10, max_retries: int = 3, 
                               backoff_factor: float = 0.5) -> Optional[requests.Response]:
@@ -339,14 +489,37 @@ class MarketDataService:
     
     def get_historical_data(self, symbol: str, period: str = '1month', 
                           interval: str = '1day', market: str = 'us_stock') -> Optional[List[Dict]]:
-        """과거 데이터 조회 - 여러 API 사용"""
+        """과거 데이터 조회 - 여러 API 사용 with optimized caching"""
         cache_key = f"historical_{market}_{symbol}_{period}_{interval}"
         cached_data = cache.get(cache_key)
         
         if cached_data:
+            logger.info(f"✅ Cache hit for {symbol} {interval}")
             return cached_data
         
         try:
+            # Check if we have daily data cached - this is the optimization key
+            daily_cache_key = f"historical_{market}_{symbol}_{period}_1d"
+            daily_data = cache.get(daily_cache_key)
+            
+            # If we have daily data cached, quickly aggregate to requested interval
+            if daily_data and interval != '1d':
+                logger.info(f"⚡ INSTANT: Fast aggregation from cached daily data for {symbol} {interval}")
+                start_agg_time = time.time()
+                aggregated_data = self._aggregate_daily_data(daily_data, interval)
+                agg_duration = time.time() - start_agg_time
+                logger.info(f"⚡ Aggregation completed in {agg_duration:.3f}s")
+                cache.set(cache_key, aggregated_data, timeout=300)  # 5min cache
+                return aggregated_data
+            
+            # If requesting daily data and we have it cached, return immediately
+            if daily_data and interval == '1d':
+                return daily_data
+            
+            # Need to fetch new data
+            logger.info(f"📡 Fetching new data for {symbol}")
+            raw_data = None
+            
             # Check if this is a cryptocurrency symbol
             crypto_symbols = ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK', 'UNI', 'ATOM',
                             'btc', 'eth', 'ada', 'bnb', 'dot', 'matic', 'sol', 'ltc', 'xrp', 'doge', 'avax', 'link', 'uni', 'atom']
@@ -369,47 +542,74 @@ class MarketDataService:
                 # Try Twelve Data first for crypto (supports BTC/USD format)
                 if symbol.upper() in ['BTC', 'ETH', 'ADA', 'BNB', 'DOT', 'MATIC', 'SOL', 'LTC', 'XRP', 'DOGE', 'AVAX', 'LINK']:
                     crypto_symbol = f"{symbol.upper()}/USD"
-                    data = self._get_twelve_data_historical(crypto_symbol, period, interval)
-                    if data:
-                        cache.set(cache_key, data, timeout=1800)
-                        return data
+                    raw_data = self._get_twelve_data_historical(crypto_symbol, period, '1d')  # Get daily first
                 
-                # Try Alpha Vantage for crypto (supports DIGITAL_CURRENCY_DAILY)
-                data = self._get_alpha_vantage_crypto_historical(symbol.upper(), period)
-                if data:
-                    cache.set(cache_key, data, timeout=1800)
-                    return data
+                # Try Alpha Vantage for crypto if Twelve Data failed
+                if not raw_data:
+                    raw_data = self._get_alpha_vantage_crypto_historical(symbol.upper(), period)
                 
                 # Try CoinGecko as fallback
-                data = self.get_coingecko_historical_data(symbol, period_days)
-                if data:
-                    cache.set(cache_key, data, timeout=1800)  # 30분 캐시
-                    return data
+                if not raw_data:
+                    raw_data = self.get_coingecko_historical_data(symbol, period_days)
             
-            # For stock symbols, use traditional APIs
-            # 1순위: Alpha Vantage
-            data = self._get_alpha_vantage_historical(symbol, period, interval)
-            if data:
-                cache.set(cache_key, data, timeout=1800)  # 30분 캐시
-                return data
+            else:
+                # 🚀 IMMEDIATE RESPONSE: Try native intervals first (no aggregation needed)
+                logger.info(f"🚀 Attempting native {interval} data for {symbol}")
+                
+                # Try Alpha Vantage native intervals first (fastest)
+                raw_data = self._get_alpha_vantage_historical(symbol, period, interval)
+                if raw_data:
+                    logger.info(f"✅ Got native {interval} data from Alpha Vantage for {symbol}")
+                    cache.set(cache_key, raw_data, timeout=120)  # 2min cache for real-time
+                    return raw_data
+                
+                # Try Twelve Data native intervals
+                raw_data = self._get_twelve_data_historical(symbol, period, interval)
+                if raw_data:
+                    logger.info(f"✅ Got native {interval} data from Twelve Data for {symbol}")
+                    cache.set(cache_key, raw_data, timeout=120)  # 2min cache for real-time
+                    return raw_data
+                
+                # 🚀 FALLBACK: If no native data, get daily and aggregate quickly
+                logger.info(f"⚡ Falling back to fast aggregation for {symbol} {interval}")
+                
+                # For stock symbols, use traditional APIs
+                # 1순위: Alpha Vantage
+                raw_data = self._get_alpha_vantage_historical(symbol, period, '1d')  # Always get daily data first
+                
+                # 2순위: Twelve Data
+                if not raw_data:
+                    raw_data = self._get_twelve_data_historical(symbol, period, '1d')  # Always get daily data first
+                
+                # 3순위: Tiingo
+                if not raw_data:
+                    raw_data = self._get_tiingo_historical(symbol, period)
+                
+                # 4순위: Marketstack
+                if not raw_data:
+                    raw_data = self._get_marketstack_historical(symbol, period)
             
-            # 2순위: Twelve Data
-            data = self._get_twelve_data_historical(symbol, period, interval)
-            if data:
-                cache.set(cache_key, data, timeout=1800)
-                return data
-            
-            # 3순위: Tiingo
-            data = self._get_tiingo_historical(symbol, period)
-            if data:
-                cache.set(cache_key, data, timeout=1800)
-                return data
-            
-            # 4순위: Marketstack
-            data = self._get_marketstack_historical(symbol, period)
-            if data:
-                cache.set(cache_key, data, timeout=1800)
-                return data
+            if raw_data:
+                # 🚀 OPTIMIZATION: Cache daily data with shorter timeout for real-time feel
+                cache.set(daily_cache_key, raw_data, timeout=300)  # 5min cache daily data
+                
+                # Pre-compute and cache all common intervals to make future requests instant
+                intervals_to_cache = ['1d', '1w', '1M']
+                for cache_interval in intervals_to_cache:
+                    if cache_interval == '1d':
+                        cache.set(f"historical_{market}_{symbol}_{period}_{cache_interval}", raw_data, timeout=300)
+                    else:
+                        aggregated = self._aggregate_daily_data(raw_data, cache_interval)
+                        cache.set(f"historical_{market}_{symbol}_{period}_{cache_interval}", aggregated, timeout=300)
+                
+                # Return the requested interval
+                if interval == '1d':
+                    logger.info(f"✅ Returning daily data for {symbol}")
+                    return raw_data
+                else:
+                    aggregated_data = self._aggregate_daily_data(raw_data, interval)
+                    logger.info(f"✅ Returning {interval} data for {symbol}")
+                    return aggregated_data
             
             return None
             
@@ -1148,10 +1348,20 @@ class MarketDataService:
             return None
     
     def _get_alpha_vantage_historical(self, symbol: str, period: str, interval: str) -> Optional[List[Dict]]:
-        """Alpha Vantage 과거 데이터"""
+        """Alpha Vantage 과거 데이터 with NATIVE INTERVAL SUPPORT for speed"""
         try:
+            # 🚀 NATIVE INTERVAL MAPPING for immediate response
             function_map = {
+                '1d': 'TIME_SERIES_DAILY',
                 '1day': 'TIME_SERIES_DAILY',
+                '1w': 'TIME_SERIES_WEEKLY',
+                '1wk': 'TIME_SERIES_WEEKLY', 
+                '1week': 'TIME_SERIES_WEEKLY',
+                'Week': 'TIME_SERIES_WEEKLY',
+                '1M': 'TIME_SERIES_MONTHLY',
+                '1mo': 'TIME_SERIES_MONTHLY',
+                '1month': 'TIME_SERIES_MONTHLY',
+                'Month': 'TIME_SERIES_MONTHLY',
                 '1hour': 'TIME_SERIES_INTRADAY',
                 '5min': 'TIME_SERIES_INTRADAY'
             }
@@ -1166,6 +1376,8 @@ class MarketDataService:
             
             if function == 'TIME_SERIES_INTRADAY':
                 params['interval'] = interval
+            
+            logger.info(f"🚀 Alpha Vantage: requesting {symbol} with native function {function}")
             
             response = requests.get(self.alpha_vantage_base, params=params, timeout=15)
             response.raise_for_status()
@@ -1196,6 +1408,7 @@ class MarketDataService:
                     'volume': int(values['5. volume']) if '5. volume' in values else 0
                 })
             
+            logger.info(f"✅ Alpha Vantage: got {len(results)} {function} records for {symbol}")
             return sorted(results, key=lambda x: x['timestamp'])
             
         except Exception as e:
@@ -1203,15 +1416,27 @@ class MarketDataService:
             return None
     
     def _get_twelve_data_historical(self, symbol: str, period: str, interval: str) -> Optional[List[Dict]]:
-        """Twelve Data 과거 데이터"""
+        """Twelve Data 과거 데이터 with NATIVE INTERVAL SUPPORT for speed"""
         try:
             url = f"{self.twelve_data_base}/time_series"
+            
+            # 🚀 NATIVE INTERVAL MAPPING for immediate response
+            native_interval = interval
+            if interval in ['1w', '1wk', '1week', 'Week']:
+                native_interval = '1week'
+            elif interval in ['1M', '1mo', '1month', 'Month']:
+                native_interval = '1month'
+            elif interval == '1d':
+                native_interval = '1day'
+            
             params = {
                 'symbol': symbol,
-                'interval': interval,
+                'interval': native_interval,  # Use native interval directly
                 'outputsize': '5000',
                 'apikey': self.twelve_data_key
             }
+            
+            logger.info(f"🚀 Twelve Data: requesting {symbol} with native interval {native_interval}")
             
             response = requests.get(url, params=params, timeout=15)
             response.raise_for_status()
@@ -1233,6 +1458,7 @@ class MarketDataService:
                     'volume': int(item['volume']) if item['volume'] else 0
                 })
             
+            logger.info(f"✅ Twelve Data: got {len(results)} {native_interval} records for {symbol}")
             return sorted(results, key=lambda x: x['timestamp'])
             
         except Exception as e:
