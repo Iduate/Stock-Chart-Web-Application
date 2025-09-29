@@ -21,8 +21,9 @@ services:
       - key: WEB_CONCURRENCY
         value: 4
 
-  - type: pserv
-    name: stock-chart-db
-    env: postgresql
+databases:
+  - name: stock-chart-db
+    databaseName: stockchart_db
+    user: stockuser
     region: oregon
     plan: free
