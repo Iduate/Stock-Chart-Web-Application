@@ -26,5 +26,3 @@ services:
     env: postgresql
     region: oregon
     plan: free
-    databaseName: stockchart_db
-    databaseUser: stockuser
