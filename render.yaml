@@ -20,6 +20,8 @@ services:
         value: False
       - key: WEB_CONCURRENCY
         value: 4
+      - key: ALLOWED_HOSTS
+        value: stock-chart-web-app.onrender.com
 
 databases:
   - name: stock-chart-db

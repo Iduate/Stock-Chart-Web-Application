@@ -58,7 +58,13 @@ ALLOWED_HOSTS = [
     '*.vercel.app',
     '*.render.com',  # Add Render support
     '*.onrender.com',  # Add Render support
+    'stock-chart-web-app.onrender.com',  # Add specific Render app domain
 ]
+
+# Add any custom ALLOWED_HOSTS from environment variable
+custom_hosts = config('ALLOWED_HOSTS', default='')
+if custom_hosts:
+    ALLOWED_HOSTS.extend([host.strip() for host in custom_hosts.split(',') if host.strip()])
 
 # 애플리케이션 정의
 INSTALLED_APPS = [
