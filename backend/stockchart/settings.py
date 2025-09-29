@@ -41,17 +41,23 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-key')
 # Railway에서 정적 파일 서빙을 위해 DEBUG=True 유지
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# Railway 환경 감지 및 디버그 모드 강제 활성화
+# Railway 및 Render 환경 감지
 RAILWAY_ENVIRONMENT = os.environ.get('RAILWAY_ENVIRONMENT', False)
+RENDER_ENVIRONMENT = os.environ.get('RENDER', False)
+
 if RAILWAY_ENVIRONMENT or os.environ.get('RAILWAY_PROJECT_ID'):
     DEBUG = True  # Railway에서는 정적 파일 서빙을 위해 강제로 DEBUG=True
+elif RENDER_ENVIRONMENT:
+    DEBUG = False  # Render에서는 production 모드 사용
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
     '*.stockchart.kr',
     '*.railway.app',
     '*.herokuapp.com',
-    '*.vercel.app'
+    '*.vercel.app',
+    '*.render.com',  # Add Render support
+    '*.onrender.com',  # Add Render support
 ]
 
 # 애플리케이션 정의
@@ -79,6 +85,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -180,8 +187,11 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-# 정적 파일 저장소 설정 (기본 Django 저장소 사용)
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# 정적 파일 저장소 설정
+if RENDER_ENVIRONMENT:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # 로깅 설정 (디버깅용)
 LOGGING = {

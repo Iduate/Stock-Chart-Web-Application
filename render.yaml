@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: stock-chart-web-app
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "cd backend && gunicorn stockchart.wsgi:application"
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.4
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stock-chart-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: WEB_CONCURRENCY
+        value: 4
+
+  - type: pserv
+    name: stock-chart-db
+    env: postgresql
+    region: oregon
+    plan: free
+    databaseName: stockchart_db
+    databaseUser: stockuser
