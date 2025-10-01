@@ -13,6 +13,14 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Fonts for better Korean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Modern Fintech Mobile Styles -->
+    <link rel="stylesheet" href="css/mobile-fintech.css">
+    
     <!-- Manifest for PWA -->
     <link rel="manifest" href="/manifest.json">
     
@@ -30,9 +38,11 @@
         html, body {
             height: 100%;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #1e222d;
-            color: #d1d4dc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', Roboto, 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #2a2f3e 100%);
+            color: #ffffff;
+            font-weight: 400;
+            line-height: 1.6;
         }
         
         /* Disable zoom on input focus */
@@ -47,7 +57,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #1e222d 0%, #2a2e39 100%);
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #2a2f3e 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,36 +73,51 @@
         }
         
         .loading-logo {
-            font-size: 48px;
-            color: #2962ff;
-            margin-bottom: 24px;
-            animation: pulse 2s infinite;
+            font-size: 64px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 32px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 20px rgba(79, 172, 254, 0.3));
         }
         
         .loading-text {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e6ed 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .loading-subtitle {
-            color: #868993;
+            color: #8892b0;
             font-size: 16px;
             margin-bottom: 48px;
+            font-weight: 500;
         }
         
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #363a45;
-            border-top: 3px solid #2962ff;
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(79, 172, 254, 0.2);
+            border-top: 4px solid #4facfe;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            filter: drop-shadow(0 0 10px rgba(79, 172, 254, 0.5));
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
         
         @keyframes spin {
@@ -114,28 +139,33 @@
         /* Install Prompt */
         .install-prompt {
             position: fixed;
-            bottom: 20px;
+            bottom: 24px;
             left: 20px;
             right: 20px;
-            background: #2a2e39;
-            border: 1px solid #363a45;
-            border-radius: 16px;
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 24px;
             display: none;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             z-index: 1000;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 80px rgba(79, 172, 254, 0.1);
         }
         
         .install-prompt.show {
             display: flex;
-            animation: slideUp 0.3s ease;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .install-icon {
-            font-size: 32px;
-            color: #2962ff;
+            font-size: 36px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 10px rgba(79, 172, 254, 0.3));
         }
         
         .install-content {
@@ -143,44 +173,56 @@
         }
         
         .install-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #ffffff;
         }
         
         .install-description {
             font-size: 14px;
-            color: #868993;
+            color: #8892b0;
+            font-weight: 500;
         }
         
         .install-buttons {
             display: flex;
-            gap: 8px;
+            gap: 12px;
         }
         
         .install-btn, .dismiss-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 16px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
         
         .install-btn {
-            background: #2962ff;
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
         }
         
         .install-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
         }
         
         .dismiss-btn {
-            background: transparent;
-            color: #868993;
-            border: 1px solid #363a45;
+            background: rgba(255, 255, 255, 0.1);
+            color: #8892b0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .dismiss-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.15);
         }
         
         @keyframes slideUp {
