@@ -18,10 +18,12 @@ services:
         generateValue: true
       - key: DEBUG
         value: False
+      - key: RENDER
+        value: True
       - key: WEB_CONCURRENCY
         value: 4
       - key: ALLOWED_HOSTS
-        value: stock-chart-web-app.onrender.com
+        value: stock-chart-web-app.onrender.com,*.onrender.com
 
 databases:
   - name: stock-chart-db
