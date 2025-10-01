@@ -6,7 +6,7 @@ services:
     plan: free
     buildCommand: "./build.sh"
     startCommand: "cd backend && gunicorn stockchart.wsgi:application"
-    healthCheckPath: /
+    healthCheckPath: /health/
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.4

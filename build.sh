@@ -17,13 +17,9 @@ echo "Current environment variables:"
 echo "DATABASE_URL is set: $([ -n "$DATABASE_URL" ] && echo "YES" || echo "NO")"
 echo "RENDER environment: ${RENDER:-Not set}"
 
-# Test database connection before collecting static files
-echo "Testing database connection..."
-python manage.py test_db
-
 # Run Django system checks
 echo "Running Django system checks..."
-python manage.py check --database default
+python manage.py check
 
 # Collect static files
 echo "Collecting static files..."

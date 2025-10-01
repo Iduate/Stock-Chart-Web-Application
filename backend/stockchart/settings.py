@@ -28,7 +28,6 @@ try:
     HAS_DJ_DATABASE_URL = True
 except ImportError:
     HAS_DJ_DATABASE_URL = False
-    print("Warning: dj_database_url not available, using fallback")
     
     # Define a minimal fallback if needed
     def parse(url):
@@ -79,6 +78,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'oauth2_provider',
+    'stockchart',  # Add the main app for management commands
     'users',
     'charts',
     'payment_system',
@@ -130,12 +130,8 @@ WSGI_APPLICATION = 'stockchart.wsgi.application'
 # 데이터베이스 설정
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-print(f"DEBUG: DATABASE_URL is {'set' if DATABASE_URL else 'not set'}")
-print(f"DEBUG: HAS_DJ_DATABASE_URL = {HAS_DJ_DATABASE_URL}")
-
 if DATABASE_URL and HAS_DJ_DATABASE_URL:
     # Production: Use Render/Railway/Heroku database URL
-    print(f"Using DATABASE_URL for database connection")
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
@@ -143,12 +139,8 @@ if DATABASE_URL and HAS_DJ_DATABASE_URL:
     DATABASES['default']['OPTIONS'] = {
         'sslmode': 'require',
     }
-    print(f"DEBUG: Database HOST = {DATABASES['default'].get('HOST')}")
-    print(f"DEBUG: Database PORT = {DATABASES['default'].get('PORT')}")
-    print(f"DEBUG: Database NAME = {DATABASES['default'].get('NAME')}")
 elif DATABASE_URL and not HAS_DJ_DATABASE_URL:
     # Fallback manual parsing if dj_database_url is not available
-    print("Parsing DATABASE_URL manually")
     import urllib.parse
     parsed = urllib.parse.urlparse(DATABASE_URL)
     DATABASES = {
@@ -164,12 +156,8 @@ elif DATABASE_URL and not HAS_DJ_DATABASE_URL:
             }
         }
     }
-    print(f"DEBUG: Manually parsed HOST = {DATABASES['default']['HOST']}")
-    print(f"DEBUG: Manually parsed PORT = {DATABASES['default']['PORT']}")
-    print(f"DEBUG: Manually parsed NAME = {DATABASES['default']['NAME']}")
 else:
     # Development: Use local PostgreSQL
-    print("Using local PostgreSQL database")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

@@ -10,6 +10,7 @@ import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('health/', views.health_check, name='health_check'),  # Health check for Render
     path('api/status/', views.api_status, name='api_status'),
     path('api/auth/', include('users.urls')),
     path('api/charts/', include('charts.urls')),

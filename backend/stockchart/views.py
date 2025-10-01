@@ -2,8 +2,32 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
 import os
+import datetime
 from django.conf import settings
+
+
+@csrf_exempt
+def health_check(request):
+    """
+    Health check endpoint for deployment monitoring
+    """
+    try:
+        # Test database connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            db_status = "healthy"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    return JsonResponse({
+        'status': 'healthy' if db_status == 'healthy' else 'unhealthy',
+        'timestamp': datetime.datetime.now().isoformat(),
+        'database': db_status,
+        'version': '1.0.0'
+    })
 
 def serve_html_page(request, page_name=None):
     """다중 페이지 HTML 파일들을 서빙하는 뷰"""
