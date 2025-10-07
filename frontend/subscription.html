@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" class="overflow-x-hidden max-w-full">
+<html lang="ko" class="bg-gray-50 overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="UTF-8">
@@ -8,25 +8,29 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-    <!-- Tailwind CSS with TradingView Color Scheme -->
+    <!-- Banking UI CSS Framework -->
+    <link rel="stylesheet" href="css/banking-ui.css">
+    
+    <!-- Tailwind CSS with Banking Color Scheme -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'tv': {
-                            'darker': '#0d1421',
-                            'dark': '#131722',
-                            'card': '#1e222d',
-                            'light': '#2a2e39',
-                            'border': '#363a45',
-                            'blue': '#2962ff',
-                            'green': '#26a69a',
-                            'red': '#ef5350',
-                            'text': '#d1d4dc',
-                            'text-secondary': '#868993'
-                        }
+                        // Banking UI colors
+                        'primary': '#2563eb',
+                        'primary-dark': '#1d4ed8',
+                        'secondary': '#64748b',
+                        'accent': '#3b82f6',
+                        'success': '#10b981',
+                        'warning': '#f59e0b',
+                        'error': '#ef4444',
+                        'surface': '#ffffff',
+                        'background': '#f8fafc',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        'border': '#e2e8f0',
                     },
                     fontFamily: {
                         'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 주식 예측 - StockChart</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Banking UI CSS -->
+    <link rel="stylesheet" href="css/banking-ui.css">
+    
+    <!-- Chart Libraries -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900">
+    <!-- Banking Navigation -->
+    <nav class="banking-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index-banking.html" class="banking-nav .nav-brand">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                        <span>StockChart</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex banking-nav .nav-links">
+                    <a href="index-banking.html" class="nav-link">홈</a>
+                    <a href="charts.html" class="nav-link">차트</a>
+                    <a href="#" class="nav-link active">예측</a>
+                    <a href="ranking.html" class="nav-link">랭킹</a>
+                    <a href="subscription.html" class="nav-link">구독</a>
+                </div>
+                
+                <!-- User Actions -->
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex items-center gap-2 text-sm">
+                        <span class="banking-badge banking-badge-success">Pro 계정</span>
+                        <span class="text-gray-600 dark:text-gray-400">김투자님</span>
+                    </div>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="darkModeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                    <i class="fas fa-crystal-ball mr-3"></i>
+                    AI 주식 예측
+                </h1>
+                <p class="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">
+                    첨단 AI 알고리즘으로 주식 가격을 예측하고 투자 전략을 수립하세요
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Stock Selection & Prediction -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Stock Selection Card -->
+                <div class="banking-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fas fa-search text-purple-600"></i>
+                            종목 선택
+                        </h2>
+                        <div class="banking-badge banking-badge-info">실시간 데이터</div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="banking-form-group">
+                            <label class="banking-form-label">종목 검색</label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    id="stockSearch" 
+                                    class="banking-form-input pl-12" 
+                                    placeholder="종목명 또는 종목코드를 입력하세요 (예: 삼성전자, 005930)"
+                                    autocomplete="off"
+                                >
+                                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                            
+                            <!-- Search Results -->
+                            <div id="searchResults" class="hidden mt-2 banking-list">
+                                <!-- Dynamic search results will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Popular Stocks -->
+                        <div>
+                            <label class="banking-form-label">인기 종목</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <button class="stock-quick-select p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-semibold text-sm">삼성전자</div>
+                                    <div class="text-xs text-gray-500">005930</div>
+                                </button>
+                                <button class="stock-quick-select p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-semibold text-sm">SK하이닉스</div>
+                                    <div class="text-xs text-gray-500">000660</div>
+                                </button>
+                                <button class="stock-quick-select p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-semibold text-sm">NAVER</div>
+                                    <div class="text-xs text-gray-500">035420</div>
+                                </button>
+                                <button class="stock-quick-select p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <div class="font-semibold text-sm">카카오</div>
+                                    <div class="text-xs text-gray-500">035720</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Stock Info -->
+                <div id="selectedStockCard" class="banking-card hidden">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-info-circle text-blue-600"></i>
+                        선택된 종목 정보
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="banking-stat-card">
+                            <div class="banking-stat-value" id="currentPrice">-</div>
+                            <div class="banking-stat-label">현재가</div>
+                        </div>
+                        <div class="banking-stat-card">
+                            <div class="banking-stat-value" id="priceChange">-</div>
+                            <div class="banking-stat-label">전일대비</div>
+                        </div>
+                        <div class="banking-stat-card">
+                            <div class="banking-stat-value" id="volume">-</div>
+                            <div class="banking-stat-label">거래량</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Settings -->
+                <div class="banking-card">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-cogs text-green-600"></i>
+                        예측 설정
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="banking-form-group">
+                            <label class="banking-form-label">예측 기간</label>
+                            <select class="banking-form-input" id="predictionPeriod">
+                                <option value="1">1일 후</option>
+                                <option value="3">3일 후</option>
+                                <option value="7" selected>1주일 후</option>
+                                <option value="14">2주일 후</option>
+                                <option value="30">1개월 후</option>
+                            </select>
+                        </div>
+                        
+                        <div class="banking-form-group">
+                            <label class="banking-form-label">AI 모델</label>
+                            <select class="banking-form-input" id="aiModel">
+                                <option value="lstm">LSTM (추천)</option>
+                                <option value="transformer">Transformer</option>
+                                <option value="ensemble">앙상블 모델</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button id="generatePrediction" class="banking-btn banking-btn-primary w-full text-lg py-4">
+                            <i class="fas fa-magic mr-2"></i>
+                            AI 예측 생성하기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prediction Results -->
+                <div id="predictionResults" class="banking-card hidden">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-chart-line text-purple-600"></i>
+                        예측 결과
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Price Prediction -->
+                        <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-gray-700 dark:to-gray-600 rounded-lg p-6">
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">예측 가격</div>
+                                <div class="text-3xl font-bold text-purple-600" id="predictedPrice">-</div>
+                                <div class="text-lg font-semibold mt-2" id="predictedChange">-</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Confidence Metrics -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">신뢰도</div>
+                                <div class="banking-progress mb-2">
+                                    <div class="banking-progress-bar" id="confidenceBar" style="width: 0%"></div>
+                                </div>
+                                <div class="font-semibold" id="confidenceScore">-</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">상승 확률</div>
+                                <div class="banking-progress mb-2">
+                                    <div class="banking-progress-bar bg-green-500" id="upProbabilityBar" style="width: 0%"></div>
+                                </div>
+                                <div class="font-semibold text-green-600" id="upProbability">-</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">하락 확률</div>
+                                <div class="banking-progress mb-2">
+                                    <div class="banking-progress-bar bg-red-500" id="downProbabilityBar" style="width: 0%"></div>
+                                </div>
+                                <div class="font-semibold text-red-600" id="downProbability">-</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Save Prediction -->
+                        <div class="flex gap-4">
+                            <button class="banking-btn banking-btn-success flex-1">
+                                <i class="fas fa-save mr-2"></i>
+                                예측 저장
+                            </button>
+                            <button class="banking-btn banking-btn-secondary flex-1">
+                                <i class="fas fa-share mr-2"></i>
+                                공유하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Sidebar -->
+            <div class="space-y-6">
+                <!-- My Predictions -->
+                <div class="banking-card">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-history text-orange-600"></i>
+                        내 예측 기록
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="banking-list-item p-3">
+                            <div class="banking-list-item-icon text-sm">
+                                📈
+                            </div>
+                            <div class="banking-list-item-content">
+                                <div class="banking-list-item-title text-sm">삼성전자</div>
+                                <div class="banking-list-item-subtitle text-xs">1일 전 예측</div>
+                            </div>
+                            <div class="banking-list-item-value positive text-sm">+5.2%</div>
+                        </div>
+                        
+                        <div class="banking-list-item p-3">
+                            <div class="banking-list-item-icon text-sm">
+                                📉
+                            </div>
+                            <div class="banking-list-item-content">
+                                <div class="banking-list-item-title text-sm">NAVER</div>
+                                <div class="banking-list-item-subtitle text-xs">3일 전 예측</div>
+                            </div>
+                            <div class="banking-list-item-value negative text-sm">-2.1%</div>
+                        </div>
+                        
+                        <div class="banking-list-item p-3">
+                            <div class="banking-list-item-icon text-sm">
+                                📈
+                            </div>
+                            <div class="banking-list-item-content">
+                                <div class="banking-list-item-title text-sm">카카오</div>
+                                <div class="banking-list-item-subtitle text-xs">1주일 전 예측</div>
+                            </div>
+                            <div class="banking-list-item-value positive text-sm">+8.7%</div>
+                        </div>
+                    </div>
+                    
+                    <a href="my-predictions.html" class="banking-btn banking-btn-secondary w-full mt-4">
+                        전체 보기
+                    </a>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="banking-card">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-brain text-purple-600"></i>
+                        AI 인사이트
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                                <div>
+                                    <div class="font-semibold text-sm text-blue-800 dark:text-blue-200">시장 동향</div>
+                                    <div class="text-sm text-blue-700 dark:text-blue-300">반도체 섹터가 강세를 보이고 있습니다.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-trending-up text-green-600 mt-1"></i>
+                                <div>
+                                    <div class="font-semibold text-sm text-green-800 dark:text-green-200">기술적 분석</div>
+                                    <div class="text-sm text-green-700 dark:text-green-300">골든크로스 패턴이 형성되었습니다.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
+                                <div>
+                                    <div class="font-semibold text-sm text-yellow-800 dark:text-yellow-200">리스크 알림</div>
+                                    <div class="text-sm text-yellow-700 dark:text-yellow-300">변동성이 높아지고 있습니다.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Accuracy -->
+                <div class="banking-card">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-target text-red-600"></i>
+                        예측 정확도
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>전체 정확도</span>
+                                <span class="font-semibold">94.2%</span>
+                            </div>
+                            <div class="banking-progress">
+                                <div class="banking-progress-bar" style="width: 94.2%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>단기 예측 (1-3일)</span>
+                                <span class="font-semibold">96.8%</span>
+                            </div>
+                            <div class="banking-progress">
+                                <div class="banking-progress-bar bg-green-500" style="width: 96.8%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>중기 예측 (1주일)</span>
+                                <span class="font-semibold">88.5%</span>
+                            </div>
+                            <div class="banking-progress">
+                                <div class="banking-progress-bar bg-yellow-500" style="width: 88.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="banking-bottom-nav md:hidden">
+        <a href="index-banking.html" class="banking-bottom-nav-item">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </a>
+        <a href="charts.html" class="banking-bottom-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>차트</span>
+        </a>
+        <a href="#" class="banking-bottom-nav-item active">
+            <i class="fas fa-crystal-ball"></i>
+            <span>예측</span>
+        </a>
+        <a href="ranking.html" class="banking-bottom-nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>랭킹</span>
+        </a>
+        <a href="subscription.html" class="banking-bottom-nav-item">
+            <i class="fas fa-crown"></i>
+            <span>구독</span>
+        </a>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="banking-card text-center">
+            <div class="banking-skeleton w-16 h-16 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-lg font-semibold mb-2">AI가 예측을 생성하고 있습니다</h3>
+            <p class="text-gray-600 dark:text-gray-400">잠시만 기다려주세요...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Sample stock data
+        const sampleStocks = [
+            { code: '005930', name: '삼성전자', price: 75000, change: 1.2 },
+            { code: '000660', name: 'SK하이닉스', price: 128000, change: -0.8 },
+            { code: '035420', name: 'NAVER', price: 185000, change: 2.1 },
+            { code: '035720', name: '카카오', price: 52000, change: -1.5 },
+            { code: '005380', name: '현대차', price: 245000, change: 0.9 }
+        ];
+
+        let selectedStock = null;
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        
+        darkModeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('darkMode', html.classList.contains('dark'));
+        });
+        
+        // Load saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            html.classList.add('dark');
+        }
+
+        // Stock search functionality
+        const stockSearch = document.getElementById('stockSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        stockSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            const filtered = sampleStocks.filter(stock => 
+                stock.name.toLowerCase().includes(query) || 
+                stock.code.includes(query)
+            );
+
+            if (filtered.length > 0) {
+                searchResults.innerHTML = filtered.map(stock => `
+                    <div class="banking-list-item cursor-pointer" onclick="selectStock('${stock.code}')">
+                        <div class="banking-list-item-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="banking-list-item-content">
+                            <div class="banking-list-item-title">${stock.name}</div>
+                            <div class="banking-list-item-subtitle">${stock.code}</div>
+                        </div>
+                        <div class="banking-list-item-value ${stock.change >= 0 ? 'positive' : 'negative'}">
+                            ${stock.change >= 0 ? '+' : ''}${stock.change}%
+                        </div>
+                    </div>
+                `).join('');
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Quick select stocks
+        document.querySelectorAll('.stock-quick-select').forEach(button => {
+            button.addEventListener('click', () => {
+                const stockCode = button.querySelector('.text-xs').textContent;
+                selectStock(stockCode);
+            });
+        });
+
+        // Select stock function
+        function selectStock(code) {
+            selectedStock = sampleStocks.find(stock => stock.code === code);
+            if (selectedStock) {
+                stockSearch.value = `${selectedStock.name} (${selectedStock.code})`;
+                searchResults.classList.add('hidden');
+                
+                // Update selected stock info
+                document.getElementById('selectedStockCard').classList.remove('hidden');
+                document.getElementById('currentPrice').textContent = selectedStock.price.toLocaleString() + '원';
+                document.getElementById('priceChange').textContent = (selectedStock.change >= 0 ? '+' : '') + selectedStock.change + '%';
+                document.getElementById('priceChange').className = `banking-stat-value ${selectedStock.change >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('volume').textContent = (Math.random() * 1000000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        }
+
+        // Generate prediction
+        document.getElementById('generatePrediction').addEventListener('click', () => {
+            if (!selectedStock) {
+                showToast('먼저 종목을 선택해주세요.', 'warning');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+
+            // Simulate AI prediction generation
+            setTimeout(() => {
+                generatePredictionResult();
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('predictionResults').classList.remove('hidden');
+                
+                // Scroll to results
+                document.getElementById('predictionResults').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            }, 3000);
+        });
+
+        function generatePredictionResult() {
+            const period = document.getElementById('predictionPeriod').value;
+            const currentPrice = selectedStock.price;
+            
+            // Generate random but realistic prediction
+            const changePercent = (Math.random() - 0.5) * 20; // -10% to +10%
+            const predictedPrice = Math.round(currentPrice * (1 + changePercent / 100));
+            const confidence = Math.random() * 20 + 80; // 80-100%
+            const upProbability = changePercent > 0 ? Math.random() * 30 + 60 : Math.random() * 40 + 20;
+            const downProbability = 100 - upProbability;
+
+            // Update UI
+            document.getElementById('predictedPrice').textContent = predictedPrice.toLocaleString() + '원';
+            document.getElementById('predictedChange').textContent = 
+                (changePercent >= 0 ? '+' : '') + changePercent.toFixed(1) + '%';
+            document.getElementById('predictedChange').className = 
+                `text-lg font-semibold mt-2 ${changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`;
+
+            // Update progress bars
+            document.getElementById('confidenceBar').style.width = confidence + '%';
+            document.getElementById('confidenceScore').textContent = confidence.toFixed(1) + '%';
+            
+            document.getElementById('upProbabilityBar').style.width = upProbability + '%';
+            document.getElementById('upProbability').textContent = upProbability.toFixed(1) + '%';
+            
+            document.getElementById('downProbabilityBar').style.width = downProbability + '%';
+            document.getElementById('downProbability').textContent = downProbability.toFixed(1) + '%';
+
+            showToast('예측이 성공적으로 생성되었습니다!', 'success');
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `banking-toast banking-toast-${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!stockSearch.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

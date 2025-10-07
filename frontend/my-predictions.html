@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" class="overflow-x-hidden max-w-full">
+<html lang="ko" class="bg-gray-50 overflow-x-hidden max-w-full">
 
 <head>
     <meta charset="UTF-8">
@@ -8,25 +8,29 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-    <!-- Tailwind CSS with TradingView Color Scheme -->
+    <!-- Banking UI CSS Framework -->
+    <link rel="stylesheet" href="css/banking-ui.css">
+    
+    <!-- Tailwind CSS with Banking Color Scheme -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'tv': {
-                            'darker': '#0d1421',
-                            'dark': '#131722',
-                            'card': '#1e222d',
-                            'light': '#2a2e39',
-                            'border': '#363a45',
-                            'blue': '#2962ff',
-                            'green': '#26a69a',
-                            'red': '#ef5350',
-                            'text': '#d1d4dc',
-                            'text-secondary': '#868993'
-                        }
+                        // Banking UI colors
+                        'primary': '#2563eb',
+                        'primary-dark': '#1d4ed8',
+                        'secondary': '#64748b',
+                        'accent': '#3b82f6',
+                        'success': '#10b981',
+                        'warning': '#f59e0b',
+                        'error': '#ef4444',
+                        'surface': '#ffffff',
+                        'background': '#f8fafc',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        'border': '#e2e8f0',
                     },
                     fontFamily: {
                         'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
@@ -83,16 +87,16 @@
     </style>
 </head>
 
-<body class="bg-tv-darker text-tv-text font-sans overflow-x-hidden max-w-full relative">
+<body class="bg-gray-50 text-gray-900 font-sans overflow-x-hidden max-w-full relative">
     <!-- Navigation Bar -->
-    <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
                     <a href="home.html"
-                        class="flex items-center space-x-2 text-tv-text hover:text-tv-blue transition-colors">
-                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
+                        class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 transition-colors">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                             <i class="fas fa-chart-line text-white text-sm"></i>
                         </div>
                         <span class="text-xl font-bold">StockChart</span>
@@ -102,28 +106,28 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-1">
                     <a href="home.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">홈</a>
                     <a href="charts.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">차트
                         보드</a>
                     <a href="prediction.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">예측하기</a>
                     <a href="my-predictions.html"
-                        class="px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">내
+                        class="px-4 py-2 rounded-lg text-white bg-blue-600 border border-blue-600">내
                         예측</a>
                     <a href="ranking.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">랭킹</a>
                     <a href="events.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">이벤트</a>
                     <a href="subscription.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">구독</a>
+                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">구독</a>
                     <button onclick="showLoginModal()"
-                        class="ml-4 bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
+                        class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
                 </div>
 
                 <!-- Mobile menu button -->
                 <div class="lg:hidden">
-                    <button onclick="toggleMobileMenu()" class="text-tv-text hover:text-tv-blue p-2">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-blue-600 p-2">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -139,10 +143,10 @@
                 onclick="toggleMobileMenu()"></div>
             <!-- Menu Sidebar -->
             <div id="mobile-menu-content"
-                class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
+                class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
                 style="z-index: 999999 !important;">
                 <!-- Menu Header -->
-                <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200">
                     <div class="flex items-center space-x-3">
                         <div
                             class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">

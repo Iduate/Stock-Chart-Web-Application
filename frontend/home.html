@@ -8,34 +8,21 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/banking-ui.css">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'tv-dark': '#131722',
-                        'tv-darker': '#0c0e15',
-                        'tv-light': '#2a2e39',
-                        'tv-blue': '#2962FF',
-                        'tv-green': '#26a69a',
-                        'tv-red': '#ef5350',
-                        'tv-text-primary': '#d1d4dc',
-                        'tv-text-secondary': '#787b86',
-                        'tv-text-tertiary': '#5d606b',
-                        'tv-bg-primary': '#131722',
-                        'tv-bg-secondary': '#1e222d',
-                        'tv-bg-tertiary': '#2a2e39',
-                        'tv-border': '#2a2e39',
-                        'tv-border-light': '#363a45',
-                        // BOSS APPROVED: High contrast fluorescent colors
-                        'neon-green': '#00FF00',
-                        'electric-blue': '#0033FF',
-                        'hot-pink': '#FF0066',
-                        'bright-yellow': '#FFFF00',
-                        'neon-orange': '#FF3300',
-                        'electric-purple': '#6600FF',
-                        'neon-cyan': '#00FFCC',
-                        'laser-red': '#FF0033',
+                        // Modern banking colors
+                        'primary': '#2563eb',
+                        'secondary': '#64748b',
+                        'accent': '#f59e0b',
+                        'success': '#10b981',
+                        'warning': '#f59e0b',
+                        'error': '#ef4444',
+                        'surface': '#f8fafc',
+                        'on-surface': '#1e293b',
                     },
                     fontFamily: {
                         'inter': ['Inter', 'sans-serif'],
@@ -340,16 +327,18 @@
     </style>
 </head>
 
-<body class="bg-tv-dark text-tv-text-primary font-inter overflow-x-hidden max-w-full min-h-screen box-border">
+<body class="bg-gray-50 text-gray-900 font-inter overflow-x-hidden max-w-full min-h-screen box-border">
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-tv-dark border-b border-tv-border backdrop-blur-sm overflow-x-hidden">
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-200 backdrop-blur-sm overflow-x-hidden shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full overflow-x-hidden">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="home.html"
-                        class="flex items-center space-x-2 text-tv-text-primary hover:text-white transition-colors">
-                        <i class="fas fa-chart-line text-tv-blue text-xl"></i>
+                        class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 transition-colors">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-sm"></i>
+                        </div>
                         <span class="text-xl font-bold">StockChart</span>
                     </a>
                 </div>
@@ -358,37 +347,37 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-1">
                         <a href="home.html"
-                            class="bg-tv-blue text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1">
+                            class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1">
                             <i class="fas fa-home"></i>
                             <span>홈</span>
                         </a>
                         <a href="charts.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-chart-line"></i>
                             <span>차트 보드</span>
                         </a>
                         <a href="prediction.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-lightbulb"></i>
                             <span>예측</span>
                         </a>
                         <a href="my-predictions.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-user-chart"></i>
                             <span>나의 예측</span>
                         </a>
                         <a href="ranking.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-trophy"></i>
                             <span>랭킹</span>
                         </a>
                         <a href="events.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-calendar"></i>
                             <span>이벤트</span>
                         </a>
                         <a href="subscription.html"
-                            class="text-tv-text-secondary hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
+                            class="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-1 transition-colors">
                             <i class="fas fa-crown"></i>
                             <span>구독</span>
                         </a>
@@ -398,7 +387,7 @@
                 <!-- CTA Button -->
                 <div class="hidden md:block">
                     <button onclick="showLoginModal()"
-                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-all duration-200 transform hover:scale-105">
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition-all duration-200 transform hover:scale-105">
                         <i class="fas fa-rocket"></i>
                         <span>지금 시작</span>
                     </button>
@@ -407,7 +396,7 @@
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button onclick="toggleMobileMenu()"
-                        class="relative z-[99999] text-tv-text-secondary hover:text-white p-2 rounded-lg transition-all duration-300 hover:bg-tv-light"
+                        class="relative z-[99999] text-gray-600 hover:text-gray-900 p-2 rounded-lg transition-all duration-300 hover:bg-gray-100"
                         id="mobileMenuButton" aria-label="메뉴 열기">
                         <div class="w-6 h-6 flex flex-col justify-center items-center">
                             <span
@@ -436,18 +425,18 @@
 
         <!-- Menu Sidebar -->
         <div id="mobile-menu-content"
-            class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
+            class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
             style="z-index: 999999 !important;">
             <!-- Menu Header -->
-            <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <div class="flex items-center space-x-3">
                     <div
-                        class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
+                        class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-chart-line text-white text-sm"></i>
                     </div>
-                    <span class="text-white font-bold text-xl">StockChart</span>
+                    <span class="text-gray-900 font-bold text-xl">StockChart</span>
                 </div>
-                <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
+                <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-gray-600 transition-colors p-2">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -455,40 +444,40 @@
             <!-- Menu Items -->
             <div class="p-6 space-y-4">
                 <a href="charts.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+                    <i class="fas fa-chart-area text-blue-600 group-hover:text-blue-700 transition-colors"></i>
+                    <span class="text-gray-700 group-hover:text-gray-900 transition-colors">차트 분석</span>
                 </a>
                 <a href="prediction.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-brain text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">AI 예측</span>
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+                    <i class="fas fa-brain text-blue-600 group-hover:text-blue-700 transition-colors"></i>
+                    <span class="text-gray-700 group-hover:text-gray-900 transition-colors">AI 예측</span>
                 </a>
                 <a href="ranking.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+                    <i class="fas fa-trophy text-blue-600 group-hover:text-blue-700 transition-colors"></i>
+                    <span class="text-gray-700 group-hover:text-gray-900 transition-colors">랭킹</span>
                 </a>
                 <a href="events.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+                    <i class="fas fa-calendar-alt text-blue-600 group-hover:text-blue-700 transition-colors"></i>
+                    <span class="text-gray-700 group-hover:text-gray-900 transition-colors">이벤트</span>
                 </a>
                 <a href="subscription.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-crown text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">구독</span>
+                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+                    <i class="fas fa-crown text-blue-600 group-hover:text-blue-700 transition-colors"></i>
+                    <span class="text-gray-700 group-hover:text-gray-900 transition-colors">구독</span>
                 </a>
             </div>
 
             <!-- Bottom Section -->
             <div class="absolute bottom-6 left-6 right-6">
                 <div
-                    class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
-                    <div class="text-white font-semibold mb-2">프리미엄 구독</div>
-                    <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
+                    class="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                    <div class="text-gray-900 font-semibold mb-2">프리미엄 구독</div>
+                    <div class="text-gray-600 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
                     <button
-                        class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
+                        class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
                         무료로 시작하기
                     </button>
                 </div>
@@ -498,14 +487,12 @@
 
     <!-- Hero Section -->
     <section
-        class="relative bg-gradient-to-br from-tv-dark via-tv-darker to-tv-dark overflow-hidden py-8 lg:py-12 w-full max-w-full overflow-x-hidden">
+        class="relative bg-gradient-to-br from-blue-600 via-purple-700 to-blue-800 overflow-hidden py-8 lg:py-12 w-full max-w-full overflow-x-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0">
-            <div
-                class="absolute top-0 right-0 w-96 h-96 bg-tv-blue opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2">
             </div>
-            <div
-                class="absolute bottom-0 left-0 w-96 h-96 bg-tv-purple opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2">
+            <div class="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2">
             </div>
         </div>
 
@@ -514,89 +501,85 @@
                 <!-- Left Content -->
                 <div class="text-center lg:text-left animate-fade-in">
                     <!-- Trust Badge -->
-                    <div
-                        class="inline-flex items-center bg-tv-light border border-tv-border rounded-full px-4 py-2 mb-4">
-                        <i class="fas fa-shield-check text-tv-green mr-2"></i>
-                        <span class="text-sm font-medium text-tv-text-secondary">신뢰할 수 있는 AI 기반 예측 플랫폼</span>
-                        <span
-                            class="ml-3 bg-tv-green text-white text-xs px-2 py-1 rounded-full font-semibold">검증됨</span>
+                    <div class="inline-flex items-center bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-4 backdrop-blur-sm">
+                        <i class="fas fa-shield-check text-green-400 mr-2"></i>
+                        <span class="text-sm font-medium text-white/90">신뢰할 수 있는 AI 기반 예측 플랫폼</span>
+                        <span class="ml-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">검증됨</span>
                     </div>
 
                     <!-- Main Heading -->
-                    <h1 class="text-3xl lg:text-5xl font-bold leading-tight mb-4">
+                    <h1 class="text-3xl lg:text-5xl font-bold leading-tight mb-4 text-white">
                         전세계 금융 전문가와 함께<br>
-                        <span class="bg-gradient-to-r from-tv-blue to-tv-purple bg-clip-text text-transparent">미래 시장을
-                            예측하세요</span>
+                        <span class="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">미래 시장을 예측하세요</span>
                     </h1>
 
                     <!-- Description -->
                     <div class="flex items-start space-x-3 mb-4">
-                        <i class="fas fa-chart-line text-tv-green text-lg mt-1 flex-shrink-0"></i>
-                        <p class="text-base text-tv-text-secondary leading-relaxed">
+                        <i class="fas fa-chart-line text-green-400 text-lg mt-1 flex-shrink-0"></i>
+                        <p class="text-base text-white/80 leading-relaxed">
                             암호화폐, 한국/미국/일본 주식 등 다양한 금융상품의 미래 가격을 예측하고
                             다른 사용자들과 예측 결과를 공유할 수 있는 전문 금융 플랫폼입니다.
                         </p>
                     </div>
 
                     <!-- Trust Indicators -->
-                    <div
-                        class="flex items-center justify-center lg:justify-start space-x-6 py-4 border-t border-b border-tv-border mb-8">
+                    <div class="flex items-center justify-center lg:justify-start space-x-6 py-4 border-t border-b border-white/20 mb-8">
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-lock text-tv-green"></i>
-                            <span class="text-sm text-tv-text-secondary">엔터프라이즈급 보안</span>
+                            <i class="fas fa-lock text-green-400"></i>
+                            <span class="text-sm text-white/80">엔터프라이즈급 보안</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-bolt text-tv-yellow"></i>
-                            <span class="text-sm text-tv-text-secondary">실시간 데이터</span>
+                            <i class="fas fa-bolt text-yellow-400"></i>
+                            <span class="text-sm text-white/80">실시간 데이터</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-users text-tv-blue"></i>
-                            <span class="text-sm text-tv-text-secondary">전문가 신뢰 분석</span>
+                            <i class="fas fa-users text-blue-300"></i>
+                            <span class="text-sm text-white/80">전문가 신뢰 분석</span>
                         </div>
                     </div>
 
                     <!-- Stats -->
                     <div class="flex justify-center lg:justify-start space-x-8 mb-8">
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-tv-blue mb-1">10K+</div>
-                            <div class="text-sm text-tv-text-secondary">활성 사용자</div>
+                            <div class="text-3xl font-bold text-white mb-1">10K+</div>
+                            <div class="text-sm text-white/70">활성 사용자</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-tv-green mb-1">95%</div>
-                            <div class="text-sm text-tv-text-secondary">예측 정확도</div>
+                            <div class="text-3xl font-bold text-green-400 mb-1">95%</div>
+                            <div class="text-sm text-white/70">예측 정확도</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-tv-yellow mb-1">500+</div>
-                            <div class="text-sm text-tv-text-secondary">지원 종목</div>
+                            <div class="text-3xl font-bold text-yellow-400 mb-1">500+</div>
+                            <div class="text-sm text-white/70">지원 종목</div>
                         </div>
                     </div>
 
                     <!-- CTA Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
                         <button onclick="window.location.href='prediction.html'"
-                            class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
+                            class="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
                             <span>무료로 시작하기</span>
                             <i class="fas fa-arrow-right"></i>
                         </button>
                         <button onclick="window.location.href='charts.html'"
-                            class="bg-tv-light hover:bg-tv-border text-tv-text-primary border border-tv-border px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105">
+                            class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all duration-200 transform hover:scale-105 backdrop-blur-sm">
                             <i class="fas fa-chart-line"></i>
                             <span>라이브 차트 보기</span>
                         </button>
                     </div>
 
                     <!-- Features -->
-                    <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-tv-text-secondary">
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-white/80">
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-shield-alt text-tv-green"></i>
+                            <i class="fas fa-shield-alt text-green-400"></i>
                             <span>안전한 거래</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-bolt text-tv-yellow"></i>
+                            <i class="fas fa-bolt text-yellow-400"></i>
                             <span>실시간 데이터</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <i class="fas fa-users text-tv-blue"></i>
+                            <i class="fas fa-users text-blue-300"></i>
                             <span>커뮤니티 인사이트</span>
                         </div>
                     </div>
@@ -605,58 +588,55 @@
                 <!-- Right Content - Chart -->
                 <div class="flex justify-center animate-slide-up">
                     <div class="relative w-full max-w-2xl">
-                        <div class="bg-tv-darker border border-tv-border rounded-2xl overflow-hidden shadow-2xl">
+                        <div class="banking-card bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl">
                             <!-- Chart Header -->
-                            <div class="bg-tv-light px-6 py-4 border-b border-tv-border">
+                            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-3 h-3 bg-tv-red rounded-full"></div>
-                                        <div class="w-3 h-3 bg-tv-yellow rounded-full"></div>
-                                        <div class="w-3 h-3 bg-tv-green rounded-full"></div>
+                                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                                     </div>
-                                    <div class="text-sm text-tv-text-secondary">실시간 차트</div>
+                                    <div class="text-sm text-gray-600">실시간 차트</div>
                                 </div>
                             </div>
 
                             <!-- Chart Content -->
-                            <div class="relative h-[380px] bg-tv-darker">
+                            <div class="relative h-[380px] bg-white">
                                 <div id="homeHeroChart" class="w-full h-[380px]"
-                                    style="background: #131722; min-height: 380px; position: relative;"></div>
+                                    style="background: white; min-height: 380px; position: relative;"></div>
 
-                                <!-- 🔥 DUAL-LINE LEGEND FOR BOSS 🔥 -->
-                                <div
-                                    class="absolute top-2 left-2 bg-tv-dark bg-opacity-95 backdrop-blur-sm border border-tv-border rounded-lg p-3 z-20">
-                                    <h4 class="text-xs font-bold text-tv-text-primary mb-2">📊 듀얼 라인 차트</h4>
+                                <!-- Dual-Line Legend -->
+                                <div class="absolute top-2 left-2 bg-white bg-opacity-95 backdrop-blur-sm border border-gray-200 rounded-lg p-3 z-20 shadow-sm">
+                                    <h4 class="text-xs font-bold text-gray-900 mb-2">📊 듀얼 라인 차트</h4>
                                     <div class="space-y-1 text-xs">
                                         <div class="flex items-center space-x-2">
-                                            <div class="w-3 h-2 bg-tv-green rounded"></div>
-                                            <span class="text-tv-text-secondary">실제 데이터 (청록색)</span>
+                                            <div class="w-3 h-2 bg-blue-600 rounded"></div>
+                                            <span class="text-gray-600">실제 데이터 (파란색)</span>
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <div class="w-3 h-2 rounded"
-                                                style="background: #00FF88; box-shadow: 0 0 8px #00FF88;"></div>
-                                            <span class="text-tv-text-secondary">회원 예측 (형광 녹색)</span>
+                                            <div class="w-3 h-2 rounded bg-green-500"></div>
+                                            <span class="text-gray-600">회원 예측 (녹색)</span>
                                         </div>
-                                        <div class="text-xs text-tv-green font-bold mt-1">
+                                        <div class="text-xs text-green-600 font-bold mt-1">
                                             ⚡ 정확도: 90%
                                         </div>
-                                        <div class="text-xs text-tv-blue mt-1">
+                                        <div class="text-xs text-blue-600 mt-1">
                                             🎯 실제 데이터와 유사한 위치
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Chart Overlay Stats -->
-                                <div
-                                    class="absolute top-4 right-4 bg-tv-dark bg-opacity-90 backdrop-blur-sm border border-tv-border rounded-lg p-4">
+                                <div class="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm border border-gray-200 rounded-lg p-4 shadow-sm">
                                     <div class="space-y-2">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-tv-text-secondary">수익률</span>
-                                            <span class="text-sm font-semibold text-tv-green">+12.5%</span>
+                                            <span class="text-xs text-gray-600">수익률</span>
+                                            <span class="text-sm font-semibold text-green-600">+12.5%</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-tv-text-secondary">활성 예측</span>
-                                            <span class="text-sm font-semibold text-tv-text-primary">247</span>
+                                            <span class="text-xs text-gray-600">활성 예측</span>
+                                            <span class="text-sm font-semibold text-gray-900">247</span>
                                         </div>
                                     </div>
                                 </div>
@@ -668,49 +648,40 @@
     </section>
 
     <!-- Main Chart Section -->
-    <section class="py-8 bg-tv-darker w-full max-w-full overflow-x-hidden">
+    <section class="py-8 bg-white w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full overflow-x-hidden">
             <!-- Section Header -->
             <div class="text-center mb-6">
-                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
-                <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">실시간 시장 분석</h2>
+                <p class="text-base text-gray-600 max-w-2xl mx-auto">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
 
             <!-- Chart Container -->
-            <div class="bg-tv-dark border border-tv-border rounded-2xl overflow-hidden shadow-xl">
+            <div class="banking-card bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xl">
                 <!-- Chart Header with Controls -->
-                <div class="bg-tv-light px-6 py-4 border-b border-tv-border">
-                    <div
-                        class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
                         <!-- Timeframe Buttons -->
                         <div class="flex flex-wrap gap-2">
-                            <button class="bg-tv-blue text-white px-4 py-2 rounded-lg text-sm font-medium">1D</button>
-                            <button
-                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1W</button>
-                            <button
-                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1M</button>
-                            <button
-                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">3M</button>
-                            <button
-                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">1Y</button>
-                            <button
-                                class="bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">ALL</button>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">1D</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">1W</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">1M</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">3M</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">1Y</button>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">ALL</button>
                         </div>
 
                         <!-- Chart Tools -->
                         <div class="flex gap-2">
-                            <button
-                                class="flex items-center space-x-2 bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <button class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-chart-line"></i>
                                 <span>지표</span>
                             </button>
-                            <button
-                                class="flex items-center space-x-2 bg-tv-light hover:bg-tv-border text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <button class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-shapes"></i>
                                 <span>도구</span>
                             </button>
-                            <button
-                                class="flex items-center space-x-2 bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <button class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                 <i class="fas fa-sync-alt"></i>
                                 <span>새로고침</span>
                             </button>
@@ -719,70 +690,69 @@
                 </div>
 
                 <!-- Main Chart -->
-                <div class="relative h-96 lg:h-[500px] bg-tv-dark">
+                <div class="relative h-96 lg:h-[500px] bg-white">
                     <div id="featuredChart" class="w-full h-full"></div>
                 </div>
             </div>
 
             <!-- Chart Guide for New Users -->
-            <div class="mt-2 bg-tv-card border border-tv-border rounded-xl p-6">
+            <div class="mt-2 banking-card border border-gray-200 rounded-xl p-6">
                 <div class="text-center mb-8">
-                    <h3 class="text-xl font-bold text-tv-text-primary mb-2">차트 읽는 방법</h3>
-                    <p class="text-tv-text-secondary">신규 방문자를 위한 가이드</p>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">차트 읽는 방법</h3>
+                    <p class="text-gray-600">신규 방문자를 위한 가이드</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Actual Data Line -->
                     <div class="flex items-start space-x-4">
-                        <div class="w-6 h-1 bg-gradient-to-r from-tv-blue to-blue-400 rounded mt-2"></div>
+                        <div class="w-6 h-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded mt-2"></div>
                         <div>
-                            <h4 class="font-semibold text-tv-text-primary mb-2">실제 데이터 라인</h4>
-                            <p class="text-sm text-tv-text-secondary">파란색 실선으로 표시되는 실제 시장 데이터</p>
+                            <h4 class="font-semibold text-gray-900 mb-2">실제 데이터 라인</h4>
+                            <p class="text-sm text-gray-600">파란색 실선으로 표시되는 실제 시장 데이터</p>
                         </div>
                     </div>
 
                     <!-- Prediction Line -->
                     <div class="flex items-start space-x-4">
-                        <div
-                            class="w-6 h-1 bg-gradient-to-r from-orange-500 to-orange-400 rounded mt-2 border border-dashed border-white/30">
+                        <div class="w-6 h-1 bg-gradient-to-r from-orange-500 to-orange-400 rounded mt-2 border border-dashed border-gray-300">
                         </div>
                         <div>
-                            <h4 class="font-semibold text-tv-text-primary mb-2">회원 예측 라인</h4>
-                            <p class="text-sm text-tv-text-secondary">주황색 점선으로 표시되는 사용자 예측 데이터</p>
+                            <h4 class="font-semibold text-gray-900 mb-2">회원 예측 라인</h4>
+                            <p class="text-sm text-gray-600">주황색 점선으로 표시되는 사용자 예측 데이터</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Accuracy Display -->
-                <div class="mt-2 text-center p-4 bg-tv-green/10 border border-tv-green/20 rounded-lg">
-                    <div class="text-lg font-bold text-tv-green mb-1">
+                <div class="mt-2 text-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div class="text-lg font-bold text-green-600 mb-1">
                         <i class="fas fa-trophy mr-2"></i>회원 예측 정확도 89.5%
                     </div>
-                    <p class="text-sm text-tv-text-secondary">실시간 업데이트 • 신규 방문자도 쉽게 이해</p>
+                    <p class="text-sm text-gray-600">실시간 업데이트 • 신규 방문자도 쉽게 이해</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Market Data Section -->
-    <section class="py-8 bg-tv-dark w-full max-w-full overflow-x-hidden">
+    <section class="py-8 bg-gray-50 w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-6">
-                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">실시간 시장 현황</h2>
-                <p class="text-base text-tv-text-secondary max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">실시간 시장 현황</h2>
+                <p class="text-base text-gray-600 max-w-2xl mx-auto">전 세계 주요 지수와 암호화폐의 실시간 가격을 확인하세요</p>
             </div>
 
             <!-- Market Tabs -->
             <div class="flex justify-center mb-6">
-                <div class="bg-tv-light rounded-xl p-1 inline-flex">
-                    <button class="bg-tv-blue text-white px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                <div class="bg-white rounded-xl p-1 inline-flex shadow-sm border border-gray-200">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="stock-tab">한국 주식</button>
                     <button
-                        class="text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                        class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="crypto-tab">암호화폐</button>
                     <button
-                        class="text-tv-text-secondary hover:text-tv-text-primary px-4 py-2 rounded-lg font-medium transition-all text-sm"
+                        class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg font-medium transition-all text-sm"
                         id="global-tab">글로벌</button>
                 </div>
             </div>
@@ -790,108 +760,102 @@
             <!-- Stock Market Cards -->
             <div id="stock-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Samsung Electronics -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-microchip text-tv-blue"></i>
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-microchip text-blue-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">삼성전자</h3>
-                                <p class="text-sm text-tv-text-secondary">005930</p>
+                                <h3 class="font-semibold text-gray-900">삼성전자</h3>
+                                <p class="text-sm text-gray-600">005930</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">₩72,600</div>
-                            <div class="flex items-center space-x-1 text-tv-green">
+                            <div class="text-2xl font-bold text-gray-900">₩72,600</div>
+                            <div class="flex items-center space-x-1 text-green-600">
                                 <i class="fas fa-caret-up"></i>
                                 <span class="text-sm font-medium">+2.1%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
 
                 <!-- SK Hynix -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-memory text-tv-green"></i>
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-memory text-green-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">SK하이닉스</h3>
-                                <p class="text-sm text-tv-text-secondary">000660</p>
+                                <h3 class="font-semibold text-gray-900">SK하이닉스</h3>
+                                <p class="text-sm text-gray-600">000660</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">₩154,500</div>
-                            <div class="flex items-center space-x-1 text-tv-green">
+                            <div class="text-2xl font-bold text-gray-900">₩154,500</div>
+                            <div class="flex items-center space-x-1 text-green-600">
                                 <i class="fas fa-caret-up"></i>
                                 <span class="text-sm font-medium">+1.8%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
 
                 <!-- Apple -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 bg-gray-400 bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fab fa-apple text-gray-400"></i>
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-apple text-gray-700"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">Apple Inc</h3>
-                                <p class="text-sm text-tv-text-secondary">AAPL</p>
+                                <h3 class="font-semibold text-gray-900">Apple Inc</h3>
+                                <p class="text-sm text-gray-600">AAPL</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">$207.50</div>
-                            <div class="flex items-center space-x-1 text-tv-green">
+                            <div class="text-2xl font-bold text-gray-900">$207.50</div>
+                            <div class="flex items-center space-x-1 text-green-600">
                                 <i class="fas fa-caret-up"></i>
                                 <span class="text-sm font-medium">+0.8%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
 
                 <!-- Tesla -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-tv-red bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fab fa-tesla text-tv-red"></i>
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-tesla text-red-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">Tesla Inc</h3>
-                                <p class="text-sm text-tv-text-secondary">TSLA</p>
+                                <h3 class="font-semibold text-gray-900">Tesla Inc</h3>
+                                <p class="text-sm text-gray-600">TSLA</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">$185.75</div>
-                            <div class="flex items-center space-x-1 text-tv-red">
+                            <div class="text-2xl font-bold text-gray-900">$185.75</div>
+                            <div class="flex items-center space-x-1 text-red-600">
                                 <i class="fas fa-caret-down"></i>
                                 <span class="text-sm font-medium">-1.2%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
             </div>
@@ -899,103 +863,147 @@
             <!-- Crypto Market Cards (Hidden by default) -->
             <div id="crypto-content" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Bitcoin -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 bg-orange-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                                 <i class="fab fa-bitcoin text-orange-500"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">Bitcoin</h3>
-                                <p class="text-sm text-tv-text-secondary">BTC</p>
+                                <h3 class="font-semibold text-gray-900">Bitcoin</h3>
+                                <p class="text-sm text-gray-600">BTC</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">$112,380</div>
-                            <div class="flex items-center space-x-1 text-tv-green">
+                            <div class="text-2xl font-bold text-gray-900">$112,380</div>
+                            <div class="flex items-center space-x-1 text-green-600">
                                 <i class="fas fa-caret-up"></i>
                                 <span class="text-sm font-medium">+2.5%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
 
                 <!-- Ethereum -->
-                <div
-                    class="bg-tv-darker border border-tv-border rounded-xl p-6 hover:border-tv-blue transition-all duration-200 group">
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
-                            <div
-                                class="w-10 h-10 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fab fa-ethereum text-blue-500"></i>
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-ethereum text-blue-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-tv-text-primary">Ethereum</h3>
-                                <p class="text-sm text-tv-text-secondary">ETH</p>
+                                <h3 class="font-semibold text-gray-900">Ethereum</h3>
+                                <p class="text-sm text-gray-600">ETH</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-2xl font-bold text-tv-text-primary">$4,320</div>
-                            <div class="flex items-center space-x-1 text-tv-red">
+                            <div class="text-2xl font-bold text-gray-900">$4,320</div>
+                            <div class="flex items-center space-x-1 text-red-600">
                                 <i class="fas fa-caret-down"></i>
                                 <span class="text-sm font-medium">-1.2%</span>
                             </div>
                         </div>
-                        <div class="w-16 h-8 bg-tv-light rounded"></div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
                     </div>
                 </div>
 
-                <!-- Add more crypto cards here -->
+                <!-- Solana -->
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-coins text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Solana</h3>
+                                <p class="text-sm text-gray-600">SOL</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-gray-900">$185.50</div>
+                            <div class="flex items-center space-x-1 text-green-600">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+3.2%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
+                    </div>
+                </div>
+
+                <!-- Cardano -->
+                <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Cardano</h3>
+                                <p class="text-sm text-gray-600">ADA</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-bold text-gray-900">$0.75</div>
+                            <div class="flex items-center space-x-1 text-green-600">
+                                <i class="fas fa-caret-up"></i>
+                                <span class="text-sm font-medium">+1.5%</span>
+                            </div>
+                        </div>
+                        <div class="w-16 h-8 bg-gray-100 rounded"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- 메인 차트 섹션 -->
-    <section class="main-chart-section py-8 bg-tv-dark w-full max-w-full overflow-x-hidden">
+    <section class="main-chart-section py-8 bg-gray-50 w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="section-header text-center mb-6">
-                <h2 class="text-2xl font-bold text-tv-text-primary mb-3">실시간 시장 분석</h2>
-                <p class="text-tv-text-secondary">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">실시간 시장 분석</h2>
+                <p class="text-gray-600">최신 시장 데이터와 AI 기반 분석을 확인하세요</p>
             </div>
-            <div class="featured-chart-container bg-tv-darker rounded-xl p-6" id="featuredChart">
+            <div class="featured-chart-container banking-card border border-gray-200 rounded-xl p-6" id="featuredChart">
                 <!-- This is where the large chart will be rendered -->
             </div>
             <div class="chart-control-row mt-2 flex justify-between items-center">
                 <div class="chart-timeframes flex space-x-2">
-                    <button class="btn btn-timeframe active bg-tv-blue text-white px-3 py-2 rounded-md text-sm"
+                    <button class="btn btn-timeframe active bg-blue-600 text-white px-3 py-2 rounded-md text-sm"
                         data-timeframe="1D">1D</button>
                     <button
-                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        class="btn btn-timeframe bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white"
                         data-timeframe="1W">1W</button>
                     <button
-                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        class="btn btn-timeframe bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white"
                         data-timeframe="1M">1M</button>
                     <button
-                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        class="btn btn-timeframe bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white"
                         data-timeframe="3M">3M</button>
                     <button
-                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        class="btn btn-timeframe bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white"
                         data-timeframe="1Y">1Y</button>
                     <button
-                        class="btn btn-timeframe bg-tv-light text-tv-text-secondary px-3 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white"
+                        class="btn btn-timeframe bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white"
                         data-timeframe="ALL">ALL</button>
                 </div>
                 <div class="feature-buttons flex space-x-2">
                     <button
-                        class="feature-button bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2"
+                        class="feature-button bg-gray-100 text-gray-600 px-4 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white flex items-center space-x-2"
                         data-feature="characteristic">
                         <i class="fas fa-chart-line"></i>
                         <span>특성</span>
                     </button>
                     <button
-                        class="feature-button bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2"
+                        class="feature-button bg-gray-100 text-gray-600 px-4 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white flex items-center space-x-2"
                         data-feature="equipment">
                         <i class="fas fa-tools"></i>
                         <span>장비</span>
@@ -1004,12 +1012,12 @@
             </div>
             <div class="chart-indicators mt-4 flex space-x-2">
                 <button
-                    class="btn btn-indicator bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2">
+                    class="btn btn-indicator bg-gray-100 text-gray-600 px-4 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white flex items-center space-x-2">
                     <i class="fas fa-chart-line"></i>
                     <span>지표</span>
                 </button>
                 <button
-                    class="btn btn-indicator bg-tv-light text-tv-text-secondary px-4 py-2 rounded-md text-sm hover:bg-tv-blue hover:text-white flex items-center space-x-2">
+                    class="btn btn-indicator bg-gray-100 text-gray-600 px-4 py-2 rounded-md text-sm hover:bg-blue-600 hover:text-white flex items-center space-x-2">
                     <i class="fas fa-shapes"></i>
                     <span>도구</span>
                 </button>
@@ -1019,21 +1027,21 @@
 
     <!-- Professional Features Section -->
     <section
-        class="py-8 bg-gradient-to-br from-tv-bg-primary via-tv-bg-secondary to-tv-bg-primary w-full max-w-full overflow-x-hidden">
+        class="py-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 w-full max-w-full overflow-x-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
             <div class="text-center mb-6">
                 <div
-                    class="inline-flex items-center px-4 py-2 bg-tv-blue bg-opacity-10 rounded-full border border-tv-blue border-opacity-20 mb-3">
-                    <i class="fas fa-star text-tv-blue mr-2"></i>
-                    <span class="text-tv-blue font-medium">Why StockChart</span>
+                    class="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full border border-blue-200 mb-3">
+                    <i class="fas fa-star text-blue-600 mr-2"></i>
+                    <span class="text-blue-600 font-medium">Why StockChart</span>
                 </div>
-                <h2 class="text-2xl lg:text-3xl font-bold text-tv-text-primary mb-3">
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
                     왜 <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-tv-blue to-purple-400">StockChart</span>를
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">StockChart</span>를
                     선택해야 할까요?
                 </h2>
-                <p class="text-base text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
+                <p class="text-base text-gray-600 max-w-3xl mx-auto leading-relaxed">
                     혁신적인 기능들로 더 스마트한 투자를 경험해보세요
                 </p>
             </div>
@@ -1043,25 +1051,25 @@
                 <!-- AI Analysis Feature -->
                 <div class="group relative">
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-tv-blue to-purple-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
+                        class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-tv-blue rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-blue-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
-                                class="w-16 h-16 bg-gradient-to-r from-tv-blue to-purple-600 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
+                                class="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-brain text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-tv-blue transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                                 AI 기반 분석
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             머신러닝과 딥러닝 알고리즘을 활용한 정확한 시장 분석과 예측으로 더 나은 투자 결정을 도와드립니다
                         </p>
                         <div
-                            class="mt-6 flex items-center text-tv-blue opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1071,25 +1079,25 @@
                 <!-- Real-time Charts Feature -->
                 <div class="group relative">
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-tv-green to-emerald-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
+                        class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-tv-green rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-green-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
-                                class="w-16 h-16 bg-gradient-to-r from-tv-green to-emerald-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
+                                class="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-chart-area text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-tv-green transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
                                 실시간 차트
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             전 세계 주요 거래소의 실시간 데이터를 기반으로 한 고급 차트 분석 도구를 제공합니다
                         </p>
                         <div
-                            class="mt-6 flex items-center text-tv-green opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1102,22 +1110,22 @@
                         class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-purple-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-purple-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
                                 class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-users-crown text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-purple-400 transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
                                 커뮤니티 예측
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             전문가와 일반 투자자들의 예측을 공유하고 비교할 수 있는 소셜 투자 플랫폼
                         </p>
                         <div
-                            class="mt-6 flex items-center text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1130,22 +1138,22 @@
                         class="absolute inset-0 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-yellow-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-yellow-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
                                 class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-trophy text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-yellow-400 transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors">
                                 경쟁 & 리워드
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             예측 정확도에 따른 랭킹 시스템과 다양한 이벤트 참여를 통한 리워드 획득 기회
                         </p>
                         <div
-                            class="mt-6 flex items-center text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1158,22 +1166,22 @@
                         class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-cyan-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-cyan-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
                                 class="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-mobile-alt text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-cyan-400 transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-cyan-600 transition-colors">
                                 모바일 최적화
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             언제 어디서나 접속 가능한 완벽한 반응형 웹 디자인으로 최적의 사용자 경험을 제공
                         </p>
                         <div
-                            class="mt-6 flex items-center text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1183,25 +1191,25 @@
                 <!-- Security & Trust Feature -->
                 <div class="group relative">
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-tv-green to-green-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
+                        class="absolute inset-0 bg-gradient-to-r from-green-600 to-green-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500">
                     </div>
                     <div
-                        class="relative bg-tv-bg-secondary border border-tv-border hover:border-tv-green rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        class="relative banking-card border border-gray-200 hover:border-green-500 rounded-2xl p-8 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
                         <div class="mb-6">
                             <div
-                                class="w-16 h-16 bg-gradient-to-r from-tv-green to-green-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
+                                class="w-16 h-16 bg-gradient-to-r from-green-600 to-green-500 rounded-2xl flex items-center justify-center mb-4 transform group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-shield-check text-white text-2xl"></i>
                             </div>
                             <h3
-                                class="text-2xl font-bold text-tv-text-primary mb-3 group-hover:text-tv-green transition-colors">
+                                class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
                                 보안 & 신뢰
                             </h3>
                         </div>
-                        <p class="text-tv-text-secondary leading-relaxed">
+                        <p class="text-gray-600 leading-relaxed">
                             은행급 보안 시스템과 투명한 데이터 관리로 안전하고 신뢰할 수 있는 투자 환경 제공
                         </p>
                         <div
-                            class="mt-6 flex items-center text-tv-green opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            class="mt-6 flex items-center text-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <span class="text-sm font-medium">자세히 보기</span>
                             <i class="fas fa-arrow-right ml-2 text-xs"></i>
                         </div>
@@ -1210,59 +1218,84 @@
             </div>
         </div>
     </section>
-    </div>
-    </div>
-    </section>
 
     <!-- 실시간 시장 데이터 섹션 -->
-    <section id="market-data" class="market-data w-full max-w-full overflow-x-hidden">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">실시간 시장 현황</h2>
-                <p class="section-description">전 세계 주요 시장의 실시간 데이터를 한눈에 확인하세요</p>
+    <section id="market-data" class="market-data w-full max-w-full overflow-x-hidden bg-gray-50">
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="section-header text-center mb-8">
+                <h2 class="section-title text-2xl font-bold text-gray-900 mb-3">실시간 시장 현황</h2>
+                <p class="section-description text-gray-600">전 세계 주요 시장의 실시간 데이터를 한눈에 확인하세요</p>
             </div>
 
-            <div class="market-tabs">
-                <div class="market-tab active" data-tab="stocks">주식</div>
-                <div class="market-tab" data-tab="crypto">암호화폐</div>
-                <div class="market-tab" data-tab="forex">외환</div>
-                <div class="market-tab" data-tab="indices">지수</div>
+            <div class="flex justify-center mb-8">
+                <div class="bg-white rounded-lg border border-gray-200 p-1 inline-flex">
+                    <button class="market-tab px-4 py-2 rounded-md text-white bg-blue-600 font-medium" data-tab="stocks">주식</button>
+                    <button class="market-tab px-4 py-2 rounded-md text-gray-600 hover:text-gray-900" data-tab="crypto">암호화폐</button>
+                    <button class="market-tab px-4 py-2 rounded-md text-gray-600 hover:text-gray-900" data-tab="forex">외환</button>
+                    <button class="market-tab px-4 py-2 rounded-md text-gray-600 hover:text-gray-900" data-tab="indices">지수</button>
+                </div>
             </div>
 
             <div class="market-content active" id="stocks-content">
-                <div class="market-grid">
-                    <div class="market-card">
-                        <div class="market-symbol">
-                            <div class="symbol-icon">
-                                <i class="fas fa-microchip"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microchip text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">삼성전자</h3>
+                                    <p class="text-sm text-gray-600">005930</p>
+                                </div>
                             </div>
-                            <div class="symbol-name">삼성전자</div>
                         </div>
-                        <div class="market-price">₩72,600</div>
-                        <div class="market-change positive">
-                            <i class="fas fa-caret-up"></i>
-                            +2.1%
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xl font-bold text-gray-900">₩72,600</div>
+                                <div class="flex items-center space-x-1 text-green-600">
+                                    <i class="fas fa-caret-up"></i>
+                                    <span class="text-sm font-medium">+2.1%</span>
+                                </div>
+                            </div>
+                            <div class="w-16 h-8 bg-gray-100 rounded" id="chart-005930"></div>
                         </div>
-                        <div class="market-mini-chart" id="chart-005930"></div>
                     </div>
 
-                    <div class="market-card">
-                        <div class="market-symbol">
-                            <div class="symbol-icon">
-                                <i class="fas fa-memory"></i>
+                    <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-memory text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">SK하이닉스</h3>
+                                    <p class="text-sm text-gray-600">000660</p>
+                                </div>
                             </div>
-                            <div class="symbol-name">SK하이닉스</div>
                         </div>
-                        <div class="market-price">₩154,500</div>
-                        <div class="market-change positive">
-                            <i class="fas fa-caret-up"></i>
-                            +1.8%
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xl font-bold text-gray-900">₩154,500</div>
+                                <div class="flex items-center space-x-1 text-green-600">
+                                    <i class="fas fa-caret-up"></i>
+                                    <span class="text-sm font-medium">+1.8%</span>
+                                </div>
+                            </div>
+                            <div class="w-16 h-8 bg-gray-100 rounded" id="chart-000660"></div>
                         </div>
-                        <div class="market-mini-chart" id="chart-000660"></div>
                     </div>
 
-                    <div class="market-card">
-                        <div class="market-symbol">
+                    <div class="banking-card border border-gray-200 rounded-xl p-6 hover:border-blue-500 transition-all duration-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <i class="fab fa-apple text-gray-700"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">Apple Inc</h3>
+                                    <p class="text-sm text-gray-600">AAPL</p>
+                                </div>
                             <div class="symbol-icon">
                                 <i class="fab fa-apple"></i>
                             </div>
