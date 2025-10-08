@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>주식 예측 - 주식 차트</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     
@@ -11,10 +14,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Korean Trading UI Design System -->
-    <link rel="stylesheet" href="css/figma-design.css">
+    <link rel="stylesheet" href="css/figma-design.css?v=2025.10.08">
     
     <!-- Mobile Trading UI -->
-    <link rel="stylesheet" href="css/mobile-trading.css">
+    <link rel="stylesheet" href="css/mobile-trading.css?v=2025.10.08">
 </head>
 
 <body>
@@ -487,8 +490,13 @@
     </script>
 
     <!-- TradingView Chart Widget -->
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js?v=2025.10.08"></script>
     <script type="text/javascript">
+        // Clear any cached functions
+        if (window.initializeTradingViewChart) {
+            delete window.initializeTradingViewChart;
+        }
+        
         let currentWidget = null;
         let currentPeriod = new Date();
         let selectedPoints = [];
