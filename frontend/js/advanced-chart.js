@@ -310,9 +310,21 @@ function initializeAdvancedChartSystem() {
 }
 
 // Auto-initialize when TradingView is loaded
-if (typeof TradingView !== 'undefined') {
-    initializeAdvancedChartSystem();
-} else {
-    // Wait for TradingView to load
-    window.addEventListener('load', initializeAdvancedChartSystem);
+function waitForTradingView() {
+    if (typeof TradingView !== 'undefined') {
+        initializeAdvancedChartSystem();
+    } else {
+        // Wait for TradingView to load
+        setTimeout(waitForTradingView, 100);
+    }
 }
+
+// Start checking for TradingView availability
+document.addEventListener('DOMContentLoaded', waitForTradingView);
+
+// Also try after window load as fallback
+window.addEventListener('load', () => {
+    if (typeof TradingView !== 'undefined') {
+        initializeAdvancedChartSystem();
+    }
+});
