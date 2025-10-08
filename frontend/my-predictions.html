@@ -1,52 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko" class="bg-gray-50 overflow-x-hidden max-w-full">
-
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 예측 - StockChart</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-
-    <!-- Banking UI CSS Framework -->
-    <link rel="stylesheet" href="css/banking-ui.css">
+    <title>내 예측 - 주식 차트 코인판매</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     
-    <!-- Tailwind CSS with Banking Color Scheme -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // Banking UI colors
-                        'primary': '#2563eb',
-                        'primary-dark': '#1d4ed8',
-                        'secondary': '#64748b',
-                        'accent': '#3b82f6',
-                        'success': '#10b981',
-                        'warning': '#f59e0b',
-                        'error': '#ef4444',
-                        'surface': '#ffffff',
-                        'background': '#f8fafc',
-                        'text-primary': '#1e293b',
-                        'text-secondary': '#64748b',
-                        'border': '#e2e8f0',
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- TradingView Charts -->
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
 
     <style>
         /* CRITICAL: Fix horizontal scrolling on mobile */
@@ -83,6 +50,53 @@
             max-width: 100% !important;
             width: 100% !important;
             overflow: hidden !important;
+        }
+
+        /* Responsive table styles */
+        .predictions-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .predictions-table {
+            min-width: 800px; /* Minimum width for proper column layout */
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .predictions-table-container {
+                margin-left: -1rem;
+                margin-right: -1rem;
+            }
+            
+            .predictions-table th,
+            .predictions-table td {
+                padding: 0.75rem 0.5rem !important;
+                font-size: 0.875rem;
+            }
+
+            .predictions-table th:first-child,
+            .predictions-table td:first-child {
+                padding-left: 1rem !important;
+            }
+
+            .predictions-table th:last-child,
+            .predictions-table td:last-child {
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Table hover effects */
+        .predictions-table tbody tr:hover {
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+
+        /* Status badge styles */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -267,12 +281,37 @@
                 </div>
             </div>
 
-            <!-- Prediction Cards Container -->
-            <div id="predictionsContainer" class="space-y-6">
+            <!-- Predictions Table Container -->
+            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden">
+                <!-- Table Header -->
+                <div class="bg-tv-light border-b border-tv-border px-6 py-4">
+                    <h3 class="text-lg font-semibold text-tv-text">예측 현황</h3>
+                </div>
+                
+                <!-- Table Content -->
+                <div class="predictions-table-container">
+                    <table class="predictions-table w-full">
+                        <thead class="bg-tv-light border-b border-tv-border">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">종목</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">예측일</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">기준가격</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">예측가격</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">등락률</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">목표일</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">상태</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">동작</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionsTableBody" class="divide-y divide-tv-border">
+                            <!-- Predictions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
                 <!-- Empty State -->
-                <div id="emptyState" class="text-center py-16">
-                    <div
-                        class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
+                <div id="emptyState" class="text-center py-16 hidden">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-tv-light rounded-2xl flex items-center justify-center">
                         <i class="fas fa-chart-line text-4xl text-tv-text-secondary"></i>
                     </div>
                     <h3 class="text-xl font-semibold text-tv-text mb-2">아직 예측이 없습니다</h3>
@@ -812,54 +851,49 @@
 
         function displayPredictions() {
             console.log('displayPredictions called with', userPredictions.length, 'predictions');
-            const container = document.getElementById('predictionsContainer');
+            const tableBody = document.getElementById('predictionsTableBody');
+            const emptyState = document.getElementById('emptyState');
 
-            // Check if container exists
-            if (!container) {
-                console.error('predictionsContainer not found');
+            // Check if table body exists
+            if (!tableBody) {
+                console.error('predictionsTableBody not found');
                 return;
             }
 
             if (userPredictions.length === 0) {
                 console.log('No predictions, showing empty state');
-                container.innerHTML = `
-                    <!-- Empty State -->
-                    <div id="emptyState" class="text-center py-16">
-                        <div class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-chart-line text-4xl text-tv-text-secondary"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-tv-text mb-2">아직 예측이 없습니다</h3>
-                        <p class="text-tv-text-secondary mb-6">첫 번째 예측을 만들어 투자 여정을 시작해보세요!</p>
-                        <button onclick="createNewPrediction()" class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                            <i class="fas fa-plus mr-2"></i>첫 예측 만들기
-                        </button>
-                    </div>
-                `;
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                emptyState.classList.remove('hidden');
                 return;
             }
 
             console.log('Displaying predictions');
+            emptyState.style.display = 'none';
+            emptyState.classList.add('hidden');
 
             try {
-                const html = userPredictions.map(prediction => createPredictionCard(prediction)).join('');
+                const html = userPredictions.map(prediction => createPredictionRow(prediction)).join('');
                 console.log('Generated HTML length:', html.length);
-                container.innerHTML = html;
+                tableBody.innerHTML = html;
                 console.log('Predictions displayed successfully');
             } catch (error) {
-                console.error('Error creating prediction cards:', error);
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <p class="text-tv-text">예측을 표시하는 중 오류가 발생했습니다.</p>
-                        <button onclick="loadUserPredictions()" class="mt-4 bg-tv-blue text-white px-4 py-2 rounded">
-                            다시 시도
-                        </button>
-                    </div>
+                console.error('Error creating prediction rows:', error);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-8 text-center">
+                            <p class="text-tv-text">예측을 표시하는 중 오류가 발생했습니다.</p>
+                            <button onclick="loadUserPredictions()" class="mt-4 bg-tv-blue text-white px-4 py-2 rounded">
+                                다시 시도
+                            </button>
+                        </td>
+                    </tr>
                 `;
             }
         }
 
-        function createPredictionCard(prediction) {
-            console.log('Creating prediction card for:', prediction);
+        function createPredictionRow(prediction) {
+            console.log('Creating prediction row for:', prediction);
 
             try {
                 // Convert API data format to display format
@@ -934,79 +968,81 @@
                 const priceChangeText = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
 
                 return `
-                <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden hover:border-tv-blue transition-all duration-200">
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-12 h-12 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                                    <i class="fas ${stockIcon} text-tv-blue"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-tv-text">${prediction.symbol}</h3>
-                                    <p class="text-sm text-tv-text-secondary">${prediction.stock_name}</p>
-                                    <p class="text-xs text-tv-text-secondary">${predictionDateStr} 예측 • ${prediction.user.username}</p>
-                                </div>
-                            </div>
-                            <span class="${config.class} px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                                <i class="fas ${config.icon} mr-1"></i>${config.text}
-                            </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <div class="text-sm text-tv-text-secondary mb-1">예측 가격</div>
-                                <div class="text-xl font-bold text-tv-text">$${parseFloat(prediction.predicted_price).toLocaleString()}</div>
-                                <div class="text-sm ${priceChangeClass}">${priceChangeText}</div>
+                <tr class="hover:bg-tv-light transition-colors">
+                    <!-- 종목 -->
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                                <i class="fas ${stockIcon} text-tv-blue text-sm"></i>
                             </div>
                             <div>
-                                <div class="text-sm text-tv-text-secondary mb-1">기준 가격</div>
-                                <div class="text-xl font-bold text-tv-text">
-                                    $${parseFloat(prediction.current_price).toLocaleString()}
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-sm text-tv-text-secondary mb-1">목표일</div>
-                                <div class="text-xl font-bold text-tv-text">${targetDateStr}</div>
-                                ${status === 'pending' && daysLeft > 0 ? `<div class="text-sm text-tv-blue">D-${daysLeft}</div>` : ''}
+                                <div class="font-semibold text-tv-text">${prediction.symbol}</div>
+                                <div class="text-sm text-tv-text-secondary">${prediction.stock_name}</div>
                             </div>
                         </div>
-
-                        ${prediction.actual_price ? `
-                            <div class="mb-4 p-3 bg-tv-light bg-opacity-50 rounded-lg">
-                                <div class="text-sm text-tv-text-secondary mb-1">실제 가격</div>
-                                <div class="text-lg font-bold ${isSuccessful ? 'text-tv-green' : 'text-tv-red'}">
-                                    $${parseFloat(prediction.actual_price).toLocaleString()}
-                                </div>
-                                ${prediction.accuracy_percentage ? `
-                                    <div class="text-sm text-tv-text-secondary">정확도: ${parseFloat(prediction.accuracy_percentage).toFixed(1)}%</div>
-                                ` : ''}
-                            </div>
-                        ` : ''}
-
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <div class="text-sm text-tv-text-secondary">기간: <span class="text-tv-text font-medium">${prediction.duration_days}일</span></div>
-                                <div class="text-sm text-tv-text-secondary">조회: <span class="text-tv-text font-medium">${prediction.views_count}</span></div>
-                                ${prediction.likes_count > 0 ? `<div class="text-sm text-tv-text-secondary">❤️ <span class="text-tv-text font-medium">${prediction.likes_count}</span></div>` : ''}
-                            </div>
-                            <div class="flex space-x-2">
-                                <button onclick="viewPredictionDetails('${prediction.id}')"
-                                    class="bg-tv-light hover:bg-tv-border text-tv-text px-4 py-2 rounded-lg text-sm font-medium transition-colors">상세보기</button>
-                            </div>
+                    </td>
+                    
+                    <!-- 예측일 -->
+                    <td class="px-6 py-4">
+                        <div class="text-tv-text">${predictionDateStr}</div>
+                        <div class="text-sm text-tv-text-secondary">${prediction.user.username}</div>
+                    </td>
+                    
+                    <!-- 기준가격 -->
+                    <td class="px-6 py-4 text-right">
+                        <div class="font-semibold text-tv-text">$${parseFloat(prediction.current_price).toLocaleString()}</div>
+                    </td>
+                    
+                    <!-- 예측가격 -->
+                    <td class="px-6 py-4 text-right">
+                        <div class="font-semibold text-tv-text">$${parseFloat(prediction.predicted_price).toLocaleString()}</div>
+                        ${prediction.actual_price ? `<div class="text-sm ${isSuccessful ? 'text-tv-green' : 'text-tv-red'}">실제: $${parseFloat(prediction.actual_price).toLocaleString()}</div>` : ''}
+                    </td>
+                    
+                    <!-- 등락률 -->
+                    <td class="px-6 py-4 text-right">
+                        <div class="font-semibold ${priceChangeClass}">${priceChangeText}</div>
+                        ${prediction.accuracy_percentage ? `<div class="text-sm text-tv-text-secondary">정확도: ${parseFloat(prediction.accuracy_percentage).toFixed(1)}%</div>` : ''}
+                    </td>
+                    
+                    <!-- 목표일 -->
+                    <td class="px-6 py-4 text-center">
+                        <div class="text-tv-text">${targetDateStr}</div>
+                        ${status === 'pending' && daysLeft > 0 ? `<div class="text-sm text-tv-blue">D-${daysLeft}</div>` : ''}
+                    </td>
+                    
+                    <!-- 상태 -->
+                    <td class="px-6 py-4 text-center">
+                        <span class="status-badge ${config.class} px-3 py-1 rounded-full text-sm font-medium">
+                            <i class="fas ${config.icon}"></i>${config.text}
+                        </span>
+                    </td>
+                    
+                    <!-- 동작 -->
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="viewPredictionDetails('${prediction.id}')"
+                                class="text-tv-blue hover:text-blue-600 text-sm font-medium">상세보기</button>
+                            ${status === 'pending' ? `
+                                <button onclick="editPrediction('${prediction.id}')"
+                                    class="text-tv-text-secondary hover:text-tv-text text-sm font-medium">수정</button>
+                            ` : ''}
                         </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
             `;
 
             } catch (error) {
-                console.error('Error creating prediction card:', error, 'for prediction:', prediction);
+                console.error('Error creating prediction row:', error, 'for prediction:', prediction);
                 return `
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="text-center text-tv-text">
-                            <p>예측 카드를 생성하는 중 오류가 발생했습니다.</p>
-                            <p class="text-sm text-tv-text-secondary mt-2">ID: ${prediction.id}</p>
-                        </div>
-                    </div>
+                    <tr>
+                        <td colspan="8" class="px-6 py-4 text-center">
+                            <div class="text-tv-text">
+                                <p>예측 행을 생성하는 중 오류가 발생했습니다.</p>
+                                <p class="text-sm text-tv-text-secondary mt-2">ID: ${prediction.id}</p>
+                            </div>
+                        </td>
+                    </tr>
                 `;
             }
         }
@@ -1034,30 +1070,27 @@
         }
 
         function displayFilteredPredictions(predictions) {
-            const container = document.getElementById('predictionsContainer');
+            const tableBody = document.getElementById('predictionsTableBody');
             const emptyState = document.getElementById('emptyState');
 
             // Check if elements exist
-            if (!container) {
-                console.error('predictionsContainer not found in displayFilteredPredictions');
+            if (!tableBody) {
+                console.error('predictionsTableBody not found in displayFilteredPredictions');
                 return;
             }
 
             if (predictions.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-16">
-                        <div class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-filter text-4xl text-tv-text-secondary"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-tv-text mb-2">필터 조건에 맞는 예측이 없습니다</h3>
-                        <p class="text-tv-text-secondary mb-6">다른 필터를 선택해보세요</p>
-                    </div>
-                `;
+                tableBody.innerHTML = '';
+                emptyState.style.display = 'block';
+                emptyState.classList.remove('hidden');
                 return;
             }
 
-            const html = predictions.map(prediction => createPredictionCard(prediction)).join('');
-            container.innerHTML = html;
+            emptyState.style.display = 'none';
+            emptyState.classList.add('hidden');
+            
+            const html = predictions.map(prediction => createPredictionRow(prediction)).join('');
+            tableBody.innerHTML = html;
         }
 
         // Action functions

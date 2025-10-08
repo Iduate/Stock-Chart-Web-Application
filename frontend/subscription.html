@@ -8,8 +8,11 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-    <!-- Banking UI CSS Framework -->
-    <link rel="stylesheet" href="css/banking-ui.css">
+    <!-- Korean Trading UI Design System -->
+    <link rel="stylesheet" href="css/figma-design.css">
+    
+    <!-- Mobile Trading UI -->
+    <link rel="stylesheet" href="css/mobile-trading.css">
     
     <!-- Tailwind CSS with Banking Color Scheme -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,6 +54,78 @@
         /* Mobile overflow prevention using Tailwind approach */
         * {
             box-sizing: border-box;
+        }
+
+        /* Responsive table styles for subscription management */
+        .subscription-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .subscription-table {
+            min-width: 700px; /* Minimum width for proper column layout */
+        }
+
+        /* Mobile responsive adjustments for subscription tables */
+        @media (max-width: 768px) {
+            .subscription-table-container {
+                margin-left: -1rem;
+                margin-right: -1rem;
+            }
+            
+            .subscription-table th,
+            .subscription-table td {
+                padding: 0.75rem 0.5rem !important;
+                font-size: 0.875rem;
+            }
+
+            .subscription-table th:first-child,
+            .subscription-table td:first-child {
+                padding-left: 1rem !important;
+            }
+
+            .subscription-table th:last-child,
+            .subscription-table td:last-child {
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Table hover effects for subscription tables */
+        .subscription-table tbody tr:hover {
+            background: linear-gradient(to right, rgba(37, 99, 235, 0.05), transparent);
+        }
+
+        /* Status badge styles for subscriptions */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+        }
+
+        .plan-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .plan-badge.basic {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+        }
+
+        .plan-badge.pro {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .plan-badge.enterprise {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
         }
     </style>
 </head>
@@ -628,6 +703,187 @@
                 </div>
             </div>
         </div>
+
+        <!-- Subscription Management Section -->
+        <div class="max-w-7xl mx-auto mt-16 mb-16" id="subscriptionManagement">
+            <!-- Current Plan Status -->
+            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-8 shadow-lg">
+                <div class="p-6 border-b border-tv-border bg-gradient-to-r from-tv-blue/5 to-transparent">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold text-tv-text">📊 현재 구독 현황</h3>
+                        <div class="flex items-center space-x-2 text-tv-text-secondary">
+                            <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse"></div>
+                            <span class="text-sm">활성 구독</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="plan-badge pro mb-2">
+                                <i class="fas fa-crown"></i>Pro 플랜
+                            </div>
+                            <p class="text-sm text-tv-text-secondary">현재 플랜</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-tv-text">₩29,000</div>
+                            <p class="text-sm text-tv-text-secondary">월간 요금</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-tv-text">2025-11-07</div>
+                            <p class="text-sm text-tv-text-secondary">다음 결제일</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center space-x-4 mt-6">
+                        <button class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-edit mr-2"></i>플랜 변경
+                        </button>
+                        <button class="bg-tv-red hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-times mr-2"></i>구독 취소
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing History -->
+            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden shadow-lg">
+                <div class="p-6 border-b border-tv-border bg-gradient-to-r from-tv-green/5 to-transparent">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold text-tv-text">💳 결제 내역</h3>
+                        <button class="text-tv-blue hover:text-blue-600 font-medium">
+                            <i class="fas fa-download mr-2"></i>전체 내역 다운로드
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Billing History Table -->
+                <div class="subscription-table-container">
+                    <table class="subscription-table w-full">
+                        <thead class="bg-tv-light border-b border-tv-border sticky top-0">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">결제일</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">플랜</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">금액</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">결제 방법</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">상태</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">영수증</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingHistoryTable" class="divide-y divide-tv-border">
+                            <!-- October 2025 -->
+                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-medium text-tv-text">2025-10-07</span>
+                                        <span class="text-xs text-tv-text-secondary">오늘</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="plan-badge pro">
+                                        <i class="fas fa-crown"></i>Pro 플랜
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="text-lg font-bold text-tv-text">₩29,000</div>
+                                    <div class="text-xs text-tv-text-secondary">월간</div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <i class="fab fa-cc-visa text-tv-blue"></i>
+                                        <span class="text-sm text-tv-text">•••• 1234</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-green/20 text-tv-green">
+                                        <i class="fas fa-check mr-1"></i>완료
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button class="text-tv-blue hover:text-blue-600 font-medium">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- September 2025 -->
+                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-medium text-tv-text">2025-09-07</span>
+                                        <span class="text-xs text-tv-text-secondary">1개월 전</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="plan-badge pro">
+                                        <i class="fas fa-crown"></i>Pro 플랜
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="text-lg font-bold text-tv-text">₩29,000</div>
+                                    <div class="text-xs text-tv-text-secondary">월간</div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <i class="fab fa-cc-visa text-tv-blue"></i>
+                                        <span class="text-sm text-tv-text">•••• 1234</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-green/20 text-tv-green">
+                                        <i class="fas fa-check mr-1"></i>완료
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <button class="text-tv-blue hover:text-blue-600 font-medium">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- August 2025 -->
+                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-medium text-tv-text">2025-08-07</span>
+                                        <span class="text-xs text-tv-text-secondary">2개월 전</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="plan-badge basic">
+                                        <i class="fas fa-rocket"></i>Basic 플랜
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="text-lg font-bold text-tv-text">₩0</div>
+                                    <div class="text-xs text-tv-text-secondary">무료</div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-sm text-tv-text-secondary">-</span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-blue/20 text-tv-blue">
+                                        <i class="fas fa-gift mr-1"></i>무료
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-tv-text-secondary">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Load More Button -->
+                <div class="p-6 text-center border-t border-tv-border">
+                    <button onclick="loadMoreBillingHistory()"
+                        class="text-tv-blue hover:text-blue-600 font-medium transition-colors">
+                        <i class="fas fa-plus mr-2"></i>더 많은 내역 보기
+                    </button>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
@@ -676,6 +932,114 @@
             content.classList.toggle('hidden');
             icon.classList.toggle('fa-chevron-down');
             icon.classList.toggle('fa-chevron-up');
+        }
+
+        // Sample billing history data for demonstration
+        const sampleBillingHistory = [
+            { date: '2025-07-07', plan: 'Pro 플랜', amount: '₩29,000', method: 'Visa •••• 1234', status: 'completed', icon: 'fab fa-cc-visa' },
+            { date: '2025-06-07', plan: 'Pro 플랜', amount: '₩29,000', method: 'Visa •••• 1234', status: 'completed', icon: 'fab fa-cc-visa' },
+            { date: '2025-05-07', plan: 'Basic 플랜', amount: '₩0', method: '-', status: 'free', icon: '' },
+            { date: '2025-04-07', plan: 'Basic 플랜', amount: '₩0', method: '-', status: 'free', icon: '' }
+        ];
+
+        // Function to create billing history table rows
+        function createBillingRow(billing, index) {
+            const statusConfig = {
+                'completed': { class: 'bg-tv-green/20 text-tv-green', text: '완료', icon: 'check' },
+                'pending': { class: 'bg-tv-blue/20 text-tv-blue', text: '대기', icon: 'clock' },
+                'failed': { class: 'bg-tv-red/20 text-tv-red', text: '실패', icon: 'times' },
+                'free': { class: 'bg-tv-blue/20 text-tv-blue', text: '무료', icon: 'gift' }
+            };
+
+            const status = statusConfig[billing.status] || statusConfig.completed;
+            const timeAgo = `${index + 3}개월 전`;
+
+            return `
+                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-tv-text">${billing.date}</span>
+                            <span class="text-xs text-tv-text-secondary">${timeAgo}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="plan-badge ${billing.plan.includes('Pro') ? 'pro' : billing.plan.includes('Enterprise') ? 'enterprise' : 'basic'}">
+                            <i class="fas fa-${billing.plan.includes('Pro') ? 'crown' : billing.plan.includes('Enterprise') ? 'star' : 'rocket'}"></i>${billing.plan}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="text-lg font-bold text-tv-text">${billing.amount}</div>
+                        <div class="text-xs text-tv-text-secondary">${billing.status === 'free' ? '무료' : '월간'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        ${billing.method !== '-' ? `
+                            <div class="flex items-center justify-center space-x-2">
+                                <i class="${billing.icon} text-tv-blue"></i>
+                                <span class="text-sm text-tv-text">${billing.method}</span>
+                            </div>
+                        ` : `<span class="text-sm text-tv-text-secondary">-</span>`}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${status.class}">
+                            <i class="fas fa-${status.icon} mr-1"></i>${status.text}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        ${billing.status !== 'free' ? `
+                            <button class="text-tv-blue hover:text-blue-600 font-medium" onclick="downloadReceipt('${billing.date}')">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        ` : `<span class="text-tv-text-secondary">-</span>`}
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Load more billing history
+        function loadMoreBillingHistory() {
+            const billingTable = document.getElementById('billingHistoryTable');
+            if (billingTable && sampleBillingHistory.length > 0) {
+                const newRows = sampleBillingHistory.map((billing, index) => createBillingRow(billing, index)).join('');
+                billingTable.insertAdjacentHTML('beforeend', newRows);
+                
+                showNotification('더 많은 결제 내역이 로드되었습니다!', 'success');
+            } else {
+                showNotification('더 이상 불러올 내역이 없습니다.', 'info');
+            }
+        }
+
+        // Download receipt
+        function downloadReceipt(date) {
+            showNotification(`${date} 영수증을 다운로드 중...`, 'info');
+            
+            // Simulate download delay
+            setTimeout(() => {
+                showNotification('영수증 다운로드가 완료되었습니다!', 'success');
+            }, 1500);
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform ${
+                type === 'success' ? 'bg-tv-green text-white' : 
+                type === 'error' ? 'bg-tv-red text-white' : 
+                'bg-tv-blue text-white'
+            }`;
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>

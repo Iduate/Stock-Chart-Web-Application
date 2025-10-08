@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예측 - 주식 차트 코인판매</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    
+    <!-- Figma Design System -->
+    <link rel="stylesheet" href="css/figma-design.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- TradingView Charts -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+
+<body>
+    <!-- Main Layout Container -->
+    <div class="figma-container">
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-user-chart text-accent-green"></i>
+                <span>내 예측</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="종목 검색 (예: BTC, ETH, AAPL)" id="searchInput">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict" onclick="window.location.href='home.html'">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </button>
+                <button class="btn-predict" onclick="window.location.href='charts.html'">
+                    <i class="fas fa-chart-candlestick"></i>
+                    <span>차트</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-user-chart"></i>
+                내 예측
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-candlestick"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-crystal-ball"></i>
+                    <span>사용자 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>랭킹</span>
+                </a>
+                <a href="my-predictions.html" class="nav-item active">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>이벤트</span>
+                </a>
+                <a href="payment.html" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>결제</span>
+                </a>
+                <a href="partners.html" class="nav-item">
+                    <i class="fas fa-handshake"></i>
+                    <span>파트너</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="figma-main">
+            <h2 style="margin-bottom: 24px; color: var(--accent-green); font-size: 1.5rem; font-weight: 700;">내 예측 내역</h2>
+            <!-- My Predictions Table -->
+            <div class="predictions-table">
+                <div class="table-header">
+                    <span>종목</span>
+                    <span>예측 가격</span>
+                    <span>예측 기간</span>
+                    <span>결과</span>
+                    <span>수익률</span>
+                </div>
+                <div class="table-row">
+                    <span>BTC/USD</span>
+                    <span>44,000</span>
+                    <span>1일</span>
+                    <span>성공</span>
+                    <span class="prediction-change positive">+8.20%</span>
+                </div>
+                <div class="table-row">
+                    <span>ETH/USD</span>
+                    <span>2,700</span>
+                    <span>4시간</span>
+                    <span>실패</span>
+                    <span class="prediction-change negative">-2.34%</span>
+                </div>
+                <div class="table-row">
+                    <span>AAPL</span>
+                    <span>180.00</span>
+                    <span>1주</span>
+                    <span>대기</span>
+                    <span class="prediction-change positive">+1.85%</span>
+                </div>
+                <div class="table-row">
+                    <span>TSLA</span>
+                    <span>250.00</span>
+                    <span>1시간</span>
+                    <span>성공</span>
+                    <span class="prediction-change positive">+12.45%</span>
+                </div>
+                <div class="table-row">
+                    <span>NVDA</span>
+                    <span>420.00</span>
+                    <span>1일</span>
+                    <span>실패</span>
+                    <span class="prediction-change negative">-3.12%</span>
+                </div>
+            </div>
+            <!-- Add more prediction rows as needed -->
+        </main>
+
+        <!-- Trading Panel -->
+        <aside class="figma-trading-panel">
+            <!-- Prediction Summary -->
+            <div class="trading-section">
+                <h3 class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    예측 통계
+                </h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value text-success">12</div>
+                        <div class="stat-label">총 예측</div>
+                        <div class="stat-sublabel">최근 30일</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-success">8</div>
+                        <div class="stat-label">성공</div>
+                        <div class="stat-sublabel">정확한 예측</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value text-danger">4</div>
+                        <div class="stat-label">실패</div>
+                        <div class="stat-sublabel">틀린 예측</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Prediction Button -->
+            <div class="trading-section">
+                <button class="btn-predict" style="width: 100%; font-size: 1.1rem; padding: 16px; margin-top: 16px;" onclick="window.location.href='prediction.html'">
+                    <i class="fas fa-plus"></i>
+                    새 예측 추가
+                </button>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>

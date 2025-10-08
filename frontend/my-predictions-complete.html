@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예측 - 주식 차트 코인판매</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    
+    <!-- Figma Design System -->
+    <link rel="stylesheet" href="css/figma-design.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- TradingView Charts -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+
+<body>
+    <!-- Main Layout Container -->
+    <div class="figma-container">
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-user-chart text-accent-green"></i>
+                <span>내 예측</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="예측 검색 (종목, 날짜, 결과)" id="searchInput">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict" onclick="window.location.href='home.html'">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </button>
+                <button class="btn-predict" onclick="window.location.href='prediction.html'">
+                    <i class="fas fa-plus"></i>
+                    <span>새 예측</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-user-chart"></i>
+                내 예측
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="home.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-candlestick"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-crystal-ball"></i>
+                    <span>사용자 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>랭킹</span>
+                </a>
+                <a href="my-predictions.html" class="nav-item active">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>이벤트</span>
+                </a>
+                <a href="payment.html" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>결제</span>
+                </a>
+                <a href="partners.html" class="nav-item">
+                    <i class="fas fa-handshake"></i>
+                    <span>파트너</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="figma-main">
+            <!-- Statistics Overview -->
+            <div class="stats-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-value text-accent-green" id="totalPredictions">47</div>
+                    <div class="stat-label">총 예측</div>
+                    <div class="stat-sublabel">전체 제출한 예측</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-success" id="successfulPredictions">28</div>
+                    <div class="stat-label">성공한 예측</div>
+                    <div class="stat-sublabel">수익률 59.6%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-danger" id="failedPredictions">12</div>
+                    <div class="stat-label">실패한 예측</div>
+                    <div class="stat-sublabel">손실률 25.5%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-secondary" id="pendingPredictions">7</div>
+                    <div class="stat-label">대기 중</div>
+                    <div class="stat-sublabel">결과 대기중</div>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-section mb-4">
+                <div class="filter-header">
+                    <h3 class="section-title">
+                        <i class="fas fa-filter"></i>
+                        필터 및 정렬
+                    </h3>
+                </div>
+                <div class="filter-controls">
+                    <select class="form-select" id="statusFilter">
+                        <option value="all">모든 상태</option>
+                        <option value="success">성공</option>
+                        <option value="failed">실패</option>
+                        <option value="pending">대기중</option>
+                    </select>
+                    <select class="form-select" id="symbolFilter">
+                        <option value="all">모든 종목</option>
+                        <option value="BTC">BTC</option>
+                        <option value="ETH">ETH</option>
+                        <option value="AAPL">AAPL</option>
+                        <option value="TSLA">TSLA</option>
+                    </select>
+                    <select class="form-select" id="timeFilter">
+                        <option value="all">모든 기간</option>
+                        <option value="today">오늘</option>
+                        <option value="week">이번 주</option>
+                        <option value="month">이번 달</option>
+                    </select>
+                    <select class="form-select" id="sortFilter">
+                        <option value="newest">최신순</option>
+                        <option value="oldest">오래된순</option>
+                        <option value="profit">수익률순</option>
+                        <option value="symbol">종목순</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- My Predictions Table -->
+            <div class="predictions-table">
+                <div class="table-header">
+                    <span>종목</span>
+                    <span>예측 가격</span>
+                    <span>실제 가격</span>
+                    <span>수익률</span>
+                    <span>날짜</span>
+                    <span>상태</span>
+                    <span>액션</span>
+                </div>
+                
+                <!-- Sample Prediction Rows -->
+                <div class="table-row" data-status="success" data-symbol="BTC" data-date="2023-12-05">
+                    <div class="prediction-symbol">
+                        <i class="fab fa-bitcoin text-accent-green"></i>
+                        <div>
+                            <div class="symbol-name">BTC/USD</div>
+                            <div class="symbol-time">4시간 예측</div>
+                        </div>
+                    </div>
+                    <div class="prediction-price">
+                        <span class="predicted">$45,200</span>
+                    </div>
+                    <div class="actual-price">
+                        <span class="actual">$46,100</span>
+                    </div>
+                    <div class="profit-rate">
+                        <span class="positive">+12.5%</span>
+                    </div>
+                    <div class="prediction-date">
+                        <span>2023-12-05</span>
+                        <span class="time">14:30</span>
+                    </div>
+                    <div class="prediction-status">
+                        <span class="status-badge success">성공</span>
+                    </div>
+                    <div class="prediction-actions">
+                        <button class="action-btn" onclick="viewDetails(1)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn" onclick="sharePrediction(1)">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-row" data-status="failed" data-symbol="ETH" data-date="2023-12-04">
+                    <div class="prediction-symbol">
+                        <i class="fab fa-ethereum text-accent-green"></i>
+                        <div>
+                            <div class="symbol-name">ETH/USD</div>
+                            <div class="symbol-time">1시간 예측</div>
+                        </div>
+                    </div>
+                    <div class="prediction-price">
+                        <span class="predicted">$2,850</span>
+                    </div>
+                    <div class="actual-price">
+                        <span class="actual">$2,805</span>
+                    </div>
+                    <div class="profit-rate">
+                        <span class="negative">-3.2%</span>
+                    </div>
+                    <div class="prediction-date">
+                        <span>2023-12-04</span>
+                        <span class="time">11:15</span>
+                    </div>
+                    <div class="prediction-status">
+                        <span class="status-badge failed">실패</span>
+                    </div>
+                    <div class="prediction-actions">
+                        <button class="action-btn" onclick="viewDetails(2)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn" onclick="sharePrediction(2)">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-row" data-status="pending" data-symbol="AAPL" data-date="2023-12-05">
+                    <div class="prediction-symbol">
+                        <i class="fas fa-apple-alt text-accent-green"></i>
+                        <div>
+                            <div class="symbol-name">AAPL</div>
+                            <div class="symbol-time">1일 예측</div>
+                        </div>
+                    </div>
+                    <div class="prediction-price">
+                        <span class="predicted">$180.50</span>
+                    </div>
+                    <div class="actual-price">
+                        <span class="pending">대기중</span>
+                    </div>
+                    <div class="profit-rate">
+                        <span class="pending">-</span>
+                    </div>
+                    <div class="prediction-date">
+                        <span>2023-12-05</span>
+                        <span class="time">09:00</span>
+                    </div>
+                    <div class="prediction-status">
+                        <span class="status-badge pending">대기중</span>
+                    </div>
+                    <div class="prediction-actions">
+                        <button class="action-btn" onclick="viewDetails(3)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn cancel" onclick="cancelPrediction(3)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-row" data-status="success" data-symbol="TSLA" data-date="2023-12-03">
+                    <div class="prediction-symbol">
+                        <i class="fas fa-car text-accent-green"></i>
+                        <div>
+                            <div class="symbol-name">TSLA</div>
+                            <div class="symbol-time">1주 예측</div>
+                        </div>
+                    </div>
+                    <div class="prediction-price">
+                        <span class="predicted">$265.00</span>
+                    </div>
+                    <div class="actual-price">
+                        <span class="actual">$272.12</span>
+                    </div>
+                    <div class="profit-rate">
+                        <span class="positive">+8.7%</span>
+                    </div>
+                    <div class="prediction-date">
+                        <span>2023-12-03</span>
+                        <span class="time">16:45</span>
+                    </div>
+                    <div class="prediction-status">
+                        <span class="status-badge success">성공</span>
+                    </div>
+                    <div class="prediction-actions">
+                        <button class="action-btn" onclick="viewDetails(4)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn" onclick="sharePrediction(4)">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-row" data-status="pending" data-symbol="BTC" data-date="2023-12-05">
+                    <div class="prediction-symbol">
+                        <i class="fab fa-bitcoin text-accent-green"></i>
+                        <div>
+                            <div class="symbol-name">BTC/USD</div>
+                            <div class="symbol-time">15분 예측</div>
+                        </div>
+                    </div>
+                    <div class="prediction-price">
+                        <span class="predicted">$46,500</span>
+                    </div>
+                    <div class="actual-price">
+                        <span class="pending">대기중</span>
+                    </div>
+                    <div class="profit-rate">
+                        <span class="pending">-</span>
+                    </div>
+                    <div class="prediction-date">
+                        <span>2023-12-05</span>
+                        <span class="time">15:20</span>
+                    </div>
+                    <div class="prediction-status">
+                        <span class="status-badge pending">대기중</span>
+                    </div>
+                    <div class="prediction-actions">
+                        <button class="action-btn" onclick="viewDetails(5)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn cancel" onclick="cancelPrediction(5)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    <span>1-5 of 47 예측 표시</span>
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Trading Panel -->
+        <aside class="figma-trading-panel">
+            <!-- Performance Summary -->
+            <div class="trading-section">
+                <h3 class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    성과 요약
+                </h3>
+                <div class="performance-chart" id="performanceChart">
+                    <!-- Mini chart will be inserted here -->
+                </div>
+                <div class="performance-stats">
+                    <div class="perf-item">
+                        <span class="perf-label">총 수익률</span>
+                        <span class="perf-value positive">+24.8%</span>
+                    </div>
+                    <div class="perf-item">
+                        <span class="perf-label">승률</span>
+                        <span class="perf-value">59.6%</span>
+                    </div>
+                    <div class="perf-item">
+                        <span class="perf-label">평균 수익</span>
+                        <span class="perf-value positive">+8.2%</span>
+                    </div>
+                    <div class="perf-item">
+                        <span class="perf-label">최대 수익</span>
+                        <span class="perf-value positive">+45.6%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Achievements -->
+            <div class="trading-section">
+                <h3 class="section-title">
+                    <i class="fas fa-medal"></i>
+                    최근 성취
+                </h3>
+                <div class="achievements-list">
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-fire text-accent-green"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <div class="achievement-title">연속 성공 달성</div>
+                            <div class="achievement-desc">5회 연속 예측 성공</div>
+                        </div>
+                    </div>
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star text-accent-green"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <div class="achievement-title">정확도 마스터</div>
+                            <div class="achievement-desc">승률 60% 달성</div>
+                        </div>
+                    </div>
+                    <div class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="fas fa-chart-line text-accent-green"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <div class="achievement-title">수익률 킹</div>
+                            <div class="achievement-desc">월 수익률 25% 달성</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="trading-section">
+                <h3 class="section-title">
+                    <i class="fas fa-bolt"></i>
+                    빠른 액션
+                </h3>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="window.location.href='prediction.html'">
+                        <i class="fas fa-plus"></i>
+                        <span>새 예측 만들기</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="exportPredictions()">
+                        <i class="fas fa-download"></i>
+                        <span>예측 내역 다운로드</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="window.location.href='ranking.html'">
+                        <i class="fas fa-trophy"></i>
+                        <span>랭킹 확인</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="sharePredictions()">
+                        <i class="fas fa-share-alt"></i>
+                        <span>예측 공유</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Prediction Tips -->
+            <div class="trading-section">
+                <h3 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    예측 팁
+                </h3>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle text-accent-green"></i>
+                        <span>기술적 분석을 활용하세요</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle text-accent-green"></i>
+                        <span>리스크 관리를 잊지 마세요</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle text-accent-green"></i>
+                        <span>시장 뉴스를 주시하세요</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle text-accent-green"></i>
+                        <span>감정적 판단을 피하세요</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Additional CSS for my-predictions specific components -->
+    <style>
+        /* Filter Section */
+        .filter-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-medium);
+            padding: var(--spacing-md);
+        }
+
+        .filter-header {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        /* Enhanced Predictions Table */
+        .prediction-symbol {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .prediction-symbol i {
+            font-size: var(--font-size-lg);
+        }
+
+        .symbol-name {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .symbol-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .prediction-price, .actual-price {
+            text-align: center;
+        }
+
+        .predicted, .actual {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .pending {
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .profit-rate {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .prediction-date {
+            text-align: center;
+        }
+
+        .prediction-date .time {
+            display: block;
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .prediction-status {
+            text-align: center;
+        }
+
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-small);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.success {
+            background: rgba(0, 255, 163, 0.2);
+            color: var(--accent-green);
+        }
+
+        .status-badge.failed {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--text-danger);
+        }
+
+        .status-badge.pending {
+            background: rgba(128, 128, 128, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .prediction-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: var(--radius-small);
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-green-transparent);
+            color: var(--accent-green);
+        }
+
+        .action-btn.cancel {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--text-danger);
+        }
+
+        .action-btn.cancel:hover {
+            background: var(--text-danger);
+            color: var(--text-primary);
+        }
+
+        /* Pagination */
+        .pagination-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .pagination-info {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: var(--radius-small);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--accent-green-transparent);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .pagination-btn.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Performance Chart */
+        .performance-chart {
+            height: 120px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-small);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+        }
+
+        .performance-stats {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .perf-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .perf-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .perf-value {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Achievements */
+        .achievements-list, .tips-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .achievement-item {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .achievement-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-green-transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .achievement-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .achievement-desc {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .quick-action-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-small);
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+        }
+
+        .quick-action-btn:hover {
+            background: var(--accent-green-transparent);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        /* Tips */
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .filter-controls {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr 80px 80px 80px 60px 60px 60px;
+                font-size: var(--font-size-xs);
+            }
+            
+            .pagination-section {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+        // Filter functionality
+        function setupFilters() {
+            const statusFilter = document.getElementById('statusFilter');
+            const symbolFilter = document.getElementById('symbolFilter');
+            const timeFilter = document.getElementById('timeFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            const searchInput = document.getElementById('searchInput');
+
+            function filterPredictions() {
+                const rows = document.querySelectorAll('.table-row');
+                const status = statusFilter.value;
+                const symbol = symbolFilter.value;
+                const timeRange = timeFilter.value;
+                const searchTerm = searchInput.value.toLowerCase();
+
+                rows.forEach(row => {
+                    let show = true;
+
+                    // Status filter
+                    if (status !== 'all' && row.dataset.status !== status) {
+                        show = false;
+                    }
+
+                    // Symbol filter
+                    if (symbol !== 'all' && !row.dataset.symbol.includes(symbol)) {
+                        show = false;
+                    }
+
+                    // Search filter
+                    if (searchTerm && !row.textContent.toLowerCase().includes(searchTerm)) {
+                        show = false;
+                    }
+
+                    // Time filter (simplified)
+                    if (timeRange !== 'all') {
+                        const rowDate = new Date(row.dataset.date);
+                        const now = new Date();
+                        let cutoff;
+
+                        switch (timeRange) {
+                            case 'today':
+                                cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                break;
+                            case 'week':
+                                cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                break;
+                            case 'month':
+                                cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+                                break;
+                        }
+
+                        if (rowDate < cutoff) {
+                            show = false;
+                        }
+                    }
+
+                    row.style.display = show ? 'grid' : 'none';
+                });
+            }
+
+            // Add event listeners
+            statusFilter.addEventListener('change', filterPredictions);
+            symbolFilter.addEventListener('change', filterPredictions);
+            timeFilter.addEventListener('change', filterPredictions);
+            searchInput.addEventListener('input', filterPredictions);
+
+            // Sort functionality
+            sortFilter.addEventListener('change', function() {
+                const tbody = document.querySelector('.predictions-table');
+                const rows = Array.from(document.querySelectorAll('.table-row'));
+                
+                rows.sort((a, b) => {
+                    switch (this.value) {
+                        case 'newest':
+                            return new Date(b.dataset.date) - new Date(a.dataset.date);
+                        case 'oldest':
+                            return new Date(a.dataset.date) - new Date(b.dataset.date);
+                        case 'symbol':
+                            return a.dataset.symbol.localeCompare(b.dataset.symbol);
+                        case 'profit':
+                            const profitA = parseFloat(a.querySelector('.profit-rate span').textContent.replace(/[%+]/g, '')) || 0;
+                            const profitB = parseFloat(b.querySelector('.profit-rate span').textContent.replace(/[%+]/g, '')) || 0;
+                            return profitB - profitA;
+                        default:
+                            return 0;
+                    }
+                });
+
+                // Remove rows and re-add in sorted order
+                rows.forEach(row => row.remove());
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        }
+
+        // Action functions
+        function viewDetails(predictionId) {
+            alert(`예측 ${predictionId} 상세 정보를 표시합니다.`);
+            // Implement detailed view modal
+        }
+
+        function sharePrediction(predictionId) {
+            alert(`예측 ${predictionId}을 공유합니다.`);
+            // Implement sharing functionality
+        }
+
+        function cancelPrediction(predictionId) {
+            if (confirm('이 예측을 취소하시겠습니까?')) {
+                alert(`예측 ${predictionId}이 취소되었습니다.`);
+                // Implement cancellation logic
+            }
+        }
+
+        function exportPredictions() {
+            alert('예측 내역을 CSV 파일로 다운로드합니다.');
+            // Implement export functionality
+        }
+
+        function sharePredictions() {
+            alert('내 예측 성과를 공유합니다.');
+            // Implement sharing functionality
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFilters();
+            
+            // Initialize performance chart placeholder
+            const performanceChart = document.getElementById('performanceChart');
+            performanceChart.innerHTML = '<i class="fas fa-chart-area" style="font-size: 2rem; color: var(--text-tertiary);"></i>';
+            
+            // Add pagination functionality
+            document.querySelectorAll('.pagination-btn:not(:disabled)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!this.classList.contains('active')) {
+                        document.querySelector('.pagination-btn.active').classList.remove('active');
+                        this.classList.add('active');
+                        // Implement page switching logic
+                    }
+                });
+            });
+        });
+
+        // Update stats periodically (simulation)
+        setInterval(() => {
+            const totalElement = document.getElementById('totalPredictions');
+            const successElement = document.getElementById('successfulPredictions');
+            const failedElement = document.getElementById('failedPredictions');
+            const pendingElement = document.getElementById('pendingPredictions');
+            
+            // Simulate small changes in stats
+            const total = parseInt(totalElement.textContent);
+            const success = parseInt(successElement.textContent);
+            const failed = parseInt(failedElement.textContent);
+            const pending = parseInt(pendingElement.textContent);
+            
+            // Occasionally add a new prediction or resolve a pending one
+            if (Math.random() < 0.1) { // 10% chance every interval
+                totalElement.textContent = total + 1;
+                pendingElement.textContent = pending + 1;
+            } else if (Math.random() < 0.1 && pending > 0) { // 10% chance to resolve pending
+                if (Math.random() < 0.6) { // 60% success rate
+                    successElement.textContent = success + 1;
+                } else {
+                    failedElement.textContent = failed + 1;
+                }
+                pendingElement.textContent = pending - 1;
+            }
+        }, 10000); // Update every 10 seconds
+    </script>
+</body>
+</html>

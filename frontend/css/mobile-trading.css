@@ -1,0 +1,510 @@
+/* 
+   MOBILE-FIRST KOREAN TRADING UI - MODERN CARD DESIGN
+   Based on boss's mobile reference design
+   Features: Card-based layout, Blue accents, Modern mobile UX
+*/
+
+/* ===== MOBILE-FIRST CSS VARIABLES ===== */
+:root {
+    /* Mobile-First Colors - Blue Theme */
+    --mobile-primary: #007AFF;          /* iOS Blue primary */
+    --mobile-primary-hover: #0056CC;    /* Darker blue for hover */
+    --mobile-secondary: #5856D6;        /* Purple accent */
+    --mobile-background: #F8F9FA;       /* Light gray background */
+    --mobile-card-bg: #FFFFFF;          /* Pure white cards */
+    --mobile-dark-bg: #1C1C1E;          /* Dark background for charts */
+    --mobile-surface: #F2F2F7;          /* Light surface */
+    
+    /* Mobile Text Colors */
+    --mobile-text-primary: #000000;     /* Black primary text */
+    --mobile-text-secondary: #6C6C70;   /* Gray secondary text */
+    --mobile-text-white: #FFFFFF;       /* White text */
+    --mobile-text-accent: #007AFF;      /* Blue accent text */
+    
+    /* Mobile Success/Error Colors */
+    --mobile-success: #34C759;          /* Green for positive */
+    --mobile-error: #FF3B30;            /* Red for negative */
+    --mobile-warning: #FF9500;          /* Orange for warning */
+    
+    /* Mobile Border & Shadow */
+    --mobile-border: #E5E5EA;           /* Light border */
+    --mobile-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --mobile-shadow-card: 0 2px 10px rgba(0, 0, 0, 0.08);
+    
+    /* Mobile Spacing */
+    --mobile-padding: 16px;
+    --mobile-padding-sm: 12px;
+    --mobile-padding-lg: 24px;
+    --mobile-radius: 16px;
+    --mobile-radius-sm: 12px;
+    
+    /* Mobile Typography */
+    --mobile-font-size-xs: 12px;
+    --mobile-font-size-sm: 14px;
+    --mobile-font-size-md: 16px;
+    --mobile-font-size-lg: 18px;
+    --mobile-font-size-xl: 24px;
+    --mobile-font-size-xxl: 32px;
+}
+
+/* ===== DESKTOP TO MOBILE VISIBILITY ===== */
+@media (max-width: 768px) {
+    /* Hide desktop content on mobile */
+    .desktop-content,
+    .content-header,
+    .market-overview,
+    .chart-preview,
+    .features-grid {
+        display: none !important;
+    }
+    
+    /* Show mobile content */
+    .mobile-search-container,
+    .mobile-stats-grid,
+    .mobile-chart-container,
+    .mobile-card,
+    .mobile-list {
+        display: block;
+    }
+    
+    .mobile-stats-grid {
+        display: grid !important;
+    }
+}
+
+/* ===== MOBILE CONTAINER SYSTEM ===== */
+@media (max-width: 768px) {
+    .figma-container {
+        display: block;
+        background: var(--mobile-background);
+        min-height: 100vh;
+    }
+    
+    /* Hide desktop sidebar and trading panel on mobile */
+    .figma-sidebar,
+    .figma-trading-panel {
+        display: none;
+    }
+    
+    /* Mobile Header */
+    .figma-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--mobile-card-bg);
+        border-bottom: 1px solid var(--mobile-border);
+        padding: var(--mobile-padding-sm) var(--mobile-padding);
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--mobile-shadow-card);
+    }
+    
+    .figma-header .header-logo {
+        font-size: var(--mobile-font-size-lg);
+        font-weight: 700;
+        color: var(--mobile-primary);
+    }
+    
+    .figma-header .header-search {
+        display: none; /* Hide search on mobile header */
+    }
+    
+    .figma-header .header-actions {
+        gap: var(--mobile-padding-sm);
+    }
+    
+    /* Mobile Main Content */
+    .figma-main {
+        padding-top: 80px; /* Account for fixed header */
+        padding-left: var(--mobile-padding);
+        padding-right: var(--mobile-padding);
+        padding-bottom: 100px; /* Account for bottom navigation */
+        background: var(--mobile-background);
+    }
+    
+    /* ===== MOBILE CARD SYSTEM ===== */
+    .mobile-card {
+        background: var(--mobile-card-bg);
+        border-radius: var(--mobile-radius);
+        padding: var(--mobile-padding);
+        margin-bottom: var(--mobile-padding);
+        box-shadow: var(--mobile-shadow-card);
+        border: 1px solid var(--mobile-border);
+    }
+    
+    .mobile-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--mobile-padding);
+        padding-bottom: var(--mobile-padding-sm);
+        border-bottom: 1px solid var(--mobile-border);
+    }
+    
+    .mobile-card-title {
+        font-size: var(--mobile-font-size-lg);
+        font-weight: 600;
+        color: var(--mobile-text-primary);
+    }
+    
+    .mobile-card-action {
+        background: var(--mobile-primary);
+        color: var(--mobile-text-white);
+        border: none;
+        border-radius: var(--mobile-radius-sm);
+        padding: 8px 16px;
+        font-size: var(--mobile-font-size-sm);
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    /* ===== MOBILE STATS GRID ===== */
+    .mobile-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--mobile-padding);
+        margin-bottom: var(--mobile-padding);
+    }
+    
+    .mobile-stat-card {
+        background: var(--mobile-card-bg);
+        border-radius: var(--mobile-radius);
+        padding: var(--mobile-padding);
+        text-align: center;
+        box-shadow: var(--mobile-shadow-card);
+        border: 1px solid var(--mobile-border);
+    }
+    
+    .mobile-stat-value {
+        font-size: var(--mobile-font-size-xxl);
+        font-weight: 700;
+        color: var(--mobile-primary);
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    
+    .mobile-stat-label {
+        font-size: var(--mobile-font-size-sm);
+        color: var(--mobile-text-secondary);
+        font-weight: 500;
+    }
+    
+    .mobile-stat-change {
+        font-size: var(--mobile-font-size-xs);
+        font-weight: 600;
+        margin-top: 4px;
+    }
+    
+    .mobile-stat-change.positive {
+        color: var(--mobile-success);
+    }
+    
+    .mobile-stat-change.negative {
+        color: var(--mobile-error);
+    }
+    
+    /* ===== MOBILE CHART CONTAINER ===== */
+    .mobile-chart-container {
+        background: var(--mobile-dark-bg);
+        border-radius: var(--mobile-radius);
+        padding: var(--mobile-padding);
+        margin-bottom: var(--mobile-padding);
+        min-height: 300px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .mobile-chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--mobile-padding);
+        color: var(--mobile-text-white);
+    }
+    
+    .mobile-chart-symbol {
+        font-size: var(--mobile-font-size-lg);
+        font-weight: 700;
+    }
+    
+    .mobile-chart-price {
+        font-size: var(--mobile-font-size-xl);
+        font-weight: 700;
+        color: var(--mobile-success);
+    }
+    
+    .mobile-chart-change {
+        font-size: var(--mobile-font-size-sm);
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(52, 199, 89, 0.2);
+        color: var(--mobile-success);
+    }
+    
+    /* ===== MOBILE LIST ITEMS ===== */
+    .mobile-list {
+        background: var(--mobile-card-bg);
+        border-radius: var(--mobile-radius);
+        box-shadow: var(--mobile-shadow-card);
+        border: 1px solid var(--mobile-border);
+        margin-bottom: var(--mobile-padding);
+    }
+    
+    .mobile-list-item {
+        display: flex;
+        align-items: center;
+        padding: var(--mobile-padding);
+        border-bottom: 1px solid var(--mobile-border);
+    }
+    
+    .mobile-list-item:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-list-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--mobile-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--mobile-text-white);
+        margin-right: var(--mobile-padding);
+        font-size: var(--mobile-font-size-md);
+    }
+    
+    .mobile-list-content {
+        flex: 1;
+    }
+    
+    .mobile-list-title {
+        font-size: var(--mobile-font-size-md);
+        font-weight: 600;
+        color: var(--mobile-text-primary);
+        margin-bottom: 2px;
+    }
+    
+    .mobile-list-subtitle {
+        font-size: var(--mobile-font-size-sm);
+        color: var(--mobile-text-secondary);
+    }
+    
+    .mobile-list-value {
+        font-size: var(--mobile-font-size-md);
+        font-weight: 600;
+        text-align: right;
+    }
+    
+    .mobile-list-value.positive {
+        color: var(--mobile-success);
+    }
+    
+    .mobile-list-value.negative {
+        color: var(--mobile-error);
+    }
+    
+    /* ===== MOBILE BOTTOM NAVIGATION ===== */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--mobile-card-bg);
+        border-top: 1px solid var(--mobile-border);
+        padding: var(--mobile-padding-sm) 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--mobile-text-secondary);
+        font-size: var(--mobile-font-size-xs);
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        min-width: 60px;
+    }
+    
+    .mobile-nav-item.active {
+        color: var(--mobile-primary);
+        background: rgba(0, 122, 255, 0.1);
+    }
+    
+    .mobile-nav-item i {
+        font-size: var(--mobile-font-size-lg);
+        margin-bottom: 4px;
+    }
+    
+    /* ===== MOBILE BUTTONS ===== */
+    .mobile-btn {
+        background: var(--mobile-primary);
+        color: var(--mobile-text-white);
+        border: none;
+        border-radius: var(--mobile-radius-sm);
+        padding: var(--mobile-padding-sm) var(--mobile-padding);
+        font-size: var(--mobile-font-size-md);
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: var(--mobile-padding-sm);
+        box-shadow: var(--mobile-shadow-card);
+        transition: all 0.2s ease;
+    }
+    
+    .mobile-btn:hover {
+        background: var(--mobile-primary-hover);
+        transform: translateY(-1px);
+    }
+    
+    .mobile-btn.secondary {
+        background: var(--mobile-surface);
+        color: var(--mobile-text-primary);
+    }
+    
+    .mobile-btn.success {
+        background: var(--mobile-success);
+    }
+    
+    .mobile-btn.error {
+        background: var(--mobile-error);
+    }
+    
+    /* ===== MOBILE FORM ELEMENTS ===== */
+    .mobile-form-group {
+        margin-bottom: var(--mobile-padding);
+    }
+    
+    .mobile-form-label {
+        display: block;
+        font-size: var(--mobile-font-size-sm);
+        font-weight: 600;
+        color: var(--mobile-text-primary);
+        margin-bottom: 8px;
+    }
+    
+    .mobile-form-input,
+    .mobile-form-select {
+        width: 100%;
+        padding: var(--mobile-padding-sm);
+        border: 1px solid var(--mobile-border);
+        border-radius: var(--mobile-radius-sm);
+        font-size: var(--mobile-font-size-md);
+        background: var(--mobile-card-bg);
+        color: var(--mobile-text-primary);
+    }
+    
+    .mobile-form-input:focus,
+    .mobile-form-select:focus {
+        outline: none;
+        border-color: var(--mobile-primary);
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+    
+    /* ===== MOBILE SEARCH BAR ===== */
+    .mobile-search-container {
+        background: var(--mobile-card-bg);
+        border-radius: var(--mobile-radius);
+        padding: var(--mobile-padding);
+        margin-bottom: var(--mobile-padding);
+        box-shadow: var(--mobile-shadow-card);
+        border: 1px solid var(--mobile-border);
+    }
+    
+    .mobile-search-input {
+        width: 100%;
+        padding: var(--mobile-padding-sm);
+        border: 1px solid var(--mobile-border);
+        border-radius: var(--mobile-radius-sm);
+        font-size: var(--mobile-font-size-md);
+        background: var(--mobile-surface);
+        color: var(--mobile-text-primary);
+    }
+    
+    /* ===== MOBILE ANIMATIONS ===== */
+    .mobile-fade-in {
+        animation: mobileFadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes mobileFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .mobile-scale-up {
+        animation: mobileScaleUp 0.2s ease-in-out;
+    }
+    
+    @keyframes mobileScaleUp {
+        from {
+            transform: scale(0.95);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+    
+    /* ===== MOBILE UTILITIES ===== */
+    .mobile-text-center {
+        text-align: center;
+    }
+    
+    .mobile-text-right {
+        text-align: right;
+    }
+    
+    .mobile-mb-0 { margin-bottom: 0; }
+    .mobile-mb-1 { margin-bottom: 8px; }
+    .mobile-mb-2 { margin-bottom: var(--mobile-padding); }
+    .mobile-mb-3 { margin-bottom: var(--mobile-padding-lg); }
+    
+    .mobile-p-0 { padding: 0; }
+    .mobile-p-1 { padding: 8px; }
+    .mobile-p-2 { padding: var(--mobile-padding); }
+    .mobile-p-3 { padding: var(--mobile-padding-lg); }
+    
+    .mobile-hidden {
+        display: none;
+    }
+    
+    .mobile-flex {
+        display: flex;
+    }
+    
+    .mobile-grid {
+        display: grid;
+    }
+}
+
+/* ===== TABLET ADJUSTMENTS ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .figma-container {
+        grid-template-columns: 200px 1fr;
+        grid-template-areas: 
+            "sidebar header"
+            "sidebar main";
+    }
+    
+    .figma-trading-panel {
+        display: none;
+    }
+}

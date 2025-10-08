@@ -16,8 +16,11 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Custom Banking UI CSS -->
-    <link rel="stylesheet" href="css/banking-ui.css">
+    <!-- Korean Trading UI Design System -->
+    <link rel="stylesheet" href="css/figma-design.css">
+    
+    <!-- Mobile Trading UI -->
+    <link rel="stylesheet" href="css/mobile-trading.css">
     
     <!-- Chart Libraries -->
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
@@ -105,6 +108,53 @@
                 font-size: 12px;
                 min-width: 50px;
             }
+        }
+
+        /* Responsive table styles for predictions */
+        .predictions-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .predictions-table {
+            min-width: 600px; /* Minimum width for proper column layout */
+        }
+
+        /* Mobile responsive adjustments for predictions table */
+        @media (max-width: 768px) {
+            .predictions-table-container {
+                margin-left: -1rem;
+                margin-right: -1rem;
+            }
+            
+            .predictions-table th,
+            .predictions-table td {
+                padding: 0.75rem 0.5rem !important;
+                font-size: 0.875rem;
+            }
+
+            .predictions-table th:first-child,
+            .predictions-table td:first-child {
+                padding-left: 1rem !important;
+            }
+
+            .predictions-table th:last-child,
+            .predictions-table td:last-child {
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Table hover effects */
+        .predictions-table tbody tr:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Status badge styles for predictions */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -1338,15 +1388,29 @@
                         </div>
 
                         <!-- Predictions Summary -->
-                        <div id="predictionsPanel" class="hidden banking-card border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-3">
+                        <div id="predictionsPanel" class="hidden banking-card border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 border-b border-gray-200">
                                 <h4 class="font-semibold text-gray-900">
                                     <i class="fas fa-list text-green-600 mr-2"></i>설정된 예측
                                 </h4>
                                 <span id="predictionCount" class="text-sm text-gray-600">0개 예측</span>
                             </div>
-                            <div id="predictionsList" class="space-y-2 max-h-32 overflow-y-auto">
-                                <!-- Predictions will be dynamically added here -->
+                            
+                            <!-- Table Content -->
+                            <div class="predictions-table-container max-h-64 overflow-y-auto">
+                                <table class="predictions-table w-full">
+                                    <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">예측일</th>
+                                            <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">목표가격</th>
+                                            <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">변화율</th>
+                                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">동작</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="predictionsList" class="divide-y divide-gray-200">
+                                        <!-- Predictions will be dynamically added here -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -2760,33 +2824,61 @@
                 predictionCount.textContent = `${predictions.length}개 예측`;
             }
 
+            if (predictions.length === 0) {
+                predictionsList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                            <i class="fas fa-chart-line text-2xl mb-2 block"></i>
+                            설정된 예측이 없습니다
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
             predictionsList.innerHTML = predictions
                 .sort((a, b) => new Date(a.date) - new Date(b.date))
                 .map(p => {
                     const date = new Date(p.date);
                     const currentPrice = getCurrentPrice();
                     const change = currentPrice ? ((p.price - currentPrice) / currentPrice * 100) : 0;
-                    const changeClass = change >= 0 ? 'text-tv-green' : 'text-tv-red';
+                    const changeClass = change >= 0 ? 'text-green-600' : 'text-red-600';
                     const changeIcon = change >= 0 ? '📈' : '📉';
 
                     return `
-                        <div class="flex items-center justify-between p-3 bg-tv-card rounded-lg border border-tv-border">
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-sm font-medium text-tv-text">${date.toLocaleDateString('ko-KR')}</span>
-                                    <span class="text-xs text-tv-text-secondary">${date.toLocaleDateString('ko-KR', { weekday: 'short' })}</span>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <!-- 예측일 -->
+                            <td class="px-4 py-3">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-gray-900">${date.toLocaleDateString('ko-KR')}</span>
+                                    <span class="text-xs text-gray-500">${date.toLocaleDateString('ko-KR', { weekday: 'short' })}</span>
                                 </div>
-                                <div class="flex items-center space-x-2 mt-1">
-                                    <span class="text-lg font-bold text-tv-text">$${p.price.toFixed(2)}</span>
+                            </td>
+                            
+                            <!-- 목표가격 -->
+                            <td class="px-4 py-3 text-right">
+                                <div class="text-sm font-bold text-gray-900">$${p.price.toFixed(2)}</div>
+                            </td>
+                            
+                            <!-- 변화율 -->
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex items-center justify-end space-x-1">
+                                    <span class="text-xs">${changeIcon}</span>
                                     <span class="${changeClass} text-sm font-medium">
-                                        ${changeIcon} ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+                                        ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
                                     </span>
                                 </div>
-                            </div>
-                            <button onclick="removePrediction(${p.id})" class="ml-3 text-tv-red hover:text-red-400 transition-colors">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                            </td>
+                            
+                            <!-- 동작 -->
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="removePrediction(${p.id})" 
+                                    class="text-red-600 hover:text-red-800 transition-colors p-1 rounded hover:bg-red-50"
+                                    title="예측 삭제">
+                                    <i class="fas fa-times text-sm"></i>
+                                </button>
+                            </td>
+                        </tr>
                     `;
                 }).join('');
         }

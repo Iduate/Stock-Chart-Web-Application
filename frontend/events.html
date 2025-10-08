@@ -8,8 +8,11 @@
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 
-    <!-- Banking UI CSS Framework -->
-    <link rel="stylesheet" href="css/banking-ui.css">
+    <!-- Korean Trading UI Design System -->
+    <link rel="stylesheet" href="css/figma-design.css">
+    
+    <!-- Mobile Trading UI -->
+    <link rel="stylesheet" href="css/mobile-trading.css">
     
     <!-- Tailwind CSS with Banking Color Scheme -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -93,10 +96,367 @@
         .menu-open .hamburger-line:nth-child(3) {
             transform: rotate(-45deg) translate(6px, -6px);
         }
+
+        /* Responsive table styles for events and leaderboards */
+        .events-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .events-table {
+            min-width: 800px; /* Minimum width for proper column layout */
+        }
+
+        /* Mobile responsive adjustments for events tables */
+        @media (max-width: 768px) {
+            .events-table-container {
+                margin-left: -1rem;
+                margin-right: -1rem;
+            }
+            
+            .events-table th,
+            .events-table td {
+                padding: 0.75rem 0.5rem !important;
+                font-size: 0.875rem;
+            }
+
+            .events-table th:first-child,
+            .events-table td:first-child {
+                padding-left: 1rem !important;
+            }
+
+            .events-table th:last-child,
+            .events-table td:last-child {
+                padding-right: 1rem !important;
+            }
+        }
+
+        /* Table hover effects for events */
+        .events-table tbody tr:hover {
+            background: linear-gradient(to right, rgba(37, 99, 235, 0.05), transparent);
+        }
+
+        /* Event status badges */
+        .event-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .event-status-badge.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .event-status-badge.upcoming {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .event-status-badge.ended {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        /* Leaderboard ranking badges */
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            min-width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.875rem;
+        }
+
+        .rank-badge.rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #8b4513;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+        }
+
+        .rank-badge.rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+            color: #4a4a4a;
+            box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+        }
+
+        .rank-badge.rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #b8711a);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(205, 127, 50, 0.4);
+        }
+
+        .rank-badge.default {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
     </style>
 </head>
 
-<body class="bg-tv-darker text-tv-text font-sans overflow-x-hidden max-w-full min-h-screen">
+<body>
+    <!-- Korean Trading UI Container -->
+    <div class="figma-container">
+        
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>주식 차트</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item active">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">게스트</div>
+                        <div class="user-status">무료 계정</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-calendar text-accent-green"></i>
+                <span>이벤트</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="이벤트 검색" id="searchInput">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </button>
+                <button class="btn-predict primary">
+                    <i class="fas fa-user-plus"></i>
+                    <span>참가하기</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="figma-main">
+            <div class="main-content">
+                <!-- Events Header -->
+                <div class="content-header">
+                    <h1>이벤트 및 대회</h1>
+                    <p>주식 예측 대회에 참가하여 상금을 획득하세요</p>
+                </div>
+                
+                <!-- Active Events -->
+                <div class="events-section">
+                    <h2>진행 중인 이벤트</h2>
+                    <div class="events-grid">
+                        <div class="event-card active">
+                            <div class="event-badge">진행중</div>
+                            <h3>월간 수익률 챌린지</h3>
+                            <p>한 달 동안 가장 높은 수익률을 달성한 참가자에게 상금 지급</p>
+                            <div class="event-details">
+                                <div class="detail-item">
+                                    <span>상금</span>
+                                    <span class="accent">₩1,000,000</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>참가자</span>
+                                    <span>1,247명</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>종료</span>
+                                    <span>7일 남음</span>
+                                </div>
+                            </div>
+                            <button class="btn-event">참가하기</button>
+                        </div>
+                        
+                        <div class="event-card active">
+                            <div class="event-badge">진행중</div>
+                            <h3>AI 예측 정확도 대회</h3>
+                            <p>AI 예측을 활용하여 가장 정확한 예측을 한 참가자 선정</p>
+                            <div class="event-details">
+                                <div class="detail-item">
+                                    <span>상금</span>
+                                    <span class="accent">₩500,000</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>참가자</span>
+                                    <span>892명</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>종료</span>
+                                    <span>3일 남음</span>
+                                </div>
+                            </div>
+                            <button class="btn-event">참가하기</button>
+                        </div>
+                        
+                        <div class="event-card upcoming">
+                            <div class="event-badge upcoming">예정</div>
+                            <h3>신규 회원 환영 이벤트</h3>
+                            <p>새로 가입한 회원들을 위한 특별 보너스 지급 이벤트</p>
+                            <div class="event-details">
+                                <div class="detail-item">
+                                    <span>보너스</span>
+                                    <span class="accent">₩50,000</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>대상</span>
+                                    <span>신규 회원</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span>시작</span>
+                                    <span>2일 후</span>
+                                </div>
+                            </div>
+                            <button class="btn-event upcoming">알림 설정</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Event Rankings -->
+                <div class="rankings-section">
+                    <h2>현재 순위</h2>
+                    <div class="ranking-table">
+                        <div class="ranking-header">
+                            <span>순위</span>
+                            <span>참가자</span>
+                            <span>수익률</span>
+                            <span>포인트</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank gold">1</span>
+                            <span class="user">투자왕123</span>
+                            <span class="return positive">+24.7%</span>
+                            <span class="points">2,470</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank silver">2</span>
+                            <span class="user">주식마스터</span>
+                            <span class="return positive">+19.3%</span>
+                            <span class="points">1,930</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank bronze">3</span>
+                            <span class="user">AI예측러</span>
+                            <span class="return positive">+15.8%</span>
+                            <span class="points">1,580</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank">4</span>
+                            <span class="user">차트분석가</span>
+                            <span class="return positive">+12.1%</span>
+                            <span class="points">1,210</span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="rank">5</span>
+                            <span class="user">데이트레이더</span>
+                            <span class="return positive">+9.4%</span>
+                            <span class="points">940</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Trading Panel -->
+        <aside class="figma-trading-panel">
+            <div class="trading-header">
+                <h3>이벤트 참가</h3>
+            </div>
+            
+            <div class="event-participation">
+                <div class="current-event">
+                    <h4>참가 중인 이벤트</h4>
+                    <div class="my-event">
+                        <div class="event-name">월간 수익률 챌린지</div>
+                        <div class="my-rank">현재 순위: #47</div>
+                        <div class="my-return">내 수익률: +5.2%</div>
+                    </div>
+                </div>
+                
+                <div class="event-stats">
+                    <h4>내 통계</h4>
+                    <div class="stat-item">
+                        <span>참가한 이벤트</span>
+                        <span>12개</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>우승 횟수</span>
+                        <span>2회</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>획득 상금</span>
+                        <span>₩750,000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>평균 순위</span>
+                        <span>15위</span>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="btn-action">새 이벤트 참가</button>
+                    <button class="btn-action secondary">내 이벤트 현황</button>
+                </div>
+            </div>
+            
+            <div class="upcoming-events">
+                <h4>다가오는 이벤트</h4>
+                <div class="upcoming-event">
+                    <div class="event-title">주간 단타 대회</div>
+                    <div class="event-time">3일 후 시작</div>
+                </div>
+                <div class="upcoming-event">
+                    <div class="event-title">암호화폐 예측 챌린지</div>
+                    <div class="event-time">1주일 후 시작</div>
+                </div>
+                <div class="upcoming-event">
+                    <div class="event-title">연말 총결산 대회</div>
+                    <div class="event-time">1개월 후 시작</div>
+                </div>
+            </div>
+        </aside>
+    </div>
     <!-- Navigation Bar -->
     <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -351,51 +711,136 @@
             <div class="mb-16">
                 <h2 class="text-2xl font-bold text-tv-text mb-8">예정된 이벤트</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-12 h-12 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-calendar text-tv-blue"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-tv-text">10월 추석 특별 이벤트</h4>
-                                <p class="text-sm text-tv-text-secondary">10월 1일 시작</p>
-                            </div>
-                        </div>
-                        <p class="text-tv-text-secondary text-sm">
-                            추석 연휴 특별 예측 대회가 준비되고 있습니다
-                        </p>
+                <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden">
+                    <div class="events-table-container">
+                        <table class="events-table w-full">
+                            <thead class="bg-tv-light border-b border-tv-border sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">이벤트</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">시작일</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">상태</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">상금</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">설명</th>
+                                    <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">동작</th>
+                                </tr>
+                            </thead>
+                            <tbody id="upcomingEventsTable" class="divide-y divide-tv-border">
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-calendar text-tv-blue"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-semibold text-tv-text">10월 추석 특별 이벤트</div>
+                                                <div class="text-sm text-tv-text-secondary">특별 예측 대회</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-tv-text">10월 15일</div>
+                                        <div class="text-sm text-tv-text-secondary">오후 2시</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="event-status-badge status-upcoming">곧 시작</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-tv-green">500만원</div>
+                                        <div class="text-sm text-tv-text-secondary">총 상금</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-tv-text-secondary max-w-xs">
+                                            추석 연휴 특별 예측 대회가 준비되고 있습니다
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <button onclick="registerForEvent('chuseok-special')" 
+                                            class="bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            사전등록
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-star text-tv-green"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-semibold text-tv-text">VIP 전용 대회</div>
+                                                <div class="text-sm text-tv-text-secondary">프리미엄 회원 전용</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-tv-text">10월 25일</div>
+                                        <div class="text-sm text-tv-text-secondary">오전 10시</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="event-status-badge status-upcoming">예정</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-tv-green">1,000만원</div>
+                                        <div class="text-sm text-tv-text-secondary">고액 상금</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-tv-text-secondary max-w-xs">
+                                            프리미엄 회원 전용 고액 상금 대회
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <button onclick="registerForEvent('vip-contest')" 
+                                            class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            VIP 등록
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-tv-red bg-opacity-20 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-rocket text-tv-red"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-semibold text-tv-text">크립토 챌린지</div>
+                                                <div class="text-sm text-tv-text-secondary">암호화폐 전문</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-tv-text">11월 1일</div>
+                                        <div class="text-sm text-tv-text-secondary">자정 시작</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="event-status-badge status-planned">계획중</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-tv-green">300만원</div>
+                                        <div class="text-sm text-tv-text-secondary">+ 크립토</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-tv-text-secondary max-w-xs">
+                                            암호화폐 가격 예측 전문 대회
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <button onclick="registerForEvent('crypto-challenge')" 
+                                            class="bg-tv-text-secondary hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            알림 설정
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div
-                                class="w-12 h-12 bg-tv-green bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-star text-tv-green"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-tv-text">VIP 전용 대회</h4>
-                                <p class="text-sm text-tv-text-secondary">9월 25일 시작</p>
-                            </div>
-                        </div>
-                        <p class="text-tv-text-secondary text-sm">
-                            프리미엄 회원 전용 고액 상금 대회
-                        </p>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div class="w-12 h-12 bg-tv-red bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-rocket text-tv-red"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-tv-text">크립토 챌린지</h4>
-                                <p class="text-sm text-tv-text-secondary">11월 1일 시작</p>
-                            </div>
-                        </div>
-                        <p class="text-tv-text-secondary text-sm">
-                            암호화폐 가격 예측 전문 대회
-                        </p>
+                    <div class="p-4 border-t border-tv-border text-center">
+                        <button onclick="viewAllUpcomingEvents()"
+                            class="text-tv-blue hover:text-blue-400 font-semibold transition-colors">
+                            <i class="fas fa-calendar-plus mr-2"></i>모든 예정 이벤트 보기
+                        </button>
                     </div>
                 </div>
             </div>
@@ -405,75 +850,166 @@
                 <h2 class="text-2xl font-bold text-tv-text mb-8">현재 대회 순위</h2>
 
                 <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden">
-                    <div class="p-6 border-b border-tv-border">
+                    <div class="p-6 border-b border-tv-border bg-gradient-to-r from-tv-blue/5 to-transparent">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-semibold text-tv-text">9월 가을 예측 챌린지 - TOP 10</h3>
-                            <span class="text-sm text-tv-text-secondary">실시간 업데이트</span>
+                            <h3 class="text-lg font-semibold text-tv-text">🏆 10월 가을 예측 챌린지 - 실시간 순위</h3>
+                            <div class="flex items-center space-x-2 text-tv-text-secondary">
+                                <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse"></div>
+                                <span class="text-sm">실시간 업데이트</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="divide-y divide-tv-border">
-                        <div class="p-4 flex items-center justify-between hover:bg-tv-light transition-colors">
-                            <div class="flex items-center space-x-4">
-                                <div
-                                    class="w-8 h-8 bg-tv-green rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    1</div>
-                                <div class="w-8 h-8 bg-tv-blue rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-tv-text">TradingMaster</div>
-                                    <div class="text-sm text-tv-text-secondary">정확도: 94.7%</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-tv-green">+127.3%</div>
-                                <div class="text-sm text-tv-text-secondary">수익률</div>
-                            </div>
-                        </div>
+                    <!-- Leaderboard Table -->
+                    <div class="events-table-container">
+                        <table class="events-table w-full">
+                            <thead class="bg-tv-light border-b border-tv-border sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">순위</th>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">참가자</th>
+                                    <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">정확도</th>
+                                    <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">수익률</th>
+                                    <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">예측 수</th>
+                                    <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">배지</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardTable" class="divide-y divide-tv-border">
+                                <!-- Rank 1 -->
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300 group">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="rank-badge rank-1 relative">
+                                                1
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-crown text-white text-xs"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                                                <i class="fas fa-trophy text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-tv-text">TradingMaster</div>
+                                                <div class="text-sm text-tv-text-secondary">프로 트레이더</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-xl font-black text-tv-text">94.7%</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-lg font-bold text-tv-green">+127.3% 🔥</div>
+                                        <div class="text-xs text-tv-text-secondary">이번 달</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="text-sm font-medium text-tv-text">
+                                            <i class="fas fa-chart-bar mr-1"></i>89
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center space-x-1">
+                                            <i class="fas fa-medal text-yellow-500" title="챔피언"></i>
+                                            <i class="fas fa-fire text-red-500" title="연속 성공"></i>
+                                        </div>
+                                    </td>
+                                </tr>
 
-                        <div class="p-4 flex items-center justify-between hover:bg-tv-light transition-colors">
-                            <div class="flex items-center space-x-4">
-                                <div
-                                    class="w-8 h-8 bg-tv-text-secondary rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    2</div>
-                                <div class="w-8 h-8 bg-tv-blue rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-tv-text">StockGuru</div>
-                                    <div class="text-sm text-tv-text-secondary">정확도: 91.2%</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-tv-green">+98.5%</div>
-                                <div class="text-sm text-tv-text-secondary">수익률</div>
-                            </div>
-                        </div>
+                                <!-- Rank 2 -->
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300 group">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="rank-badge rank-2 relative">
+                                                2
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-gray-400 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-medal text-white text-xs"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                                                <i class="fas fa-user-tie text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-tv-text">StockGuru</div>
+                                                <div class="text-sm text-tv-text-secondary">분석 전문가</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-xl font-black text-tv-text">91.2%</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-lg font-bold text-tv-green">+98.5% 💰</div>
+                                        <div class="text-xs text-tv-text-secondary">이번 달</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="text-sm font-medium text-tv-text">
+                                            <i class="fas fa-chart-bar mr-1"></i>76
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center space-x-1">
+                                            <i class="fas fa-star text-blue-500" title="베테랑"></i>
+                                            <i class="fas fa-brain text-purple-500" title="분석왕"></i>
+                                        </div>
+                                    </td>
+                                </tr>
 
-                        <div class="p-4 flex items-center justify-between hover:bg-tv-light transition-colors">
-                            <div class="flex items-center space-x-4">
-                                <div
-                                    class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                    3</div>
-                                <div class="w-8 h-8 bg-tv-blue rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-tv-text">MarketPro</div>
-                                    <div class="text-sm text-tv-text-secondary">정확도: 88.9%</div>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <div class="font-bold text-tv-green">+76.2%</div>
-                                <div class="text-sm text-tv-text-secondary">수익률</div>
-                            </div>
-                        </div>
+                                <!-- Rank 3 -->
+                                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300 group">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            <div class="rank-badge rank-3 relative">
+                                                3
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center">
+                                                    <i class="fas fa-award text-white text-xs"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                                                <i class="fas fa-chart-line text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-tv-text">MarketPro</div>
+                                                <div class="text-sm text-tv-text-secondary">시장 분석가</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-xl font-black text-tv-text">88.9%</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="text-lg font-bold text-tv-green">+76.2% 📈</div>
+                                        <div class="text-xs text-tv-text-secondary">이번 달</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="text-sm font-medium text-tv-text">
+                                            <i class="fas fa-chart-bar mr-1"></i>63
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center space-x-1">
+                                            <i class="fas fa-chart-line text-green-500" title="트렌드마스터"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="p-4 border-t border-tv-border text-center">
                         <button onclick="viewFullRankings()"
-                            class="text-tv-blue hover:text-blue-400 font-semibold transition-colors">전체 순위 보기</button>
+                            class="text-tv-blue hover:text-blue-400 font-semibold transition-colors">
+                            <i class="fas fa-trophy mr-2"></i>전체 순위 보기
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2301,6 +2837,346 @@
         console.log('- showEventRulesModal:', typeof window.showEventRulesModal);
         console.log('- hideEventRulesModal:', typeof window.hideEventRulesModal);
 
+        // Event Management Functions
+        function joinEvent(eventId) {
+            console.log('Joining event:', eventId);
+            
+            // Check if user is logged in
+            if (!localStorage.getItem('isLoggedIn')) {
+                showLoginModal();
+                return;
+            }
+
+            try {
+                // Show loading notification
+                if (window.showNotification) {
+                    showNotification('이벤트 참가 신청 중...', 'info');
+                }
+
+                // Simulate API call
+                setTimeout(() => {
+                    if (window.showNotification) {
+                        showNotification('이벤트 참가 신청이 완료되었습니다!', 'success');
+                    } else {
+                        alert('이벤트 참가 신청이 완료되었습니다!');
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error('Event join error:', error);
+                if (window.showNotification) {
+                    showNotification('이벤트 참가 신청 중 오류가 발생했습니다.', 'error');
+                }
+            }
+        }
+
+        function registerForEvent(eventId) {
+            console.log('Registering for upcoming event:', eventId);
+            
+            // Check if user is logged in
+            if (!localStorage.getItem('isLoggedIn')) {
+                showLoginModal();
+                return;
+            }
+
+            try {
+                // Show loading notification
+                if (window.showNotification) {
+                    showNotification('사전 등록 중...', 'info');
+                }
+
+                // Simulate API call
+                setTimeout(() => {
+                    if (window.showNotification) {
+                        showNotification('사전 등록이 완료되었습니다! 이벤트 시작 시 알림을 받으실 수 있습니다.', 'success');
+                    } else {
+                        alert('사전 등록이 완료되었습니다!');
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error('Event registration error:', error);
+                if (window.showNotification) {
+                    showNotification('사전 등록 중 오류가 발생했습니다.', 'error');
+                }
+            }
+        }
+
+        // Table data loading functions for events
+        function loadLeaderboardData() {
+            const tableBody = document.getElementById('leaderboardTable');
+            if (!tableBody) return;
+
+            // Sample leaderboard data
+            const leaderboardData = [
+                {
+                    rank: 1,
+                    user: 'TradingMaster',
+                    userType: '프로 트레이더',
+                    accuracy: '94.7%',
+                    profit: '+127.3% 🔥',
+                    predictions: 89,
+                    badges: ['fas fa-medal text-yellow-500', 'fas fa-fire text-red-500'],
+                    bgColor: 'from-yellow-400 to-yellow-600',
+                    icon: 'fas fa-trophy'
+                },
+                {
+                    rank: 2,
+                    user: 'StockGuru',
+                    userType: '분석 전문가',
+                    accuracy: '91.2%',
+                    profit: '+98.5% 💰',
+                    predictions: 76,
+                    badges: ['fas fa-star text-blue-500', 'fas fa-brain text-purple-500'],
+                    bgColor: 'from-gray-400 to-gray-600',
+                    icon: 'fas fa-user-tie'
+                },
+                {
+                    rank: 3,
+                    user: 'MarketPro',
+                    userType: '시장 분석가',
+                    accuracy: '88.9%',
+                    profit: '+76.2% 📈',
+                    predictions: 63,
+                    badges: ['fas fa-chart-line text-green-500'],
+                    bgColor: 'from-orange-400 to-orange-600',
+                    icon: 'fas fa-chart-line'
+                }
+            ];
+
+            // Clear existing data
+            tableBody.innerHTML = '';
+
+            // Add each row
+            leaderboardData.forEach(data => {
+                const row = createLeaderboardRow(data);
+                tableBody.appendChild(row);
+            });
+        }
+
+        function createLeaderboardRow(data) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300 group';
+            
+            const rankClass = data.rank <= 3 ? `rank-${data.rank}` : '';
+            const badgeIcons = data.badges.map(badge => `<i class="${badge}"></i>`).join(' ');
+            
+            row.innerHTML = `
+                <td class="px-6 py-4">
+                    <div class="flex items-center">
+                        <div class="rank-badge ${rankClass} relative">
+                            ${data.rank}
+                            ${data.rank === 1 ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center"><i class="fas fa-crown text-white text-xs"></i></div>' : ''}
+                            ${data.rank === 2 ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-gray-400 rounded-full flex items-center justify-center"><i class="fas fa-medal text-white text-xs"></i></div>' : ''}
+                            ${data.rank === 3 ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center"><i class="fas fa-award text-white text-xs"></i></div>' : ''}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br ${data.bgColor} rounded-full flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                            <i class="${data.icon} text-white"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-tv-text">${data.user}</div>
+                            <div class="text-sm text-tv-text-secondary">${data.userType}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <div class="text-xl font-black text-tv-text">${data.accuracy}</div>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <div class="text-lg font-bold text-tv-green">${data.profit}</div>
+                    <div class="text-xs text-tv-text-secondary">이번 달</div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <div class="text-sm font-medium text-tv-text">
+                        <i class="fas fa-chart-bar mr-1"></i>${data.predictions}
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center space-x-1">
+                        ${badgeIcons}
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        function loadUpcomingEventsData() {
+            const tableBody = document.getElementById('upcomingEventsTable');
+            if (!tableBody) return;
+
+            // Sample upcoming events data
+            const eventsData = [
+                {
+                    name: '10월 추석 특별 이벤트',
+                    description: '특별 예측 대회',
+                    startDate: '10월 15일',
+                    startTime: '오후 2시',
+                    status: 'upcoming',
+                    statusText: '곧 시작',
+                    prize: '500만원',
+                    info: '추석 연휴 특별 예측 대회가 준비되고 있습니다',
+                    eventId: 'chuseok-special',
+                    icon: 'fas fa-calendar',
+                    iconBg: 'bg-tv-blue bg-opacity-20'
+                },
+                {
+                    name: 'VIP 회원 전용 대회',
+                    description: '프리미엄 예측 챌린지',
+                    startDate: '10월 20일',
+                    startTime: '오전 10시',
+                    status: 'vip',
+                    statusText: 'VIP 전용',
+                    prize: '1000만원',
+                    info: 'VIP 회원만 참가할 수 있는 특별 대회입니다',
+                    eventId: 'vip-contest',
+                    icon: 'fas fa-crown',
+                    iconBg: 'bg-yellow-500 bg-opacity-20'
+                },
+                {
+                    name: '암호화폐 예측 챌린지',
+                    description: '디지털 자산 예측',
+                    startDate: '10월 25일',
+                    startTime: '오후 6시',
+                    status: 'active',
+                    statusText: '모집중',
+                    prize: '300만원',
+                    info: '비트코인, 이더리움 등 주요 암호화폐 예측 대회',
+                    eventId: 'crypto-challenge',
+                    icon: 'fas fa-coins',
+                    iconBg: 'bg-purple-500 bg-opacity-20'
+                }
+            ];
+
+            // Clear existing data and add new rows
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                eventsData.forEach(event => {
+                    const row = createEventRow(event);
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function createEventRow(event) {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300';
+            
+            row.innerHTML = `
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 ${event.iconBg} rounded-lg flex items-center justify-center">
+                            <i class="${event.icon} text-tv-blue"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-tv-text">${event.name}</div>
+                            <div class="text-sm text-tv-text-secondary">${event.description}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-tv-text">${event.startDate}</div>
+                    <div class="text-sm text-tv-text-secondary">${event.startTime}</div>
+                </td>
+                <td class="px-6 py-4">
+                    <span class="event-status-badge status-${event.status}">${event.statusText}</span>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="font-bold text-tv-green">${event.prize}</div>
+                    <div class="text-sm text-tv-text-secondary">총 상금</div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-sm text-tv-text-secondary max-w-xs">
+                        ${event.info}
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-center">
+                    <button onclick="registerForEvent('${event.eventId}')" 
+                        class="bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        참가 신청
+                    </button>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        function viewFullRankings() {
+            console.log('Viewing full rankings');
+            
+            try {
+                // Show loading notification
+                if (window.showNotification) {
+                    showNotification('전체 순위를 불러오는 중...', 'info');
+                }
+
+                // Simulate navigation to rankings page
+                setTimeout(() => {
+                    window.location.href = 'ranking.html';
+                }, 500);
+
+            } catch (error) {
+                console.error('Rankings view error:', error);
+                if (window.showNotification) {
+                    showNotification('순위 페이지 로딩 중 오류가 발생했습니다.', 'error');
+                }
+            }
+        }
+
+        function viewAllUpcomingEvents() {
+            console.log('Viewing all upcoming events');
+            
+            try {
+                // Expand table to show more events or navigate to dedicated page
+                const tbody = document.getElementById('upcomingEventsTable');
+                if (tbody) {
+                    // For now, just show notification
+                    if (window.showNotification) {
+                        showNotification('모든 예정 이벤트를 표시합니다.', 'info');
+                    }
+                }
+
+            } catch (error) {
+                console.error('View all events error:', error);
+                if (window.showNotification) {
+                    showNotification('이벤트 목록 로딩 중 오류가 발생했습니다.', 'error');
+                }
+            }
+        }
+
+        function showEventRulesModal() {
+            console.log('Showing event rules modal');
+            
+            try {
+                // For now, show basic alert with rules
+                alert(`이벤트 참가 규칙:
+
+1. 참가 자격
+   - StockChart 회원
+   - 이메일 인증 완료
+   - 약관 동의 필수
+
+2. 상금 지급
+   - 대회 종료 후 7일 내
+   - 등록된 계좌로 입금
+   - 세금 별도 공제
+
+3. 예측 규칙
+   - 1일 최대 10개 예측 가능
+   - 수정은 마감 1시간 전까지
+   - 부정행위 적발 시 참가 제한
+
+자세한 내용은 이용약관을 확인해주세요.`);
+
+            } catch (error) {
+                console.error('Event rules modal error:', error);
+            }
+        }
+
         // Override any conflicting functions from app.js after page load
         window.addEventListener('load', function () {
             // Force override modal functions to ensure professional ones are used
@@ -2309,9 +3185,41 @@
             window.showSignupModal = showSignupModal;
             window.hideSignupModal = hideSignupModal;
 
+            // Add event-specific functions to global scope
+            window.joinEvent = joinEvent;
+            window.registerForEvent = registerForEvent;
+            window.viewFullRankings = viewFullRankings;
+            window.viewAllUpcomingEvents = viewAllUpcomingEvents;
+            window.showEventRulesModal = showEventRulesModal;
+
             console.log('Professional events modal functions have been set as global overrides');
+            console.log('Event management functions have been added to global scope');
         });
     </script>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </a>
+        <a href="charts.html" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>차트</span>
+        </a>
+        <a href="prediction.html" class="mobile-nav-item">
+            <i class="fas fa-brain"></i>
+            <span>예측</span>
+        </a>
+        <a href="ranking.html" class="mobile-nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>랭킹</span>
+        </a>
+        <a href="events.html" class="mobile-nav-item active">
+            <i class="fas fa-calendar"></i>
+            <span>이벤트</span>
+        </a>
+    </nav>
 </body>
 
 </html>
