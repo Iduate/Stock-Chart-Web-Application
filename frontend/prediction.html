@@ -15,139 +15,90 @@
     
     <!-- Mobile Trading UI -->
     <link rel="stylesheet" href="css/mobile-trading.css">
-    
-    <style>
-        /* Navbar Styles */
-        .navbar {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-primary);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent-green);
-            text-decoration: none;
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-small);
-        }
-        
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--accent-green);
-            background: var(--accent-green-transparent);
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-small);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--border-primary);
-        }
-        
-        .btn-outline:hover {
-            background: var(--accent-green-transparent);
-            color: var(--accent-green);
-            border-color: var(--accent-green);
-        }
-        
-        .btn-primary {
-            background: var(--accent-green);
-            color: var(--bg-primary);
-        }
-        
-        .btn-primary:hover {
-            background: var(--text-success);
-        }
-        
-        /* Mobile Navigation */
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="nav-brand">
+    <!-- Korean Trading UI Container -->
+    <div class="figma-container">
+        
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
                 <i class="fas fa-chart-line"></i>
-                주식차트
-            </a>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">홈</a>
-                <a href="charts.html" class="nav-link">차트</a>
-                <a href="prediction.html" class="nav-link active">예측</a>
-                <a href="ranking.html" class="nav-link">랭킹</a>
-                <a href="subscription.html" class="nav-link">구독</a>
-                <a href="events.html" class="nav-link">이벤트</a>
-                <a href="partners.html" class="nav-link">파트너</a>
+                <span>주식 차트</span>
             </div>
-            <div class="user-menu">
-                <a href="#" class="btn btn-outline">로그인</a>
-                <a href="#" class="btn btn-primary">회원가입</a>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>사용자 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">게스트</div>
+                        <div class="user-status">무료 계정</div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content" style="padding: 2rem 0;">
-        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
-            <!-- Prediction Header -->
-            <div class="content-header" style="text-align: center; margin-bottom: 3rem;">
-                <h1 style="color: var(--text-primary); margin-bottom: 1rem;">주식 예측</h1>
-                <p style="color: var(--text-secondary); font-size: 1.1rem;">데이터 분석을 통해 주식 가격을 예측하고 투자 전략을 수립하세요</p>
+        </aside>
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-chart-line text-accent-green"></i>
+                <span>주식 예측</span>
             </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="예측할 종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </button>
+                <button class="btn-predict primary">
+                    <i class="fas fa-chart-line"></i>
+                    <span>예측 시작</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="figma-main">
+            <div class="main-content">
+                <!-- Prediction Header -->
+                <div class="content-header">
+                    <h1>주식 예측</h1>
+                    <p>데이터 분석을 통해 주식 가격을 예측하고 투자 전략을 수립하세요</p>
+                </div>
                 
                 <!-- Prediction Form -->
                 <div class="prediction-form-section">
@@ -343,8 +294,8 @@
                     <div class="rec-confidence">82% 신뢰도</div>
                 </div>
             </div>
-        </div>
-    </main>
+        </aside>
+    </div>
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
@@ -418,5 +369,8 @@
             }
         });
     </script>
+
+    <!-- Collapsible Sidebar Script -->
+    <script src="js/collapsible-sidebar.js"></script>
 </body>
 </html>
