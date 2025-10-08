@@ -22,8 +22,55 @@
 </head>
 
 <body>
-    <!-- Main Layout Container -->
+    <!-- Korean Trading UI Container -->
     <div class="figma-container">
+        
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>주식 차트</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">게스트</div>
+                        <div class="user-status">무료 계정</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
         
         <!-- Header -->
         <header class="figma-header">
@@ -37,59 +84,16 @@
             </div>
             
             <div class="header-actions">
-                <button class="btn-predict" onclick="window.location.href='home.html'">
-                    <i class="fas fa-home"></i>
-                    <span>홈</span>
+                <button class="btn-predict">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
                 </button>
-                <button class="btn-predict" onclick="window.location.href='prediction.html'">
+                <button class="btn-predict primary">
                     <i class="fas fa-brain"></i>
                     <span>예측하기</span>
                 </button>
             </div>
         </header>
-
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-candlestick"></i>
-                차트 분석
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="home.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>홈</span>
-                </a>
-                <a href="charts.html" class="nav-item active">
-                    <i class="fas fa-chart-candlestick"></i>
-                    <span>차트 분석</span>
-                </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-crystal-ball"></i>
-                    <span>사용자 예측</span>
-                </a>
-                <a href="ranking.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>랭킹</span>
-                </a>
-                <a href="my-predictions.html" class="nav-item">
-                    <i class="fas fa-user-chart"></i>
-                    <span>내 예측</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>이벤트</span>
-                </a>
-                <a href="payment.html" class="nav-item">
-                    <i class="fas fa-credit-card"></i>
-                    <span>결제</span>
-                </a>
-                <a href="partners.html" class="nav-item">
-                    <i class="fas fa-handshake"></i>
-                    <span>파트너</span>
-                </a>
-            </nav>
-        </aside>
 
         <!-- Main Content Area -->
         <main class="figma-main">
@@ -353,6 +357,30 @@
             </div>
         </aside>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </a>
+        <a href="charts.html" class="mobile-nav-item active">
+            <i class="fas fa-chart-line"></i>
+            <span>차트</span>
+        </a>
+        <a href="prediction.html" class="mobile-nav-item">
+            <i class="fas fa-brain"></i>
+            <span>예측</span>
+        </a>
+        <a href="ranking.html" class="mobile-nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>랭킹</span>
+        </a>
+        <a href="subscription.html" class="mobile-nav-item">
+            <i class="fas fa-crown"></i>
+            <span>프리미엄</span>
+        </a>
+    </nav>
 
     <!-- Additional CSS for chart-specific components -->
     <style>

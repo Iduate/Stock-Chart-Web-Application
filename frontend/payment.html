@@ -1,354 +1,438 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결제하기 - 주식차트 예측 플랫폼</title>
+    <title>결제하기 - 주식 차트</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Korean Trading UI Design System -->
     <link rel="stylesheet" href="css/figma-design.css">
-    <link rel="stylesheet" href="css/payments.css">
+    
+    <!-- Mobile Trading UI -->
+    <link rel="stylesheet" href="css/mobile-trading.css">
+    
+    <!-- Payment scripts -->
     <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
     <script src="https://js.tosspayments.com/v1/payment"></script>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="/" class="nav-brand-link">주식차트 예측</a>
+    <!-- Korean Trading UI Container -->
+    <div class="figma-container">
+        
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>주식 차트</span>
             </div>
-            <div class="nav-menu">
-                <a href="charts.html" class="nav-link">차트</a>
-                <a href="prediction.html" class="nav-link">예측</a>
-                <a href="ranking.html" class="nav-link">랭킹</a>
-                <a href="subscription.html" class="nav-link active">구독</a>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>사용자 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+                <a href="payment.html" class="nav-item active">
+                    <i class="fas fa-credit-card"></i>
+                    <span>결제</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">게스트</div>
+                        <div class="user-status">무료 계정</div>
+                    </div>
+                </div>
             </div>
-            <div class="user-menu">
-                <div class="language-selector">
-                    <select id="languageSelect">
-                        <option value="ko" selected>한국어</option>
-                        <option value="en">English</option>
-                        <option value="ja">日本語</option>
-                        <option value="zh">中文</option>
-                    </select>
+        </aside>
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-credit-card text-accent-green"></i>
+                <span>결제하기</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="플랜 검색">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </button>
+                <button class="btn-predict primary">
+                    <i class="fas fa-credit-card"></i>
+                    <span>결제하기</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="figma-main">
+            <div class="main-content">
+                <!-- Payment Header -->
+                <div class="content-header">
+                    <h1>💳 결제하기</h1>
+                    <p>원하는 플랜을 선택하고 안전하게 결제하세요</p>
                 </div>
-                <div class="user-profile" id="userProfile" style="display: none;">
-                    <span id="userName">사용자</span>
-                    <button id="logoutBtn" class="btn btn-outline">로그아웃</button>
+                
+                <!-- Selected Plan Info -->
+                <div class="selected-plan-info">
+                    <h2>선택된 플랜</h2>
+                    <div class="plan-summary">
+                        <div class="plan-details">
+                            <h3 id="selectedPlanName">프로 플랜</h3>
+                            <p id="selectedPlanDescription">모든 프리미엄 기능과 고급 분석 도구</p>
+                            <div class="plan-price">
+                                <span id="selectedPlanPrice">₩39,900</span>
+                                <span>/월</span>
+                            </div>
+                        </div>
+                        <button class="change-plan-btn" onclick="changePlan()">
+                            <i class="fas fa-edit"></i>
+                            플랜 변경
+                        </button>
+                    </div>
                 </div>
-                <div class="auth-buttons" id="authButtons">
-                    <a href="#" id="loginBtn" class="btn btn-outline">로그인</a>
-                    <a href="#" id="registerBtn" class="btn btn-primary">회원가입</a>
+                
+                <!-- Payment Methods -->
+                <div class="payment-methods-section">
+                    <h2>결제 방법 선택</h2>
+                    <div class="payment-methods">
+                        <div class="payment-method" data-method="card">
+                            <div class="method-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="method-info">
+                                <h3>신용카드</h3>
+                                <p>Visa, MasterCard, JCB</p>
+                            </div>
+                            <div class="method-radio">
+                                <input type="radio" name="paymentMethod" value="card" checked>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" data-method="kakao">
+                            <div class="method-icon">
+                                <i class="fas fa-comments" style="color: #fee500;"></i>
+                            </div>
+                            <div class="method-info">
+                                <h3>카카오페이</h3>
+                                <p>간편하고 안전한 결제</p>
+                            </div>
+                            <div class="method-radio">
+                                <input type="radio" name="paymentMethod" value="kakao">
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" data-method="toss">
+                            <div class="method-icon">
+                                <i class="fas fa-mobile-alt" style="color: #3182f6;"></i>
+                            </div>
+                            <div class="method-info">
+                                <h3>토스페이</h3>
+                                <p>토스 앱으로 간편 결제</p>
+                            </div>
+                            <div class="method-radio">
+                                <input type="radio" name="paymentMethod" value="toss">
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method" data-method="bank">
+                            <div class="method-icon">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <div class="method-info">
+                                <h3>계좌이체</h3>
+                                <p>무통장 입금</p>
+                            </div>
+                            <div class="method-radio">
+                                <input type="radio" name="paymentMethod" value="bank">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Billing Information -->
+                <div class="billing-info-section">
+                    <h2>결제 정보</h2>
+                    <form class="billing-form" id="billingForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>이름</label>
+                                <input type="text" id="customerName" placeholder="홍길동" required>
+                            </div>
+                            <div class="form-group">
+                                <label>이메일</label>
+                                <input type="email" id="customerEmail" placeholder="example@email.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>전화번호</label>
+                                <input type="tel" id="customerPhone" placeholder="010-1234-5678" required>
+                            </div>
+                            <div class="form-group">
+                                <label>회사명 (선택)</label>
+                                <input type="text" id="companyName" placeholder="회사명">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="order-summary-section">
+                    <h2>주문 요약</h2>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>플랜</span>
+                            <span id="summaryPlanName">프로 플랜</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>월 요금</span>
+                            <span id="summaryPlanPrice">₩39,900</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>할인</span>
+                            <span class="discount">-₩0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>총 결제 금액</span>
+                            <span id="totalAmount">₩39,900</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="terms-section">
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">
+                            <a href="#" onclick="showTerms()">이용약관</a> 및 
+                            <a href="#" onclick="showPrivacy()">개인정보처리방침</a>에 동의합니다
+                        </label>
+                    </div>
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="agreePayment" required>
+                        <label for="agreePayment">결제 정보 제공에 동의합니다</label>
+                    </div>
+                </div>
+                
+                <!-- Payment Button -->
+                <div class="payment-button-section">
+                    <button class="payment-submit-btn" onclick="processPayment()">
+                        <i class="fas fa-lock"></i>
+                        <span id="paymentBtnText">₩39,900 결제하기</span>
+                    </button>
+                    <p class="payment-security">
+                        <i class="fas fa-shield-alt"></i>
+                        SSL 보안 결제로 안전하게 보호됩니다
+                    </p>
                 </div>
             </div>
-        </div>
+        </main>
+        
+        <!-- Trading Panel -->
+        <aside class="figma-trading-panel">
+            <div class="trading-header">
+                <h3>결제 도움말</h3>
+            </div>
+            
+            <div class="payment-help">
+                <div class="help-item">
+                    <h4>결제 문의</h4>
+                    <p>결제 관련 문의사항이 있으시면 언제든지 연락주세요</p>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>1588-1234</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>payment@stockchart.com</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-item">
+                    <h4>안전한 결제</h4>
+                    <div class="security-badges">
+                        <div class="security-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>SSL 인증</span>
+                        </div>
+                        <div class="security-badge">
+                            <i class="fas fa-lock"></i>
+                            <span>256bit 암호화</span>
+                        </div>
+                        <div class="security-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>PCI DSS 준수</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-item">
+                    <h4>환불 정책</h4>
+                    <ul class="refund-policy">
+                        <li>7일 무료 체험 기간</li>
+                        <li>언제든지 구독 취소 가능</li>
+                        <li>미사용 기간 비례 환불</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </a>
+        <a href="charts.html" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>차트</span>
+        </a>
+        <a href="prediction.html" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>예측</span>
+        </a>
+        <a href="ranking.html" class="mobile-nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>랭킹</span>
+        </a>
+        <a href="payment.html" class="mobile-nav-item active">
+            <i class="fas fa-credit-card"></i>
+            <span>결제</span>
+        </a>
     </nav>
 
-    <main class="main-content">
-        <div class="container">
-            <div class="payment-container">
-                <div class="payment-header">
-                    <h1 data-i18n="payment.title">결제하기</h1>
-                    <p data-i18n="payment.subtitle">안전하고 편리한 결제 서비스를 제공합니다</p>
-                </div>
-
-                <!-- 구독 플랜 선택 -->
-                <div class="subscription-plans" id="subscriptionPlans">
-                    <h2 data-i18n="payment.plans.title">구독 플랜 선택</h2>
-                    <div class="plans-grid">
-                        <div class="plan-card" data-plan="basic">
-                            <div class="plan-header">
-                                <h3 data-i18n="payment.plans.basic.title">베이직</h3>
-                                <div class="plan-price">
-                                    <span class="price">₩9,900</span>
-                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li data-i18n="payment.plans.basic.feature1">기본 차트 분석</li>
-                                    <li data-i18n="payment.plans.basic.feature2">일일 예측 5회</li>
-                                    <li data-i18n="payment.plans.basic.feature3">기본 알림 서비스</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary plan-select-btn" data-amount="9900" data-plan="basic">
-                                <span data-i18n="payment.plans.select">선택하기</span>
-                            </button>
-                        </div>
-
-                        <div class="plan-card premium" data-plan="premium">
-                            <div class="plan-badge" data-i18n="payment.plans.popular">인기</div>
-                            <div class="plan-header">
-                                <h3 data-i18n="payment.plans.premium.title">프리미엄</h3>
-                                <div class="plan-price">
-                                    <span class="price">₩19,900</span>
-                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li data-i18n="payment.plans.premium.feature1">고급 차트 분석</li>
-                                    <li data-i18n="payment.plans.premium.feature2">무제한 예측</li>
-                                    <li data-i18n="payment.plans.premium.feature3">실시간 알림</li>
-                                    <li data-i18n="payment.plans.premium.feature4">전문가 리포트</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary plan-select-btn" data-amount="19900" data-plan="premium">
-                                <span data-i18n="payment.plans.select">선택하기</span>
-                            </button>
-                        </div>
-
-                        <div class="plan-card" data-plan="pro">
-                            <div class="plan-header">
-                                <h3 data-i18n="payment.plans.pro.title">프로</h3>
-                                <div class="plan-price">
-                                    <span class="price">₩39,900</span>
-                                    <span class="period" data-i18n="payment.plans.monthly">/월</span>
-                                </div>
-                            </div>
-                            <div class="plan-features">
-                                <ul>
-                                    <li data-i18n="payment.plans.pro.feature1">전문가 분석 도구</li>
-                                    <li data-i18n="payment.plans.pro.feature2">API 접근 권한</li>
-                                    <li data-i18n="payment.plans.pro.feature3">개인 컨설팅</li>
-                                    <li data-i18n="payment.plans.pro.feature4">우선 지원</li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-primary plan-select-btn" data-amount="39900" data-plan="pro">
-                                <span data-i18n="payment.plans.select">선택하기</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 결제 방법 선택 -->
-                <div class="payment-methods" id="paymentMethods" style="display: none;">
-                    <h2 data-i18n="payment.methods.title">결제 방법 선택</h2>
-
-                    <!-- 한국 결제 수단 -->
-                    <div class="payment-category">
-                        <h3 data-i18n="payment.methods.korean">한국 결제 수단</h3>
-                        <div class="payment-options">
-                            <div class="payment-option" data-provider="iamport" data-method="card">
-                                <div class="payment-icon">💳</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.card">신용카드</h4>
-                                    <p data-i18n="payment.methods.card.desc">모든 신용카드 및 체크카드 사용 가능</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="card" id="card">
-                            </div>
-
-                            <div class="payment-option" data-provider="iamport" data-method="trans">
-                                <div class="payment-icon">🏦</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.transfer">계좌이체</h4>
-                                    <p data-i18n="payment.methods.transfer.desc">실시간 계좌이체</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="trans" id="trans">
-                            </div>
-
-                            <div class="payment-option" data-provider="iamport" data-method="vbank">
-                                <div class="payment-icon">🏛️</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.vbank">가상계좌</h4>
-                                    <p data-i18n="payment.methods.vbank.desc">가상계좌 발급 후 입금</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="vbank" id="vbank">
-                            </div>
-
-                            <div class="payment-option" data-provider="kakaopay" data-method="kakaopay">
-                                <div class="payment-icon">💬</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.kakaopay">카카오페이</h4>
-                                    <p data-i18n="payment.methods.kakaopay.desc">카카오페이로 간편결제</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="kakaopay" id="kakaopay">
-                            </div>
-
-                            <div class="payment-option" data-provider="toss" data-method="toss">
-                                <div class="payment-icon">💙</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.toss">토스페이</h4>
-                                    <p data-i18n="payment.methods.toss.desc">토스페이로 간편결제</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="toss" id="toss">
-                            </div>
-
-                            <div class="payment-option" data-provider="iamport" data-method="phone">
-                                <div class="payment-icon">📱</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.phone">휴대폰 소액결제</h4>
-                                    <p data-i18n="payment.methods.phone.desc">휴대폰 요금과 함께 결제</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="phone" id="phone">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 국제 결제 수단 -->
-                    <div class="payment-category">
-                        <h3 data-i18n="payment.methods.international">국제 결제 수단</h3>
-                        <div class="payment-options">
-                            <div class="payment-option" data-provider="paypal" data-method="paypal">
-                                <div class="payment-icon">🌐</div>
-                                <div class="payment-info">
-                                    <h4 data-i18n="payment.methods.paypal">PayPal</h4>
-                                    <p data-i18n="payment.methods.paypal.desc">전 세계 어디서나 안전한 결제</p>
-                                </div>
-                                <input type="radio" name="paymentMethod" value="paypal" id="paypal">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 결제 정보 확인 -->
-                <div class="payment-summary" id="paymentSummary" style="display: none;">
-                    <h2 data-i18n="payment.summary.title">결제 정보 확인</h2>
-                    <div class="summary-content">
-                        <div class="summary-item">
-                            <span data-i18n="payment.summary.plan">선택한 플랜:</span>
-                            <span id="selectedPlan">-</span>
-                        </div>
-                        <div class="summary-item">
-                            <span data-i18n="payment.summary.method">결제 방법:</span>
-                            <span id="selectedMethod">-</span>
-                        </div>
-                        <div class="summary-item">
-                            <span data-i18n="payment.summary.amount">결제 금액:</span>
-                            <span id="paymentAmount">₩0</span>
-                        </div>
-                    </div>
-
-                    <!-- 할인 코드 -->
-                    <div class="discount-section">
-                        <label for="discountCode" data-i18n="payment.discount.label">할인 코드 (선택사항)</label>
-                        <div class="discount-input-group">
-                            <input type="text" id="discountCode" placeholder="할인 코드를 입력하세요">
-                            <button type="button" class="btn btn-outline" id="applyDiscountBtn"
-                                data-i18n="payment.discount.apply">적용</button>
-                        </div>
-                        <div class="discount-result" id="discountResult" style="display: none;"></div>
-                    </div>
-
-                    <!-- 최종 결제 버튼 -->
-                    <div class="payment-actions">
-                        <button type="button" class="btn btn-outline" id="backToMethodsBtn"
-                            data-i18n="payment.back">이전</button>
-                        <button type="button" class="btn btn-primary btn-lg" id="payNowBtn" data-i18n="payment.pay">지금
-                            결제하기</button>
-                    </div>
-                </div>
-
-                <!-- 결제 처리 중 -->
-                <div class="payment-processing" id="paymentProcessing" style="display: none;">
-                    <div class="processing-animation">
-                        <div class="spinner"></div>
-                    </div>
-                    <h2 data-i18n="payment.processing.title">결제 처리 중...</h2>
-                    <p data-i18n="payment.processing.message">잠시만 기다려주세요. 결제가 처리되고 있습니다.</p>
-                </div>
-
-                <!-- 결제 결과 -->
-                <div class="payment-result" id="paymentResult" style="display: none;">
-                    <div class="result-success" id="resultSuccess" style="display: none;">
-                        <div class="result-icon">✅</div>
-                        <h2 data-i18n="payment.result.success.title">결제 완료!</h2>
-                        <p data-i18n="payment.result.success.message">결제가 성공적으로 완료되었습니다.</p>
-                        <div class="result-details">
-                            <div class="detail-item">
-                                <span data-i18n="payment.result.transaction">거래번호:</span>
-                                <span id="transactionId">-</span>
-                            </div>
-                            <div class="detail-item">
-                                <span data-i18n="payment.result.plan">구독 플랜:</span>
-                                <span id="resultPlan">-</span>
-                            </div>
-                            <div class="detail-item">
-                                <span data-i18n="payment.result.amount">결제 금액:</span>
-                                <span id="resultAmount">₩0</span>
-                            </div>
-                        </div>
-                        <div class="result-actions">
-                            <a href="/" class="btn btn-primary" data-i18n="payment.result.home">홈으로</a>
-                            <a href="my-predictions.html" class="btn btn-outline" data-i18n="payment.result.mypage">내
-                                예측</a>
-                        </div>
-                    </div>
-
-                    <div class="result-error" id="resultError" style="display: none;">
-                        <div class="result-icon">❌</div>
-                        <h2 data-i18n="payment.result.error.title">결제 실패</h2>
-                        <p data-i18n="payment.result.error.message">결제 처리 중 오류가 발생했습니다.</p>
-                        <div class="error-details">
-                            <p id="errorMessage">알 수 없는 오류</p>
-                        </div>
-                        <div class="result-actions">
-                            <button type="button" class="btn btn-primary" id="retryPaymentBtn"
-                                data-i18n="payment.result.retry">다시 시도</button>
-                            <a href="/" class="btn btn-outline" data-i18n="payment.result.home">홈으로</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4 data-i18n="footer.service">서비스</h4>
-                    <ul>
-                        <li><a href="charts.html" data-i18n="footer.charts">차트</a></li>
-                        <li><a href="prediction.html" data-i18n="footer.prediction">예측</a></li>
-                        <li><a href="ranking.html" data-i18n="footer.ranking">랭킹</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 data-i18n="footer.support">고객지원</h4>
-                    <ul>
-                        <li><a href="#" data-i18n="footer.faq">FAQ</a></li>
-                        <li><a href="#" data-i18n="footer.contact">문의하기</a></li>
-                        <li><a href="#" data-i18n="footer.terms">이용약관</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4 data-i18n="footer.company">회사</h4>
-                    <ul>
-                        <li><a href="#" data-i18n="footer.about">회사소개</a></li>
-                        <li><a href="partners.html" data-i18n="footer.partners">파트너</a></li>
-                        <li><a href="#" data-i18n="footer.careers">채용</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 주식차트 예측 플랫폼. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="/js/i18n.js"></script>
-    <script src="/js/auth.js"></script>
-    <script src="/js/korean-payments.js"></script>
+    <!-- JavaScript -->
     <script>
-        // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function () {
-            // 언어 설정 초기화
-            I18n.init().then(() => {
-                I18n.applyTranslations();
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                // Remove active class from all methods
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+                
+                // Add active class to clicked method
+                this.classList.add('active');
+                
+                // Check the radio button
+                this.querySelector('input[type="radio"]').checked = true;
             });
+        });
 
-            // 인증 상태 확인
-            checkAuthStatus();
+        // Form validation
+        function validateForm() {
+            const name = document.getElementById('customerName').value;
+            const email = document.getElementById('customerEmail').value;
+            const phone = document.getElementById('customerPhone').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const agreePayment = document.getElementById('agreePayment').checked;
 
-            // 한국 결제 시스템 초기화
-            if (typeof KoreanPayments !== 'undefined') {
-                KoreanPayments.init();
+            if (!name || !email || !phone) {
+                alert('필수 정보를 모두 입력해주세요.');
+                return false;
             }
+
+            if (!agreeTerms || !agreePayment) {
+                alert('약관에 동의해주세요.');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Process payment
+        function processPayment() {
+            if (!validateForm()) {
+                return;
+            }
+
+            const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const amount = document.getElementById('totalAmount').textContent;
+            
+            // Show loading state
+            const btn = document.querySelector('.payment-submit-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 결제 처리 중...';
+            btn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                alert(`${selectedMethod} 결제가 성공적으로 완료되었습니다!\n결제 금액: ${amount}`);
+                
+                // Reset button
+                btn.innerHTML = '<i class="fas fa-lock"></i> ₩39,900 결제하기';
+                btn.disabled = false;
+                
+                // Redirect to success page (in real app)
+                // window.location.href = 'payment-success.html';
+            }, 3000);
+        }
+
+        // Change plan
+        function changePlan() {
+            alert('플랜 변경 페이지로 이동합니다.');
+            window.location.href = 'subscription.html';
+        }
+
+        // Show terms
+        function showTerms() {
+            alert('이용약관을 표시합니다.');
+        }
+
+        // Show privacy policy
+        function showPrivacy() {
+            alert('개인정보처리방침을 표시합니다.');
+        }
+
+        // Initialize payment methods
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set first payment method as active
+            document.querySelector('.payment-method').classList.add('active');
+            
+            // Add animation to form elements
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                group.style.animationDelay = `${index * 0.1}s`;
+                group.classList.add('fade-in');
+            });
         });
     </script>
 </body>
-
 </html>

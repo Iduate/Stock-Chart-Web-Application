@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="ko" class="h-full">
-
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockChart - 프리미엄 주식 예측 플랫폼</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     
-    <!-- Icons -->
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Korean Trading UI Design System -->
@@ -22,536 +16,252 @@
     <!-- Mobile Trading UI -->
     <link rel="stylesheet" href="css/mobile-trading.css">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
-                    }
-                }
+    <style>
+        /* Navbar Styles */
+        .navbar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-small);
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent-green);
+            background: var(--accent-green-transparent);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-small);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--accent-green-transparent);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+        
+        .btn-primary {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+        
+        .btn-primary:hover {
+            background: var(--text-success);
+        }
+        
+        /* Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
             }
         }
-    </script>
+    </style>
 </head>
 
 <body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
                 <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
+                주식차트
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">홈</a>
+                <a href="charts.html" class="nav-link">차트</a>
+                <a href="prediction.html" class="nav-link">예측</a>
+                <a href="ranking.html" class="nav-link">랭킹</a>
+                <a href="subscription.html" class="nav-link">구독</a>
+                <a href="events.html" class="nav-link">이벤트</a>
+                <a href="partners.html" class="nav-link">파트너</a>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item active">
-                    <i class="fas fa-home"></i>
-                    <span>홈</span>
-                </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
-                </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-brain"></i>
-                    <span>AI 예측</span>
-                </a>
-                <a href="ranking.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
-                </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>이벤트</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-home text-accent-green"></i>
-                <span>홈 대시보드</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
-                </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-user-plus"></i>
-                    <span>무료 체험</span>
-                </button>
-            </div>
-        </header>
-        
-        <!-- Mobile Content (Visible on Mobile Only) -->
-        <div class="mobile-search-container mobile-fade-in">
-            <input type="text" class="mobile-search-input" placeholder="종목 검색 (BTC, ETH, AAPL, TSLA)" id="mobileSearchInput">
-        </div>
-        
-        <div class="mobile-stats-grid mobile-fade-in">
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$432.32</div>
-                <div class="mobile-stat-label">BTC/USD</div>
-                <div class="mobile-stat-change positive">+2.5%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$2,845</div>
-                <div class="mobile-stat-label">ETH/USD</div>
-                <div class="mobile-stat-change positive">+1.8%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$175.43</div>
-                <div class="mobile-stat-label">AAPL</div>
-                <div class="mobile-stat-change negative">-0.7%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$257.89</div>
-                <div class="mobile-stat-label">TSLA</div>
-                <div class="mobile-stat-change positive">+3.2%</div>
+            <div class="user-menu">
+                <a href="#" class="btn btn-outline">로그인</a>
+                <a href="#" class="btn btn-primary">회원가입</a>
             </div>
         </div>
-        
-        <div class="mobile-chart-container mobile-fade-in">
-            <div class="mobile-chart-header">
-                <div>
-                    <div class="mobile-chart-symbol">BTC/USD</div>
-                    <div class="mobile-chart-price">$432.32</div>
-                </div>
-                <div class="mobile-chart-change">+2.5%</div>
-            </div>
-            <canvas id="mobileChart" width="100%" height="250"></canvas>
-        </div>
-        
-        <div class="mobile-card mobile-fade-in">
-            <div class="mobile-card-header">
-                <div class="mobile-card-title">빠른 실행</div>
-            </div>
-            <button class="mobile-btn">AI 예측 시작하기</button>
-            <button class="mobile-btn secondary">차트 분석하기</button>
-            <button class="mobile-btn secondary">내 포트폴리오</button>
-        </div>
-        
-        <div class="mobile-list mobile-fade-in">
-            <div class="mobile-card-header">
-                <div class="mobile-card-title">최근 활동</div>
-                <button class="mobile-card-action">전체보기</button>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">BTC 예측 완료</div>
-                    <div class="mobile-list-subtitle">10분 전</div>
-                </div>
-                <div class="mobile-list-value positive">+5.2%</div>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">랭킹 상승</div>
-                    <div class="mobile-list-subtitle">1시간 전</div>
-                </div>
-                <div class="mobile-list-value">15위 → 12위</div>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-coins"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">보너스 지급</div>
-                    <div class="mobile-list-subtitle">2시간 전</div>
-                </div>
-                <div class="mobile-list-value positive">+₩50,000</div>
-            </div>
-        </div>
-        
-        <!-- Main Content -->
-    <section class="banking-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center py-16 md:py-24">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in">
-                    AI 기반 주식 예측으로<br>
-                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                        수익률을 극대화하세요
-                    </span>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" style="padding: 2rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+            <!-- Hero Section -->
+            <div class="hero-section" style="text-align: center; padding: 4rem 0;">
+                <h1 style="font-size: 3rem; color: var(--text-primary); margin-bottom: 1rem;">
+                    📈 프리미엄 주식 예측 플랫폼
                 </h1>
-                <p class="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto fade-in">
-                    첨단 AI 알고리즘과 실시간 시장 분석으로 정확한 주식 예측을 제공합니다.
-                    전문가들이 검증한 예측 시스템으로 투자 성공률을 높여보세요.
+                <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2rem;">
+                    데이터 분석과 커뮤니티 예측으로 더 나은 투자 결정을 내리세요
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in">
-                    <button class="banking-btn banking-btn-success text-lg px-8 py-4">
-                        <i class="fas fa-rocket"></i>
-                        무료로 시작하기
-                    </button>
-                    <button class="banking-btn banking-btn-secondary text-lg px-8 py-4">
-                        <i class="fas fa-play"></i>
-                        데모 보기
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="py-16 bg-white dark:bg-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="banking-stat-card fade-in">
-                    <div class="banking-stat-value">94%</div>
-                    <div class="banking-stat-label">예측 정확도</div>
-                </div>
-                <div class="banking-stat-card fade-in">
-                    <div class="banking-stat-value">50K+</div>
-                    <div class="banking-stat-label">활성 사용자</div>
-                </div>
-                <div class="banking-stat-card fade-in">
-                    <div class="banking-stat-value">$2.5M</div>
-                    <div class="banking-stat-label">누적 수익</div>
-                </div>
-                <div class="banking-stat-card fade-in">
-                    <div class="banking-stat-value">24/7</div>
-                    <div class="banking-stat-label">실시간 분석</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-        <!-- Loading Text -->
-        <div class="text-center space-y-2">
-            <p class="text-tv-text-secondary" id="loadingText">플랫폼을 준비하고 있습니다...</p>
-            <div class="flex justify-center space-x-1">
-                <div class="w-2 h-2 bg-tv-blue rounded-full animate-bounce" style="animation-delay: 0ms"></div>
-                <div class="w-2 h-2 bg-tv-blue rounded-full animate-bounce" style="animation-delay: 150ms"></div>
-                <div class="w-2 h-2 bg-tv-blue rounded-full animate-bounce" style="animation-delay: 300ms"></div>
-            </div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="w-80 mt-8">
-            <div class="bg-tv-border rounded-full h-2 overflow-hidden">
-                <div class="bg-gradient-to-r from-tv-blue to-tv-green h-full rounded-full animate-pulse"
-                    id="progressBar" style="width: 0%"></div>
-            </div>
-            <p class="text-sm text-tv-text-secondary text-center mt-2" id="progressText">0%</p>
-    <!-- Features Section -->
-    <section class="py-20 bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    왜 StockChart를 선택해야 할까요?
-                </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    전문가 수준의 투자 분석을 누구나 쉽게 이용할 수 있도록 만들었습니다.
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="banking-feature-card fade-in">
-                    <div class="banking-feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3 class="banking-feature-title">AI 기반 예측</h3>
-                    <p class="banking-feature-description">
-                        머신러닝과 딥러닝 알고리즘을 활용한 정확한 주식 가격 예측으로 투자 리스크를 최소화합니다.
-                    </p>
-                </div>
-                
-                <div class="banking-feature-card fade-in">
-                    <div class="banking-feature-icon">
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a href="prediction.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
                         <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3 class="banking-feature-title">실시간 차트 분석</h3>
-                    <p class="banking-feature-description">
-                        TradingView 기반의 전문가급 차트 도구로 시장 동향을 실시간으로 분석하고 추적합니다.
-                    </p>
-                </div>
-                
-                <div class="banking-feature-card fade-in">
-                    <div class="banking-feature-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h3 class="banking-feature-title">수익률 경쟁</h3>
-                    <p class="banking-feature-description">
-                        다른 투자자들과 수익률을 비교하고 랭킹 시스템을 통해 실력을 검증받으세요.
-                    </p>
+                        예측 시작하기
+                    </a>
+                    <a href="charts.html" class="btn btn-outline" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        <i class="fas fa-chart-bar"></i>
+                        차트 보기
+                    </a>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Recent Predictions -->
-    <section class="py-20 bg-white dark:bg-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    최근 성공한 예측
-                </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400">
-                    AI가 예측한 주식들의 실제 성과를 확인해보세요
+            <!-- Market Overview -->
+            <div class="market-overview" style="margin: 4rem 0;">
+                <h2 style="color: var(--text-primary); margin-bottom: 2rem; text-align: center;">실시간 시장 현황</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="market-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fab fa-bitcoin" style="font-size: 2rem; color: #f7931a;"></i>
+                            <div>
+                                <h3 style="color: var(--text-primary); margin: 0;">BTC/USD</h3>
+                                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">비트코인</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">$43,234.56</div>
+                            <div style="color: var(--text-success); font-weight: 500;">+2.34% (+$987.23)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fab fa-ethereum" style="font-size: 2rem; color: #627eea;"></i>
+                            <div>
+                                <h3 style="color: var(--text-primary); margin: 0;">ETH/USD</h3>
+                                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">이더리움</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">$2,687.90</div>
+                            <div style="color: var(--text-danger); font-weight: 500;">-1.45% (-$39.87)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-apple-alt" style="font-size: 2rem; color: #a6a6a6;"></i>
+                            <div>
+                                <h3 style="color: var(--text-primary); margin: 0;">AAPL</h3>
+                                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">애플</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">$178.24</div>
+                            <div style="color: var(--text-success); font-weight: 500;">+0.87% (+$1.54)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="market-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary);">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-car" style="font-size: 2rem; color: #e82127;"></i>
+                            <div>
+                                <h3 style="color: var(--text-primary); margin: 0;">TSLA</h3>
+                                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">테슬라</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">$251.89</div>
+                            <div style="color: var(--text-danger); font-weight: 500;">-2.13% (-$5.48)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section" style="margin: 4rem 0;">
+                <h2 style="color: var(--text-primary); margin-bottom: 2rem; text-align: center;">주요 기능</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div class="feature-card" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary); text-align: center;">
+                        <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 1rem;">실시간 차트 분석</h3>
+                        <p style="color: var(--text-secondary);">TradingView 차트로 실시간 시장 데이터를 분석하고 트렌드를 파악하세요.</p>
+                    </div>
+                    
+                    <div class="feature-card" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary); text-align: center;">
+                        <i class="fas fa-users" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 1rem;">커뮤니티 예측</h3>
+                        <p style="color: var(--text-secondary);">다른 투자자들의 예측을 보고 자신만의 예측을 공유해보세요.</p>
+                    </div>
+                    
+                    <div class="feature-card" style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-medium); border: 1px solid var(--border-primary); text-align: center;">
+                        <i class="fas fa-trophy" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--text-primary); margin-bottom: 1rem;">수익률 랭킹</h3>
+                        <p style="color: var(--text-secondary);">예측 정확도로 순위를 매기고 다른 투자자들과 경쟁해보세요.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section" style="background: var(--bg-card); padding: 4rem 2rem; border-radius: var(--radius-medium); text-align: center; margin: 4rem 0;">
+                <h2 style="color: var(--text-primary); margin-bottom: 1rem;">지금 시작하세요!</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1.1rem;">
+                    무료로 가입하고 커뮤니티 기반 주식 예측의 힘을 경험해보세요.
                 </p>
-            </div>
-            
-            <div class="banking-list max-w-4xl mx-auto">
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">삼성전자 (005930)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.10.01 | 목표가: 75,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+12.5%</div>
-                </div>
-                
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">현대차 (005380)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.09.28 | 목표가: 245,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+8.3%</div>
-                </div>
-                
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">LG화학 (051910)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.09.25 | 목표가: 420,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+15.7%</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                지금 바로 시작하세요
-            </h2>
-            <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                7일 무료 체험으로 AI 주식 예측의 힘을 직접 경험해보세요.
-                신용카드 정보 없이도 시작할 수 있습니다.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="banking-btn bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4">
+                <a href="prediction.html" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">
                     <i class="fas fa-rocket"></i>
-                    무료 체험 시작
-                </button>
-                <button class="banking-btn border-2 border-white hover:bg-white hover:text-purple-600 text-lg px-8 py-4">
-                    <i class="fas fa-phone"></i>
-                    상담 받기
-                </button>
+                    무료로 시작하기
+                </a>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="banking-nav .nav-brand text-white mb-4">
-                        <i class="fas fa-chart-line text-2xl"></i>
-                        <span>StockChart</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">
-                        AI 기반 주식 예측으로 투자의 새로운 패러다임을 제시합니다.
-                    </p>
-                    <div class="flex gap-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">서비스</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">주식 예측</a></li>
-                        <li><a href="#" class="hover:text-white">차트 분석</a></li>
-                        <li><a href="#" class="hover:text-white">포트폴리오 관리</a></li>
-                        <li><a href="#" class="hover:text-white">실시간 알림</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">지원</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">도움말</a></li>
-                        <li><a href="#" class="hover:text-white">튜토리얼</a></li>
-                        <li><a href="#" class="hover:text-white">고객지원</a></li>
-                        <li><a href="#" class="hover:text-white">API 문서</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">회사</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">회사소개</a></li>
-                        <li><a href="#" class="hover:text-white">채용정보</a></li>
-                        <li><a href="#" class="hover:text-white">개인정보처리방침</a></li>
-                        <li><a href="#" class="hover:text-white">이용약관</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 StockChart. All rights reserved. Made with ❤️ in Korea</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Mobile Bottom Navigation -->
-    <div class="banking-bottom-nav md:hidden">
-        <a href="#" class="banking-bottom-nav-item active">
-            <i class="fas fa-home"></i>
-            <span>홈</span>
-        </a>
-        <a href="charts.html" class="banking-bottom-nav-item">
-            <i class="fas fa-chart-line"></i>
-            <span>차트</span>
-        </a>
-        <a href="prediction.html" class="banking-bottom-nav-item">
-            <i class="fas fa-crystal-ball"></i>
-            <span>예측</span>
-        </a>
-        <a href="ranking.html" class="banking-bottom-nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>랭킹</span>
-        </a>
-        <a href="subscription.html" class="banking-bottom-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>구독</span>
-        </a>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const html = document.documentElement;
-        
-        darkModeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.setItem('darkMode', html.classList.contains('dark'));
-        });
-        
-        // Load saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            html.classList.add('dark');
-        }
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-        
-        // Add animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('fade-in');
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all elements with fade-in class
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
-
-        const messages = [
-            '플랫폼을 준비하고 있습니다...',
-            '시장 데이터를 불러오는 중...',
-            '차트 엔진을 초기화하는 중...',
-            '준비 완료!'
-        ];
-
-        let messageIndex = 0;
-
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 15 + 5;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(progressInterval);
-                loadingText.textContent = messages[3];
-            } else if (progress > 75 && messageIndex < 2) {
-                messageIndex = 2;
-                loadingText.textContent = messages[messageIndex];
-            } else if (progress > 40 && messageIndex < 1) {
-                messageIndex = 1;
-                loadingText.textContent = messages[messageIndex];
-            }
-
-            progressBar.style.width = progress + '%';
-            progressText.textContent = Math.round(progress) + '%';
-        }, 100);
-    </script>
+    </main>
 
     <!-- Mobile Bottom Navigation -->
     <nav class="mobile-bottom-nav">
@@ -564,7 +274,7 @@
             <span>차트</span>
         </a>
         <a href="prediction.html" class="mobile-nav-item">
-            <i class="fas fa-brain"></i>
+            <i class="fas fa-chart-line"></i>
             <span>예측</span>
         </a>
         <a href="ranking.html" class="mobile-nav-item">
@@ -573,9 +283,47 @@
         </a>
         <a href="subscription.html" class="mobile-nav-item">
             <i class="fas fa-crown"></i>
-            <span>프리미엄</span>
+            <span>구독</span>
         </a>
     </nav>
-</body>
 
+    <!-- JavaScript -->
+    <script>
+        // Simulate real-time price updates
+        function updatePrices() {
+            const cards = document.querySelectorAll('.market-card');
+            cards.forEach(card => {
+                const priceElement = card.querySelector('div:last-child > div:first-child');
+                const changeElement = card.querySelector('div:last-child > div:last-child');
+                
+                if (priceElement && changeElement) {
+                    // Simulate price changes
+                    const variation = (Math.random() - 0.5) * 0.02; // 2% max variation
+                    const isPositive = Math.random() > 0.5;
+                    const changePercent = (Math.random() * 3).toFixed(2);
+                    
+                    changeElement.className = isPositive ? 'text-success' : 'text-danger';
+                    changeElement.style.color = isPositive ? 'var(--text-success)' : 'var(--text-danger)';
+                    changeElement.textContent = (isPositive ? '+' : '-') + changePercent + '%';
+                }
+            });
+        }
+        
+        // Update prices every 5 seconds
+        setInterval(updatePrices, 5000);
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
 </html>

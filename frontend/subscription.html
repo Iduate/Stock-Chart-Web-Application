@@ -1,1765 +1,380 @@
 <!DOCTYPE html>
-<html lang="ko" class="bg-gray-50 overflow-x-hidden max-w-full">
-
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구독 - StockChart</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-
+    <title>프리미엄 구독 - 주식 차트</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Korean Trading UI Design System -->
     <link rel="stylesheet" href="css/figma-design.css">
     
     <!-- Mobile Trading UI -->
     <link rel="stylesheet" href="css/mobile-trading.css">
-    
-    <!-- Tailwind CSS with Banking Color Scheme -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        // Banking UI colors
-                        'primary': '#2563eb',
-                        'primary-dark': '#1d4ed8',
-                        'secondary': '#64748b',
-                        'accent': '#3b82f6',
-                        'success': '#10b981',
-                        'warning': '#f59e0b',
-                        'error': '#ef4444',
-                        'surface': '#ffffff',
-                        'background': '#f8fafc',
-                        'text-primary': '#1e293b',
-                        'text-secondary': '#64748b',
-                        'border': '#e2e8f0',
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <style>
-        /* Mobile overflow prevention using Tailwind approach */
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Responsive table styles for subscription management */
-        .subscription-table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .subscription-table {
-            min-width: 700px; /* Minimum width for proper column layout */
-        }
-
-        /* Mobile responsive adjustments for subscription tables */
-        @media (max-width: 768px) {
-            .subscription-table-container {
-                margin-left: -1rem;
-                margin-right: -1rem;
-            }
-            
-            .subscription-table th,
-            .subscription-table td {
-                padding: 0.75rem 0.5rem !important;
-                font-size: 0.875rem;
-            }
-
-            .subscription-table th:first-child,
-            .subscription-table td:first-child {
-                padding-left: 1rem !important;
-            }
-
-            .subscription-table th:last-child,
-            .subscription-table td:last-child {
-                padding-right: 1rem !important;
-            }
-        }
-
-        /* Table hover effects for subscription tables */
-        .subscription-table tbody tr:hover {
-            background: linear-gradient(to right, rgba(37, 99, 235, 0.05), transparent);
-        }
-
-        /* Status badge styles for subscriptions */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            white-space: nowrap;
-        }
-
-        .plan-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        .plan-badge.basic {
-            background: linear-gradient(135deg, #6b7280, #9ca3af);
-            color: white;
-        }
-
-        .plan-badge.pro {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-        }
-
-        .plan-badge.enterprise {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-    </style>
 </head>
 
-<body class="bg-tv-darker text-tv-text font-sans overflow-x-hidden max-w-full min-h-screen">
-    <!-- Navigation Bar -->
-    <nav class="bg-tv-dark border-b border-tv-border sticky top-0 z-40 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <a href="home.html"
-                        class="flex items-center space-x-2 text-tv-text hover:text-tv-blue transition-colors">
-                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-sm"></i>
-                        </div>
-                        <span class="text-xl font-bold">StockChart</span>
-                    </a>
-                </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="home.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">홈</a>
-                    <a href="charts.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">차트
-                        보드</a>
-                    <a href="prediction.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">예측하기</a>
-                    <a href="my-predictions.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">내
-                        예측</a>
-                    <a href="ranking.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">랭킹</a>
-                    <a href="events.html"
-                        class="px-4 py-2 rounded-lg text-tv-text-secondary hover:text-tv-text hover:bg-tv-light transition-all duration-200">이벤트</a>
-                    <a href="subscription.html"
-                        class="px-4 py-2 rounded-lg text-tv-text bg-tv-blue bg-opacity-20 border border-tv-blue">구독</a>
-                    <button onclick="showLoginModal()"
-                        class="ml-4 bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="lg:hidden">
-                    <button onclick="toggleMobileMenu()"
-                        class="relative z-[99999] text-tv-text-secondary hover:text-white p-2 rounded-lg transition-all duration-300 hover:bg-tv-light"
-                        id="mobileMenuButton" aria-label="메뉴 열기">
-                        <div class="w-6 h-6 flex flex-col justify-center items-center">
-                            <span
-                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center"></span>
-                            <span
-                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center mt-1.5"></span>
-                            <span
-                                class="hamburger-line w-6 h-0.5 bg-current transition-all duration-300 transform origin-center mt-1.5"></span>
-                        </div>
-                    </button>
+<body>
+    <!-- Korean Trading UI Container -->
+    <div class="figma-container">
+        
+        <!-- Sidebar -->
+        <aside class="figma-sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>주식 차트</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item active">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-bottom">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">게스트</div>
+                        <div class="user-status">무료 계정</div>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        </div>
-        </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu Portal - Outside Nav Context -->
-    <div id="mobile-menu-portal" class="fixed inset-0 lg:hidden"
-        style="display: none; z-index: 999999 !important; position: fixed !important;">
-        <!-- Full Screen Overlay -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" style="z-index: 999990 !important;"
-            onclick="toggleMobileMenu()"></div>
-
-        <!-- Menu Sidebar -->
-        <div id="mobile-menu-content"
-            class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-[#1e1e2e] border-r border-[#8b5cf6]/20 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
-            style="z-index: 999999 !important;">
-            <!-- Menu Header -->
-            <div class="flex items-center justify-between p-6 border-b border-[#8b5cf6]/20">
-                <div class="flex items-center space-x-3">
-                    <div
-                        class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-white text-sm"></i>
-                    </div>
-                    <span class="text-white font-bold text-xl">StockChart</span>
-                </div>
-                <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
-                    <i class="fas fa-times text-xl"></i>
+        </aside>
+        
+        <!-- Header -->
+        <header class="figma-header">
+            <div class="header-logo">
+                <i class="fas fa-crown text-accent-green"></i>
+                <span>프리미엄 구독</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="요금제 검색">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </button>
+                <button class="btn-predict primary">
+                    <i class="fas fa-crown"></i>
+                    <span>구독하기</span>
                 </button>
             </div>
-
-            <!-- Menu Items -->
-            <div class="p-6 space-y-4">
-                <a href="home.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-home text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">홈</span>
-                </a>
-                <a href="charts.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
-                </a>
-                <a href="prediction.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-brain text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">AI 예측</span>
-                </a>
-                <a href="my-predictions.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-user-chart text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">내 예측</span>
-                </a>
-                <a href="ranking.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
-                </a>
-                <a href="events.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                    <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                    <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
-                </a>
-                <a href="subscription.html"
-                    class="flex items-center space-x-3 p-3 rounded-lg bg-[#8b5cf6]/20 border border-[#8b5cf6] transition-colors group">
-                    <i class="fas fa-crown text-[#8b5cf6] transition-colors"></i>
-                    <span class="text-white transition-colors">구독</span>
-                </a>
-            </div>
-
-            <!-- Bottom Section -->
-            <div class="absolute bottom-6 left-6 right-6">
-                <div
-                    class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
-                    <div class="text-white font-semibold mb-2">프리미엄 구독</div>
-                    <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
-                    <button
-                        class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
-                        무료로 시작하기
-                    </button>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="figma-main">
+            <div class="main-content">
+                <!-- Subscription Header -->
+                <div class="content-header">
+                    <h1>프리미엄 구독</h1>
+                    <p>더 많은 기능과 정확한 예측으로 투자 수익을 극대화하세요</p>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Subscription Section -->
-    <section class="py-16 bg-tv-darker min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Page Header -->
-            <div class="text-center mb-10">
-                <div class="flex items-center justify-center space-x-3 mb-6">
-                    <div
-                        class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full flex items-center justify-center shadow-lg">
-                        <i class="fas fa-crown text-white text-2xl"></i>
-                    </div>
-                    <h1
-                        class="text-4xl lg:text-5xl font-bold text-tv-text bg-clip-text text-transparent bg-gradient-to-r from-tv-blue to-blue-400">
-                        프리미엄 구독</h1>
-                </div>
-                <p class="text-xl text-tv-text-secondary max-w-3xl mx-auto leading-relaxed">
-                    전문가 수준의 분석 도구와 고급 기능으로 투자 성과를 극대화하세요
-                </p>
-                <!-- Period Toggle -->
-                <div
-                    class="mt-8 inline-flex items-center bg-tv-card rounded-full p-1 shadow-inner border border-tv-border">
-                    <button
-                        class="px-6 py-2 rounded-full bg-tv-blue text-white font-medium transition-all duration-200 focus:outline-none">월간</button>
-                    <button
-                        class="px-6 py-2 rounded-full text-tv-text-secondary hover:text-tv-text transition-all duration-200 focus:outline-none flex items-center">
-                        연간 <span class="ml-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">20% 할인</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Free access limit alert -->
-            <div id="freeAccessAlert"
-                class="hidden mb-10 bg-gradient-to-r from-amber-900/40 to-red-900/40 border border-amber-500/50 rounded-lg p-6 shadow-lg max-w-4xl mx-auto animate-pulse">
-                <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0 bg-amber-500/20 rounded-full p-2">
-                        <i class="fas fa-exclamation-triangle text-amber-500 text-2xl"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-amber-400 mb-2">무료 접근 횟수 제한에 도달했습니다</h3>
-                        <p class="text-gray-300 mb-2">무료 사용자는 프리미엄 콘텐츠에 <span class="font-medium text-white">3</span>번의
-                            접근만 가능합니다.</p>
-                        <div class="flex items-center mb-3">
-                            <span class="mr-2 text-gray-300">접근 횟수:</span>
-                            <span id="accessCount"
-                                class="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-md font-medium">3/3</span>
-                        </div>
-                        <p class="text-gray-300 mb-4">무제한 접근과 추가 기능을 사용하시려면 프리미엄 또는 프로 요금제를 구독하세요.</p>
-                        <button onclick="document.querySelector('.pricing-grid').scrollIntoView({behavior: 'smooth'})"
-                            class="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center shadow-md">
-                            <i class="fas fa-arrow-up-right-from-square mr-2"></i>
-                            <span>지금 업그레이드</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pricing Plans -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-                <!-- Basic Plan -->
-                <div
-                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden relative shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-500 to-gray-400"></div>
-                    <div class="p-8">
-                        <div class="text-center">
-                            <div class="mb-4 inline-block p-3 bg-gray-800 bg-opacity-50 rounded-full">
-                                <i class="fas fa-rocket text-gray-400 text-2xl"></i>
+                
+                <!-- Current Plan Status -->
+                <div class="current-plan">
+                    <div class="plan-status">
+                        <h3>현재 플랜</h3>
+                        <div class="current-plan-card">
+                            <div class="plan-info">
+                                <span class="plan-name">무료 플랜</span>
+                                <span class="plan-price">₩0/월</span>
                             </div>
-                            <h3 class="text-2xl font-bold text-tv-text mb-2">베이직</h3>
-                            <p class="text-tv-text-secondary mb-6">시작하는 투자자를 위한</p>
-                            <div class="mb-8">
-                                <span class="text-4xl font-bold text-tv-text">무료</span>
-                                <span class="text-tv-text-secondary">/월</span>
+                            <div class="plan-features">
+                                <span>• 기본 차트 분석</span>
+                                <span>• 일일 예측 3회</span>
+                                <span>• 커뮤니티 접근</span>
                             </div>
-                        </div>
-
-                        <ul class="space-y-4 mb-8">
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text-secondary">월 10개 예측</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text-secondary">기본 차트 분석</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text-secondary">커뮤니티 액세스</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-times text-tv-red text-xs"></i>
-                                </div>
-                                <span class="text-tv-text-secondary">AI 분석 도구</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-times text-tv-red text-xs"></i>
-                                </div>
-                                <span class="text-tv-text-secondary">실시간 알림</span>
-                            </li>
-                        </ul>
-
-                        <button
-                            class="w-full bg-tv-light hover:bg-tv-border text-tv-text py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm">
-                            현재 플랜
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Pro Plan (Most Popular) -->
-                <div
-                    class="bg-tv-card border-2 border-tv-blue rounded-xl overflow-hidden relative shadow-xl transform scale-105 z-10">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-400"></div>
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span
-                            class="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">가장
-                            인기</span>
-                    </div>
-
-                    <div class="p-8">
-                        <div class="text-center">
-                            <div class="mb-4 inline-block p-3 bg-blue-900 bg-opacity-30 rounded-full">
-                                <i class="fas fa-bolt text-tv-blue text-2xl"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-tv-text mb-2">프로</h3>
-                            <p class="text-tv-text-secondary mb-6">진지한 투자자를 위한</p>
-                            <div class="mb-8">
-                                <span class="text-4xl font-bold text-tv-blue">₩29,000</span>
-                                <span class="text-tv-text-secondary">/월</span>
-                            </div>
-                        </div>
-
-                        <ul class="space-y-4 mb-8">
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">무제한 예측</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">고급 차트 분석</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">AI 분석 도구</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">실시간 알림</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">우선 고객 지원</span>
-                            </li>
-                        </ul>
-
-                        <button onclick="startFreeTrial('pro')"
-                            class="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md flex items-center justify-center">
-                            <span>7일 무료 체험 시작</span>
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
-
-                        <div id="paymentError" class="mt-3 text-center text-red-400 text-sm hidden">
-                            결제 처리 중 오류가 발생했습니다. 다시 시도해주세요.
-                        </div>
-
-                        <div class="mt-4 flex items-center justify-center space-x-2 opacity-80">
-                            <i class="fas fa-lock text-xs text-tv-text-secondary"></i>
-                            <span class="text-xs text-tv-text-secondary">안전한 결제 • 언제든지 취소 가능</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Enterprise Plan -->
-                <div
-                    class="bg-tv-card border border-tv-border rounded-xl overflow-hidden relative shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-400"></div>
-                    <div class="p-8">
-                        <div class="text-center">
-                            <div class="mb-4 inline-block p-3 bg-green-900 bg-opacity-30 rounded-full">
-                                <i class="fas fa-crown text-tv-green text-2xl"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-tv-text mb-2">엔터프라이즈</h3>
-                            <p class="text-tv-text-secondary mb-6">기관 투자자를 위한</p>
-                            <div class="mb-8">
-                                <span class="text-4xl font-bold text-tv-text">₩99,000</span>
-                                <span class="text-tv-text-secondary">/월</span>
-                            </div>
-                        </div>
-
-                        <ul class="space-y-4 mb-8">
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">프로의 모든 기능</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">API 액세스</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">맞춤형 대시보드</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">전담 계정 매니저</span>
-                            </li>
-                            <li class="flex items-center space-x-3">
-                                <div
-                                    class="w-5 h-5 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-tv-green text-xs"></i>
-                                </div>
-                                <span class="text-tv-text">24/7 프리미엄 지원</span>
-                            </li>
-                        </ul>
-
-                        <button
-                            class="w-full bg-gradient-to-r from-green-600 to-green-400 hover:from-green-700 hover:to-green-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md">
-                            문의하기
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payment Options Section -->
-            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16 shadow-lg">
-                <div class="p-6 border-b border-tv-border">
-                    <h3 class="text-2xl font-bold text-tv-text text-center flex items-center justify-center space-x-2">
-                        <i class="fas fa-credit-card text-tv-blue"></i>
-                        <span>결제 옵션</span>
-                    </h3>
-                </div>
-
-                <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- PayPal Option -->
-                        <div
-                            class="bg-tv-light p-6 rounded-xl border border-tv-border hover:border-tv-blue transition-colors">
-                            <h4 class="text-xl font-semibold text-tv-text mb-4">PayPal로 결제하기</h4>
-                            <p class="text-tv-text-secondary mb-6">신용카드, 체크카드 또는 PayPal 계정으로 안전하게 결제하세요</p>
-
-                            <div class="mb-6">
-                                <button
-                                    class="w-full bg-[#0070ba] hover:bg-[#005ea6] text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-                                    <span>Pay with</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" viewBox="0 0 124 33">
-                                        <path fill="#ffffff"
-                                            d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.972-1.142-2.696-1.746-4.985-1.746zM47 13.154c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906zm19.654-.079h-3.275a.57.57 0 0 0-.563.481l-.145.916-.229-.332c-.709-1.029-2.29-1.373-3.868-1.373-3.619 0-6.71 2.741-7.312 6.586-.313 1.918.132 3.752 1.22 5.031.998 1.176 2.426 1.666 4.125 1.666 2.916 0 4.533-1.875 4.533-1.875l-.146.91a.57.57 0 0 0 .562.66h2.95a.95.95 0 0 0 .939-.803l1.77-11.209a.568.568 0 0 0-.561-.658zm-4.565 6.374c-.316 1.871-1.801 3.127-3.695 3.127-.951 0-1.711-.305-2.199-.883-.484-.574-.668-1.391-.514-2.301.295-1.855 1.805-3.152 3.67-3.152.93 0 1.686.309 2.184.892.499.589.697 1.411.554 2.317zm22.007-6.374h-3.291a.954.954 0 0 0-.787.417l-4.539 6.686-1.924-6.425a.953.953 0 0 0-.912-.678h-3.234a.57.57 0 0 0-.541.754l3.625 10.638-3.408 4.811a.57.57 0 0 0 .465.9h3.287a.949.949 0 0 0 .781-.408l10.946-15.8a.57.57 0 0 0-.468-.895z" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div class="text-center">
-                                <p class="text-xs text-tv-text-secondary">
-                                    <i class="fas fa-shield-alt mr-1"></i>
-                                    PayPal의 구매자 보호 프로그램 적용
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Card Option -->
-                        <div
-                            class="bg-tv-light p-6 rounded-xl border border-tv-border hover:border-tv-blue transition-colors">
-                            <h4 class="text-xl font-semibold text-tv-text mb-4">카드로 결제하기</h4>
-                            <p class="text-tv-text-secondary mb-6">모든 신용/체크카드 결제가 가능합니다</p>
-
-                            <div class="mb-6">
-                                <button
-                                    class="w-full bg-tv-card hover:bg-tv-border text-tv-text py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-                                    <i class="far fa-credit-card mr-2"></i>
-                                    <span>신용카드 또는 체크카드</span>
-                                </button>
-                            </div>
-
-                            <div class="flex justify-center space-x-2">
-                                <i class="fab fa-cc-visa text-2xl text-tv-text-secondary"></i>
-                                <i class="fab fa-cc-mastercard text-2xl text-tv-text-secondary"></i>
-                                <i class="fab fa-cc-amex text-2xl text-tv-text-secondary"></i>
-                                <i class="fab fa-cc-discover text-2xl text-tv-text-secondary"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-tv-darker rounded-lg border border-tv-border">
-                        <div class="flex items-start space-x-3">
-                            <i class="fas fa-info-circle text-tv-blue mt-1"></i>
-                            <div>
-                                <h5 class="font-medium text-tv-text mb-1">안전한 결제</h5>
-                                <p class="text-sm text-tv-text-secondary">모든 결제는 SSL 암호화로 보호되며, 저희는 귀하의 개인정보를 판매하거나 공유하지
-                                    않습니다. <a href="#" class="text-tv-blue hover:underline">자세히 알아보기</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Comparison -->
-            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16 shadow-lg">
-                <div class="p-6 border-b border-tv-border">
-                    <h3 class="text-2xl font-bold text-tv-text text-center flex items-center justify-center">
-                        <i class="fas fa-list-check mr-2 text-tv-blue"></i>
-                        <span>기능 비교</span>
-                    </h3>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-tv-light">
-                            <tr>
-                                <th class="text-left p-4 text-tv-text font-semibold">기능</th>
-                                <th class="text-center p-4 text-tv-text font-semibold">베이직</th>
-                                <th class="text-center p-4 text-tv-blue font-semibold">프로</th>
-                                <th class="text-center p-4 text-tv-green font-semibold">엔터프라이즈</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-tv-border">
-                            <tr>
-                                <td class="p-4 text-tv-text">월간 예측 수</td>
-                                <td class="p-4 text-center text-tv-text-secondary">10개</td>
-                                <td class="p-4 text-center text-tv-blue">무제한</td>
-                                <td class="p-4 text-center text-tv-green">무제한</td>
-                            </tr>
-                            <tr class="bg-tv-light bg-opacity-50">
-                                <td class="p-4 text-tv-text">AI 분석 도구</td>
-                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 text-tv-text">실시간 알림</td>
-                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
-                            </tr>
-                            <tr class="bg-tv-light bg-opacity-50">
-                                <td class="p-4 text-tv-text">API 액세스</td>
-                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-times text-tv-red"></i></td>
-                                <td class="p-4 text-center"><i class="fas fa-check text-tv-green"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 text-tv-text">고객 지원</td>
-                                <td class="p-4 text-center text-tv-text-secondary">이메일</td>
-                                <td class="p-4 text-center text-tv-blue">우선 지원</td>
-                                <td class="p-4 text-center text-tv-green">24/7 전담</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- FAQ Section -->
-            <div class="max-w-4xl mx-auto">
-                <h3 class="text-3xl font-bold text-tv-text text-center mb-12">자주 묻는 질문</h3>
-
-                <div class="space-y-4">
-                    <div class="bg-tv-card border border-tv-border rounded-xl">
-                        <button
-                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
-                            onclick="toggleFAQ(1)">
-                            <span class="text-lg font-semibold text-tv-text">언제든지 취소할 수 있나요?</span>
-                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-1"></i>
-                        </button>
-                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-1">
-                            <p class="text-tv-text-secondary">네, 언제든지 구독을 취소할 수 있습니다. 취소 시 현재 결제 기간이 끝날 때까지 서비스를 이용할 수
-                                있습니다.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl">
-                        <button
-                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
-                            onclick="toggleFAQ(2)">
-                            <span class="text-lg font-semibold text-tv-text">무료 체험 기간이 있나요?</span>
-                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-2"></i>
-                        </button>
-                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-2">
-                            <p class="text-tv-text-secondary">프로 플랜은 14일 무료 체험을 제공합니다. 체험 기간 동안 모든 기능을 제한 없이 사용하실 수
-                                있습니다.</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl">
-                        <button
-                            class="w-full text-left p-6 flex items-center justify-between hover:bg-tv-light transition-colors"
-                            onclick="toggleFAQ(3)">
-                            <span class="text-lg font-semibold text-tv-text">결제 방법은 무엇인가요?</span>
-                            <i class="fas fa-chevron-down text-tv-text-secondary" id="faq-icon-3"></i>
-                        </button>
-                        <div class="hidden p-6 pt-0 border-t border-tv-border" id="faq-content-3">
-                            <p class="text-tv-text-secondary">신용카드, 체크카드, PayPal, 그리고 암호화폐 결제를 지원합니다. 모든 결제는 안전하게
-                                암호화됩니다.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Subscription Management Section -->
-        <div class="max-w-7xl mx-auto mt-16 mb-16" id="subscriptionManagement">
-            <!-- Current Plan Status -->
-            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-8 shadow-lg">
-                <div class="p-6 border-b border-tv-border bg-gradient-to-r from-tv-blue/5 to-transparent">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-2xl font-bold text-tv-text">📊 현재 구독 현황</h3>
-                        <div class="flex items-center space-x-2 text-tv-text-secondary">
-                            <div class="w-2 h-2 bg-tv-green rounded-full animate-pulse"></div>
-                            <span class="text-sm">활성 구독</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="text-center">
-                            <div class="plan-badge pro mb-2">
-                                <i class="fas fa-crown"></i>Pro 플랜
+                <!-- Subscription Plans -->
+                <div class="subscription-plans">
+                    <h3>요금제 선택</h3>
+                    
+                    <!-- Basic Plan -->
+                    <div class="plan-card">
+                        <div class="plan-header">
+                            <h4>베이직</h4>
+                            <div class="plan-price">
+                                <span class="price">₩19,900</span>
+                                <span class="period">/월</span>
                             </div>
-                            <p class="text-sm text-tv-text-secondary">현재 플랜</p>
                         </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-tv-text">₩29,000</div>
-                            <p class="text-sm text-tv-text-secondary">월간 요금</p>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>고급 차트 분석 도구</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>AI 예측 무제한</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>실시간 시장 데이터</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>이메일 알림</span>
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <div class="text-lg font-semibold text-tv-text">2025-11-07</div>
-                            <p class="text-sm text-tv-text-secondary">다음 결제일</p>
-                        </div>
+                        <button class="plan-button">베이직 선택</button>
                     </div>
                     
-                    <div class="flex justify-center space-x-4 mt-6">
-                        <button class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                            <i class="fas fa-edit mr-2"></i>플랜 변경
-                        </button>
-                        <button class="bg-tv-red hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                            <i class="fas fa-times mr-2"></i>구독 취소
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Billing History -->
-            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden shadow-lg">
-                <div class="p-6 border-b border-tv-border bg-gradient-to-r from-tv-green/5 to-transparent">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-2xl font-bold text-tv-text">💳 결제 내역</h3>
-                        <button class="text-tv-blue hover:text-blue-600 font-medium">
-                            <i class="fas fa-download mr-2"></i>전체 내역 다운로드
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Billing History Table -->
-                <div class="subscription-table-container">
-                    <table class="subscription-table w-full">
-                        <thead class="bg-tv-light border-b border-tv-border sticky top-0">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">결제일</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">플랜</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">금액</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">결제 방법</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">상태</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">영수증</th>
-                            </tr>
-                        </thead>
-                        <tbody id="billingHistoryTable" class="divide-y divide-tv-border">
-                            <!-- October 2025 -->
-                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm font-medium text-tv-text">2025-10-07</span>
-                                        <span class="text-xs text-tv-text-secondary">오늘</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="plan-badge pro">
-                                        <i class="fas fa-crown"></i>Pro 플랜
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="text-lg font-bold text-tv-text">₩29,000</div>
-                                    <div class="text-xs text-tv-text-secondary">월간</div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <i class="fab fa-cc-visa text-tv-blue"></i>
-                                        <span class="text-sm text-tv-text">•••• 1234</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-green/20 text-tv-green">
-                                        <i class="fas fa-check mr-1"></i>완료
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <button class="text-tv-blue hover:text-blue-600 font-medium">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- September 2025 -->
-                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm font-medium text-tv-text">2025-09-07</span>
-                                        <span class="text-xs text-tv-text-secondary">1개월 전</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="plan-badge pro">
-                                        <i class="fas fa-crown"></i>Pro 플랜
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="text-lg font-bold text-tv-text">₩29,000</div>
-                                    <div class="text-xs text-tv-text-secondary">월간</div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <i class="fab fa-cc-visa text-tv-blue"></i>
-                                        <span class="text-sm text-tv-text">•••• 1234</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-green/20 text-tv-green">
-                                        <i class="fas fa-check mr-1"></i>완료
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <button class="text-tv-blue hover:text-blue-600 font-medium">
-                                        <i class="fas fa-download"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- August 2025 -->
-                            <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
-                                <td class="px-6 py-4">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm font-medium text-tv-text">2025-08-07</span>
-                                        <span class="text-xs text-tv-text-secondary">2개월 전</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="plan-badge basic">
-                                        <i class="fas fa-rocket"></i>Basic 플랜
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="text-lg font-bold text-tv-text">₩0</div>
-                                    <div class="text-xs text-tv-text-secondary">무료</div>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-sm text-tv-text-secondary">-</span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-tv-blue/20 text-tv-blue">
-                                        <i class="fas fa-gift mr-1"></i>무료
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-tv-text-secondary">-</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Load More Button -->
-                <div class="p-6 text-center border-t border-tv-border">
-                    <button onclick="loadMoreBillingHistory()"
-                        class="text-tv-blue hover:text-blue-600 font-medium transition-colors">
-                        <i class="fas fa-plus mr-2"></i>더 많은 내역 보기
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-tv-darker border-t border-tv-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-tv-blue rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-sm"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-tv-text">StockChart</h3>
-                    </div>
-                    <p class="text-tv-text-secondary mb-6 leading-relaxed">미래의 주식 가격을 예측하고 공유하는 프리미엄 플랫폼</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-tv-text mb-4">서비스</h4>
-                    <ul class="space-y-3">
-                        <li><a href="charts.html" class="text-tv-text-secondary hover:text-tv-blue transition-colors">차트
-                                보드</a></li>
-                        <li><a href="prediction.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">예측하기</a></li>
-                        <li><a href="my-predictions.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">내 예측</a></li>
-                        <li><a href="ranking.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors">랭킹</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-tv-border mt-12 pt-8 text-center text-tv-text-secondary">
-                <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        }
-
-        function toggleFAQ(id) {
-            const content = document.getElementById(`faq-content-${id}`);
-            const icon = document.getElementById(`faq-icon-${id}`);
-
-            content.classList.toggle('hidden');
-            icon.classList.toggle('fa-chevron-down');
-            icon.classList.toggle('fa-chevron-up');
-        }
-
-        // Sample billing history data for demonstration
-        const sampleBillingHistory = [
-            { date: '2025-07-07', plan: 'Pro 플랜', amount: '₩29,000', method: 'Visa •••• 1234', status: 'completed', icon: 'fab fa-cc-visa' },
-            { date: '2025-06-07', plan: 'Pro 플랜', amount: '₩29,000', method: 'Visa •••• 1234', status: 'completed', icon: 'fab fa-cc-visa' },
-            { date: '2025-05-07', plan: 'Basic 플랜', amount: '₩0', method: '-', status: 'free', icon: '' },
-            { date: '2025-04-07', plan: 'Basic 플랜', amount: '₩0', method: '-', status: 'free', icon: '' }
-        ];
-
-        // Function to create billing history table rows
-        function createBillingRow(billing, index) {
-            const statusConfig = {
-                'completed': { class: 'bg-tv-green/20 text-tv-green', text: '완료', icon: 'check' },
-                'pending': { class: 'bg-tv-blue/20 text-tv-blue', text: '대기', icon: 'clock' },
-                'failed': { class: 'bg-tv-red/20 text-tv-red', text: '실패', icon: 'times' },
-                'free': { class: 'bg-tv-blue/20 text-tv-blue', text: '무료', icon: 'gift' }
-            };
-
-            const status = statusConfig[billing.status] || statusConfig.completed;
-            const timeAgo = `${index + 3}개월 전`;
-
-            return `
-                <tr class="hover:bg-gradient-to-r hover:from-tv-light/30 hover:to-transparent transition-all duration-300">
-                    <td class="px-6 py-4">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium text-tv-text">${billing.date}</span>
-                            <span class="text-xs text-tv-text-secondary">${timeAgo}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="plan-badge ${billing.plan.includes('Pro') ? 'pro' : billing.plan.includes('Enterprise') ? 'enterprise' : 'basic'}">
-                            <i class="fas fa-${billing.plan.includes('Pro') ? 'crown' : billing.plan.includes('Enterprise') ? 'star' : 'rocket'}"></i>${billing.plan}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <div class="text-lg font-bold text-tv-text">${billing.amount}</div>
-                        <div class="text-xs text-tv-text-secondary">${billing.status === 'free' ? '무료' : '월간'}</div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        ${billing.method !== '-' ? `
-                            <div class="flex items-center justify-center space-x-2">
-                                <i class="${billing.icon} text-tv-blue"></i>
-                                <span class="text-sm text-tv-text">${billing.method}</span>
+                    <!-- Pro Plan (Recommended) -->
+                    <div class="plan-card recommended">
+                        <div class="plan-badge">추천</div>
+                        <div class="plan-header">
+                            <h4>프로</h4>
+                            <div class="plan-price">
+                                <span class="price">₩39,900</span>
+                                <span class="period">/월</span>
                             </div>
-                        ` : `<span class="text-sm text-tv-text-secondary">-</span>`}
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${status.class}">
-                            <i class="fas fa-${status.icon} mr-1"></i>${status.text}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        ${billing.status !== 'free' ? `
-                            <button class="text-tv-blue hover:text-blue-600 font-medium" onclick="downloadReceipt('${billing.date}')">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        ` : `<span class="text-tv-text-secondary">-</span>`}
-                    </td>
-                </tr>
-            `;
-        }
-
-        // Load more billing history
-        function loadMoreBillingHistory() {
-            const billingTable = document.getElementById('billingHistoryTable');
-            if (billingTable && sampleBillingHistory.length > 0) {
-                const newRows = sampleBillingHistory.map((billing, index) => createBillingRow(billing, index)).join('');
-                billingTable.insertAdjacentHTML('beforeend', newRows);
-                
-                showNotification('더 많은 결제 내역이 로드되었습니다!', 'success');
-            } else {
-                showNotification('더 이상 불러올 내역이 없습니다.', 'info');
-            }
-        }
-
-        // Download receipt
-        function downloadReceipt(date) {
-            showNotification(`${date} 영수증을 다운로드 중...`, 'info');
-            
-            // Simulate download delay
-            setTimeout(() => {
-                showNotification('영수증 다운로드가 완료되었습니다!', 'success');
-            }, 1500);
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform ${
-                type === 'success' ? 'bg-tv-green text-white' : 
-                type === 'error' ? 'bg-tv-red text-white' : 
-                'bg-tv-blue text-white'
-            }`;
-            
-            notification.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
-                    <span>${message}</span>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>베이직 플랜 모든 기능</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>고급 AI 예측 모델</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>포트폴리오 분석</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>SMS 알림</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>전문가 리포트</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>우선 고객 지원</span>
+                            </div>
+                        </div>
+                        <button class="plan-button primary">프로 선택</button>
+                    </div>
+                    
+                    <!-- Enterprise Plan -->
+                    <div class="plan-card">
+                        <div class="plan-header">
+                            <h4>엔터프라이즈</h4>
+                            <div class="plan-price">
+                                <span class="price">₩99,900</span>
+                                <span class="period">/월</span>
+                            </div>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>프로 플랜 모든 기능</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>API 접근</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>커스텀 지표</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>백테스팅 도구</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>전담 계정 관리자</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>무제한 데이터 내보내기</span>
+                            </div>
+                        </div>
+                        <button class="plan-button">엔터프라이즈 문의</button>
+                    </div>
                 </div>
-            `;
+                
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <h3>결제 방법</h3>
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <i class="fas fa-credit-card"></i>
+                            <span>신용카드</span>
+                        </div>
+                        <div class="payment-option">
+                            <i class="fab fa-paypal"></i>
+                            <span>PayPal</span>
+                        </div>
+                        <div class="payment-option">
+                            <i class="fas fa-university"></i>
+                            <span>계좌이체</span>
+                        </div>
+                        <div class="payment-option">
+                            <i class="fab fa-bitcoin"></i>
+                            <span>암호화폐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Trading Panel -->
+        <aside class="figma-trading-panel">
+            <div class="trading-header">
+                <h3>구독 혜택</h3>
+            </div>
             
-            document.body.appendChild(notification);
+            <div class="subscription-benefits">
+                <div class="benefit-item">
+                    <i class="fas fa-chart-line text-accent-green"></i>
+                    <div>
+                        <h4>정확한 예측</h4>
+                        <p>AI 기반 고정밀 예측 모델</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-bolt text-accent-green"></i>
+                    <div>
+                        <h4>실시간 분석</h4>
+                        <p>즉시 업데이트되는 시장 데이터</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-shield-alt text-accent-green"></i>
+                    <div>
+                        <h4>리스크 관리</h4>
+                        <p>포트폴리오 위험도 분석</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-trophy text-accent-green"></i>
+                    <div>
+                        <h4>랭킹 시스템</h4>
+                        <p>수익률 경쟁 및 보상</p>
+                    </div>
+                </div>
+            </div>
             
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
+            <div class="trial-offer">
+                <h4>7일 무료체험</h4>
+                <p>모든 프리미엄 기능을 7일간 무료로 체험해보세요</p>
+                <button class="btn-action">무료체험 시작</button>
+            </div>
+            
+            <div class="support-info">
+                <h4>고객 지원</h4>
+                <div class="support-item">
+                    <i class="fas fa-phone"></i>
+                    <span>1588-1234</span>
+                </div>
+                <div class="support-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>support@stockchart.com</span>
+                </div>
+                <div class="support-item">
+                    <i class="fas fa-clock"></i>
+                    <span>평일 9:00-18:00</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html" class="mobile-nav-item">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </a>
+        <a href="charts.html" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>차트</span>
+        </a>
+        <a href="prediction.html" class="mobile-nav-item">
+            <i class="fas fa-brain"></i>
+            <span>예측</span>
+        </a>
+        <a href="ranking.html" class="mobile-nav-item">
+            <i class="fas fa-trophy"></i>
+            <span>랭킹</span>
+        </a>
+        <a href="subscription.html" class="mobile-nav-item active">
+            <i class="fas fa-crown"></i>
+            <span>프리미엄</span>
+        </a>
+    </nav>
+
+    <!-- JavaScript -->
+    <script>
+        // Plan selection functionality
+        document.querySelectorAll('.plan-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const planCard = this.closest('.plan-card');
+                const planName = planCard.querySelector('h4').textContent;
+                const planPrice = planCard.querySelector('.price').textContent;
+                
+                console.log(`Selected plan: ${planName} - ${planPrice}`);
+                
+                if (planName === '엔터프라이즈') {
+                    alert('엔터프라이즈 플랜 문의를 위해 연결해드리겠습니다.');
+                } else {
+                    alert(`${planName} 플랜을 선택하셨습니다. 결제 페이지로 이동합니다.`);
+                    // Here you would redirect to payment page
+                    // window.location.href = `payment.html?plan=${planName}`;
+                }
+            });
+        });
+
+        // Free trial button
+        document.querySelector('.trial-offer .btn-action').addEventListener('click', function() {
+            alert('7일 무료체험을 시작합니다. 회원가입 페이지로 이동합니다.');
+            // Redirect to signup with trial parameter
+        });
+
+        // Add animation to plan cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.classList.add('fade-in');
+            });
+        });
     </script>
 </body>
-
-</html>
-
-<!-- 구독 섹션 - 이 섹션 제거됨 (TailwindCSS 버전만 사용) -->
-
-<!-- Premium Features Showcase -->
-<div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16 shadow-lg">
-    <div class="p-6 border-b border-tv-border">
-        <h3 class="text-2xl font-bold text-tv-text text-center flex items-center justify-center">
-            <i class="fas fa-star-half-alt text-yellow-400 mr-2"></i>
-            <span>프리미엄 기능 하이라이트</span>
-        </h3>
-    </div>
-
-    <div class="p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Advanced Analytics Feature -->
-            <div
-                class="bg-gradient-to-br from-blue-900/30 to-blue-800/10 rounded-xl overflow-hidden border border-tv-border hover:border-blue-500 transition-all duration-300 shadow-md group">
-                <div class="p-6">
-                    <div
-                        class="w-16 h-16 mb-6 bg-blue-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i class="fas fa-chart-line text-blue-400 text-2xl"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-tv-text mb-3">고급 기술적 분석</h4>
-                    <p class="text-tv-text-secondary mb-4 text-sm">50+ 기술적 지표와 패턴 인식으로 더 정확한 분석을 제공합니다.</p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-blue text-xs"></i>
-                            <span class="text-tv-text">볼린저 밴드, RSI, MACD 등</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-blue text-xs"></i>
-                            <span class="text-tv-text">자동 패턴 감지</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-blue text-xs"></i>
-                            <span class="text-tv-text">사용자 정의 지표</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Real-time Alerts Feature -->
-            <div
-                class="bg-gradient-to-br from-green-900/30 to-green-800/10 rounded-xl overflow-hidden border border-tv-border hover:border-green-500 transition-all duration-300 shadow-md group">
-                <div class="p-6">
-                    <div
-                        class="w-16 h-16 mb-6 bg-green-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i class="fas fa-bell text-green-400 text-2xl"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-tv-text mb-3">실시간 알림 시스템</h4>
-                    <p class="text-tv-text-secondary mb-4 text-sm">중요한 가격 변동과 예측 결과를 즉시 알려드립니다.</p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-green text-xs"></i>
-                            <span class="text-tv-text">가격 임계값 알림</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-green text-xs"></i>
-                            <span class="text-tv-text">예측 달성 알림</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-tv-green text-xs"></i>
-                            <span class="text-tv-text">시장 급변 알림</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Portfolio Tracking Feature -->
-            <div
-                class="bg-gradient-to-br from-amber-900/30 to-amber-800/10 rounded-xl overflow-hidden border border-tv-border hover:border-amber-500 transition-all duration-300 shadow-md group">
-                <div class="p-6">
-                    <div
-                        class="w-16 h-16 mb-6 bg-amber-900/30 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i class="fas fa-wallet text-amber-400 text-2xl"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-tv-text mb-3">포트폴리오 추적</h4>
-                    <p class="text-tv-text-secondary mb-4 text-sm">모든 투자를 한눈에 보고 성과를 분석하세요.</p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-amber-400 text-xs"></i>
-                            <span class="text-tv-text">실시간 손익 계산</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-amber-400 text-xs"></i>
-                            <span class="text-tv-text">자산 배분 분석</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fas fa-check-circle text-amber-400 text-xs"></i>
-                            <span class="text-tv-text">성과 리포트</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Testimonials Section -->
-<div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16 shadow-lg">
-    <div class="p-6 border-b border-tv-border">
-        <h3 class="text-2xl font-bold text-tv-text text-center flex items-center justify-center">
-            <i class="fas fa-comment-dots text-purple-400 mr-2"></i>
-            <span>사용자 후기</span>
-        </h3>
-    </div>
-
-    <div class="p-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Testimonial 1 -->
-            <div
-                class="bg-tv-light p-6 rounded-xl border border-tv-border relative shadow-md hover:shadow-lg transition-all">
-                <div
-                    class="absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center bg-blue-500 rounded-full border-2 border-tv-darker">
-                    <i class="fas fa-quote-left text-white"></i>
-                </div>
-
-                <div class="text-tv-text mb-4 pt-2">
-                    <p class="italic">"프리미엄 기능 덕분에 예측 정확도가 30% 향상되었습니다. 특히 실시간 알림이 매우 유용해요!"</p>
-                </div>
-
-                <div class="flex items-center mt-6">
-                    <div
-                        class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white font-bold">
-                        K
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="font-medium text-tv-text">김트레이더</h4>
-                        <p class="text-xs text-tv-text-secondary">프로 플랜 사용자</p>
-                    </div>
-                    <div class="ml-auto">
-                        <div class="text-amber-400 flex">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonial 2 -->
-            <div
-                class="bg-tv-light p-6 rounded-xl border border-tv-border relative shadow-md hover:shadow-lg transition-all">
-                <div
-                    class="absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center bg-green-500 rounded-full border-2 border-tv-darker">
-                    <i class="fas fa-quote-left text-white"></i>
-                </div>
-
-                <div class="text-tv-text mb-4 pt-2">
-                    <p class="italic">"API 접근으로 자동 트레이딩 시스템을 구축했습니다. 엔터프라이즈 플랜의 지원도 훌륭해요."</p>
-                </div>
-
-                <div class="flex items-center mt-6">
-                    <div
-                        class="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-400 flex items-center justify-center text-white font-bold">
-                        L
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="font-medium text-tv-text">이투자</h4>
-                        <p class="text-xs text-tv-text-secondary">엔터프라이즈 사용자</p>
-                    </div>
-                    <div class="ml-auto">
-                        <div class="text-amber-400 flex">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonial 3 -->
-            <div
-                class="bg-tv-light p-6 rounded-xl border border-tv-border relative shadow-md hover:shadow-lg transition-all">
-                <div
-                    class="absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center bg-amber-500 rounded-full border-2 border-tv-darker">
-                    <i class="fas fa-quote-left text-white"></i>
-                </div>
-
-                <div class="text-tv-text mb-4 pt-2">
-                    <p class="italic">"7일 무료 체험으로 시작했는데, 첫 주만에 효과를 느꼈습니다. 바로 구독했어요!"</p>
-                </div>
-
-                <div class="flex items-center mt-6">
-                    <div
-                        class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-600 to-amber-400 flex items-center justify-center text-white font-bold">
-                        P
-                    </div>
-                    <div class="ml-3">
-                        <h4 class="font-medium text-tv-text">박초보</h4>
-                        <p class="text-xs text-tv-text-secondary">프로 플랜 사용자</p>
-                    </div>
-                    <div class="ml-auto">
-                        <div class="text-amber-400 flex">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- FAQ Section -->
-<div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden mb-16 shadow-lg">
-    <div class="p-6 border-b border-tv-border">
-        <h3 class="text-2xl font-bold text-tv-text text-center flex items-center justify-center">
-            <i class="fas fa-circle-question text-tv-blue mr-2"></i>
-            <span>자주 묻는 질문</span>
-        </h3>
-    </div>
-
-    <div class="divide-y divide-tv-border">
-        <!-- FAQ Item 1 -->
-        <div class="p-6 hover:bg-tv-light transition-colors">
-            <button class="w-full text-left flex items-center justify-between" onclick="toggleFAQ(1)">
-                <h4 class="text-lg font-medium text-tv-text">언제든지 취소할 수 있나요?</h4>
-                <i id="faq-icon-1" class="fas fa-chevron-down text-tv-text-secondary transition-transform"></i>
-            </button>
-            <div id="faq-content-1" class="hidden mt-4 pl-6 border-l-2 border-tv-blue">
-                <p class="text-tv-text-secondary">네, 언제든지 취소하실 수 있습니다. 취소 후에도 현재 결제 기간이 끝날 때까지는 프리미엄 기능을 이용하실 수 있습니다.
-                </p>
-            </div>
-        </div>
-
-        <!-- FAQ Item 2 -->
-        <div class="p-6 hover:bg-tv-light transition-colors">
-            <button class="w-full text-left flex items-center justify-between" onclick="toggleFAQ(2)">
-                <h4 class="text-lg font-medium text-tv-text">무료 체험 기간 동안 요금이 부과되나요?</h4>
-                <i id="faq-icon-2" class="fas fa-chevron-down text-tv-text-secondary transition-transform"></i>
-            </button>
-            <div id="faq-content-2" class="hidden mt-4 pl-6 border-l-2 border-tv-blue">
-                <p class="text-tv-text-secondary">7일 무료 체험 기간 동안에는 어떤 요금도 부과되지 않습니다. 체험 기간이 끝나기 전에 취소하시면 요금이 청구되지 않습니다.
-                </p>
-            </div>
-        </div>
-
-        <!-- FAQ Item 3 -->
-        <div class="p-6 hover:bg-tv-light transition-colors">
-            <button class="w-full text-left flex items-center justify-between" onclick="toggleFAQ(3)">
-                <h4 class="text-lg font-medium text-tv-text">플랜을 언제든지 변경할 수 있나요?</h4>
-                <i id="faq-icon-3" class="fas fa-chevron-down text-tv-text-secondary transition-transform"></i>
-            </button>
-            <div id="faq-content-3" class="hidden mt-4 pl-6 border-l-2 border-tv-blue">
-                <p class="text-tv-text-secondary">네, 언제든지 플랜을 업그레이드하거나 다운그레이드하실 수 있습니다. 변경 사항은 즉시 적용됩니다.</p>
-            </div>
-        </div>
-
-        <!-- FAQ Item 4 -->
-        <div class="p-6 hover:bg-tv-light transition-colors">
-            <button class="w-full text-left flex items-center justify-between" onclick="toggleFAQ(4)">
-                <h4 class="text-lg font-medium text-tv-text">API 접근 권한은 어떤 플랜에서 제공되나요?</h4>
-                <i id="faq-icon-4" class="fas fa-chevron-down text-tv-text-secondary transition-transform"></i>
-            </button>
-            <div id="faq-content-4" class="hidden mt-4 pl-6 border-l-2 border-tv-blue">
-                <p class="text-tv-text-secondary">API 접근 권한은 엔터프라이즈 플랜에서만 제공됩니다. 개발자 문서와 함께 전체 API에 접근하실 수 있습니다.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- CTA Section -->
-<div
-    class="bg-gradient-to-r from-blue-900/40 to-purple-900/40 rounded-xl overflow-hidden mb-16 p-8 text-center shadow-lg border border-tv-border">
-    <div class="max-w-3xl mx-auto">
-        <div class="mb-6">
-            <div
-                class="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <i class="fas fa-rocket text-white text-2xl"></i>
-            </div>
-            <h3 class="text-3xl font-bold text-white mb-2">지금 시작하세요!</h3>
-            <p class="text-gray-300 text-lg">7일 무료 체험으로 프리미엄 기능을 경험해보세요</p>
-        </div>
-
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-            <button onclick="startFreeTrial('pro')"
-                class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3 px-8 rounded-lg font-semibold transition-all duration-200 shadow-md flex items-center justify-center">
-                <span>무료 체험 시작</span>
-                <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-            <button onclick="document.querySelector('.pricing-grid').scrollIntoView({behavior: 'smooth'})"
-                class="w-full sm:w-auto bg-transparent border border-white/30 hover:bg-white/10 text-white py-3 px-8 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center">
-                <span>플랜 비교하기</span>
-            </button>
-        </div>
-
-        <div class="flex items-center justify-center space-x-4 text-gray-300 text-sm">
-            <div class="flex items-center">
-                <i class="fas fa-credit-card mr-2 text-gray-400"></i>
-                <span>신용카드 필요 없음</span>
-            </div>
-            <div class="flex items-center">
-                <i class="fas fa-clock mr-2 text-gray-400"></i>
-                <span>언제든 취소 가능</span>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</section>
-
-<!-- Duplicate footer removed -->
-
-<!-- 로그인 모달 -->
-<div id="loginModal"
-    class="modal hidden fixed inset-0 z-50 overflow-auto flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm">
-    <div
-        class="modal-content relative bg-tv-card border border-tv-border rounded-xl p-8 w-full max-w-md shadow-2xl transform transition-all">
-        <button onclick="hideLoginModal()"
-            class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-            <i class="fas fa-times text-xl"></i>
-        </button>
-
-        <div class="text-center mb-6">
-            <div class="w-14 h-14 bg-tv-blue bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-user text-tv-blue text-xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
-            <p class="text-tv-text-secondary mt-2">계정에 로그인하여 계속하세요</p>
-        </div>
-
-        <form id="loginForm" class="space-y-4">
-            <div class="form-group">
-                <label for="loginEmail" class="block text-sm font-medium text-tv-text-secondary mb-1">이메일</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="far fa-envelope text-tv-text-secondary"></i>
-                    </div>
-                    <input type="email" id="loginEmail" placeholder="name@example.com" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="flex justify-between mb-1">
-                    <label for="loginPassword" class="block text-sm font-medium text-tv-text-secondary">비밀번호</label>
-                    <a href="#" class="text-sm text-tv-blue hover:underline">비밀번호 찾기</a>
-                </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-tv-text-secondary"></i>
-                    </div>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox"
-                    class="h-4 w-4 text-tv-blue focus:ring-tv-blue bg-tv-light border-tv-border rounded">
-                <label for="remember-me" class="ml-2 block text-sm text-tv-text-secondary">로그인 상태 유지</label>
-            </div>
-            <button type="submit"
-                class="w-full bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md flex items-center justify-center">
-                <span>로그인</span>
-                <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-        </form>
-
-        <div class="relative flex items-center justify-center my-6">
-            <div class="border-t border-tv-border absolute w-full"></div>
-            <span class="bg-tv-card px-4 text-sm text-tv-text-secondary relative">또는</span>
-        </div>
-
-        <div class="space-y-3">
-            <button onclick="loginWithGoogle()"
-                class="w-full bg-tv-light hover:bg-tv-border border border-tv-border rounded-lg py-3 flex items-center justify-center text-tv-text font-medium transition-all">
-                <i class="fab fa-google text-red-500 mr-2"></i>
-                <span>Google로 로그인</span>
-            </button>
-            <button onclick="loginWithApple()"
-                class="w-full bg-tv-light hover:bg-tv-border border border-tv-border rounded-lg py-3 flex items-center justify-center text-tv-text font-medium transition-all">
-                <i class="fab fa-apple mr-2"></i>
-                <span>Apple로 로그인</span>
-            </button>
-        </div>
-
-        <p class="text-center mt-6 text-tv-text-secondary">
-            계정이 없으신가요? <a href="#" onclick="showSignupModal()" class="text-tv-blue hover:underline font-medium">회원가입</a>
-        </p>
-    </div>
-</div>
-
-<!-- 회원가입 모달 -->
-<div id="signupModal"
-    class="modal hidden fixed inset-0 z-50 overflow-auto flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm">
-    <div
-        class="modal-content relative bg-tv-card border border-tv-border rounded-xl p-8 w-full max-w-md shadow-2xl transform transition-all">
-        <button onclick="hideSignupModal()"
-            class="absolute top-4 right-4 text-tv-text-secondary hover:text-tv-text transition-colors">
-            <i class="fas fa-times text-xl"></i>
-        </button>
-
-        <div class="text-center mb-6">
-            <div
-                class="w-14 h-14 bg-green-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-user-plus text-green-500 text-xl"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-tv-text">회원가입</h2>
-            <p class="text-tv-text-secondary mt-2">새 계정을 만들어 StockChart를 시작하세요</p>
-        </div>
-
-        <form id="signupForm" class="space-y-4">
-            <div class="form-group">
-                <label for="signupUsername" class="block text-sm font-medium text-tv-text-secondary mb-1">사용자명</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="far fa-user text-tv-text-secondary"></i>
-                    </div>
-                    <input type="text" id="signupUsername" placeholder="사용자명" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signupEmail" class="block text-sm font-medium text-tv-text-secondary mb-1">이메일</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="far fa-envelope text-tv-text-secondary"></i>
-                    </div>
-                    <input type="email" id="signupEmail" placeholder="name@example.com" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signupPassword" class="block text-sm font-medium text-tv-text-secondary mb-1">비밀번호</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-tv-text-secondary"></i>
-                    </div>
-                    <input type="password" id="signupPassword" placeholder="••••••••" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="signupPasswordConfirm" class="block text-sm font-medium text-tv-text-secondary mb-1">비밀번호
-                    확인</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-tv-text-secondary"></i>
-                    </div>
-                    <input type="password" id="signupPasswordConfirm" placeholder="••••••••" required
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="referralCode" class="block text-sm font-medium text-tv-text-secondary mb-1">추천인 코드
-                    (선택사항)</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-user-friends text-tv-text-secondary"></i>
-                    </div>
-                    <input type="text" id="referralCode" placeholder="추천인 코드"
-                        class="w-full bg-tv-light border border-tv-border rounded-lg py-3 pl-10 pr-3 text-tv-text placeholder-tv-text-secondary focus:outline-none focus:border-tv-blue transition-colors">
-                </div>
-            </div>
-            <div class="flex items-start">
-                <div class="flex items-center h-5">
-                    <input id="agreeTerms" name="terms" type="checkbox" required
-                        class="h-4 w-4 text-tv-blue focus:ring-tv-blue bg-tv-light border-tv-border rounded">
-                </div>
-                <div class="ml-3 text-sm">
-                    <label for="agreeTerms" class="text-tv-text-secondary">
-                        <a href="#" class="text-tv-blue hover:underline">이용약관</a> 및
-                        <a href="#" class="text-tv-blue hover:underline">개인정보처리방침</a>에 동의합니다.
-                    </label>
-                </div>
-            </div>
-
-            <button type="submit"
-                class="w-full bg-gradient-to-r from-green-600 to-green-400 hover:from-green-700 hover:to-green-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md flex items-center justify-center">
-                <span>회원가입</span>
-                <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-        </form>
-
-        <div class="relative flex items-center justify-center my-6">
-            <div class="border-t border-tv-border absolute w-full"></div>
-            <span class="bg-tv-card px-4 text-sm text-tv-text-secondary relative">또는</span>
-        </div>
-
-        <div class="space-y-3">
-            <button onclick="signupWithGoogle()"
-                class="w-full bg-tv-light hover:bg-tv-border border border-tv-border rounded-lg py-3 flex items-center justify-center text-tv-text font-medium transition-all">
-                <i class="fab fa-google text-red-500 mr-2"></i>
-                <span>Google로 가입</span>
-            </button>
-            <button onclick="signupWithApple()"
-                class="w-full bg-tv-light hover:bg-tv-border border border-tv-border rounded-lg py-3 flex items-center justify-center text-tv-text font-medium transition-all">
-                <i class="fab fa-apple mr-2"></i>
-                <span>Apple로 가입</span>
-            </button>
-        </div>
-
-        <p class="text-center mt-6 text-tv-text-secondary">
-            이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()"
-                class="text-tv-blue hover:underline font-medium">로그인</a>
-        </p>
-    </div>
-</div>
-
-<script src="js/notification.js?v=1.0"></script>
-<script src="js/stock-chart-app.js?v=1.0"></script>
-<script src="js/app.js?v=1.5"></script>
-<script src="js/access-limit.js?v=1.0"></script>
-<script src="js/google-auth.js?v=1.0"></script>
-<script src="js/paypal-payment.js?v=1.0"></script>
-
-<script>
-    // Subscription page specific functionality
-    class SubscriptionManager {
-        constructor() {
-            this.init();
-        }
-
-        init() {
-            this.checkAccessLimit();
-            this.setupPricing();
-            this.setupPaymentErrorHandling();
-        }
-
-        checkAccessLimit() {
-            // Check URL parameters for payment required flag
-            const urlParams = new URLSearchParams(window.location.search);
-            const paymentRequired = urlParams.get('payment_required') === 'true';
-            const visitCount = urlParams.get('visit_count') || localStorage.getItem('freeAccessCount') || '0';
-
-            if (paymentRequired || parseInt(visitCount) >= 3) {
-                this.showAccessLimitAlert(visitCount);
-            }
-        }
-
-        showAccessLimitAlert(visitCount) {
-            const alert = document.getElementById('freeAccessAlert');
-            if (alert) {
-                alert.classList.remove('hidden');
-
-                const accessCount = document.getElementById('accessCount');
-                if (accessCount) {
-                    accessCount.textContent = `${visitCount}/3`;
-                }
-            }
-        }
-
-        setupPricing() {
-            // Setup monthly/yearly toggle
-            const toggleBtns = document.querySelectorAll('.toggle-btn');
-            toggleBtns.forEach(btn => {
-                btn.onclick = () => this.togglePricing(btn.dataset.period);
-            });
-        }
-
-        togglePricing(period) {
-            // Update toggle buttons
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.period === period);
-            });
-
-            // Update prices
-            const monthlyPrices = document.querySelectorAll('.monthly-price');
-            const yearlyPrices = document.querySelectorAll('.yearly-price');
-
-            if (period === 'monthly') {
-                monthlyPrices.forEach(el => el.classList.remove('hidden'));
-                yearlyPrices.forEach(el => el.classList.add('hidden'));
-            } else {
-                monthlyPrices.forEach(el => el.classList.add('hidden'));
-                yearlyPrices.forEach(el => el.classList.remove('hidden'));
-            }
-        }
-
-        setupPaymentErrorHandling() {
-            // Handle payment errors
-            window.addEventListener('paypal_error', (event) => {
-                this.showPaymentError(event.detail.message);
-            });
-
-            window.addEventListener('paypal_success', (event) => {
-                this.showPaymentSuccess();
-            });
-        }
-
-        showPaymentError(message) {
-            const errorDiv = document.getElementById('paymentError');
-            if (errorDiv) {
-                errorDiv.textContent = message || '결제 처리 중 오류가 발생했습니다.';
-                errorDiv.classList.add('show');
-
-                // Hide after 5 seconds
-                setTimeout(() => {
-                    errorDiv.classList.remove('show');
-                }, 5000);
-            }
-
-            // Also show notification
-            if (window.showNotification) {
-                showNotification(message || '결제 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        showPaymentSuccess() {
-            if (window.showNotification) {
-                showNotification('결제가 성공적으로 완료되었습니다!', 'success');
-            }
-
-            // Redirect after success
-            setTimeout(() => {
-                window.location.href = 'home.html?upgraded=true';
-            }, 2000);
-        }
-    }
-
-    // Global functions for backward compatibility
-    window.startFreeTrial = function (planType) {
-        if (window.stockChartApp && !window.stockChartApp.isAuthenticated()) {
-            localStorage.setItem('loginRedirect', window.location.href);
-            showNotification('구독하려면 먼저 로그인해주세요.', 'info');
-            window.stockChartApp.showModal('loginModal');
-            return;
-        }
-
-        // Handle free trial start
-        showNotification('7일 무료 체험이 시작됩니다!', 'success');
-
-        // You can add PayPal integration here
-        console.log(`Starting free trial for ${planType} plan`);
-    };
-
-    // Initialize subscription manager
-    document.addEventListener('DOMContentLoaded', () => {
-        window.subscriptionManager = new SubscriptionManager();
-    });
-
-    // Portal-Style Mobile Menu Functions
-    function toggleMobileMenu() {
-        const portal = document.getElementById('mobile-menu-portal');
-        const content = document.getElementById('mobile-menu-content');
-        const button = document.getElementById('mobileMenuButton');
-        const body = document.body;
-
-        const isOpen = portal.style.display !== 'none';
-
-        if (isOpen) {
-            closeMobileMenu();
-        } else {
-            openMobileMenu();
-        }
-    }
-
-    function openMobileMenu() {
-        const portal = document.getElementById('mobile-menu-portal');
-        const content = document.getElementById('mobile-menu-content');
-        const button = document.getElementById('mobileMenuButton');
-        const body = document.body;
-
-        body.style.overflow = 'hidden';
-        portal.style.display = 'block';
-        portal.style.pointerEvents = 'none';
-
-        const overlay = portal.querySelector('.absolute.inset-0');
-        const menuContent = portal.querySelector('#mobile-menu-content');
-        if (overlay) overlay.style.pointerEvents = 'auto';
-        if (menuContent) menuContent.style.pointerEvents = 'auto';
-
-        setTimeout(() => {
-            content.classList.remove('-translate-x-full');
-            content.classList.add('translate-x-0');
-        }, 10);
-
-        if (button) button.classList.add('menu-open');
-        if (button) button.setAttribute('aria-label', '메뉴 닫기');
-    }
-
-    function closeMobileMenu() {
-        const portal = document.getElementById('mobile-menu-portal');
-        const content = document.getElementById('mobile-menu-content');
-        const button = document.getElementById('mobileMenuButton');
-        const body = document.body;
-
-        body.style.overflow = '';
-        content.classList.remove('translate-x-0');
-        content.classList.add('-translate-x-full');
-
-        setTimeout(() => {
-            portal.style.display = 'none';
-        }, 300);
-
-        if (button) button.classList.remove('menu-open');
-        if (button) button.setAttribute('aria-label', '메뉴 열기');
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            closeMobileMenu();
-        }
-    });
-
-    window.addEventListener('resize', function () {
-        if (window.innerWidth >= 768) {
-            closeMobileMenu();
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const portal = document.getElementById('mobile-menu-portal');
-        if (portal) {
-            portal.style.display = 'none';
-        }
-    });
-</script>
-</body>
-
 </html>
