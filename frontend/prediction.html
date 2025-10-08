@@ -154,6 +154,57 @@
                     </div>
                 </div>
                 
+                <!-- Chart Section -->
+                <div class="chart-section">
+                    <h2>실시간 차트</h2>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-symbol">
+                                <span class="symbol" id="chartSymbol">AAPL</span>
+                                <span class="symbol-name">Apple Inc.</span>
+                            </div>
+                            <div class="chart-price">
+                                <span class="price" id="chartPrice">$189.45</span>
+                                <span class="change positive" id="chartChange">+2.34 (+1.25%)</span>
+                            </div>
+                        </div>
+                        
+                        <!-- TradingView Chart Widget -->
+                        <div class="chart-widget">
+                            <div class="tradingview-widget-container">
+                                <div id="tradingview_chart" style="height: 600px; width: 100%;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Controls -->
+                        <div class="chart-controls">
+                            <div class="timeframe-selector">
+                                <button class="timeframe-btn" data-timeframe="1">1분</button>
+                                <button class="timeframe-btn" data-timeframe="5">5분</button>
+                                <button class="timeframe-btn" data-timeframe="15">15분</button>
+                                <button class="timeframe-btn" data-timeframe="60">1시간</button>
+                                <button class="timeframe-btn active" data-timeframe="D">1일</button>
+                                <button class="timeframe-btn" data-timeframe="W">1주</button>
+                            </div>
+                            
+                            <div class="chart-tools">
+                                <button class="tool-btn" title="추세선">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <button class="tool-btn" title="지지/저항선">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button class="tool-btn" title="피보나치">
+                                    <i class="fas fa-wave-square"></i>
+                                </button>
+                                <button class="tool-btn" title="전체화면">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Analysis Results -->
                 <div class="analysis-section">
                     <h2>분석 결과</h2>
@@ -367,6 +418,74 @@
                 document.getElementById('symbolSelect').value = symbol;
                 this.value = '';
             }
+        });
+    </script>
+
+    <!-- TradingView Chart Widget -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        // Initialize TradingView Chart
+        function initializeTradingViewChart(symbol = 'AAPL') {
+            new TradingView.widget({
+                "width": "100%",
+                "height": 600,
+                "symbol": symbol,
+                "interval": "D",
+                "timezone": "Asia/Seoul",
+                "theme": "dark",
+                "style": "1",
+                "locale": "ko",
+                "toolbar_bg": "#1a1a1a",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": false,
+                "container_id": "tradingview_chart",
+                "studies": [
+                    "MASimple@tv-basicstudies",
+                    "RSI@tv-basicstudies"
+                ],
+                "overrides": {
+                    "paneProperties.background": "#1a1a1a",
+                    "paneProperties.vertGridProperties.color": "#2a2a2a",
+                    "paneProperties.horzGridProperties.color": "#2a2a2a",
+                    "symbolWatermarkProperties.transparency": 90,
+                    "scalesProperties.textColor": "#888888",
+                    "mainSeriesProperties.candleStyle.upColor": "#00FFA3",
+                    "mainSeriesProperties.candleStyle.downColor": "#FF4747",
+                    "mainSeriesProperties.candleStyle.borderUpColor": "#00FFA3",
+                    "mainSeriesProperties.candleStyle.borderDownColor": "#FF4747",
+                    "mainSeriesProperties.candleStyle.wickUpColor": "#00FFA3",
+                    "mainSeriesProperties.candleStyle.wickDownColor": "#FF4747"
+                }
+            });
+        }
+
+        // Initialize chart when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTradingViewChart();
+            
+            // Chart timeframe buttons
+            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const timeframe = this.dataset.timeframe;
+                    // Reinitialize chart with new timeframe
+                    const currentSymbol = document.getElementById('chartSymbol').textContent;
+                    initializeTradingViewChart(currentSymbol);
+                });
+            });
+            
+            // Update chart when symbol changes
+            document.getElementById('symbolSelect').addEventListener('change', function() {
+                const symbol = this.value;
+                if (symbol) {
+                    document.getElementById('chartSymbol').textContent = symbol;
+                    initializeTradingViewChart(symbol);
+                }
+            });
         });
     </script>
 
