@@ -750,9 +750,13 @@
         });
     </script>
 
-        // Initialize chart when page loads
+        // Initialize everything when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initializeTradingViewChart();
+            initializeAdvancedChart();
+            setupChartSearch();
+            setupTimeNavigation();
+            setupDrawingTools();
+            animateVolumeBars();
             
             // Form tabs functionality
             document.querySelectorAll('.form-tab').forEach(tab => {
@@ -762,27 +766,31 @@
                 });
             });
             
-            // Chart timeframe buttons
-            document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            // Timeframe control buttons
+            document.querySelectorAll('.timeframe-control-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.timeframe-control-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    const timeframe = this.dataset.timeframe;
-                    // Reinitialize chart with new timeframe
-                    const currentSymbol = document.getElementById('chartSymbol').textContent;
-                    initializeTradingViewChart(currentSymbol);
+                    const period = this.dataset.period;
+                    const symbol = document.getElementById('chartSymbolName').textContent;
+                    initializeAdvancedChart(symbol, convertPeriodToInterval(period));
                 });
             });
             
-            // Update chart when symbol changes
-            document.getElementById('symbolSelect').addEventListener('change', function() {
-                const symbol = this.value;
-                if (symbol) {
-                    document.getElementById('chartSymbol').textContent = symbol;
-                    initializeTradingViewChart(symbol);
-                }
-            });
+            // Update chart when symbol changes in prediction form
+            const symbolSelect = document.getElementById('symbolSelect');
+            if (symbolSelect) {
+                symbolSelect.addEventListener('change', function() {
+                    const symbol = this.value;
+                    if (symbol) {
+                        document.getElementById('chartSymbolName').textContent = symbol;
+                        const activeInterval = document.querySelector('.timeframe-control-btn.active').dataset.period;
+                        initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
+                        updatePriceInfo(symbol);
+                    }
+                });
+            }
         });
     </script>
 
