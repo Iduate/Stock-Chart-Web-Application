@@ -692,7 +692,8 @@ body {
     }
     
     .form-tabs {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: var(--spacing-xs);
     }
     
@@ -714,6 +715,356 @@ body {
     .prediction-form-section {
         padding: var(--spacing-lg);
         margin-bottom: var(--spacing-lg);
+    }
+}
+
+/* ===== ADVANCED CHART STYLES ===== */
+.chart-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-large);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--border-primary);
+}
+
+.chart-header-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    align-items: center;
+}
+
+.chart-search-section {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.chart-search-input {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-md) var(--spacing-lg);
+    color: var(--text-primary);
+    font-size: var(--font-size-md);
+    outline: none;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 200px;
+}
+
+.chart-search-input:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px var(--accent-green-transparent);
+}
+
+.timeframe-controls {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-medium);
+    padding: 4px;
+    gap: 2px;
+}
+
+.timeframe-control-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-small);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+}
+
+.timeframe-control-btn.active {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+.timeframe-control-btn:hover:not(.active) {
+    background: var(--accent-green-transparent);
+    color: var(--text-primary);
+}
+
+.chart-symbol-info {
+    text-align: center;
+}
+
+.chart-symbol-name {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    display: block;
+}
+
+.chart-company-name {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.chart-price-info {
+    text-align: right;
+}
+
+.current-price {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    display: block;
+}
+
+.price-change {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.price-change.positive {
+    color: var(--accent-green);
+}
+
+.price-change.negative {
+    color: var(--text-danger);
+}
+
+.advanced-chart-container {
+    position: relative;
+    background: var(--bg-primary);
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    border: 1px solid var(--border-primary);
+}
+
+.chart-navigation {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-primary);
+}
+
+.time-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.nav-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-small);
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-btn:hover {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    border-color: var(--accent-green);
+}
+
+.current-period {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 120px;
+    text-align: center;
+}
+
+.chart-scrollbar {
+    position: relative;
+    margin-top: var(--spacing-md);
+}
+
+.time-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--bg-card);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.time-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    cursor: pointer;
+    border: 3px solid var(--bg-primary);
+    box-shadow: var(--shadow-medium);
+}
+
+.time-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    cursor: pointer;
+    border: 3px solid var(--bg-primary);
+    box-shadow: var(--shadow-medium);
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+.volume-section {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-primary);
+}
+
+.volume-section h4 {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+}
+
+.volume-bars {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 4px;
+    height: 60px;
+}
+
+.volume-bar {
+    background: var(--accent-green);
+    width: 8px;
+    border-radius: 2px 2px 0 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.volume-bar:hover {
+    opacity: 1;
+    background: var(--accent-green-hover);
+}
+
+.chart-tools-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-medium);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-primary);
+}
+
+.drawing-tools {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.drawing-tools .tool-btn {
+    background: transparent;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-small);
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drawing-tools .tool-btn:hover {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    border-color: var(--accent-green);
+}
+
+.drawing-tools .tool-btn.active {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    border-color: var(--accent-green);
+}
+
+/* Chart Point Management */
+.chart-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border: 2px solid var(--bg-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.chart-point:hover {
+    transform: scale(1.5);
+}
+
+.point-delete-btn {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 20px;
+    height: 20px;
+    background: var(--text-danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-point:hover .point-delete-btn {
+    display: flex;
+}
+
+/* Mobile Responsive for Chart */
+@media (max-width: 768px) {
+    .chart-header-controls {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+        text-align: center;
+    }
+    
+    .chart-search-section {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .timeframe-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .time-navigation {
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+    
+    .chart-tools-panel {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: var(--spacing-md);
     }
 }
 

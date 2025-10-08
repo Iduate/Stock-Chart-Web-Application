@@ -107,10 +107,6 @@
                             <i class="fas fa-chart-line"></i>
                             주식 예측
                         </button>
-                        <button class="form-tab" data-tab="analysis">
-                            <i class="fas fa-brain"></i>
-                            AI 로그인
-                        </button>
                         <button class="form-tab" data-tab="start">
                             <i class="fas fa-play"></i>
                             예측 시작
@@ -171,49 +167,87 @@
                 
                 <!-- Chart Section -->
                 <div class="chart-section">
-                    <h2>실시간 차트</h2>
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <div class="chart-symbol">
-                                <span class="symbol" id="chartSymbol">AAPL</span>
-                                <span class="symbol-name">Apple Inc.</span>
-                            </div>
-                            <div class="chart-price">
-                                <span class="price" id="chartPrice">$189.45</span>
-                                <span class="change positive" id="chartChange">+2.34 (+1.25%)</span>
-                            </div>
-                        </div>
-                        
-                        <!-- TradingView Chart Widget -->
-                        <div class="chart-widget">
-                            <div class="tradingview-widget-container">
-                                <div id="tradingview_chart" style="height: 600px; width: 100%;"></div>
+                    <div class="chart-header-controls">
+                        <div class="chart-search-section">
+                            <input type="text" class="chart-search-input" placeholder="종목 검색 (예: AAPL, TSLA, BTC)" id="chartSearchInput">
+                            <div class="timeframe-controls">
+                                <button class="timeframe-control-btn active" data-period="1D">일</button>
+                                <button class="timeframe-control-btn" data-period="1W">주</button>
+                                <button class="timeframe-control-btn" data-period="1M">월</button>
+                                <button class="timeframe-control-btn" data-period="1Y">년</button>
+                                <button class="timeframe-control-btn" data-period="5M">5분</button>
+                                <button class="timeframe-control-btn" data-period="1H">시간</button>
                             </div>
                         </div>
                         
-                        <!-- Chart Controls -->
-                        <div class="chart-controls">
-                            <div class="timeframe-selector">
-                                <button class="timeframe-btn" data-timeframe="1">1분</button>
-                                <button class="timeframe-btn" data-timeframe="5">5분</button>
-                                <button class="timeframe-btn" data-timeframe="15">15분</button>
-                                <button class="timeframe-btn" data-timeframe="60">1시간</button>
-                                <button class="timeframe-btn active" data-timeframe="D">1일</button>
-                                <button class="timeframe-btn" data-timeframe="W">1주</button>
+                        <div class="chart-symbol-info">
+                            <span class="chart-symbol-name" id="chartSymbolName">AAPL</span>
+                            <span class="chart-company-name">Apple Inc.</span>
+                        </div>
+                        
+                        <div class="chart-price-info">
+                            <span class="current-price" id="currentChartPrice">$189.45</span>
+                            <span class="price-change positive" id="priceChangeDisplay">+2.34 (+1.25%)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="advanced-chart-container">
+                        <!-- TradingView Advanced Chart -->
+                        <div class="tradingview-widget-container" style="height: 600px; width: 100%;">
+                            <div id="advanced_tradingview_chart" style="height: 100%; width: 100%;"></div>
+                        </div>
+                        
+                        <!-- Chart Navigation Controls -->
+                        <div class="chart-navigation">
+                            <div class="chart-scrollbar-container">
+                                <div class="time-navigation">
+                                    <button class="nav-btn" id="prevYear" title="이전 년도">&lt;&lt;</button>
+                                    <button class="nav-btn" id="prevMonth" title="이전 달">&lt;</button>
+                                    <span class="current-period" id="currentPeriod">2025년 10월</span>
+                                    <button class="nav-btn" id="nextMonth" title="다음 달">&gt;</button>
+                                    <button class="nav-btn" id="nextYear" title="다음 년도">&gt;&gt;</button>
+                                </div>
+                                
+                                <div class="chart-scrollbar">
+                                    <input type="range" class="time-slider" id="timeSlider" min="0" max="365" value="280" 
+                                           title="시간 탐색 - 과거/현재/미래">
+                                    <div class="slider-labels">
+                                        <span>과거</span>
+                                        <span>현재</span>
+                                        <span>미래</span>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="chart-tools">
-                                <button class="tool-btn" title="추세선">
+                        </div>
+                        
+                        <!-- Volume Display -->
+                        <div class="volume-section">
+                            <h4>거래량</h4>
+                            <div class="volume-bars" id="volumeBars">
+                                <div class="volume-bar" style="height: 60%;" title="거래량: 1.2M"></div>
+                                <div class="volume-bar" style="height: 80%;" title="거래량: 1.6M"></div>
+                                <div class="volume-bar" style="height: 45%;" title="거래량: 0.9M"></div>
+                                <div class="volume-bar" style="height: 75%;" title="거래량: 1.5M"></div>
+                                <div class="volume-bar" style="height: 90%;" title="거래량: 1.8M"></div>
+                                <div class="volume-bar" style="height: 65%;" title="거래량: 1.3M"></div>
+                                <div class="volume-bar" style="height: 55%;" title="거래량: 1.1M"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Drawing Tools -->
+                        <div class="chart-tools-panel">
+                            <div class="drawing-tools">
+                                <button class="tool-btn" id="addPoint" title="포인트 추가">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="tool-btn" id="drawLine" title="추세선 그리기">
                                     <i class="fas fa-chart-line"></i>
                                 </button>
-                                <button class="tool-btn" title="지지/저항선">
-                                    <i class="fas fa-minus"></i>
+                                <button class="tool-btn" id="addNote" title="메모 추가">
+                                    <i class="fas fa-sticky-note"></i>
                                 </button>
-                                <button class="tool-btn" title="피보나치">
-                                    <i class="fas fa-wave-square"></i>
-                                </button>
-                                <button class="tool-btn" title="전체화면">
-                                    <i class="fas fa-expand"></i>
+                                <button class="tool-btn" id="clearAll" title="모든 그리기 삭제">
+                                    <i class="fas fa-eraser"></i>
                                 </button>
                             </div>
                         </div>
@@ -271,7 +305,7 @@
                         </div>
                         <div class="table-row">
                             <span class="symbol">BTC/USD</span>
-                            <span>2024.10.01</span>
+                            <span>2025.10.05</span>
                             <span class="direction up">상승</span>
                             <span>$45,000</span>
                             <span class="status success">성공</span>
@@ -279,7 +313,7 @@
                         </div>
                         <div class="table-row">
                             <span class="symbol">AAPL</span>
-                            <span>2024.09.28</span>
+                            <span>2025.10.03</span>
                             <span class="direction up">상승</span>
                             <span>$180</span>
                             <span class="status success">성공</span>
@@ -287,11 +321,27 @@
                         </div>
                         <div class="table-row">
                             <span class="symbol">TSLA</span>
-                            <span>2024.09.25</span>
+                            <span>2025.10.01</span>
                             <span class="direction down">하락</span>
                             <span>$240</span>
                             <span class="status failed">실패</span>
                             <span class="profit negative">-3.2%</span>
+                        </div>
+                        <div class="table-row">
+                            <span class="symbol">MSFT</span>
+                            <span>2025.09.30</span>
+                            <span class="direction up">상승</span>
+                            <span>$420</span>
+                            <span class="status success">성공</span>
+                            <span class="profit positive">+15.7%</span>
+                        </div>
+                        <div class="table-row">
+                            <span class="symbol">GOOGL</span>
+                            <span>2025.09.28</span>
+                            <span class="direction up">상승</span>
+                            <span>$175</span>
+                            <span class="status success">성공</span>
+                            <span class="profit positive">+6.9%</span>
                         </div>
                     </div>
                 </div>
@@ -439,13 +489,21 @@
     <!-- TradingView Chart Widget -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script type="text/javascript">
-        // Initialize TradingView Chart
-        function initializeTradingViewChart(symbol = 'AAPL') {
-            new TradingView.widget({
+        let currentWidget = null;
+        let currentPeriod = new Date();
+        let selectedPoints = [];
+        
+        // Initialize Advanced TradingView Chart
+        function initializeAdvancedChart(symbol = 'AAPL', interval = 'D') {
+            if (currentWidget) {
+                currentWidget.remove();
+            }
+            
+            currentWidget = new TradingView.widget({
                 "width": "100%",
                 "height": 600,
                 "symbol": symbol,
-                "interval": "D",
+                "interval": interval,
                 "timezone": "Asia/Seoul",
                 "theme": "dark",
                 "style": "1",
@@ -455,10 +513,11 @@
                 "hide_top_toolbar": false,
                 "hide_legend": false,
                 "save_image": false,
-                "container_id": "tradingview_chart",
+                "container_id": "advanced_tradingview_chart",
                 "studies": [
                     "MASimple@tv-basicstudies",
-                    "RSI@tv-basicstudies"
+                    "RSI@tv-basicstudies",
+                    "Volume@tv-basicstudies"
                 ],
                 "overrides": {
                     "paneProperties.background": "#1a1a1a",
@@ -466,15 +525,230 @@
                     "paneProperties.horzGridProperties.color": "#2a2a2a",
                     "symbolWatermarkProperties.transparency": 90,
                     "scalesProperties.textColor": "#888888",
+                    "scalesProperties.lineColor": "#2a2a2a",
                     "mainSeriesProperties.candleStyle.upColor": "#00FFA3",
                     "mainSeriesProperties.candleStyle.downColor": "#FF4747",
                     "mainSeriesProperties.candleStyle.borderUpColor": "#00FFA3",
                     "mainSeriesProperties.candleStyle.borderDownColor": "#FF4747",
                     "mainSeriesProperties.candleStyle.wickUpColor": "#00FFA3",
-                    "mainSeriesProperties.candleStyle.wickDownColor": "#FF4747"
+                    "mainSeriesProperties.candleStyle.wickDownColor": "#FF4747",
+                    "paneProperties.vertGridProperties.style": 1,
+                    "paneProperties.horzGridProperties.style": 1
+                },
+                "disabled_features": [],
+                "enabled_features": ["study_templates"]
+            });
+        }
+        
+        // Chart Search Functionality
+        function setupChartSearch() {
+            const searchInput = document.getElementById('chartSearchInput');
+            const symbolName = document.getElementById('chartSymbolName');
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const symbol = this.value.toUpperCase().trim();
+                    if (symbol) {
+                        symbolName.textContent = symbol;
+                        const activeInterval = document.querySelector('.timeframe-control-btn.active').dataset.period;
+                        initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
+                        updatePriceInfo(symbol);
+                    }
                 }
             });
         }
+        
+        // Convert period format to TradingView interval
+        function convertPeriodToInterval(period) {
+            const mapping = {
+                '5M': '5',
+                '1H': '60',
+                '1D': 'D',
+                '1W': 'W',
+                '1M': 'M',
+                '1Y': '12M'
+            };
+            return mapping[period] || 'D';
+        }
+        
+        // Time Navigation Functions
+        function setupTimeNavigation() {
+            const prevYear = document.getElementById('prevYear');
+            const prevMonth = document.getElementById('prevMonth');
+            const nextMonth = document.getElementById('nextMonth');
+            const nextYear = document.getElementById('nextYear');
+            const currentPeriodSpan = document.getElementById('currentPeriod');
+            const timeSlider = document.getElementById('timeSlider');
+            
+            function updatePeriodDisplay() {
+                const year = currentPeriod.getFullYear();
+                const month = currentPeriod.getMonth() + 1;
+                currentPeriodSpan.textContent = `${year}년 ${month}월`;
+            }
+            
+            prevYear.addEventListener('click', () => {
+                currentPeriod.setFullYear(currentPeriod.getFullYear() - 1);
+                updatePeriodDisplay();
+                updateChartPeriod();
+            });
+            
+            prevMonth.addEventListener('click', () => {
+                currentPeriod.setMonth(currentPeriod.getMonth() - 1);
+                updatePeriodDisplay();
+                updateChartPeriod();
+            });
+            
+            nextMonth.addEventListener('click', () => {
+                currentPeriod.setMonth(currentPeriod.getMonth() + 1);
+                updatePeriodDisplay();
+                updateChartPeriod();
+            });
+            
+            nextYear.addEventListener('click', () => {
+                currentPeriod.setFullYear(currentPeriod.getFullYear() + 1);
+                updatePeriodDisplay();
+                updateChartPeriod();
+            });
+            
+            // Time slider for past/present/future navigation
+            timeSlider.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                const today = new Date();
+                const daysDiff = value - 280; // 280 represents current day
+                
+                const newDate = new Date(today);
+                newDate.setDate(today.getDate() + daysDiff);
+                
+                currentPeriod = newDate;
+                updatePeriodDisplay();
+                updateChartPeriod();
+            });
+            
+            updatePeriodDisplay();
+        }
+        
+        function updateChartPeriod() {
+            const symbol = document.getElementById('chartSymbolName').textContent;
+            const activeInterval = document.querySelector('.timeframe-control-btn.active').dataset.period;
+            initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
+        }
+        
+        // Chart Drawing Tools
+        function setupDrawingTools() {
+            const addPointBtn = document.getElementById('addPoint');
+            const drawLineBtn = document.getElementById('drawLine');
+            const addNoteBtn = document.getElementById('addNote');
+            const clearAllBtn = document.getElementById('clearAll');
+            
+            let isAddingPoint = false;
+            
+            addPointBtn.addEventListener('click', function() {
+                isAddingPoint = !isAddingPoint;
+                this.classList.toggle('active');
+                
+                if (isAddingPoint) {
+                    document.body.style.cursor = 'crosshair';
+                } else {
+                    document.body.style.cursor = 'default';
+                }
+            });
+            
+            // Add click listener to chart for point placement
+            document.addEventListener('click', function(e) {
+                if (isAddingPoint && e.target.closest('#advanced_tradingview_chart')) {
+                    addChartPoint(e.clientX, e.clientY);
+                }
+            });
+            
+            clearAllBtn.addEventListener('click', function() {
+                selectedPoints.forEach(point => point.remove());
+                selectedPoints = [];
+            });
+        }
+        
+        function addChartPoint(x, y) {
+            const chartContainer = document.getElementById('advanced_tradingview_chart');
+            const rect = chartContainer.getBoundingClientRect();
+            
+            const point = document.createElement('div');
+            point.className = 'chart-point';
+            point.style.left = (x - rect.left - 4) + 'px';
+            point.style.top = (y - rect.top - 4) + 'px';
+            
+            // Create delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'point-delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                point.remove();
+                selectedPoints = selectedPoints.filter(p => p !== point);
+            });
+            
+            point.appendChild(deleteBtn);
+            chartContainer.appendChild(point);
+            selectedPoints.push(point);
+        }
+        
+        // Update price information
+        function updatePriceInfo(symbol) {
+            // Simulate price data - in real implementation, fetch from API
+            const prices = {
+                'AAPL': { price: 189.45, change: 2.34, percent: 1.25 },
+                'TSLA': { price: 242.67, change: -3.21, percent: -1.31 },
+                'BTC': { price: 28450.00, change: 1250.00, percent: 4.59 },
+                'MSFT': { price: 338.11, change: 5.67, percent: 1.71 }
+            };
+            
+            const data = prices[symbol] || prices['AAPL'];
+            const priceElement = document.getElementById('currentChartPrice');
+            const changeElement = document.getElementById('priceChangeDisplay');
+            
+            priceElement.textContent = `$${data.price.toLocaleString()}`;
+            changeElement.textContent = `${data.change >= 0 ? '+' : ''}${data.change} (${data.change >= 0 ? '+' : ''}${data.percent}%)`;
+            changeElement.className = `price-change ${data.change >= 0 ? 'positive' : 'negative'}`;
+        }
+        
+        // Volume bars animation
+        function animateVolumeBars() {
+            const volumeBars = document.querySelectorAll('.volume-bar');
+            setInterval(() => {
+                volumeBars.forEach(bar => {
+                    const randomHeight = Math.random() * 80 + 20;
+                    bar.style.height = randomHeight + '%';
+                });
+            }, 5000);
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAdvancedChart();
+            setupChartSearch();
+            setupTimeNavigation();
+            setupDrawingTools();
+            animateVolumeBars();
+            
+            // Form tabs functionality
+            document.querySelectorAll('.form-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Timeframe control buttons
+            document.querySelectorAll('.timeframe-control-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.timeframe-control-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const period = this.dataset.period;
+                    const symbol = document.getElementById('chartSymbolName').textContent;
+                    initializeAdvancedChart(symbol, convertPeriodToInterval(period));
+                });
+            });
+        });
+    </script>
 
         // Initialize chart when page loads
         document.addEventListener('DOMContentLoaded', function() {
