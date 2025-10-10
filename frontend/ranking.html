@@ -27,7 +27,7 @@
             </div>
 
             <nav class="top-nav-links">
-                <a href="index.html" class="top-nav-link">
+                <a href="/" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
@@ -56,7 +56,7 @@
             <div class="top-actions">
                 <div class="search-input-wrap">
                     <i class="fas fa-search"></i>
-                    <input id="rankingSearch" type="search" placeholder="사용자 또는 전략 검색">
+                    <input id="rankingSearch" class="search-input" type="search" placeholder="사용자 또는 전략 검색">
                 </div>
                 <button id="downloadRankingBtn" class="ghost-btn">
                     <i class="fas fa-download"></i>
@@ -77,7 +77,7 @@
                     <div class="card-heading">
                         <div>
                             <h2>리더보드</h2>
-                            <p>AI 검증된 실적을 기준으로 실시간 업데이트 됩니다.</p>
+                            <p>검증된 실적을 기준으로 실시간 업데이트 됩니다.</p>
                         </div>
                         <div class="ranking-tabs" id="timeframeTabs"></div>
                     </div>
@@ -146,7 +146,7 @@
                     <div class="home-news-card ranking-insights">
                         <div class="board-header">
                             <div>
-                                <h3>AI 인사이트</h3>
+                                <h3>전략 인사이트</h3>
                                 <span>선택된 기간 기준 전략 요약</span>
                             </div>
                             <button id="refreshInsightsBtn" class="board-action">새로고침</button>
@@ -171,7 +171,7 @@
                         <div class="card-heading">
                             <div>
                                 <h3>다가오는 대회</h3>
-                                <p>AI 추천 참가 일정</p>
+                                <p>추천 참가 일정</p>
                             </div>
                             <button id="openEventsBtn" class="ghost-btn small">전체 보기</button>
                         </div>
@@ -193,7 +193,7 @@
     </div>
 
     <nav class="mobile-bottom-nav mobile-only">
-        <a href="index.html" class="mobile-nav-item">
+    <a href="/" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
@@ -232,7 +232,7 @@
             entries: [
                 { id: 'd-1', username: '투자왕123', avatar: '투', tier: '챌린저', timeframe: 'daily', returnRate: 24.7, trades: 127, winRate: 87.4, profit: 4250000, streak: 8 },
                 { id: 'd-2', username: '주식마스터', avatar: '주', tier: '타이탄', timeframe: 'daily', returnRate: 19.3, trades: 95, winRate: 82.1, profit: 3180000, streak: 6 },
-                { id: 'd-3', username: 'AI예측러', avatar: 'AI', tier: '프로', timeframe: 'daily', returnRate: 15.8, trades: 78, winRate: 79.5, profit: 2650000, streak: 5 },
+                { id: 'd-3', username: '전략예측러', avatar: '전', tier: '프로', timeframe: 'daily', returnRate: 15.8, trades: 78, winRate: 79.5, profit: 2650000, streak: 5 },
                 { id: 'd-4', username: '차트분석가', avatar: '차', tier: '프로', timeframe: 'daily', returnRate: 12.1, trades: 65, winRate: 75.4, profit: 1980000, streak: 4 },
                 { id: 'd-5', username: '데이트레이더', avatar: '데', tier: '프로', timeframe: 'daily', returnRate: 9.4, trades: 156, winRate: 71.2, profit: 1540000, streak: 3 },
                 { id: 'w-1', username: '스윙킹', avatar: '스', tier: '챌린저', timeframe: 'weekly', returnRate: 32.5, trades: 42, winRate: 68.2, profit: 3120000, streak: 5 },
@@ -240,24 +240,24 @@
                 { id: 'm-1', username: '퀀트마스터', avatar: '퀀', tier: '챌린저', timeframe: 'monthly', returnRate: 58.9, trades: 118, winRate: 69.5, profit: 8450000, streak: 9 },
                 { id: 'm-2', username: '리스크제로', avatar: '리', tier: '타이탄', timeframe: 'monthly', returnRate: 41.2, trades: 102, winRate: 75.2, profit: 6230000, streak: 7 },
                 { id: 'y-1', username: '롱런전략가', avatar: '롱', tier: '챌린저', timeframe: 'yearly', returnRate: 128.4, trades: 520, winRate: 64.1, profit: 18500000, streak: 12 },
-                { id: 'y-2', username: 'AIHybrid', avatar: 'HY', tier: '프로', timeframe: 'yearly', returnRate: 112.8, trades: 447, winRate: 66.9, profit: 16200000, streak: 10 },
+                { id: 'y-2', username: '하이브리드전략', avatar: '하', tier: '프로', timeframe: 'yearly', returnRate: 112.8, trades: 447, winRate: 66.9, profit: 16200000, streak: 10 },
                 { id: 'w-3', username: '국내주식러', avatar: '국', tier: '루키', timeframe: 'weekly', returnRate: 18.6, trades: 24, winRate: 62.3, profit: 930000, streak: 2 }
             ],
             insights: {
                 daily: [
                     '일간 챌린저 티어 평균 수익률은 +18.6%로 전일 대비 2.1% 상승했습니다.',
-                    'AI 기반 전략 채택 비율이 63%를 돌파하며 상승장 대응력이 향상되었습니다.',
+                    '자동화 전략 채택 비율이 63%를 돌파하며 상승장 대응력이 향상되었습니다.',
                     '가장 긴 연속 성공은 8회로, 변동성 장세에서 짧은 홀딩 전략이 효과적이었습니다.'
                 ],
                 weekly: [
                     '주간 상위권은 평균 32% 이상의 수익률을 기록하며 변동성 플레이에 강점을 보였습니다.',
-                    '스윙 전략과 AI 보조 시그널을 결합한 유저의 승률이 70%를 넘었습니다.',
+                    '스윙 전략과 보조 시그널을 결합한 유저의 승률이 70%를 넘었습니다.',
                     '손실 제한을 4% 이내로 설정한 참가자가 평균보다 1.6배 높은 승률을 기록했습니다.'
                 ],
                 monthly: [
                     '월간 Top3의 평균 연속 성공 수는 8.7회로 장기 추세 추종 전략이 돋보입니다.',
                     '퀀트 기반 포트폴리오 조정 빈도가 낮을수록 누적 수익이 높게 나타났습니다.',
-                    'AI 매매 시그널 신뢰도(45일 기준)가 92%로 업데이트되었습니다.'
+                    '자동 매매 시그널 신뢰도(45일 기준)가 92%로 업데이트되었습니다.'
                 ],
                 yearly: [
                     '연간 기준 누적 수익 1억원 이상 참가자가 12명으로 사상 최대치를 기록했습니다.',
@@ -276,11 +276,11 @@
             },
             upcoming: [
                 { title: '주간 예측 스프린트', date: '10월 12일', reward: '₩500,000', status: '접수 중' },
-                { title: 'AI 하이브리드 챌린지', date: '10월 25일', reward: '프리미엄 2개월', status: '대기 중' },
+                { title: '하이브리드 전략 챌린지', date: '10월 25일', reward: '프리미엄 2개월', status: '대기 중' },
                 { title: '연말 결산 빅배틀', date: '11월 02일', reward: '총 상금 ₩10,000,000', status: '사전 예약' }
             ],
             strategies: [
-                { title: 'AI 추세 추종', meta: '정확도 92% · 추천', tone: 'positive' },
+                { title: '전략 추세 추종', meta: '정확도 92% · 추천', tone: 'positive' },
                 { title: '변동성 박스 매매', meta: '장 초반 스캘핑 강화', tone: 'neutral' },
                 { title: '리스크 헤지 플랜', meta: '포트폴리오 방어 추천', tone: 'info' }
             ]
@@ -329,7 +329,7 @@
                         <div class="metric-sub">성과 데이터 없음</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">AI 신뢰도</div>
+                        <div class="metric-label">분석 신뢰도</div>
                         <div class="metric-value">92%</div>
                         <div class="metric-sub">기본 모델 기준</div>
                     </div>
@@ -456,7 +456,7 @@
             list.innerHTML = insights.map(text => `
                 <li>
                     <span class="news-title">${text}</span>
-                    <span class="news-meta">AI 분석</span>
+                    <span class="news-meta">전략 분석</span>
                 </li>
             `).join('');
         }
@@ -589,7 +589,7 @@
             });
 
             document.getElementById('refreshInsightsBtn').addEventListener('click', () => {
-                showRankingToast('AI 인사이트가 최신 상태로 업데이트되었습니다.', 'success');
+                showRankingToast('전략 인사이트가 최신 상태로 업데이트되었습니다.', 'success');
             });
 
             document.getElementById('compareStrategiesBtn').addEventListener('click', () => {

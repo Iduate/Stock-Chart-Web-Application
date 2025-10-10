@@ -27,7 +27,7 @@
             </div>
 
             <nav class="top-nav-links">
-                <a href="index.html" class="top-nav-link">
+                <a href="/" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
@@ -56,7 +56,7 @@
             <div class="top-actions">
                 <div class="search-input-wrap">
                     <i class="fas fa-search"></i>
-                    <input id="eventSearch" type="search" placeholder="이벤트 검색 (AI, 챌린지, ...)">
+                    <input id="eventSearch" class="search-input" type="search" placeholder="이벤트 검색 (챌린지, 워크숍 등)">
                 </div>
                 <button id="newEventAlertBtn" class="ghost-btn">
                     <i class="fas fa-bell"></i>
@@ -161,7 +161,7 @@
                         <div class="card-heading">
                             <div>
                                 <h3>공지 & 알림</h3>
-                                <p>AI 분석과 운영 공지</p>
+                                <p>시장 분석과 운영 공지</p>
                             </div>
                             <button id="refreshNewsBtn" class="ghost-btn small">새로고침</button>
                         </div>
@@ -172,8 +172,113 @@
         </section>
     </div>
 
+    <section class="events-mobile mobile-only">
+        <div class="mobile-hero-card mobile-fade-in">
+            <div class="mobile-hero-top">
+                <div>
+                    <span class="mobile-hero-subtitle">진행 중</span>
+                    <span class="mobile-hero-title">주간 수익률 챌린지</span>
+                </div>
+                <button class="mobile-notification-btn" aria-label="이벤트 알림">
+                    <i class="fas fa-bell"></i>
+                    <span class="mobile-notification-dot"></span>
+                </button>
+            </div>
+            <div class="mobile-hero-balance">
+                <span class="label">참가자</span>
+                <span class="value">532명</span>
+            </div>
+            <div class="mobile-hero-card-info">
+                <div>
+                    <span class="mobile-card-label">남은 기간</span>
+                    <span class="mobile-card-value">D-3 · 실시간 업데이트</span>
+                </div>
+                <div class="mobile-card-change positive">상금 ₩500,000</div>
+            </div>
+            <div class="mobile-hero-card-meta">
+                <span>3개의 전략 추천이 준비되어 있습니다.</span>
+                <span class="mobile-card-chip"></span>
+            </div>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <h3 class="mobile-card-title">이벤트 검색</h3>
+                <button class="mobile-card-action" type="button">필터</button>
+            </div>
+            <div class="mobile-search-container">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input id="eventSearchMobile" class="search-input" type="search" placeholder="이벤트, 캠페인, 워크숍 검색">
+                </div>
+            </div>
+            <div class="mobile-filter-grid">
+                <button class="mobile-filter-chip active" type="button">전체</button>
+                <button class="mobile-filter-chip" type="button">챌린지</button>
+                <button class="mobile-filter-chip" type="button">워크숍</button>
+                <button class="mobile-filter-chip" type="button">라이브</button>
+            </div>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <h3 class="mobile-card-title">다가오는 이벤트</h3>
+                <button class="mobile-card-action" type="button">전체보기</button>
+            </div>
+            <div class="mobile-history-list">
+                <div class="mobile-transaction-item">
+                    <div class="mobile-list-icon"><i class="fas fa-chart-column"></i></div>
+                    <div class="mobile-list-content">
+                        <div class="mobile-list-title">시즌 챌린지 결승</div>
+                        <div class="mobile-transaction-meta">5월 12일 · 상금 ₩1,500,000</div>
+                    </div>
+                    <div class="mobile-list-value positive">D-5</div>
+                </div>
+                <div class="mobile-transaction-item">
+                    <div class="mobile-list-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="mobile-list-content">
+                        <div class="mobile-list-title">전략 워크숍</div>
+                        <div class="mobile-transaction-meta">온라인 라이브 · 정원 200명</div>
+                    </div>
+                    <div class="mobile-list-value">5월 16일</div>
+                </div>
+                <div class="mobile-transaction-item">
+                    <div class="mobile-list-icon"><i class="fas fa-people-group"></i></div>
+                    <div class="mobile-list-content">
+                        <div class="mobile-list-title">팀 배틀 시즌2</div>
+                        <div class="mobile-transaction-meta">사전 등록 마감 임박</div>
+                    </div>
+                    <div class="mobile-list-value negative">D-1</div>
+                </div>
+            </div>
+            <button class="mobile-btn" type="button">모든 이벤트 둘러보기</button>
+            <button class="mobile-btn secondary" type="button">알림 설정 관리</button>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <h3 class="mobile-card-title">공지 & 알림</h3>
+                <button class="mobile-card-action" type="button">새로고침</button>
+            </div>
+            <ul class="mobile-news-list">
+                <li>
+                    <span class="news-title">월간 전략 리포트가 업데이트되었습니다.</span>
+                    <span class="news-time">12분 전</span>
+                </li>
+                <li>
+                    <span class="news-title">팀 배틀 시즌2 참가 팀이 48개에 도달했습니다.</span>
+                    <span class="news-time">1시간 전</span>
+                </li>
+                <li>
+                    <span class="news-title">다음 주 워크숍 교재가 이메일로 발송되었습니다.</span>
+                    <span class="news-time">어제</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
     <nav class="mobile-bottom-nav mobile-only">
-        <a href="index.html" class="mobile-nav-item">
+        <a href="/" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
@@ -182,8 +287,8 @@
             <span>차트</span>
         </a>
         <a href="prediction.html" class="mobile-nav-item">
-            <i class="fas fa-magic"></i>
-            <span>예측</span>
+            <i class="fas fa-lightbulb"></i>
+            <span>전략</span>
         </a>
         <a href="ranking.html" class="mobile-nav-item">
             <i class="fas fa-trophy"></i>
@@ -203,7 +308,7 @@
                 { label: '이번 주 개설', value: 7, delta: '+2 신규', accent: 'positive' },
                 { label: '총 참가자', value: '28.4K', delta: '+12% MoM', accent: 'neutral' },
                 { label: '누적 상금', value: '₩38M', delta: '지급 완료', accent: 'positive' },
-                { label: 'AI 추천', value: 3, delta: '업데이트됨', accent: 'info' }
+                { label: '전략 추천', value: 3, delta: '업데이트됨', accent: 'info' }
             ],
             events: [
                 {
@@ -219,10 +324,10 @@
                     badge: 'LIVE'
                 },
                 {
-                    id: 'ai-duel',
-                    title: 'AI vs 인간 예측 대결',
+                    id: 'strategy-duel',
+                    title: '전략 vs 인간 예측 대결',
                     category: 'challenge',
-                    description: 'AI 예측 모델과 사용자 전략을 비교하는 월간 대전',
+                    description: '자동화된 예측 시스템과 사용자 전략을 비교하는 월간 대전',
                     prize: '상금 ₩1,000,000',
                     duration: 'D-15',
                     participants: '참가자 2,182명',
@@ -246,7 +351,7 @@
                     id: 'alpha-lab',
                     title: '알파 전략 실험실',
                     category: 'education',
-                    description: 'AI 전략을 학습하고 실전에서 테스트하는 14일 워크숍',
+                    description: '고급 전략을 학습하고 실전에서 테스트하는 14일 워크숍',
                     prize: '전략 템플릿 제공',
                     duration: '시작 예정 10/21',
                     participants: '대기자 184명',
@@ -258,21 +363,21 @@
             upcoming: [
                 { date: '10월 15일', title: '밸런타인 리워드 특집', description: '커플 포트폴리오 대회', id: 'valentine' },
                 { date: '10월 28일', title: '국내주식 올스타전', description: 'KOSPI 전략 챌린지', id: 'kospi-allstar' },
-                { date: '11월 02일', title: 'AI 전략 업데이트 설명회', description: '실시간 모델 업데이트', id: 'ai-briefing' }
+                { date: '11월 02일', title: '전략 업데이트 설명회', description: '실시간 모델 업데이트', id: 'strategy-briefing' }
             ],
             ranking: [
                 { rank: 1, name: '투자왕123', badge: '챌린저', returnRate: '+24.7%', reward: '₩1,000,000' },
                 { rank: 2, name: '주식마스터', badge: '타이탄', returnRate: '+19.3%', reward: '₩500,000' },
-                { rank: 3, name: 'AI예측러', badge: '프로', returnRate: '+15.8%', reward: '₩300,000' },
+                { rank: 3, name: '전략예측러', badge: '프로', returnRate: '+15.8%', reward: '₩300,000' },
                 { rank: 4, name: '나도한다', badge: '루키', returnRate: '+12.1%', reward: '₩200,000' }
             ],
             myEvents: [
                 { title: '주간 수익률 챌린지', position: '23위', performance: '+5.2%', status: '참가 중' },
-                { title: 'AI vs 인간 대결', position: '156위', performance: '+2.8%', status: '참가 중' }
+                { title: '전략 vs 인간 대결', position: '156위', performance: '+2.8%', status: '참가 중' }
             ],
             news: [
                 { title: '겨울 시즌 스페셜 토너먼트 발표', meta: '방금 전 · 운영팀', tone: 'positive' },
-                { title: 'AI 분석 리포트 10월호 발행', meta: '1시간 전 · AI 인사이트', tone: 'neutral' },
+                { title: '시장 분석 리포트 10월호 발행', meta: '1시간 전 · 전략 인사이트', tone: 'neutral' },
                 { title: '랭킹 보상 구조 업데이트 안내', meta: '어제 · 서비스 공지', tone: 'info' }
             ]
         };
@@ -428,6 +533,22 @@
                 }
             });
 
+            const eventSearchMobile = document.getElementById('eventSearchMobile');
+            eventSearchMobile?.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    showToast(`"${event.target.value}" 모바일 검색`, 'info');
+                    event.target.value = '';
+                }
+            });
+
+            document.querySelectorAll('.mobile-filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.mobile-filter-chip').forEach(node => node.classList.remove('active'));
+                    chip.classList.add('active');
+                    showToast(`${chip.textContent.trim()} 필터가 적용되었습니다.`, 'info');
+                });
+            });
+
             document.getElementById('addCalendarBtn').addEventListener('click', () => {
                 showToast('개인 캘린더와 연동되었습니다.', 'success');
             });
@@ -449,7 +570,7 @@
             });
 
             document.getElementById('refreshNewsBtn').addEventListener('click', () => {
-                showToast('AI 공지를 최신 상태로 업데이트했습니다.', 'success');
+                showToast('시장 공지를 최신 상태로 업데이트했습니다.', 'success');
             });
 
             document.getElementById('eventsGrid').addEventListener('click', event => {

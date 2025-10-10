@@ -356,6 +356,31 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
         box-shadow: var(--mobile-shadow-card);
         backdrop-filter: blur(18px);
+
+    .mobile-filter-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .mobile-filter-chip {
+        border: 1px solid rgba(91, 213, 255, 0.35);
+        border-radius: 14px;
+        padding: 10px 0;
+        font-size: var(--mobile-font-size-xs);
+        font-weight: 600;
+        color: var(--mobile-text-secondary);
+        background: rgba(91, 213, 255, 0.12);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .mobile-filter-chip.active {
+        color: var(--mobile-text-white);
+        background: linear-gradient(135deg, rgba(10, 132, 255, 0.28), rgba(94, 92, 230, 0.24));
+        border-color: transparent;
+        box-shadow: 0 12px 28px rgba(10, 132, 255, 0.3);
+    }
     }
 
     .mobile-chart-header {
