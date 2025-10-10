@@ -7,7 +7,8 @@ class CollapsibleSidebar {
     constructor() {
         this.container = document.querySelector('.figma-container');
         this.leftSidebar = document.querySelector('.figma-sidebar');
-        this.rightPanel = document.querySelector('.figma-trading-panel');
+    this.rightPanel = document.querySelector('.figma-trading-panel');
+    this.hasRightPanel = !!this.rightPanel;
         
         this.isLeftCollapsed = false;
         this.isRightCollapsed = false;
@@ -85,6 +86,10 @@ class CollapsibleSidebar {
     }
     
     toggleRightPanel() {
+        if (!this.hasRightPanel) {
+            return;
+        }
+
         this.isRightCollapsed = !this.isRightCollapsed;
         
         if (this.isRightCollapsed) {
@@ -107,7 +112,7 @@ class CollapsibleSidebar {
             this.container.classList.add('both-collapsed');
         } else if (this.isLeftCollapsed) {
             this.container.classList.add('left-collapsed');
-        } else if (this.isRightCollapsed) {
+        } else if (this.isRightCollapsed && this.hasRightPanel) {
             this.container.classList.add('right-collapsed');
         }
     }
@@ -145,7 +150,7 @@ class CollapsibleSidebar {
                     this.toggleLeftSidebar();
                 }
                 
-                if (state.rightCollapsed) {
+                if (state.rightCollapsed && this.hasRightPanel) {
                     this.toggleRightPanel();
                 }
             }
@@ -168,25 +173,29 @@ class CollapsibleSidebar {
     }
     
     collapseRight() {
-        if (!this.isRightCollapsed) {
+        if (this.hasRightPanel && !this.isRightCollapsed) {
             this.toggleRightPanel();
         }
     }
     
     expandRight() {
-        if (this.isRightCollapsed) {
+        if (this.hasRightPanel && this.isRightCollapsed) {
             this.toggleRightPanel();
         }
     }
     
     collapseAll() {
         this.collapseLeft();
-        this.collapseRight();
+        if (this.hasRightPanel) {
+            this.collapseRight();
+        }
     }
     
     expandAll() {
         this.expandLeft();
-        this.expandRight();
+        if (this.hasRightPanel) {
+            this.expandRight();
+        }
     }
 }
 

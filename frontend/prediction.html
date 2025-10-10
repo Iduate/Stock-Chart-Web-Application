@@ -347,14 +347,17 @@
             }, 2000);
         }
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const symbol = this.value.toUpperCase();
-                document.getElementById('symbolSelect').value = symbol;
-                this.value = '';
-            }
-        });
+        // Search functionality (header search may not exist on all layouts)
+        const headerSearchInput = document.getElementById('searchInput');
+        if (headerSearchInput) {
+            headerSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const symbol = this.value.toUpperCase();
+                    document.getElementById('symbolSelect').value = symbol;
+                    this.value = '';
+                }
+            });
+        }
     </script>
 
     <!-- TradingView Chart Widget -->
