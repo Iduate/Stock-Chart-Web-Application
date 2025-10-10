@@ -22,7 +22,7 @@
 
 <body>
     <!-- Korean Trading UI Container -->
-    <div class="figma-container">
+    <div class="figma-container prediction-page">
         
         <!-- Sidebar -->
         <aside class="figma-sidebar">
@@ -31,95 +31,177 @@
                 <span>주식 차트</span>
             </div>
             
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>홈</span>
-                </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
-                </a>
-                <a href="prediction.html" class="nav-item active">
-                    <i class="fas fa-chart-line"></i>
-                    <span>사용자 예측</span>
-                </a>
-                <a href="ranking.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
-                </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>이벤트</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-chart-line text-accent-green"></i>
-                <span>주식 예측</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="예측할 종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
-                </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-chart-line"></i>
-                    <span>예측 시작</span>
-                </button>
-            </div>
-        </header>
-        
-        <!-- Main Content -->
-        <main class="figma-main">
-            <div class="main-content">
-                <!-- Prediction Header -->
-                <div class="content-header">
-                    <h1>주식 예측</h1>
-                    <p>데이터 분석을 통해 주식 가격을 예측하고 투자 전략을 수립하세요</p>
-                </div>
-                
-                <!-- Prediction Form -->
-                <div class="prediction-form-section">
-                    <div class="form-tabs">
-                        <button class="form-tab active" data-tab="prediction">
-                            <i class="fas fa-chart-line"></i>
-                            주식 예측
-                        </button>
-                        <button class="form-tab" data-tab="start">
-                            <i class="fas fa-play"></i>
-                            예측 시작
-                        </button>
-                    </div>
-                    
-                    <div class="modern-prediction-form">
-                        <div class="form-section">
-                            <div class="form-group-modern">
-                                <label class="form-label-modern">종목을 선택하세요</label>
+            <!-- Main Content -->
+            <main class="figma-main prediction-main">
+                <div class="prediction-dashboard">
+                    <section class="dashboard-left">
+                        <header class="dashboard-header">
+                            <div class="profile-block">
+                                <div class="profile-avatar">
+                                    <span>🟢</span>
+                                </div>
+                                <div class="profile-meta">
+                                    <div class="profile-name">SamsiteUR</div>
+                                    <div class="profile-balance">사용 가능한 자금 <strong>$466,277.01</strong></div>
+                                </div>
+                            </div>
+                            <div class="asset-meta">
+                                <div class="asset-symbol">
+                                    <span class="asset-tag">BTC/USD</span>
+                                    <span class="asset-network">비트코인 네트워크</span>
+                                </div>
+                                <div class="asset-stats">
+                                    <div class="asset-price">
+                                        <span class="price-value" id="currentChartPrice">$432.32</span>
+                                        <span class="price-delta positive" id="priceChangeDisplay">+2.34 (+0.20%)</span>
+                                    </div>
+                                    <div class="asset-timeframe">
+                                        <span class="timeframe-label">시간 프레임</span>
+                                        <strong class="timeframe-value">1일</strong>
+                                    </div>
+                                    <div class="asset-trend">
+                                        <span class="trend-label">방향</span>
+                                        <strong class="trend-value positive">강세</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="asset-controls">
+                                <div class="chart-search-section compact">
+                                    <input type="text" class="chart-search-input" placeholder="종목 검색 (예: AAPL, TSLA, BTC)" id="chartSearchInput">
+                                    <div class="timeframe-controls">
+                                        <button class="timeframe-control-btn active" data-period="1D">1D</button>
+                                        <button class="timeframe-control-btn" data-period="1W">1W</button>
+                                        <button class="timeframe-control-btn" data-period="1M">1M</button>
+                                        <button class="timeframe-control-btn" data-period="1Y">1Y</button>
+                                        <button class="timeframe-control-btn" data-period="5M">5M</button>
+                                        <button class="timeframe-control-btn" data-period="1H">1H</button>
+                                    </div>
+                                </div>
+                                <div class="chart-symbol-info">
+                                    <span class="chart-symbol-name" id="chartSymbolName">BTC</span>
+                                    <span class="chart-company-name">Bitcoin / USD</span>
+                                </div>
+                            </div>
+                        </header>
+
+                        <section class="chart-card card-dark">
+                            <div class="tradingview-widget-container">
+                                <div id="advanced_tradingview_chart"></div>
+                            </div>
+                            <div class="chart-navigation">
+                                <div class="time-navigation">
+                                    <button class="nav-btn" id="prevYear" title="이전 년도">&lt;&lt;</button>
+                                    <button class="nav-btn" id="prevMonth" title="이전 달">&lt;</button>
+                                    <span class="current-period" id="currentPeriod">2025년 10월</span>
+                                    <button class="nav-btn" id="nextMonth" title="다음 달">&gt;</button>
+                                    <button class="nav-btn" id="nextYear" title="다음 년도">&gt;&gt;</button>
+                                </div>
+                                <div class="chart-scrollbar">
+                                    <input type="range" class="time-slider" id="timeSlider" min="0" max="365" value="280" title="시간 탐색 - 과거/현재/미래">
+                                    <div class="slider-labels">
+                                        <span>과거</span>
+                                        <span>현재</span>
+                                        <span>미래</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="volume-section">
+                                <div class="volume-bars" id="volumeBars">
+                                    <div class="volume-bar" style="height:68%"></div>
+                                    <div class="volume-bar" style="height:82%"></div>
+                                    <div class="volume-bar" style="height:45%"></div>
+                                    <div class="volume-bar" style="height:78%"></div>
+                                    <div class="volume-bar" style="height:92%"></div>
+                                    <div class="volume-bar" style="height:61%"></div>
+                                    <div class="volume-bar" style="height:54%"></div>
+                                </div>
+                                <div class="volume-legend">
+                                    <span>거래량</span>
+                                    <span>24h 기준</span>
+                                </div>
+                            </div>
+                            <div class="chart-tools-panel">
+                                <button class="tool-btn" id="addPoint" title="포인트 추가"><i class="fas fa-plus"></i></button>
+                                <button class="tool-btn" id="drawLine" title="추세선 그리기"><i class="fas fa-chart-line"></i></button>
+                                <button class="tool-btn" id="addNote" title="메모 추가"><i class="fas fa-sticky-note"></i></button>
+                                <button class="tool-btn" id="clearAll" title="모든 그리기 삭제"><i class="fas fa-eraser"></i></button>
+                            </div>
+                        </section>
+
+                        <section class="prediction-history card-dark">
+                            <header class="history-header">
+                                <div>
+                                    <h2>예측 보드</h2>
+                                    <span class="history-sub">최근 거래 및 예측 기록</span>
+                                </div>
+                                <div class="history-filters">
+                                    <button class="history-filter active">전체</button>
+                                    <button class="history-filter">성공</button>
+                                    <button class="history-filter">실패</button>
+                                </div>
+                            </header>
+                            <div class="history-table">
+                                <div class="history-row header">
+                                    <span>이름</span>
+                                    <span>날짜</span>
+                                    <span>매수/매도</span>
+                                    <span>시간 프레임</span>
+                                    <span>수익률</span>
+                                </div>
+                                <div class="history-row">
+                                    <span>엘리 이아리에</span>
+                                    <span>2025-10-05</span>
+                                    <span class="chip buy">매수</span>
+                                    <span>5분</span>
+                                    <span class="profit negative">-3.17%</span>
+                                </div>
+                                <div class="history-row">
+                                    <span>엘리 이아리에</span>
+                                    <span>2025-10-05</span>
+                                    <span class="chip buy">매수</span>
+                                    <span>1일</span>
+                                    <span class="profit positive">+8.30%</span>
+                                </div>
+                                <div class="history-row">
+                                    <span>엘리 이아리에</span>
+                                    <span>2025-10-04</span>
+                                    <span class="chip sell">매도</span>
+                                    <span>5분</span>
+                                    <span class="profit negative">-1.96%</span>
+                                </div>
+                                <div class="history-row">
+                                    <span>엘리 이아리에</span>
+                                    <span>2025-10-04</span>
+                                    <span class="chip buy">매수</span>
+                                    <span>1일</span>
+                                    <span class="profit positive">+8.30%</span>
+                                </div>
+                                <div class="history-row">
+                                    <span>엘리 이아리에</span>
+                                    <span>2025-10-03</span>
+                                    <span class="chip sell">매도</span>
+                                    <span>5분</span>
+                                    <span class="profit negative">-3.17%</span>
+                                </div>
+                            </div>
+                        </section>
+                    </section>
+
+                    <aside class="dashboard-right">
+                        <div class="prediction-form-card card-dark">
+                            <header class="form-header">
+                                <div>
+                                    <span class="form-tag">예측</span>
+                                    <h2>포지션 입력</h2>
+                                </div>
+                                <button class="form-settings"><i class="fas fa-ellipsis-h"></i></button>
+                            </header>
+                            <div class="form-tabs">
+                                <button class="form-tab active" data-tab="prediction">주식 예측</button>
+                                <button class="form-tab" data-tab="start">빠른 시작</button>
+                            </div>
+                            <div class="form-body">
+                                <label class="form-label-modern">자산 선택</label>
                                 <select class="form-control-modern" id="symbolSelect">
                                     <option value="">종목을 선택하세요</option>
                                     <option value="BTC/USD">BTC/USD - 비트코인</option>
@@ -129,10 +211,8 @@
                                     <option value="MSFT">MSFT - 마이크로소프트</option>
                                     <option value="GOOGL">GOOGL - 구글</option>
                                 </select>
-                            </div>
-                            
-                            <div class="form-group-modern">
-                                <label class="form-label-modern">기간</label>
+
+                                <label class="form-label-modern" for="periodSelect">예측 기간</label>
                                 <select class="form-control-modern" id="periodSelect">
                                     <option value="1d">1일</option>
                                     <option value="3d">3일</option>
@@ -140,280 +220,68 @@
                                     <option value="1m">1개월</option>
                                     <option value="3m">3개월</option>
                                 </select>
-                            </div>
-                        </div>
-                        
-                        <div class="prediction-direction-section">
-                            <div class="direction-buttons-modern">
-                                <button type="button" class="direction-btn-modern up" onclick="selectDirection('up')">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span>상승</span>
-                                </button>
-                                <button type="button" class="direction-btn-modern down" onclick="selectDirection('down')">
-                                    <i class="fas fa-arrow-down"></i>
-                                    <span>하락</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group-modern">
-                            <label class="form-label-modern">예상 목표 가격</label>
-                            <input type="number" class="form-control-modern" id="targetPrice" placeholder="예상 목표 가격">
-                        </div>
-                        
-                        <button class="btn-predict-submit-modern" onclick="submitPrediction()">
-                            <i class="fas fa-chart-line"></i>
-                            예측 제출
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Chart Section -->
-                <div class="chart-section">
-                    <div class="chart-header-controls">
-                        <div class="chart-search-section">
-                            <input type="text" class="chart-search-input" placeholder="종목 검색 (예: AAPL, TSLA, BTC)" id="chartSearchInput">
-                            <div class="timeframe-controls">
-                                <button class="timeframe-control-btn active" data-period="1D">일</button>
-                                <button class="timeframe-control-btn" data-period="1W">주</button>
-                                <button class="timeframe-control-btn" data-period="1M">월</button>
-                                <button class="timeframe-control-btn" data-period="1Y">년</button>
-                                <button class="timeframe-control-btn" data-period="5M">5분</button>
-                                <button class="timeframe-control-btn" data-period="1H">시간</button>
-                            </div>
-                        </div>
-                        
-                        <div class="chart-symbol-info">
-                            <span class="chart-symbol-name" id="chartSymbolName">AAPL</span>
-                            <span class="chart-company-name">Apple Inc.</span>
-                        </div>
-                        
-                        <div class="chart-price-info">
-                            <span class="current-price" id="currentChartPrice">$189.45</span>
-                            <span class="price-change positive" id="priceChangeDisplay">+2.34 (+1.25%)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="advanced-chart-container">
-                        <!-- TradingView Advanced Chart -->
-                        <div class="tradingview-widget-container" style="height: 600px; width: 100%;">
-                            <div id="advanced_tradingview_chart" style="height: 100%; width: 100%;"></div>
-                        </div>
-                        
-                        <!-- Chart Navigation Controls -->
-                        <div class="chart-navigation">
-                            <div class="chart-scrollbar-container">
-                                <div class="time-navigation">
-                                    <button class="nav-btn" id="prevYear" title="이전 년도">&lt;&lt;</button>
-                                    <button class="nav-btn" id="prevMonth" title="이전 달">&lt;</button>
-                                    <span class="current-period" id="currentPeriod">2025년 10월</span>
-                                    <button class="nav-btn" id="nextMonth" title="다음 달">&gt;</button>
-                                    <button class="nav-btn" id="nextYear" title="다음 년도">&gt;&gt;</button>
+
+                                <label class="form-label-modern">현재가</label>
+                                <div class="form-value-display">$437.0</div>
+
+                                <label class="form-label-modern">수량</label>
+                                <input type="number" class="form-control-modern" placeholder="수량" value="10">
+
+                                <label class="form-label-modern">목표가</label>
+                                <input type="number" class="form-control-modern" id="targetPrice" placeholder="예상 목표 가격">
+
+                                <label class="form-label-modern">메모 (선택)</label>
+                                <textarea class="form-control-modern" rows="3" placeholder="메모를 입력하세요"></textarea>
+
+                                <div class="direction-buttons-modern">
+                                    <button type="button" class="direction-btn-modern up" onclick="selectDirection('up')">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>상승</span>
+                                    </button>
+                                    <button type="button" class="direction-btn-modern down" onclick="selectDirection('down')">
+                                        <i class="fas fa-arrow-down"></i>
+                                        <span>하락</span>
+                                    </button>
                                 </div>
-                                
-                                <div class="chart-scrollbar">
-                                    <input type="range" class="time-slider" id="timeSlider" min="0" max="365" value="280" 
-                                           title="시간 탐색 - 과거/현재/미래">
-                                    <div class="slider-labels">
-                                        <span>과거</span>
-                                        <span>현재</span>
-                                        <span>미래</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Volume Display -->
-                        <div class="volume-section">
-                            <h4>거래량</h4>
-                            <div class="volume-bars" id="volumeBars">
-                                <div class="volume-bar" style="height: 60%;" title="거래량: 1.2M"></div>
-                                <div class="volume-bar" style="height: 80%;" title="거래량: 1.6M"></div>
-                                <div class="volume-bar" style="height: 45%;" title="거래량: 0.9M"></div>
-                                <div class="volume-bar" style="height: 75%;" title="거래량: 1.5M"></div>
-                                <div class="volume-bar" style="height: 90%;" title="거래량: 1.8M"></div>
-                                <div class="volume-bar" style="height: 65%;" title="거래량: 1.3M"></div>
-                                <div class="volume-bar" style="height: 55%;" title="거래량: 1.1M"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Chart Drawing Tools -->
-                        <div class="chart-tools-panel">
-                            <div class="drawing-tools">
-                                <button class="tool-btn" id="addPoint" title="포인트 추가">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                                <button class="tool-btn" id="drawLine" title="추세선 그리기">
-                                    <i class="fas fa-chart-line"></i>
-                                </button>
-                                <button class="tool-btn" id="addNote" title="메모 추가">
-                                    <i class="fas fa-sticky-note"></i>
-                                </button>
-                                <button class="tool-btn" id="clearAll" title="모든 그리기 삭제">
-                                    <i class="fas fa-eraser"></i>
+
+                                <button class="btn-predict-submit-modern" onclick="submitPrediction()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    예측 등록
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Analysis Results -->
-                <div class="analysis-section">
-                    <h2>분석 결과</h2>
-                    <div class="analysis-cards">
-                        <div class="analysis-card">
-                            <div class="card-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h3>기술적 분석</h3>
-                            <div class="analysis-result">
-                                <div class="confidence">92%</div>
-                                <div class="recommendation up">강력 매수</div>
-                            </div>
+
+                        <div class="news-card card-dark">
+                            <header class="news-header">
+                                <h3>최신 뉴스</h3>
+                                <button class="news-refresh"><i class="fas fa-sync"></i></button>
+                            </header>
+                            <ul class="news-list">
+                                <li>
+                                    <span class="news-title">새로운 금융 규제가 시장을 흔들다</span>
+                                    <span class="news-time">2분 전</span>
+                                </li>
+                                <li>
+                                    <span class="news-title">BTC 급등, 주요 저항선 돌파</span>
+                                    <span class="news-time">8분 전</span>
+                                </li>
+                                <li>
+                                    <span class="news-title">기관 투자자, 기술주 매수 확대로 전환</span>
+                                    <span class="news-time">12분 전</span>
+                                </li>
+                                <li>
+                                    <span class="news-title">미 연준, 금리 동결 시사</span>
+                                    <span class="news-time">20분 전</span>
+                                </li>
+                                <li>
+                                    <span class="news-title">AI 섹터, 조정 후 반등 신호</span>
+                                    <span class="news-time">30분 전</span>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="analysis-card">
-                            <div class="card-icon">
-                                <i class="fas fa-newspaper"></i>
-                            </div>
-                            <h3>뉴스 감성 분석</h3>
-                            <div class="analysis-result">
-                                <div class="confidence">87%</div>
-                                <div class="recommendation up">긍정적</div>
-                            </div>
-                        </div>
-                        <div class="analysis-card">
-                            <div class="card-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h3>시장 심리</h3>
-                            <div class="analysis-result">
-                                <div class="confidence">78%</div>
-                                <div class="recommendation neutral">중립</div>
-                            </div>
-                        </div>
-                    </div>
+                    </aside>
                 </div>
-                
-                <!-- Recent Predictions -->
-                <div class="recent-predictions-section">
-                    <h2>최근 예측 결과</h2>
-                    <div class="predictions-table">
-                        <div class="table-header">
-                            <span>종목</span>
-                            <span>예측일</span>
-                            <span>방향</span>
-                            <span>목표가</span>
-                            <span>결과</span>
-                            <span>수익률</span>
-                        </div>
-                        <div class="table-row">
-                            <span class="symbol">BTC/USD</span>
-                            <span>2025.10.05</span>
-                            <span class="direction up">상승</span>
-                            <span>$45,000</span>
-                            <span class="status success">성공</span>
-                            <span class="profit positive">+12.5%</span>
-                        </div>
-                        <div class="table-row">
-                            <span class="symbol">AAPL</span>
-                            <span>2025.10.03</span>
-                            <span class="direction up">상승</span>
-                            <span>$180</span>
-                            <span class="status success">성공</span>
-                            <span class="profit positive">+8.3%</span>
-                        </div>
-                        <div class="table-row">
-                            <span class="symbol">TSLA</span>
-                            <span>2025.10.01</span>
-                            <span class="direction down">하락</span>
-                            <span>$240</span>
-                            <span class="status failed">실패</span>
-                            <span class="profit negative">-3.2%</span>
-                        </div>
-                        <div class="table-row">
-                            <span class="symbol">MSFT</span>
-                            <span>2025.09.30</span>
-                            <span class="direction up">상승</span>
-                            <span>$420</span>
-                            <span class="status success">성공</span>
-                            <span class="profit positive">+15.7%</span>
-                        </div>
-                        <div class="table-row">
-                            <span class="symbol">GOOGL</span>
-                            <span>2025.09.28</span>
-                            <span class="direction up">상승</span>
-                            <span>$175</span>
-                            <span class="status success">성공</span>
-                            <span class="profit positive">+6.9%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <!-- Trading Panel -->
-        <aside class="figma-trading-panel">
-            <div class="trading-header">
-                <h3>예측 현황</h3>
-            </div>
-            
-            <div class="prediction-stats">
-                <div class="stat-item">
-                    <span>총 예측 수</span>
-                    <span class="value">47</span>
-                </div>
-                <div class="stat-item">
-                    <span>성공률</span>
-                    <span class="value success">78.7%</span>
-                </div>
-                <div class="stat-item">
-                    <span>평균 수익률</span>
-                    <span class="value positive">+15.3%</span>
-                </div>
-                <div class="stat-item">
-                    <span>이번 달 수익</span>
-                    <span class="value positive">+₩2,450,000</span>
-                </div>
-            </div>
-            
-            <div class="active-predictions">
-                <h4>진행 중인 예측</h4>
-                <div class="prediction-item">
-                    <div class="prediction-symbol">BTC/USD</div>
-                    <div class="prediction-direction up">상승 예측</div>
-                    <div class="prediction-time">2일 남음</div>
-                </div>
-                <div class="prediction-item">
-                    <div class="prediction-symbol">ETH/USD</div>
-                    <div class="prediction-direction up">상승 예측</div>
-                    <div class="prediction-time">5일 남음</div>
-                </div>
-                <div class="prediction-item">
-                    <div class="prediction-symbol">AAPL</div>
-                    <div class="prediction-direction down">하락 예측</div>
-                    <div class="prediction-time">1주일 남음</div>
-                </div>
-            </div>
-            
-            <div class="user-recommendations">
-                <h4>추천 종목</h4>
-                <div class="recommendation-item">
-                    <div class="rec-symbol">MSFT</div>
-                    <div class="rec-action up">매수 추천</div>
-                    <div class="rec-confidence">95% 신뢰도</div>
-                </div>
-                <div class="recommendation-item">
-                    <div class="rec-symbol">GOOGL</div>
-                    <div class="rec-action up">매수 추천</div>
-                    <div class="rec-confidence">89% 신뢰도</div>
-                </div>
-                <div class="recommendation-item">
-                    <div class="rec-symbol">NFLX</div>
-                    <div class="rec-action down">매도 추천</div>
-                    <div class="rec-confidence">82% 신뢰도</div>
-                </div>
-            </div>
-        </aside>
+            </main>
     </div>
 
     <!-- Mobile Bottom Navigation -->
