@@ -1,0 +1,4 @@
+- [ ] Replace the light-themed `home-desktop` section in `frontend/index.html` with a figma-themed dark dashboard that mirrors the reference layout (chart, metrics, order panel, tables).
+- [ ] Extend `frontend/css/figma-design.css` with home dashboard styles (metric chips, chart card, order form, news list) matching the desktop dark UI from the mock.
+- [ ] Rebuild `frontend/my-predictions.html` with the figma container plus dark desktop + mobile sections, reusing the new dashboard styling to keep parity with other pages.
+- [ ] Apply the same dark figma layout to the auxiliary prediction pages (`frontend/my-predictions-new.html`, `frontend/my-predictions-complete.html`) so every desktop view remains consistent.
