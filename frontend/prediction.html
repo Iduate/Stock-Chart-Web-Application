@@ -78,7 +78,7 @@
 
         <!-- Main Content -->
         <main class="figma-main prediction-main">
-            <div class="prediction-dashboard">
+            <div class="prediction-dashboard desktop-only">
                     <section class="dashboard-left">
                         <header class="dashboard-header">
                             <div class="profile-block">
@@ -326,6 +326,177 @@
                         </div>
                     </aside>
                 </div>
+
+                <section class="prediction-mobile mobile-only">
+                    <div class="mobile-hero-card mobile-fade-in">
+                        <div class="mobile-hero-top">
+                            <div>
+                                <span class="mobile-hero-subtitle">안녕하세요,</span>
+                                <span class="mobile-hero-title">SamsiteUR</span>
+                            </div>
+                            <button class="mobile-notification-btn" aria-label="새 알림">
+                                <i class="fas fa-bell"></i>
+                                <span class="mobile-notification-dot"></span>
+                            </button>
+                        </div>
+                        <div class="mobile-hero-balance">
+                            <span class="label">총 자산</span>
+                            <span class="value">₩164,500,000</span>
+                        </div>
+                        <div class="mobile-hero-card-info">
+                            <div>
+                                <span class="mobile-card-label">주요 자산</span>
+                                <span class="mobile-card-value">BTC / USD</span>
+                            </div>
+                            <div class="mobile-card-change positive">+8.30%</div>
+                        </div>
+                        <div class="mobile-hero-card-meta">
+                            <span class="mobile-card-number">**** 4821</span>
+                            <span class="mobile-card-chip"></span>
+                        </div>
+                    </div>
+
+                    <div class="mobile-quick-actions mobile-fade-in">
+                        <button class="mobile-action-btn primary">
+                            <i class="fas fa-bullseye"></i>
+                            예측 등록
+                        </button>
+                        <button class="mobile-action-btn secondary">
+                            <i class="fas fa-chart-line"></i>
+                            차트 보기
+                        </button>
+                        <button class="mobile-action-btn tertiary">
+                            <i class="fas fa-wallet"></i>
+                            자금 관리
+                        </button>
+                    </div>
+
+                    <div class="mobile-chart-container mobile-fade-in">
+                        <div class="mobile-chart-header">
+                            <div>
+                                <div class="mobile-chart-symbol">BTC / USD</div>
+                                <div class="mobile-chart-subtitle">비트코인 네트워크</div>
+                            </div>
+                            <div class="mobile-chart-price-wrap">
+                                <span class="mobile-chart-price">$43,276</span>
+                                <span class="mobile-chart-change positive">+3.12%</span>
+                            </div>
+                        </div>
+                        <div class="mobile-chart-canvas" id="mobilePredictionChart"></div>
+                        <div class="mobile-chart-timeframes">
+                            <button class="mobile-timeframe-btn active" data-period="1D">1D</button>
+                            <button class="mobile-timeframe-btn" data-period="1W">1W</button>
+                            <button class="mobile-timeframe-btn" data-period="1M">1M</button>
+                            <button class="mobile-timeframe-btn" data-period="1Y">1Y</button>
+                        </div>
+                    </div>
+
+                    <div class="mobile-stats-grid mobile-fade-in">
+                        <div class="mobile-stat-card">
+                            <div class="mobile-stat-label">오늘 수익률</div>
+                            <div class="mobile-stat-value">+4.12%</div>
+                            <div class="mobile-stat-change positive">상승 추세</div>
+                        </div>
+                        <div class="mobile-stat-card">
+                            <div class="mobile-stat-label">예측 정확도</div>
+                            <div class="mobile-stat-value">86%</div>
+                            <div class="mobile-stat-change">지난주 대비 +6%</div>
+                        </div>
+                    </div>
+
+                    <div class="mobile-card mobile-wallet-card mobile-fade-in">
+                        <div class="mobile-card-header">
+                            <div>
+                                <h3 class="mobile-card-title">포지션 입력</h3>
+                                <span class="mobile-card-subtitle">상승 / 하락 선택 후 목표가를 입력하세요</span>
+                            </div>
+                            <button class="mobile-card-action">새 예측</button>
+                        </div>
+                        <div class="mobile-form-group">
+                            <label class="mobile-form-label">자산 선택</label>
+                            <select class="mobile-form-select">
+                                <option>BTC / USD</option>
+                                <option>ETH / USD</option>
+                                <option>AAPL</option>
+                                <option>TSLA</option>
+                            </select>
+                        </div>
+                        <div class="mobile-form-inline">
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">기간</label>
+                                <select class="mobile-form-select">
+                                    <option>1D</option>
+                                    <option>1W</option>
+                                    <option selected>1M</option>
+                                    <option>3M</option>
+                                </select>
+                            </div>
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">목표가</label>
+                                <input type="number" class="mobile-form-input" placeholder="$45,000">
+                            </div>
+                        </div>
+                        <div class="mobile-direction-toggle">
+                            <button class="mobile-direction-btn up active"><i class="fas fa-arrow-up"></i> 상승</button>
+                            <button class="mobile-direction-btn down"><i class="fas fa-arrow-down"></i> 하락</button>
+                        </div>
+                        <button class="mobile-btn">예측 제출</button>
+                    </div>
+
+                    <div class="mobile-card mobile-fade-in">
+                        <div class="mobile-card-header">
+                            <h3 class="mobile-card-title">최근 거래</h3>
+                            <button class="mobile-card-action">전체 보기</button>
+                        </div>
+                        <div class="mobile-history-list">
+                            <div class="mobile-transaction-item">
+                                <div class="mobile-list-icon"><i class="fas fa-coins"></i></div>
+                                <div class="mobile-list-content">
+                                    <div class="mobile-list-title">비트코인 매수</div>
+                                    <div class="mobile-transaction-meta">5분 전 · 1일 예측</div>
+                                </div>
+                                <div class="mobile-list-value positive">+8.30%</div>
+                            </div>
+                            <div class="mobile-transaction-item">
+                                <div class="mobile-list-icon"><i class="fas fa-chart-area"></i></div>
+                                <div class="mobile-list-content">
+                                    <div class="mobile-list-title">이더리움 매도</div>
+                                    <div class="mobile-transaction-meta">32분 전 · 5분 예측</div>
+                                </div>
+                                <div class="mobile-list-value negative">-3.17%</div>
+                            </div>
+                            <div class="mobile-transaction-item">
+                                <div class="mobile-list-icon"><i class="fas fa-rocket"></i></div>
+                                <div class="mobile-list-content">
+                                    <div class="mobile-list-title">테슬라 상승</div>
+                                    <div class="mobile-transaction-meta">어제 · 1주 예측</div>
+                                </div>
+                                <div class="mobile-list-value positive">+4.52%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mobile-card mobile-fade-in">
+                        <div class="mobile-card-header">
+                            <h3 class="mobile-card-title">시장 뉴스</h3>
+                            <button class="mobile-card-action">새로고침</button>
+                        </div>
+                        <ul class="mobile-news-list">
+                            <li>
+                                <span class="news-title">BTC 급등, 저항선 돌파</span>
+                                <span class="news-time">2분 전</span>
+                            </li>
+                            <li>
+                                <span class="news-title">美 연준, 금리 동결 시사</span>
+                                <span class="news-time">12분 전</span>
+                            </li>
+                            <li>
+                                <span class="news-title">AI 섹터, 조정 후 반등 신호</span>
+                                <span class="news-time">30분 전</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
             </main>
     </div>
 

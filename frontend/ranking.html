@@ -1,387 +1,681 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수익률 랭킹 - 주식 차트</title>
+    <title>실시간 랭킹 - StockChart</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Korean Trading UI Design System -->
-    <link rel="stylesheet" href="css/figma-design.css">
-    
-    <!-- Mobile Trading UI -->
-    <link rel="stylesheet" href="css/mobile-trading.css">
-</head>
 
-<body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
+    <link rel="stylesheet" href="css/figma-design.css">
+    <link rel="stylesheet" href="css/mobile-trading.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="home-body">
+    <div class="home-desktop desktop-only">
+        <header class="dashboard-top-bar">
+            <div class="top-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                    <p class="brand-eyebrow">실시간 수익률 보드</p>
+                    <h1 class="brand-title">랭킹 대시보드</h1>
+                </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
+
+            <nav class="top-nav-links">
+                <a href="index.html" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
+                <a href="charts.html" class="top-nav-link">
+                    <i class="fas fa-chart-area"></i>
+                    <span>차트</span>
                 </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-brain"></i>
-                    <span>AI 예측</span>
+                <a href="prediction.html" class="top-nav-link">
+                    <i class="fas fa-magic"></i>
+                    <span>예측하기</span>
                 </a>
-                <a href="ranking.html" class="nav-item active">
+                <a href="my-predictions.html" class="top-nav-link">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="ranking.html" class="top-nav-link active">
                     <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
+                    <span>랭킹</span>
                 </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
+                <a href="events.html" class="top-nav-link">
+                    <i class="fas fa-calendar-star"></i>
                     <span>이벤트</span>
                 </a>
             </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
+
+            <div class="top-actions">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input id="rankingSearch" type="search" placeholder="사용자 또는 전략 검색">
                 </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-trophy text-accent-green"></i>
-                <span>수익률 랭킹</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="사용자 검색" id="searchInput">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
+                <button id="downloadRankingBtn" class="ghost-btn">
+                    <i class="fas fa-download"></i>
+                    데이터 내보내기
                 </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-trophy"></i>
-                    <span>랭킹 참가</span>
+                <button id="joinRankingBtn" class="primary-btn">
+                    <i class="fas fa-flag-checkered"></i>
+                    랭킹 참가하기
                 </button>
             </div>
         </header>
-        
-        <!-- Main Content -->
-        <main class="figma-main">
-            <div class="main-content">
-                <!-- Ranking Header -->
-                <div class="content-header">
-                    <h1>수익률 랭킹</h1>
-                    <p>투자자들의 실시간 수익률을 확인하고 경쟁하세요</p>
-                </div>
-                
-                <!-- Ranking Filters -->
-                <div class="ranking-filters">
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" onclick="setFilter('daily')">일간</button>
-                        <button class="filter-tab" onclick="setFilter('weekly')">주간</button>
-                        <button class="filter-tab" onclick="setFilter('monthly')">월간</button>
-                        <button class="filter-tab" onclick="setFilter('yearly')">연간</button>
+
+        <section class="home-dashboard ranking-dashboard">
+            <div class="home-metrics" id="rankingStats"></div>
+
+            <div class="home-main-grid ranking-layout">
+                <div class="ranking-primary">
+                    <div class="card-heading">
+                        <div>
+                            <h2>리더보드</h2>
+                            <p>AI 검증된 실적을 기준으로 실시간 업데이트 됩니다.</p>
+                        </div>
+                        <div class="ranking-tabs" id="timeframeTabs"></div>
                     </div>
-                </div>
-                
-                <!-- Top 3 Winners -->
-                <div class="top-winners">
-                    <div class="winner-card gold">
-                        <div class="winner-rank">1</div>
-                        <div class="winner-info">
-                            <div class="winner-name">투자왕123</div>
-                            <div class="winner-return">+24.7%</div>
-                            <div class="winner-badge">🏆 1위</div>
+
+                    <div class="home-prediction-board ranking-highlight">
+                        <div class="board-header">
+                            <div>
+                                <h3>하이라이트</h3>
+                                <span>최근 성과 기준 Top 3</span>
+                            </div>
+                            <button id="compareStrategiesBtn" class="board-action">전략 비교</button>
+                        </div>
+                        <table class="board-table" id="leaderHighlights"></table>
+                    </div>
+
+                    <div class="predictions-table-card ranking-table-card">
+                        <div class="card-toolbar">
+                            <div class="filter-group">
+                                <label for="rankingTierFilter">티어</label>
+                                <select id="rankingTierFilter" class="filter-select">
+                                    <option value="all">전체</option>
+                                    <option value="챌린저">챌린저</option>
+                                    <option value="타이탄">타이탄</option>
+                                    <option value="프로">프로</option>
+                                    <option value="루키">루키</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="rankingSort">정렬</label>
+                                <select id="rankingSort" class="filter-select">
+                                    <option value="return">수익률</option>
+                                    <option value="winrate">승률</option>
+                                    <option value="streak">연속 성공</option>
+                                    <option value="profit">총 수익</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="predictions-table-wrapper">
+                            <table class="predictions-table rankings-table">
+                                <thead>
+                                    <tr>
+                                        <th>순위</th>
+                                        <th>사용자</th>
+                                        <th>수익률</th>
+                                        <th>거래 수</th>
+                                        <th>승률</th>
+                                        <th>총 수익</th>
+                                        <th>연속 성공</th>
+                                        <th>동작</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rankingTableBody"></tbody>
+                            </table>
+                            <div id="rankingEmpty" class="predictions-empty hidden">
+                                <div class="empty-icon"><i class="fas fa-user-slash"></i></div>
+                                <h3>조건에 맞는 랭커가 없습니다</h3>
+                                <p>필터를 리셋하거나 다른 기간을 선택해보세요.</p>
+                                <button id="resetFiltersBtn" class="ghost-btn">
+                                    <i class="fas fa-arrow-rotate-left"></i>
+                                    필터 초기화
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="winner-card silver">
-                        <div class="winner-rank">2</div>
-                        <div class="winner-info">
-                            <div class="winner-name">주식마스터</div>
-                            <div class="winner-return">+19.3%</div>
-                            <div class="winner-badge">🥈 2위</div>
+
+                    <div class="home-news-card ranking-insights">
+                        <div class="board-header">
+                            <div>
+                                <h3>AI 인사이트</h3>
+                                <span>선택된 기간 기준 전략 요약</span>
+                            </div>
+                            <button id="refreshInsightsBtn" class="board-action">새로고침</button>
                         </div>
+                        <ul class="news-list" id="insightsList"></ul>
                     </div>
-                    <div class="winner-card bronze">
-                        <div class="winner-rank">3</div>
-                        <div class="winner-info">
-                            <div class="winner-name">AI예측러</div>
-                            <div class="winner-return">+15.8%</div>
-                            <div class="winner-badge">🥉 3위</div>
+                </div>
+
+                <aside class="ranking-sidebar">
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>내 현재 성과</h3>
+                                <p>오늘 오전 9시 기준</p>
+                            </div>
+                            <button id="viewDashboardBtn" class="ghost-btn small">대시보드</button>
                         </div>
+                        <div id="profileStats" class="my-events"></div>
                     </div>
-                </div>
-                
-                <!-- Full Ranking Table -->
-                <div class="ranking-table">
-                    <div class="table-header">
-                        <span>순위</span>
-                        <span>사용자</span>
-                        <span>수익률</span>
-                        <span>거래 횟수</span>
-                        <span>승률</span>
-                        <span>총 수익</span>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>다가오는 대회</h3>
+                                <p>AI 추천 참가 일정</p>
+                            </div>
+                            <button id="openEventsBtn" class="ghost-btn small">전체 보기</button>
+                        </div>
+                        <div id="upcomingTournaments" class="my-events"></div>
                     </div>
-                    <div class="table-row rank-1">
-                        <span class="rank gold">1</span>
-                        <span class="user">
-                            <div class="user-avatar">투</div>
-                            <div class="user-name">투자왕123</div>
-                        </span>
-                        <span class="return positive">+24.7%</span>
-                        <span>127</span>
-                        <span class="winrate">87.4%</span>
-                        <span class="profit positive">+₩4,250,000</span>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>전략 제안</h3>
+                                <p>실시간 변동성에 기반한 Tip</p>
+                            </div>
+                        </div>
+                        <ul id="strategySuggestions" class="news-list"></ul>
                     </div>
-                    <div class="table-row rank-2">
-                        <span class="rank silver">2</span>
-                        <span class="user">
-                            <div class="user-avatar">주</div>
-                            <div class="user-name">주식마스터</div>
-                        </span>
-                        <span class="return positive">+19.3%</span>
-                        <span>95</span>
-                        <span class="winrate">82.1%</span>
-                        <span class="profit positive">+₩3,180,000</span>
-                    </div>
-                    <div class="table-row rank-3">
-                        <span class="rank bronze">3</span>
-                        <span class="user">
-                            <div class="user-avatar">AI</div>
-                            <div class="user-name">AI예측러</div>
-                        </span>
-                        <span class="return positive">+15.8%</span>
-                        <span>78</span>
-                        <span class="winrate">79.5%</span>
-                        <span class="profit positive">+₩2,650,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">4</span>
-                        <span class="user">
-                            <div class="user-avatar">차</div>
-                            <div class="user-name">차트분석가</div>
-                        </span>
-                        <span class="return positive">+12.1%</span>
-                        <span>65</span>
-                        <span class="winrate">75.4%</span>
-                        <span class="profit positive">+₩1,980,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">5</span>
-                        <span class="user">
-                            <div class="user-avatar">데</div>
-                            <div class="user-name">데이트레이더</div>
-                        </span>
-                        <span class="return positive">+9.4%</span>
-                        <span>156</span>
-                        <span class="winrate">71.2%</span>
-                        <span class="profit positive">+₩1,540,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">6</span>
-                        <span class="user">
-                            <div class="user-avatar">코</div>
-                            <div class="user-name">코인킹</div>
-                        </span>
-                        <span class="return positive">+7.8%</span>
-                        <span>89</span>
-                        <span class="winrate">68.5%</span>
-                        <span class="profit positive">+₩1,280,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">7</span>
-                        <span class="user">
-                            <div class="user-avatar">스</div>
-                            <div class="user-name">스윙트레이더</div>
-                        </span>
-                        <span class="return positive">+6.2%</span>
-                        <span>43</span>
-                        <span class="winrate">65.1%</span>
-                        <span class="profit positive">+₩1,020,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">8</span>
-                        <span class="user">
-                            <div class="user-avatar">테</div>
-                            <div class="user-name">테크투자자</div>
-                        </span>
-                        <span class="return positive">+4.9%</span>
-                        <span>52</span>
-                        <span class="winrate">61.5%</span>
-                        <span class="profit positive">+₩850,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">9</span>
-                        <span class="user">
-                            <div class="user-avatar">바</div>
-                            <div class="user-name">바이앤홀드</div>
-                        </span>
-                        <span class="return positive">+3.1%</span>
-                        <span>21</span>
-                        <span class="winrate">57.1%</span>
-                        <span class="profit positive">+₩640,000</span>
-                    </div>
-                    <div class="table-row">
-                        <span class="rank">10</span>
-                        <span class="user">
-                            <div class="user-avatar">신</div>
-                            <div class="user-name">신규투자자</div>
-                        </span>
-                        <span class="return positive">+1.7%</span>
-                        <span>15</span>
-                        <span class="winrate">53.3%</span>
-                        <span class="profit positive">+₩380,000</span>
-                    </div>
-                </div>
+                </aside>
             </div>
-        </main>
-        
-        <!-- Trading Panel -->
-        <aside class="figma-trading-panel">
-            <div class="trading-header">
-                <h3>내 랭킹 정보</h3>
-            </div>
-            
-            <div class="my-ranking">
-                <div class="my-rank-card">
-                    <div class="my-rank-number">47</div>
-                    <div class="my-rank-label">현재 순위</div>
-                </div>
-                <div class="my-stats">
-                    <div class="stat-item">
-                        <span>내 수익률</span>
-                        <span class="positive">+5.2%</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>거래 횟수</span>
-                        <span>23</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>승률</span>
-                        <span>65.2%</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>총 수익</span>
-                        <span class="positive">+₩420,000</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="ranking-actions">
-                <button class="btn-action">더 많은 예측하기</button>
-                <button class="btn-action secondary">포트폴리오 보기</button>
-            </div>
-            
-            <div class="ranking-rewards">
-                <h4>순위별 보상</h4>
-                <div class="reward-item">
-                    <span class="reward-rank">1위</span>
-                    <span class="reward-prize">₩1,000,000</span>
-                </div>
-                <div class="reward-item">
-                    <span class="reward-rank">2위</span>
-                    <span class="reward-prize">₩500,000</span>
-                </div>
-                <div class="reward-item">
-                    <span class="reward-rank">3위</span>
-                    <span class="reward-prize">₩300,000</span>
-                </div>
-                <div class="reward-item">
-                    <span class="reward-rank">4-10위</span>
-                    <span class="reward-prize">₩100,000</span>
-                </div>
-            </div>
-        </aside>
+        </section>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav">
+    <nav class="mobile-bottom-nav mobile-only">
         <a href="index.html" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
         <a href="charts.html" class="mobile-nav-item">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-chart-area"></i>
             <span>차트</span>
         </a>
         <a href="prediction.html" class="mobile-nav-item">
-            <i class="fas fa-brain"></i>
+            <i class="fas fa-magic"></i>
             <span>예측</span>
         </a>
         <a href="ranking.html" class="mobile-nav-item active">
             <i class="fas fa-trophy"></i>
             <span>랭킹</span>
         </a>
-        <a href="subscription.html" class="mobile-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>프리미엄</span>
+        <a href="events.html" class="mobile-nav-item">
+            <i class="fas fa-calendar-star"></i>
+            <span>이벤트</span>
         </a>
     </nav>
 
-    <!-- JavaScript -->
+    <div id="rankingToast" class="home-toast"></div>
+
     <script>
-        function setFilter(period) {
-            // Remove active class from all tabs
-            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-            
-            // Add active class to clicked tab
-            event.target.classList.add('active');
-            
-            // Update ranking data based on period
-            console.log(`Filtering rankings by: ${period}`);
-            
-            // Here you would typically make an API call to get filtered data
-            // For now, we'll just show an alert
-            alert(`${period} 랭킹으로 필터링되었습니다.`);
+        const rankingState = {
+            currentFilter: 'daily',
+            tierFilter: 'all',
+            searchTerm: '',
+            sortKey: 'return',
+            filters: [
+                { id: 'daily', label: '일간', description: '24시간 실적' },
+                { id: 'weekly', label: '주간', description: '최근 7일' },
+                { id: 'monthly', label: '월간', description: '최근 30일' },
+                { id: 'yearly', label: '연간', description: '최근 365일' }
+            ],
+            entries: [
+                { id: 'd-1', username: '투자왕123', avatar: '투', tier: '챌린저', timeframe: 'daily', returnRate: 24.7, trades: 127, winRate: 87.4, profit: 4250000, streak: 8 },
+                { id: 'd-2', username: '주식마스터', avatar: '주', tier: '타이탄', timeframe: 'daily', returnRate: 19.3, trades: 95, winRate: 82.1, profit: 3180000, streak: 6 },
+                { id: 'd-3', username: 'AI예측러', avatar: 'AI', tier: '프로', timeframe: 'daily', returnRate: 15.8, trades: 78, winRate: 79.5, profit: 2650000, streak: 5 },
+                { id: 'd-4', username: '차트분석가', avatar: '차', tier: '프로', timeframe: 'daily', returnRate: 12.1, trades: 65, winRate: 75.4, profit: 1980000, streak: 4 },
+                { id: 'd-5', username: '데이트레이더', avatar: '데', tier: '프로', timeframe: 'daily', returnRate: 9.4, trades: 156, winRate: 71.2, profit: 1540000, streak: 3 },
+                { id: 'w-1', username: '스윙킹', avatar: '스', tier: '챌린저', timeframe: 'weekly', returnRate: 32.5, trades: 42, winRate: 68.2, profit: 3120000, streak: 5 },
+                { id: 'w-2', username: '포지션헌터', avatar: '포', tier: '타이탄', timeframe: 'weekly', returnRate: 27.1, trades: 53, winRate: 73.4, profit: 2860000, streak: 4 },
+                { id: 'm-1', username: '퀀트마스터', avatar: '퀀', tier: '챌린저', timeframe: 'monthly', returnRate: 58.9, trades: 118, winRate: 69.5, profit: 8450000, streak: 9 },
+                { id: 'm-2', username: '리스크제로', avatar: '리', tier: '타이탄', timeframe: 'monthly', returnRate: 41.2, trades: 102, winRate: 75.2, profit: 6230000, streak: 7 },
+                { id: 'y-1', username: '롱런전략가', avatar: '롱', tier: '챌린저', timeframe: 'yearly', returnRate: 128.4, trades: 520, winRate: 64.1, profit: 18500000, streak: 12 },
+                { id: 'y-2', username: 'AIHybrid', avatar: 'HY', tier: '프로', timeframe: 'yearly', returnRate: 112.8, trades: 447, winRate: 66.9, profit: 16200000, streak: 10 },
+                { id: 'w-3', username: '국내주식러', avatar: '국', tier: '루키', timeframe: 'weekly', returnRate: 18.6, trades: 24, winRate: 62.3, profit: 930000, streak: 2 }
+            ],
+            insights: {
+                daily: [
+                    '일간 챌린저 티어 평균 수익률은 +18.6%로 전일 대비 2.1% 상승했습니다.',
+                    'AI 기반 전략 채택 비율이 63%를 돌파하며 상승장 대응력이 향상되었습니다.',
+                    '가장 긴 연속 성공은 8회로, 변동성 장세에서 짧은 홀딩 전략이 효과적이었습니다.'
+                ],
+                weekly: [
+                    '주간 상위권은 평균 32% 이상의 수익률을 기록하며 변동성 플레이에 강점을 보였습니다.',
+                    '스윙 전략과 AI 보조 시그널을 결합한 유저의 승률이 70%를 넘었습니다.',
+                    '손실 제한을 4% 이내로 설정한 참가자가 평균보다 1.6배 높은 승률을 기록했습니다.'
+                ],
+                monthly: [
+                    '월간 Top3의 평균 연속 성공 수는 8.7회로 장기 추세 추종 전략이 돋보입니다.',
+                    '퀀트 기반 포트폴리오 조정 빈도가 낮을수록 누적 수익이 높게 나타났습니다.',
+                    'AI 매매 시그널 신뢰도(45일 기준)가 92%로 업데이트되었습니다.'
+                ],
+                yearly: [
+                    '연간 기준 누적 수익 1억원 이상 참가자가 12명으로 사상 최대치를 기록했습니다.',
+                    '롱런전략가는 변동성 25% 구간에서도 12연승을 유지했습니다.',
+                    '리스크 조정 수익률(Sharpe) 2.1 이상 전략 비중이 34%까지 확대되었습니다.'
+                ]
+            },
+            myProfile: {
+                rank: 47,
+                returnRate: 5.2,
+                winRate: 65.2,
+                streak: 3,
+                bestTimeframe: '주간',
+                target: 'Top 20 진입',
+                strategy: '상승 전략 유지'
+            },
+            upcoming: [
+                { title: '주간 예측 스프린트', date: '10월 12일', reward: '₩500,000', status: '접수 중' },
+                { title: 'AI 하이브리드 챌린지', date: '10월 25일', reward: '프리미엄 2개월', status: '대기 중' },
+                { title: '연말 결산 빅배틀', date: '11월 02일', reward: '총 상금 ₩10,000,000', status: '사전 예약' }
+            ],
+            strategies: [
+                { title: 'AI 추세 추종', meta: '정확도 92% · 추천', tone: 'positive' },
+                { title: '변동성 박스 매매', meta: '장 초반 스캘핑 강화', tone: 'neutral' },
+                { title: '리스크 헤지 플랜', meta: '포트폴리오 방어 추천', tone: 'info' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderStats();
+            renderLeaderboard();
+            renderTable();
+            renderInsights();
+            renderProfile();
+            renderUpcoming();
+            renderStrategies();
+            attachRankingHandlers();
+        });
+
+        function renderFilters() {
+            const container = document.getElementById('timeframeTabs');
+            container.innerHTML = rankingState.filters.map(filter => `
+                <button class="ghost-btn small ${filter.id === rankingState.currentFilter ? 'active' : ''}" data-filter="${filter.id}">
+                    ${filter.label}
+                </button>
+            `).join('');
         }
 
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchTerm = this.value;
-                console.log(`Searching for user: ${searchTerm}`);
-                // Implement user search functionality here
-                this.value = '';
-            }
-        });
+        function renderStats() {
+            const statsContainer = document.getElementById('rankingStats');
+            const entries = getFilteredEntries();
 
-        // Add animation to ranking rows
-        document.addEventListener('DOMContentLoaded', function() {
-            const rows = document.querySelectorAll('.table-row');
-            rows.forEach((row, index) => {
-                row.style.animationDelay = `${index * 0.1}s`;
-                row.classList.add('fade-in');
+            if (entries.length === 0) {
+                statsContainer.innerHTML = `
+                    <div class="metric-card primary">
+                        <div class="metric-label">참가자 수</div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-change info">데이터 없음</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">평균 수익률</div>
+                        <div class="metric-value">0%</div>
+                        <div class="metric-sub">새로운 참가자를 기다리는 중</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">최고 연속 성공</div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-sub">성과 데이터 없음</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">AI 신뢰도</div>
+                        <div class="metric-value">92%</div>
+                        <div class="metric-sub">기본 모델 기준</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalParticipants = entries.length;
+            const topReturn = entries[0].returnRate;
+            const avgReturn = entries.reduce((sum, item) => sum + item.returnRate, 0) / entries.length;
+            const avgWinRate = entries.reduce((sum, item) => sum + item.winRate, 0) / entries.length;
+            const bestStreak = Math.max(...entries.map(item => item.streak));
+
+            statsContainer.innerHTML = `
+                <div class="metric-card primary">
+                    <div class="metric-label">참가자 수</div>
+                    <div class="metric-value">${totalParticipants}</div>
+                    <div class="metric-change positive">실시간 동기화</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">최고 수익률</div>
+                    <div class="metric-value positive-text">+${topReturn.toFixed(1)}%</div>
+                    <div class="metric-sub">${getFilterLabel()} 기준</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">평균 수익률</div>
+                    <div class="metric-value">${avgReturn.toFixed(1)}%</div>
+                    <div class="metric-sub">승률 ${avgWinRate.toFixed(1)}%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">연속 성공</div>
+                    <div class="metric-value">${bestStreak}</div>
+                    <div class="metric-sub">최고 연승 기록</div>
+                </div>
+            `;
+        }
+
+        function renderLeaderboard() {
+            const highlights = document.getElementById('leaderHighlights');
+            const entries = getFilteredEntries().slice(0, 3);
+
+            if (!entries.length) {
+                highlights.innerHTML = `
+                    <tbody>
+                        <tr>
+                            <td colspan="4">표시할 리더가 없습니다.</td>
+                        </tr>
+                    </tbody>
+                `;
+                return;
+            }
+
+            highlights.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>사용자</th>
+                        <th>수익률</th>
+                        <th>연속 성공</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${entries.map((item, index) => `
+                        <tr>
+                            <td><span class="rank ${index === 0 ? 'gold' : index === 1 ? 'silver' : 'bronze'}">${index + 1}</span></td>
+                            <td>
+                                <div class="board-user">
+                                    <span class="avatar">${item.avatar}</span>
+                                    <div>
+                                        <span class="board-name">${item.username}</span>
+                                        <span class="board-meta">${item.tier}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="positive">+${item.returnRate.toFixed(1)}%</td>
+                            <td>${item.streak}회</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('rankingTableBody');
+            const emptyState = document.getElementById('rankingEmpty');
+            const entries = getFilteredEntries(true);
+
+            if (!entries.length) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tableBody.innerHTML = entries.map((item, index) => `
+                <tr>
+                    <td><span class="symbol-tag">${index + 1}</span></td>
+                    <td>
+                        <div class="table-symbol">
+                            <span class="symbol-tag">${item.avatar}</span>
+                            <div class="table-col">
+                                <strong>${item.username}</strong>
+                                <span class="subtext">${item.tier}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="numeric positive-text">+${item.returnRate.toFixed(1)}%</td>
+                    <td class="numeric">${item.trades}</td>
+                    <td class="numeric">${item.winRate.toFixed(1)}%</td>
+                    <td class="numeric positive-text">${formatCurrency(item.profit)}</td>
+                    <td class="numeric">${item.streak}회</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="ghost-btn small" data-action="inspect" data-id="${item.id}">분석</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderInsights() {
+            const list = document.getElementById('insightsList');
+            const insights = rankingState.insights[rankingState.currentFilter] || [];
+            list.innerHTML = insights.map(text => `
+                <li>
+                    <span class="news-title">${text}</span>
+                    <span class="news-meta">AI 분석</span>
+                </li>
+            `).join('');
+        }
+
+        function renderProfile() {
+            const container = document.getElementById('profileStats');
+            const profile = rankingState.myProfile;
+            container.innerHTML = `
+                <div class="my-event-item primary">
+                    <div>
+                        <h4>현재 순위</h4>
+                        <span>${profile.rank}위</span>
+                    </div>
+                    <div class="my-event-stats">
+                        <span class="rank">${profile.strategy}</span>
+                        <span class="return positive">목표 ${profile.target}</span>
+                    </div>
+                </div>
+                <div class="my-event-item">
+                    <div>
+                        <h4>일간 수익률</h4>
+                        <span>승률 ${profile.winRate.toFixed(1)}%</span>
+                    </div>
+                    <div class="my-event-stats">
+                        <span class="return positive">+${profile.returnRate.toFixed(1)}%</span>
+                        <span class="rank">연속 ${profile.streak}회</span>
+                    </div>
+                </div>
+                <div class="my-event-item">
+                    <div>
+                        <h4>강점 구간</h4>
+                        <span>${profile.bestTimeframe} 성과 우수</span>
+                    </div>
+                    <div class="my-event-stats">
+                        <button class="ghost-btn tiny" id="improvePlanBtn">향상 플랜</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUpcoming() {
+            const container = document.getElementById('upcomingTournaments');
+            container.innerHTML = rankingState.upcoming.map(item => `
+                <div class="my-event-item">
+                    <div>
+                        <h4>${item.title}</h4>
+                        <span>${item.date} · ${item.status}</span>
+                    </div>
+                    <div class="my-event-stats">
+                        <span class="return positive">${item.reward}</span>
+                        <button class="ghost-btn tiny" data-action="join-event" data-title="${item.title}">참가</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStrategies() {
+            const list = document.getElementById('strategySuggestions');
+            list.innerHTML = rankingState.strategies.map(item => `
+                <li class="news-item ${item.tone}">
+                    <div>
+                        <span class="news-title">${item.title}</span>
+                        <span class="news-meta">${item.meta}</span>
+                    </div>
+                    <button class="ghost-btn tiny" data-action="strategy">상세</button>
+                </li>
+            `).join('');
+        }
+
+        function attachRankingHandlers() {
+            document.getElementById('timeframeTabs').addEventListener('click', event => {
+                const button = event.target.closest('button[data-filter]');
+                if (!button) return;
+                rankingState.currentFilter = button.dataset.filter;
+                renderFilters();
+                refreshRankingView();
+                showRankingToast(`${button.textContent.trim()} 리더보드로 전환했습니다.`, 'info');
             });
-        });
+
+            document.getElementById('rankingTierFilter').addEventListener('change', event => {
+                rankingState.tierFilter = event.target.value;
+                renderTable();
+                renderLeaderboard();
+                renderStats();
+            });
+
+            document.getElementById('rankingSort').addEventListener('change', event => {
+                rankingState.sortKey = event.target.value;
+                renderTable();
+            });
+
+            document.getElementById('rankingSearch').addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    rankingState.searchTerm = event.target.value.trim();
+                    renderTable();
+                    renderLeaderboard();
+                    renderStats();
+                    event.target.value = '';
+                }
+            });
+
+            document.getElementById('rankingTableBody').addEventListener('click', event => {
+                const action = event.target.closest('[data-action]');
+                if (!action) return;
+
+                if (action.dataset.action === 'inspect') {
+                    const entry = rankingState.entries.find(item => item.id === action.dataset.id);
+                    if (entry) {
+                        showRankingToast(`${entry.username}님의 전략 리포트를 준비 중입니다.`, 'info');
+                    }
+                }
+            });
+
+            document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+                rankingState.tierFilter = 'all';
+                rankingState.searchTerm = '';
+                document.getElementById('rankingTierFilter').value = 'all';
+                renderTable();
+                renderLeaderboard();
+                renderStats();
+                showRankingToast('필터와 검색 조건이 초기화되었습니다.', 'success');
+            });
+
+            document.getElementById('downloadRankingBtn').addEventListener('click', () => {
+                showRankingToast('랭킹 데이터를 CSV로 내보냈습니다.', 'success');
+            });
+
+            document.getElementById('joinRankingBtn').addEventListener('click', () => {
+                showRankingToast('랭킹 참가 신청이 완료되었습니다. 화이팅!', 'success');
+            });
+
+            document.getElementById('refreshInsightsBtn').addEventListener('click', () => {
+                showRankingToast('AI 인사이트가 최신 상태로 업데이트되었습니다.', 'success');
+            });
+
+            document.getElementById('compareStrategiesBtn').addEventListener('click', () => {
+                showRankingToast('전략 비교 모듈은 곧 제공될 예정입니다.', 'info');
+            });
+
+            document.getElementById('profileStats').addEventListener('click', event => {
+                if (event.target && event.target.id === 'improvePlanBtn') {
+                    showRankingToast('향상 플랜이 곧 공개됩니다.', 'info');
+                }
+            });
+
+            document.getElementById('upcomingTournaments').addEventListener('click', event => {
+                const target = event.target.closest('[data-action="join-event"]');
+                if (!target) return;
+                showRankingToast(`${target.dataset.title} 참가 등록이 완료되었습니다.`, 'success');
+            });
+
+            document.getElementById('strategySuggestions').addEventListener('click', event => {
+                const target = event.target.closest('[data-action="strategy"]');
+                if (!target) return;
+                showRankingToast('전략 세부 설명은 프리미엄에서 확인하실 수 있습니다.', 'info');
+            });
+
+            document.getElementById('viewDashboardBtn').addEventListener('click', () => {
+                showRankingToast('개인 대시보드로 이동합니다.', 'info');
+            });
+
+            document.getElementById('openEventsBtn').addEventListener('click', () => {
+                window.location.href = 'events.html';
+            });
+        }
+
+        function refreshRankingView() {
+            renderStats();
+            renderLeaderboard();
+            renderTable();
+            renderInsights();
+        }
+
+        function getFilteredEntries(includeSort = false) {
+            const base = rankingState.entries.filter(entry => entry.timeframe === rankingState.currentFilter);
+            const tierFiltered = rankingState.tierFilter === 'all'
+                ? base
+                : base.filter(entry => entry.tier === rankingState.tierFilter);
+
+            const searchFiltered = rankingState.searchTerm
+                ? tierFiltered.filter(entry => entry.username.toLowerCase().includes(rankingState.searchTerm.toLowerCase()))
+                : tierFiltered;
+
+            const sorted = [...searchFiltered].sort((a, b) => {
+                switch (rankingState.sortKey) {
+                    case 'winrate':
+                        return b.winRate - a.winRate;
+                    case 'streak':
+                        return b.streak - a.streak;
+                    case 'profit':
+                        return b.profit - a.profit;
+                    default:
+                        return b.returnRate - a.returnRate;
+                }
+            });
+
+            return includeSort ? sorted : sorted;
+        }
+
+        function getFilterLabel() {
+            const filter = rankingState.filters.find(item => item.id === rankingState.currentFilter);
+            return filter ? filter.label : '';
+        }
+
+        function formatCurrency(value) {
+            return '₩' + Math.round(value).toLocaleString('ko-KR');
+        }
+
+        function showRankingToast(message, type = 'success') {
+            const toast = document.getElementById('rankingToast');
+            toast.textContent = message;
+            toast.className = `home-toast visible ${type}`;
+            clearTimeout(showRankingToast.timer);
+            showRankingToast.timer = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
     </script>
 
-    <!-- Collapsible Sidebar Script -->
     <script src="js/collapsible-sidebar.js"></script>
 </body>
 </html>

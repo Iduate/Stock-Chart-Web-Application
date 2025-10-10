@@ -320,7 +320,7 @@ function showNotification(message, type = 'info') {
 // Logout function
 function logout() {
     if (confirm('정말 로그아웃하시겠습니까?')) {
-        window.location.href = '../home.html';
+    window.location.href = '../index.html';
     }
 }
 

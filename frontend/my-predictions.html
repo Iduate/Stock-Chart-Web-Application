@@ -1,1228 +1,734 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>내 예측 - 주식 차트 코인판매</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- TradingView Charts -->
-    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>내 예측 - StockChart</title>
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+
+	<!-- Core Styles -->
+	<link rel="stylesheet" href="css/figma-design.css">
+	<link rel="stylesheet" href="css/mobile-trading.css">
+
+	<!-- Fonts & Icons -->
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+	<!-- Charts -->
+	<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
-
-    <style>
-        /* CRITICAL: Fix horizontal scrolling on mobile */
-        html,
-        body {
-            overflow-x: hidden !important;
-            max-width: 100vw !important;
-            position: relative !important;
-        }
-
-        * {
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Prevent any element from causing horizontal overflow */
-        .container,
-        .max-w-7xl,
-        .w-full {
-            max-width: 100vw !important;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-        }
-
-        /* Ensure all sections stay within viewport */
-        section {
-            max-width: 100vw !important;
-            overflow-x: hidden !important;
-        }
-
-        /* Fix chart containers */
-        .chart-container,
-        #chartContainer {
-            max-width: 100% !important;
-            width: 100% !important;
-            overflow: hidden !important;
-        }
-
-        /* Responsive table styles */
-        .predictions-table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .predictions-table {
-            min-width: 800px; /* Minimum width for proper column layout */
-        }
-
-        /* Mobile responsive adjustments */
-        @media (max-width: 768px) {
-            .predictions-table-container {
-                margin-left: -1rem;
-                margin-right: -1rem;
-            }
-            
-            .predictions-table th,
-            .predictions-table td {
-                padding: 0.75rem 0.5rem !important;
-                font-size: 0.875rem;
-            }
-
-            .predictions-table th:first-child,
-            .predictions-table td:first-child {
-                padding-left: 1rem !important;
-            }
-
-            .predictions-table th:last-child,
-            .predictions-table td:last-child {
-                padding-right: 1rem !important;
-            }
-        }
-
-        /* Table hover effects */
-        .predictions-table tbody tr:hover {
-            background-color: rgba(139, 92, 246, 0.05);
-        }
-
-        /* Status badge styles */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            white-space: nowrap;
-        }
-    </style>
-</head>
-
-<body class="bg-gray-50 text-gray-900 font-sans overflow-x-hidden max-w-full relative">
-    <!-- Navigation Bar -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-md shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    <a href="home.html"
-                        class="flex items-center space-x-2 text-gray-900 hover:text-blue-600 transition-colors">
-                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-sm"></i>
-                        </div>
-                        <span class="text-xl font-bold">StockChart</span>
-                    </a>
-                </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden lg:flex items-center space-x-1">
-                    <a href="home.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">홈</a>
-                    <a href="charts.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">차트
-                        보드</a>
-                    <a href="prediction.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">예측하기</a>
-                    <a href="my-predictions.html"
-                        class="px-4 py-2 rounded-lg text-white bg-blue-600 border border-blue-600">내
-                        예측</a>
-                    <a href="ranking.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">랭킹</a>
-                    <a href="events.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">이벤트</a>
-                    <a href="subscription.html"
-                        class="px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200">구독</a>
-                    <button onclick="showLoginModal()"
-                        class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">로그인</button>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="lg:hidden">
-                    <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-blue-600 p-2">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Navigation -->
-        <!-- Mobile Menu Portal - Outside Nav Context -->
-        <div id="mobile-menu-portal" class="fixed inset-0 lg:hidden"
-            style="display: none; z-index: 999999 !important; position: fixed !important;">
-            <!-- Full Screen Overlay -->
-            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" style="z-index: 999990 !important;"
-                onclick="toggleMobileMenu()"></div>
-            <!-- Menu Sidebar -->
-            <div id="mobile-menu-content"
-                class="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl"
-                style="z-index: 999999 !important;">
-                <!-- Menu Header -->
-                <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                    <div class="flex items-center space-x-3">
-                        <div
-                            class="w-8 h-8 bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-sm"></i>
-                        </div>
-                        <span class="text-white font-bold text-xl">StockChart</span>
-                    </div>
-                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors p-2">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <!-- Menu Items -->
-                <div class="p-6 space-y-4">
-                    <a href="home.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-home text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">홈</span>
-                    </a>
-                    <a href="charts.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-chart-area text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">차트 분석</span>
-                    </a>
-                    <a href="prediction.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-brain text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">AI 예측</span>
-                    </a>
-                    <a href="my-predictions.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg bg-[#8b5cf6]/20 border border-[#8b5cf6] transition-colors group">
-                        <i class="fas fa-user-chart text-[#8b5cf6] transition-colors"></i>
-                        <span class="text-white transition-colors">내 예측</span>
-                    </a>
-                    <a href="ranking.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-trophy text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">랭킹</span>
-                    </a>
-                    <a href="events.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-calendar-alt text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">이벤트</span>
-                    </a>
-                    <a href="subscription.html"
-                        class="flex items-center space-x-3 p-3 rounded-lg hover:bg-[#8b5cf6]/10 transition-colors group">
-                        <i class="fas fa-crown text-[#8b5cf6] group-hover:text-white transition-colors"></i>
-                        <span class="text-gray-300 group-hover:text-white transition-colors">구독</span>
-                    </a>
-                </div>
-                <!-- Bottom Section -->
-                <div class="absolute bottom-6 left-6 right-6">
-                    <div
-                        class="p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#3b82f6]/20 rounded-lg border border-[#8b5cf6]/30">
-                        <div class="text-white font-semibold mb-2">프리미엄 구독</div>
-                        <div class="text-gray-300 text-sm mb-3">고급 분석 도구와 실시간 알림을 받아보세요</div>
-                        <button
-                            class="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] text-white py-2 px-4 rounded-lg hover:from-[#7c3aed] hover:to-[#2563eb] transition-all">
-                            무료로 시작하기
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- My Predictions Section -->
-    <section class="py-8 bg-tv-darker min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Page Header -->
-            <div class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-3">
-                        <i class="fas fa-user-chart text-tv-blue text-3xl"></i>
-                        <h1 class="text-3xl lg:text-4xl font-bold text-tv-text">내 예측</h1>
-                    </div>
-                    <button onclick="loadUserPredictions()"
-                        class="bg-tv-blue hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>새로고침</span>
-                    </button>
-                    <button onclick="loadTestData()"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ml-2">
-                        <i class="fas fa-flask"></i>
-                        <span>테스트 데이터</span>
-                    </button>
-                </div>
-                <p class="text-lg text-tv-text-secondary max-w-2xl">나의 예측 현황과 성과를 확인하고 분석해보세요</p>
-            </div>
-
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="statsOverview">
-                <!-- Stats will be loaded dynamically -->
-            </div>
-
-            <!-- Filters and Controls -->
-            <div class="bg-tv-card border border-tv-border rounded-xl p-6 mb-6">
-                <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-                    <div class="flex flex-wrap gap-4">
-                        <select id="statusFilter"
-                            class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                            <option value="all">전체 상태</option>
-                            <option value="active">진행중</option>
-                            <option value="completed">완료</option>
-                            <option value="cancelled">취소됨</option>
-                        </select>
-                        <select id="periodFilter"
-                            class="bg-tv-light border border-tv-border rounded-lg px-4 py-2 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent">
-                            <option value="all">전체 기간</option>
-                            <option value="week">이번 주</option>
-                            <option value="month">이번 달</option>
-                            <option value="quarter">최근 3개월</option>
-                        </select>
-                    </div>
-                    <button onclick="createNewPrediction()"
-                        class="bg-tv-blue hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
-                        <i class="fas fa-plus mr-2"></i>새 예측 추가
-                    </button>
-                </div>
-            </div>
-
-            <!-- Predictions Table Container -->
-            <div class="bg-tv-card border border-tv-border rounded-xl overflow-hidden">
-                <!-- Table Header -->
-                <div class="bg-tv-light border-b border-tv-border px-6 py-4">
-                    <h3 class="text-lg font-semibold text-tv-text">예측 현황</h3>
-                </div>
-                
-                <!-- Table Content -->
-                <div class="predictions-table-container">
-                    <table class="predictions-table w-full">
-                        <thead class="bg-tv-light border-b border-tv-border">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">종목</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-tv-text">예측일</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">기준가격</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">예측가격</th>
-                                <th class="px-6 py-4 text-right text-sm font-semibold text-tv-text">등락률</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">목표일</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">상태</th>
-                                <th class="px-6 py-4 text-center text-sm font-semibold text-tv-text">동작</th>
-                            </tr>
-                        </thead>
-                        <tbody id="predictionsTableBody" class="divide-y divide-tv-border">
-                            <!-- Predictions will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Empty State -->
-                <div id="emptyState" class="text-center py-16 hidden">
-                    <div class="w-24 h-24 mx-auto mb-6 bg-tv-light rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-chart-line text-4xl text-tv-text-secondary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-tv-text mb-2">아직 예측이 없습니다</h3>
-                    <p class="text-tv-text-secondary mb-6">첫 번째 예측을 만들어 투자 여정을 시작해보세요!</p>
-                    <button onclick="createNewPrediction()"
-                        class="bg-tv-blue hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-                        <i class="fas fa-plus mr-2"></i>첫 예측 만들기
-                    </button>
-                </div>
-            </div>
-
-            <!-- Load More -->
-            <div id="loadMoreContainer" class="text-center mt-8 hidden">
-                <button onclick="loadMorePredictions()"
-                    class="bg-tv-light hover:bg-tv-border text-tv-text px-8 py-3 rounded-lg font-semibold transition-colors">
-                    더 많은 예측 보기
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Enhanced Footer -->
-    <footer class="bg-tv-darker border-t border-tv-border relative overflow-hidden">
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-tv-blue/5 via-transparent to-tv-green/5"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-            <!-- Main Footer Content -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                <!-- Company Section -->
-                <div class="lg:col-span-1">
-                    <div class="flex items-center space-x-2 mb-6">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-br from-tv-blue to-tv-green rounded-xl flex items-center justify-center">
-                            <i class="fas fa-chart-line text-white text-lg"></i>
-                        </div>
-                        <h3 class="text-2xl font-bold text-tv-text">StockChart</h3>
-                    </div>
-                    <p class="text-tv-text-secondary mb-6 leading-relaxed">
-                        AI 기반 주식 예측과 실시간 분석으로<br>
-                        더 스마트한 투자 결정을 내리세요
-                    </p>
-                    <div class="flex space-x-3">
-                        <a href="#"
-                            class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200 hover:scale-110">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#"
-                            class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200 hover:scale-110">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#"
-                            class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200 hover:scale-110">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#"
-                            class="w-10 h-10 bg-tv-light hover:bg-tv-blue rounded-lg flex items-center justify-center text-tv-text-secondary hover:text-white transition-all duration-200 hover:scale-110">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Services Section -->
-                <div>
-                    <h4 class="font-semibold text-tv-text mb-6 text-lg">서비스</h4>
-                    <ul class="space-y-3">
-                        <li><a href="charts.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-chart-bar w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>차트 보드</span>
-                            </a></li>
-                        <li><a href="prediction.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-target w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>예측하기</span>
-                            </a></li>
-                        <li><a href="my-predictions.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-user-chart w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>내 예측</span>
-                            </a></li>
-                        <li><a href="ranking.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-trophy w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>랭킹</span>
-                            </a></li>
-                        <li><a href="events.html"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-calendar w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>이벤트</span>
-                            </a></li>
-                    </ul>
-                </div>
-
-                <!-- Support Section -->
-                <div>
-                    <h4 class="font-semibold text-tv-text mb-6 text-lg">고객지원</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-question-circle w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>FAQ</span>
-                            </a></li>
-                        <li><a href="#"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-envelope w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>문의하기</span>
-                            </a></li>
-                        <li><a href="#"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-file-contract w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>이용약관</span>
-                            </a></li>
-                        <li><a href="#"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-shield-alt w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>개인정보처리방침</span>
-                            </a></li>
-                        <li><a href="#"
-                                class="text-tv-text-secondary hover:text-tv-blue transition-colors flex items-center space-x-2 group">
-                                <i
-                                    class="fas fa-headset w-4 text-tv-text-secondary group-hover:text-tv-blue transition-colors"></i>
-                                <span>24/7 고객센터</span>
-                            </a></li>
-                    </ul>
-                </div>
-
-                <!-- Newsletter Section -->
-                <div>
-                    <h4 class="font-semibold text-tv-text mb-6 text-lg">뉴스레터</h4>
-                    <p class="text-tv-text-secondary mb-4 text-sm">
-                        최신 시장 분석과 예측 팁을<br>
-                        이메일로 받아보세요
-                    </p>
-                    <form class="space-y-3" onsubmit="subscribeNewsletter(event)">
-                        <div class="relative">
-                            <input type="email" id="newsletterEmail" placeholder="이메일 주소 입력"
-                                class="w-full bg-tv-light border border-tv-border rounded-lg px-4 py-3 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent text-sm">
-                            <button type="submit"
-                                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-tv-blue hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
-                                구독
-                            </button>
-                        </div>
-                        <div class="flex items-start space-x-2">
-                            <input type="checkbox" id="agreeMarketing"
-                                class="mt-1 rounded border-tv-border bg-tv-light text-tv-blue focus:ring-tv-blue">
-                            <label for="agreeMarketing" class="text-xs text-tv-text-secondary">
-                                마케팅 정보 수신에 동의합니다
-                            </label>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Footer Bottom -->
-            <div class="border-t border-tv-border pt-8">
-                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <div class="text-tv-text-secondary text-sm">
-                        <p>&copy; 2025 StockChart. 모든 권리 보유.</p>
-                    </div>
-                    <div class="flex items-center space-x-6 text-sm text-tv-text-secondary">
-                        <span class="flex items-center space-x-1">
-                            <i class="fas fa-shield-alt text-tv-green"></i>
-                            <span>보안인증</span>
-                        </span>
-                        <span class="flex items-center space-x-1">
-                            <i class="fas fa-lock text-tv-blue"></i>
-                            <span>SSL 암호화</span>
-                        </span>
-                        <span class="flex items-center space-x-1">
-                            <i class="fas fa-award text-tv-green"></i>
-                            <span>금융위원회 인가</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div id="loginModalContent"
-            class="bg-tv-card border border-tv-border rounded-2xl p-8 max-w-md w-full mx-4 transform scale-95 opacity-0 transition-all duration-300">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-tv-text">로그인</h2>
-                <button onclick="hideLoginModal()" class="text-tv-text-secondary hover:text-tv-text transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <input type="email" id="loginEmail" placeholder="이메일"
-                        class="w-full bg-tv-light border border-tv-border rounded-lg px-4 py-3 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent"
-                        required>
-                </div>
-                <div class="relative">
-                    <input type="password" id="loginPassword" placeholder="비밀번호"
-                        class="w-full bg-tv-light border border-tv-border rounded-lg px-4 py-3 text-tv-text focus:ring-2 focus:ring-tv-blue focus:border-transparent pr-12"
-                        required>
-                    <button type="button" onclick="togglePasswordVisibility('loginPassword')"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-tv-text-secondary hover:text-tv-text transition-colors">
-                        <i id="loginPasswordEye" class="fas fa-eye"></i>
-                    </button>
-                </div>
-                <button type="submit"
-                    class="w-full bg-tv-blue hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
-                    로그인
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // User predictions data (will be loaded from localStorage or API)
-        let userPredictions = [];
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM Content Loaded - starting initialization');
-
-            // Check if required elements exist
-            const container = document.getElementById('predictionsContainer');
-            const stats = document.getElementById('statsOverview');
-            const empty = document.getElementById('emptyState');
-
-            console.log('Required elements check:');
-            console.log('- predictionsContainer:', container ? 'Found' : 'Missing');
-            console.log('- statsOverview:', stats ? 'Found' : 'Missing');
-            console.log('- emptyState:', empty ? 'Found' : 'Missing');
-
-            if (!container || !stats || !empty) {
-                console.error('Missing required elements!');
-                return;
-            }
-
-            loadUserPredictions();
-            setupEventListeners();
-        });
-
-        async function loadUserPredictions() {
-            try {
-                // Show loading state
-                console.log('Loading predictions - showing loading state...');
-                showLoadingState();
-
-                // Load predictions from API
-                console.log('Fetching predictions from API...');
-                const response = await fetch('/api/charts/predictions/all/');
-                console.log('API response status:', response.status);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('API response data:', data);
-
-                    // Filter predictions for the current user (anonymous for non-authenticated users)
-                    const allPredictions = data.predictions || [];
-                    console.log('Total predictions from API:', allPredictions.length);
-
-                    // Debug: Log first few predictions to see structure
-                    if (allPredictions.length > 0) {
-                        console.log('First prediction structure:', allPredictions[0]);
-                        console.log('Sample prediction user:', allPredictions[0].user);
-                    }
-
-                    // For anonymous users, show only predictions by "anonymous" user
-                    userPredictions = allPredictions.filter(p => {
-                        console.log('Filtering prediction:', p.id, 'User:', p.user?.username);
-                        return p.user && p.user.username === 'anonymous';
-                    });
-
-                    console.log('Filtered predictions for anonymous user:', userPredictions.length);
-
-                    // Also merge with any local predictions (for offline support)
-                    const localPredictions = localStorage.getItem('userPredictions');
-                    if (localPredictions) {
-                        const localData = JSON.parse(localPredictions);
-                        // Add local predictions that aren't in the API response
-                        localData.forEach(localPred => {
-                            if (!userPredictions.find(p => p.id === localPred.id)) {
-                                userPredictions.push(localPred);
-                            }
-                        });
-                    }
-                } else {
-                    // Fallback to localStorage if API fails
-                    console.warn('Failed to load predictions from API, using localStorage');
-                    const saved = localStorage.getItem('userPredictions');
-                    userPredictions = saved ? JSON.parse(saved) : [];
-                }
-
-                console.log('Displaying stats and predictions...');
-                displayStats();
-                displayPredictions();
-                console.log('Hiding loading state...');
-                hideLoadingState();
-
-            } catch (error) {
-                console.error('Error loading predictions:', error);
-                // Fallback to localStorage
-                const saved = localStorage.getItem('userPredictions');
-                userPredictions = saved ? JSON.parse(saved) : [];
-                displayStats();
-                displayPredictions();
-                hideLoadingState();
-            }
-        }
-
-        function loadTestData() {
-            console.log('Loading test data...');
-            showLoadingState();
-
-            // Use the exact same data structure as the API
-            userPredictions = [
-                {
-                    "id": 1,
-                    "symbol": "AAPL",
-                    "stock_name": "AAPL Stock",
-                    "market_type": "us_stock",
-                    "current_price": 238.71,
-                    "predicted_price": 230.6,
-                    "prediction_date": "2025-09-16T07:53:39.455561+00:00",
-                    "target_date": "2025-09-23T15:53:39.454585+00:00",
-                    "duration_days": 7,
-                    "status": "pending",
-                    "is_completed": false,
-                    "user": {
-                        "username": "Anonymous",
-                        "is_authenticated": false
-                    },
-                    "created_at": "2025-09-16T15:53:39.524229+00:00",
-                    "views_count": 0,
-                    "likes_count": 0,
-                    "comments_count": 0
-                },
-                {
-                    "id": 2,
-                    "symbol": "BTC",
-                    "stock_name": "BTC Stock",
-                    "market_type": "crypto",
-                    "current_price": 51.25,
-                    "predicted_price": 55.16,
-                    "prediction_date": "2025-09-16T08:25:40.948196+00:00",
-                    "target_date": "2025-09-30T16:25:40.947020+00:00",
-                    "duration_days": 14,
-                    "status": "pending",
-                    "is_completed": false,
-                    "user": {
-                        "username": "Anonymous",
-                        "is_authenticated": false
-                    },
-                    "created_at": "2025-09-16T16:25:40.962136+00:00",
-                    "views_count": 0,
-                    "likes_count": 0,
-                    "comments_count": 0
-                }
-            ];
-
-            console.log('Test data loaded:', userPredictions.length, 'predictions');
-            displayStats();
-            displayPredictions();
-            hideLoadingState();
-        }
-
-        function showLoadingState() {
-            const container = document.getElementById('predictionsContainer');
-            container.innerHTML = `
-                <div class="text-center py-16">
-                    <div class="w-24 h-24 mx-auto mb-6 bg-tv-card border border-tv-border rounded-2xl flex items-center justify-center">
-                        <i class="fas fa-spinner fa-spin text-4xl text-tv-text-secondary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-tv-text mb-2">예측 목록 로딩 중...</h3>
-                    <p class="text-tv-text-secondary">잠시만 기다려주세요.</p>
-                </div>
-            `;
-        }
-
-        function hideLoadingState() {
-            // Remove loading state - the container will be populated by displayPredictions()
-            console.log('Hiding loading state');
-        }
-
-        function displayStats() {
-            console.log('displayStats called');
-            try {
-                const stats = calculateStats();
-                console.log('Calculated stats:', stats);
-                const container = document.getElementById('statsOverview');
-
-                container.innerHTML = `
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-chart-line text-tv-blue text-2xl"></i>
-                            <span class="text-sm ${stats.totalChange >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
-                                ${stats.totalChange >= 0 ? '+' : ''}${stats.totalChange.toFixed(1)}%
-                            </span>
-                        </div>
-                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalCount}</div>
-                        <div class="text-sm text-tv-text-secondary">총 예측 수</div>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-target text-tv-green text-2xl"></i>
-                            <span class="text-sm text-tv-green bg-tv-green bg-opacity-20 px-2 py-1 rounded">↑</span>
-                        </div>
-                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.accuracy.toFixed(1)}%</div>
-                        <div class="text-sm text-tv-text-secondary">정확도</div>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-trophy text-tv-blue text-2xl"></i>
-                            <span class="text-sm text-tv-text-secondary">#${stats.ranking}</span>
-                        </div>
-                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.successStreak}</div>
-                        <div class="text-sm text-tv-text-secondary">연속 성공</div>
-                    </div>
-
-                    <div class="bg-tv-card border border-tv-border rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-2">
-                            <i class="fas fa-coins text-tv-green text-2xl"></i>
-                            <span class="text-sm ${stats.totalReturn >= 0 ? 'text-tv-green bg-tv-green' : 'text-tv-red bg-tv-red'} bg-opacity-20 px-2 py-1 rounded">
-                                ${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%
-                            </span>
-                        </div>
-                        <div class="text-2xl font-bold text-tv-text mb-1">${stats.totalReturn >= 0 ? '+' : ''}${stats.totalReturn.toFixed(1)}%</div>
-                        <div class="text-sm text-tv-text-secondary">총 수익률</div>
-                    </div>
-                `;
-                console.log('Stats displayed successfully');
-            } catch (error) {
-                console.error('Error displaying stats:', error);
-                const container = document.getElementById('statsOverview');
-                container.innerHTML = '<div class="text-center py-4 text-tv-text">통계를 불러오는 중 오류가 발생했습니다.</div>';
-            }
-        }
-
-        function calculateStats() {
-            if (userPredictions.length === 0) {
-                return {
-                    totalCount: 0,
-                    accuracy: 0,
-                    totalReturn: 0,
-                    successStreak: 0,
-                    ranking: 999,
-                    totalChange: 0
-                };
-            }
-
-            // Filter completed predictions (either status='completed' or past target date)
-            const completed = userPredictions.filter(p => {
-                const targetDate = new Date(p.target_date);
-                const currentDate = new Date();
-                return p.status === 'completed' || currentDate >= targetDate;
-            });
-
-            // Calculate successful predictions
-            const successful = completed.filter(p => {
-                if (p.actual_price) {
-                    // Use actual accuracy if available
-                    return p.accuracy_percentage && parseFloat(p.accuracy_percentage) > 70;
-                } else {
-                    // For predictions without actual_price, consider direction accuracy
-                    const predicted = parseFloat(p.predicted_price);
-                    const current = parseFloat(p.current_price);
-                    // This is a simplified success metric - could be enhanced
-                    return Math.abs(predicted - current) / current < 0.1; // Within 10%
-                }
-            });
-
-            // Calculate total return/profit
-            const totalReturn = completed.reduce((sum, p) => {
-                if (p.profit_rate) {
-                    return sum + parseFloat(p.profit_rate);
-                }
-                return sum;
-            }, 0);
-
-            // Calculate average change
-            const avgChange = completed.length > 0 ? totalReturn / completed.length : 0;
-
-            return {
-                totalCount: userPredictions.length,
-                accuracy: completed.length > 0 ? (successful.length / completed.length) * 100 : 0,
-                totalReturn: totalReturn,
-                successStreak: calculateSuccessStreak(completed, successful),
-                ranking: Math.floor(Math.random() * 50) + 1, // Simulated ranking - could be real
-                totalChange: avgChange
-            };
-        }
-
-        function calculateSuccessStreak(completed = null, successful = null) {
-            if (!completed) {
-                completed = userPredictions.filter(p => {
-                    const targetDate = new Date(p.target_date);
-                    const currentDate = new Date();
-                    return p.status === 'completed' || currentDate >= targetDate;
-                });
-            }
-
-            if (!successful) {
-                successful = completed.filter(p => {
-                    if (p.actual_price) {
-                        return p.accuracy_percentage && parseFloat(p.accuracy_percentage) > 70;
-                    } else {
-                        const predicted = parseFloat(p.predicted_price);
-                        const current = parseFloat(p.current_price);
-                        return Math.abs(predicted - current) / current < 0.1;
-                    }
-                });
-            }
-
-            let streak = 0;
-            const sortedCompleted = completed.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-            for (const prediction of sortedCompleted) {
-                const isSuccessful = successful.some(s => s.id === prediction.id);
-                if (isSuccessful) {
-                    streak++;
-                } else {
-                    break;
-                }
-            }
-
-            return streak;
-        }
-
-        function displayPredictions() {
-            console.log('displayPredictions called with', userPredictions.length, 'predictions');
-            const tableBody = document.getElementById('predictionsTableBody');
-            const emptyState = document.getElementById('emptyState');
-
-            // Check if table body exists
-            if (!tableBody) {
-                console.error('predictionsTableBody not found');
-                return;
-            }
-
-            if (userPredictions.length === 0) {
-                console.log('No predictions, showing empty state');
-                tableBody.innerHTML = '';
-                emptyState.style.display = 'block';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            console.log('Displaying predictions');
-            emptyState.style.display = 'none';
-            emptyState.classList.add('hidden');
-
-            try {
-                const html = userPredictions.map(prediction => createPredictionRow(prediction)).join('');
-                console.log('Generated HTML length:', html.length);
-                tableBody.innerHTML = html;
-                console.log('Predictions displayed successfully');
-            } catch (error) {
-                console.error('Error creating prediction rows:', error);
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="px-6 py-8 text-center">
-                            <p class="text-tv-text">예측을 표시하는 중 오류가 발생했습니다.</p>
-                            <button onclick="loadUserPredictions()" class="mt-4 bg-tv-blue text-white px-4 py-2 rounded">
-                                다시 시도
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        function createPredictionRow(prediction) {
-            console.log('Creating prediction row for:', prediction);
-
-            try {
-                // Convert API data format to display format
-                const currentDate = new Date();
-                const targetDate = new Date(prediction.target_date);
-                const predictionDate = new Date(prediction.prediction_date);
-                const isCompleted = currentDate >= targetDate;
-
-                console.log('Dates parsed:', {
-                    current: currentDate,
-                    target: targetDate,
-                    prediction: predictionDate,
-                    isCompleted: isCompleted
-                });
-
-                // Calculate days left or days since completion
-                const daysDiff = Math.ceil((targetDate - currentDate) / (1000 * 60 * 60 * 24));
-                const daysLeft = daysDiff > 0 ? daysDiff : 0;
-
-                // Determine status and success
-                let status = prediction.status;
-                if (isCompleted && status === 'pending') {
-                    status = 'completed';
-                }
-
-                console.log('Status calculated:', status, 'Days left:', daysLeft);
-
-                // Calculate if prediction was successful (if we have actual price)
-                let isSuccessful = false;
-                if (prediction.actual_price) {
-                    const predicted = parseFloat(prediction.predicted_price);
-                    const actual = parseFloat(prediction.actual_price);
-                    const current = parseFloat(prediction.current_price);
-
-                    // Success if the prediction was in the right direction
-                    if (predicted > current && actual >= predicted * 0.95) {
-                        isSuccessful = true;
-                    } else if (predicted < current && actual <= predicted * 1.05) {
-                        isSuccessful = true;
-                    }
-                }
-
-                const statusConfig = {
-                    'pending': { class: 'bg-tv-blue bg-opacity-20 text-tv-blue', text: '진행중', icon: 'fa-clock' },
-                    'completed': {
-                        class: isSuccessful ? 'bg-tv-green bg-opacity-20 text-tv-green' : 'bg-tv-red bg-opacity-20 text-tv-red',
-                        text: isSuccessful ? '성공' : '완료',
-                        icon: isSuccessful ? 'fa-check' : 'fa-chart-line'
-                    },
-                    'cancelled': { class: 'bg-tv-text-secondary bg-opacity-20 text-tv-text-secondary', text: '취소됨', icon: 'fa-ban' }
-                };
-
-                const config = statusConfig[status] || statusConfig.pending;
-
-                // Format dates
-                const predictionDateStr = predictionDate.toLocaleDateString('ko-KR');
-                const targetDateStr = targetDate.toLocaleDateString('ko-KR');
-
-                // Determine stock icon based on market type
-                let stockIcon = 'fa-chart-line';
-                if (prediction.market_type === 'crypto') {
-                    stockIcon = 'fa-bitcoin';
-                } else if (prediction.market_type === 'us_stock') {
-                    stockIcon = 'fa-building';
-                } else if (prediction.market_type === 'kr_stock') {
-                    stockIcon = 'fa-won-sign';
-                }
-
-                // Calculate price change percentage
-                const priceChange = ((parseFloat(prediction.predicted_price) - parseFloat(prediction.current_price)) / parseFloat(prediction.current_price)) * 100;
-                const priceChangeClass = priceChange >= 0 ? 'text-tv-green' : 'text-tv-red';
-                const priceChangeText = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%`;
-
-                return `
-                <tr class="hover:bg-tv-light transition-colors">
-                    <!-- 종목 -->
-                    <td class="px-6 py-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-tv-blue bg-opacity-20 rounded-lg flex items-center justify-center">
-                                <i class="fas ${stockIcon} text-tv-blue text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-tv-text">${prediction.symbol}</div>
-                                <div class="text-sm text-tv-text-secondary">${prediction.stock_name}</div>
-                            </div>
-                        </div>
-                    </td>
-                    
-                    <!-- 예측일 -->
-                    <td class="px-6 py-4">
-                        <div class="text-tv-text">${predictionDateStr}</div>
-                        <div class="text-sm text-tv-text-secondary">${prediction.user.username}</div>
-                    </td>
-                    
-                    <!-- 기준가격 -->
-                    <td class="px-6 py-4 text-right">
-                        <div class="font-semibold text-tv-text">$${parseFloat(prediction.current_price).toLocaleString()}</div>
-                    </td>
-                    
-                    <!-- 예측가격 -->
-                    <td class="px-6 py-4 text-right">
-                        <div class="font-semibold text-tv-text">$${parseFloat(prediction.predicted_price).toLocaleString()}</div>
-                        ${prediction.actual_price ? `<div class="text-sm ${isSuccessful ? 'text-tv-green' : 'text-tv-red'}">실제: $${parseFloat(prediction.actual_price).toLocaleString()}</div>` : ''}
-                    </td>
-                    
-                    <!-- 등락률 -->
-                    <td class="px-6 py-4 text-right">
-                        <div class="font-semibold ${priceChangeClass}">${priceChangeText}</div>
-                        ${prediction.accuracy_percentage ? `<div class="text-sm text-tv-text-secondary">정확도: ${parseFloat(prediction.accuracy_percentage).toFixed(1)}%</div>` : ''}
-                    </td>
-                    
-                    <!-- 목표일 -->
-                    <td class="px-6 py-4 text-center">
-                        <div class="text-tv-text">${targetDateStr}</div>
-                        ${status === 'pending' && daysLeft > 0 ? `<div class="text-sm text-tv-blue">D-${daysLeft}</div>` : ''}
-                    </td>
-                    
-                    <!-- 상태 -->
-                    <td class="px-6 py-4 text-center">
-                        <span class="status-badge ${config.class} px-3 py-1 rounded-full text-sm font-medium">
-                            <i class="fas ${config.icon}"></i>${config.text}
-                        </span>
-                    </td>
-                    
-                    <!-- 동작 -->
-                    <td class="px-6 py-4 text-center">
-                        <div class="flex items-center justify-center space-x-2">
-                            <button onclick="viewPredictionDetails('${prediction.id}')"
-                                class="text-tv-blue hover:text-blue-600 text-sm font-medium">상세보기</button>
-                            ${status === 'pending' ? `
-                                <button onclick="editPrediction('${prediction.id}')"
-                                    class="text-tv-text-secondary hover:text-tv-text text-sm font-medium">수정</button>
-                            ` : ''}
-                        </div>
-                    </td>
-                </tr>
-            `;
-
-            } catch (error) {
-                console.error('Error creating prediction row:', error, 'for prediction:', prediction);
-                return `
-                    <tr>
-                        <td colspan="8" class="px-6 py-4 text-center">
-                            <div class="text-tv-text">
-                                <p>예측 행을 생성하는 중 오류가 발생했습니다.</p>
-                                <p class="text-sm text-tv-text-secondary mt-2">ID: ${prediction.id}</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        function setupEventListeners() {
-            // Filter listeners
-            document.getElementById('statusFilter').addEventListener('change', filterPredictions);
-            document.getElementById('periodFilter').addEventListener('change', filterPredictions);
-        }
-
-        function filterPredictions() {
-            const statusFilter = document.getElementById('statusFilter').value;
-            const periodFilter = document.getElementById('periodFilter').value;
-
-            // Apply filters and re-display
-            let filtered = userPredictions;
-
-            if (statusFilter !== 'all') {
-                filtered = filtered.filter(p => p.status === statusFilter);
-            }
-
-            // Period filtering logic would go here
-
-            displayFilteredPredictions(filtered);
-        }
-
-        function displayFilteredPredictions(predictions) {
-            const tableBody = document.getElementById('predictionsTableBody');
-            const emptyState = document.getElementById('emptyState');
-
-            // Check if elements exist
-            if (!tableBody) {
-                console.error('predictionsTableBody not found in displayFilteredPredictions');
-                return;
-            }
-
-            if (predictions.length === 0) {
-                tableBody.innerHTML = '';
-                emptyState.style.display = 'block';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.style.display = 'none';
-            emptyState.classList.add('hidden');
-            
-            const html = predictions.map(prediction => createPredictionRow(prediction)).join('');
-            tableBody.innerHTML = html;
-        }
-
-        // Action functions
-        function createNewPrediction() {
-            window.location.href = 'prediction.html';
-        }
-
-        function editPrediction(id) {
-            showNotification('예측 수정 기능을 준비 중입니다', 'info');
-        }
-
-        function cancelPrediction(id) {
-            if (confirm('정말로 이 예측을 취소하시겠습니까?')) {
-                const prediction = userPredictions.find(p => p.id === id);
-                if (prediction) {
-                    prediction.status = 'cancelled';
-                    saveUserPredictions();
-                    loadUserPredictions();
-                    showNotification('예측이 취소되었습니다', 'success');
-                }
-            }
-        }
-
-        function viewPredictionDetails(id) {
-            showNotification('상세 분석 기능을 준비 중입니다', 'info');
-        }
-
-        function loadMorePredictions() {
-            showNotification('더 많은 예측을 불러오는 중...', 'info');
-        }
-
-        function saveUserPredictions() {
-            localStorage.setItem('userPredictions', JSON.stringify(userPredictions));
-        }
-
-        // Newsletter subscription
-        function subscribeNewsletter(event) {
-            event.preventDefault();
-            const email = document.getElementById('newsletterEmail').value;
-            const agree = document.getElementById('agreeMarketing').checked;
-
-            if (!email) {
-                showNotification('이메일 주소를 입력해주세요', 'error');
-                return;
-            }
-
-            if (!agree) {
-                showNotification('마케팅 정보 수신에 동의해주세요', 'error');
-                return;
-            }
-
-            // Simulate subscription
-            showNotification('뉴스레터 구독이 완료되었습니다!', 'success');
-            document.getElementById('newsletterEmail').value = '';
-            document.getElementById('agreeMarketing').checked = false;
-        }
-
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        }
-
-        // Modal functions
-        function showLoginModal() {
-            const modal = document.getElementById('loginModal');
-            const content = document.getElementById('loginModalContent');
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function hideLoginModal() {
-            const modal = document.getElementById('loginModal');
-            const content = document.getElementById('loginModalContent');
-
-            content.classList.add('scale-95', 'opacity-0');
-            content.classList.remove('scale-100', 'opacity-100');
-
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = '';
-            }, 300);
-        }
-
-        function togglePasswordVisibility(inputId) {
-            const input = document.getElementById(inputId);
-            const eyeIcon = document.getElementById(inputId + 'Eye');
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                eyeIcon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                eyeIcon.className = 'fas fa-eye';
-            }
-        }
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 ${type === 'success' ? 'bg-tv-green text-white' :
-                type === 'error' ? 'bg-tv-red text-white' :
-                    'bg-tv-blue text-white'
-                }`;
-            notification.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' :
-                    type === 'error' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                }"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.classList.remove('translate-x-full'), 100);
-
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
-        }
-    </script>
+<body class="home-body">
+	<div class="home-desktop desktop-only">
+		<header class="dashboard-top-bar">
+			<div class="top-brand">
+				<div class="brand-icon">
+					<i class="fas fa-user-chart"></i>
+				</div>
+				<div>
+					<p class="brand-eyebrow">개인 투자 성과</p>
+					<h1 class="brand-title">내 예측 보드</h1>
+				</div>
+			</div>
+			<nav class="top-nav-links">
+				<a href="index.html" class="top-nav-link">
+					<i class="fas fa-home"></i>
+					<span>홈</span>
+				</a>
+				<a href="charts.html" class="top-nav-link">
+					<i class="fas fa-chart-area"></i>
+					<span>차트</span>
+				</a>
+				<a href="prediction.html" class="top-nav-link">
+					<i class="fas fa-magic"></i>
+					<span>예측하기</span>
+				</a>
+				<a href="my-predictions.html" class="top-nav-link active">
+					<i class="fas fa-user-chart"></i>
+					<span>내 예측</span>
+				</a>
+				<a href="ranking.html" class="top-nav-link">
+					<i class="fas fa-trophy"></i>
+					<span>랭킹</span>
+				</a>
+				<a href="events.html" class="top-nav-link">
+					<i class="fas fa-calendar-star"></i>
+					<span>이벤트</span>
+				</a>
+			</nav>
+			<div class="top-actions">
+				<button id="refreshPredictionsBtn" class="ghost-btn">
+					<i class="fas fa-rotate"></i>
+					새로고침
+				</button>
+				<button id="newPredictionBtn" class="primary-btn">
+					<i class="fas fa-plus"></i>
+					새 예측 작성
+				</button>
+			</div>
+		</header>
+
+		<section class="home-dashboard predictions-dashboard">
+			<div id="statsOverview" class="home-metrics"></div>
+
+			<div class="home-main-grid predictions-grid">
+				<div class="predictions-table-card">
+					<div class="card-heading">
+						<div>
+							<h2>예측 내역</h2>
+							<p>제출한 예측들의 진행 상황을 추적하세요.</p>
+						</div>
+						<div class="heading-actions">
+							<button id="testDataBtn" class="ghost-btn">
+								<i class="fas fa-flask"></i>
+								테스트 데이터
+							</button>
+						</div>
+					</div>
+
+					<div class="predictions-filters">
+						<div class="filter-group">
+							<label for="statusFilter">상태</label>
+							<select id="statusFilter" class="filter-select">
+								<option value="all">전체</option>
+								<option value="pending">진행중</option>
+								<option value="completed">완료</option>
+								<option value="cancelled">취소됨</option>
+							</select>
+						</div>
+						<div class="filter-group">
+							<label for="periodFilter">기간</label>
+							<select id="periodFilter" class="filter-select">
+								<option value="all">전체</option>
+								<option value="week">이번 주</option>
+								<option value="month">이번 달</option>
+								<option value="quarter">최근 3개월</option>
+							</select>
+						</div>
+						<div class="filter-group">
+							<label for="symbolFilter">종목</label>
+							<select id="symbolFilter" class="filter-select">
+								<option value="all">전체</option>
+								<option value="crypto">암호화폐</option>
+								<option value="us_stock">미국 주식</option>
+								<option value="kr_stock">국내 주식</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="predictions-table-wrapper">
+						<table class="predictions-table">
+							<thead>
+								<tr>
+									<th>종목</th>
+									<th>예측일</th>
+									<th>기준가</th>
+									<th>예측가</th>
+									<th>변동률</th>
+									<th>목표일</th>
+									<th>상태</th>
+									<th>동작</th>
+								</tr>
+							</thead>
+							<tbody id="predictionsTableBody"></tbody>
+						</table>
+						<div id="predictionsLoading" class="predictions-loading hidden">
+							<i class="fas fa-spinner fa-spin"></i>
+							데이터를 불러오는 중입니다...
+						</div>
+						<div id="emptyState" class="predictions-empty hidden">
+							<div class="empty-icon">
+								<i class="fas fa-user-clock"></i>
+							</div>
+							<h3>등록된 예측이 없습니다</h3>
+							<p>첫 번째 예측을 등록하고 실시간 성과를 확인해보세요.</p>
+							<button class="primary-btn" id="emptyStateAction">
+								<i class="fas fa-pen"></i>
+								예측 만들기
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<aside class="home-order-card predictions-form-card">
+					<div class="order-header">
+						<h3>빠른 예측 등록</h3>
+						<span>AI 추천 데이터를 기반으로 빠르게 제출하세요.</span>
+					</div>
+					<form class="order-form" id="quickPredictionForm">
+						<label class="order-label" for="quickAsset">자산 선택</label>
+						<select id="quickAsset" class="order-input">
+							<option value="BTC" selected>BTC / USD</option>
+							<option value="ETH">ETH / USD</option>
+							<option value="KOSPI">KOSPI 200</option>
+							<option value="AAPL">AAPL</option>
+						</select>
+
+						<label class="order-label">방향</label>
+						<div class="direction-toggle">
+							<button type="button" class="direction-btn active" data-direction="up">
+								<i class="fas fa-arrow-trend-up"></i>
+								상승
+							</button>
+							<button type="button" class="direction-btn" data-direction="down">
+								<i class="fas fa-arrow-trend-down"></i>
+								하락
+							</button>
+						</div>
+
+						<label class="order-label" for="quickTarget">목표 가격</label>
+						<div class="order-input-group">
+							<span>₩</span>
+							<input id="quickTarget" class="order-input" type="number" placeholder="43,500,000">
+						</div>
+
+						<label class="order-label" for="quickPeriod">예측 기간</label>
+						<select id="quickPeriod" class="order-input">
+							<option value="1D">1일</option>
+							<option value="3D">3일</option>
+							<option value="1W" selected>1주일</option>
+							<option value="1M">1개월</option>
+						</select>
+
+						<button type="submit" class="order-submit">
+							<i class="fas fa-meteor"></i>
+							예측 제출
+						</button>
+					</form>
+					<div class="order-footnote">
+						<p><i class="fas fa-shield-alt"></i> 제출된 예측은 대시보드와 랭킹에 즉시 반영됩니다.</p>
+						<p><i class="fas fa-clock"></i> 평균 검증 시간 2분 미만 · 신뢰도 지수 94%</p>
+					</div>
+				</aside>
+			</div>
+
+			<div class="home-bottom-grid">
+				<div class="home-prediction-board">
+					<div class="board-header">
+						<div>
+							<h3>최근 예측 활동</h3>
+							<span>AI가 감지한 성과 하이라이트</span>
+						</div>
+						<button class="board-action" id="exportPredictionsBtn">데이터 내보내기</button>
+					</div>
+					<table class="board-table" id="summaryBoard">
+						<thead>
+							<tr>
+								<th>사용자</th>
+								<th>예측</th>
+								<th>기간</th>
+								<th>결과</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<div class="board-user">
+										<span class="avatar">MJ</span>
+										<div>
+											<span class="board-name">마켓저니</span>
+											<span class="board-meta">프리미엄</span>
+										</div>
+									</div>
+								</td>
+								<td>BTC / USD</td>
+								<td>3일</td>
+								<td class="positive">+5.2%</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="board-user">
+										<span class="avatar">SK</span>
+										<div>
+											<span class="board-name">스윙킹</span>
+											<span class="board-meta">챌린지</span>
+										</div>
+									</div>
+								</td>
+								<td>KOSPI 200</td>
+								<td>1주</td>
+								<td class="negative">-1.8%</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="board-user">
+										<span class="avatar">AI</span>
+										<div>
+											<span class="board-name">AI Rocket</span>
+											<span class="board-meta">AI 추천</span>
+										</div>
+									</div>
+								</td>
+								<td>ETH / USD</td>
+								<td>5일</td>
+								<td class="positive">+3.9%</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="home-news-card">
+					<div class="board-header">
+						<div>
+							<h3>AI 알림 & 뉴스</h3>
+							<span>포지션 유지와 리밸런싱에 참고하세요.</span>
+						</div>
+						<button class="board-action" id="refreshNewsBtn">업데이트</button>
+					</div>
+					<ul class="news-list" id="newsList">
+						<li>
+							<div>
+								<span class="news-title">AI: BTC 장중 변동성 12% 감소, 포지션 유지 권장</span>
+								<span class="news-meta">8분 전 · AI 인사이트</span>
+							</div>
+							<span class="news-tag positive">안정</span>
+						</li>
+						<li>
+							<div>
+								<span class="news-title">국내 반도체 섹터 외국인 순매수 확대</span>
+								<span class="news-meta">32분 전 · 국내 증시</span>
+							</div>
+							<span class="news-tag neutral">중립</span>
+						</li>
+						<li>
+							<div>
+								<span class="news-title">AI 예측 모델 업데이트, 평균 정확도 1.8% 상승</span>
+								<span class="news-meta">1시간 전 · 시스템공지</span>
+							</div>
+							<span class="news-tag positive">호재</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<nav class="mobile-bottom-nav mobile-only">
+		<a href="index.html" class="mobile-nav-item">
+			<i class="fas fa-home"></i>
+			<span>홈</span>
+		</a>
+		<a href="charts.html" class="mobile-nav-item">
+			<i class="fas fa-chart-area"></i>
+			<span>차트</span>
+		</a>
+		<a href="prediction.html" class="mobile-nav-item">
+			<i class="fas fa-magic"></i>
+			<span>예측</span>
+		</a>
+		<a href="my-predictions.html" class="mobile-nav-item active">
+			<i class="fas fa-user-chart"></i>
+			<span>내 예측</span>
+		</a>
+	</nav>
+
+	<div id="predictionToast" class="home-toast"></div>
+
+	<script>
+		const state = {
+			predictions: [],
+			filtered: [],
+			currentFilters: {
+				status: 'all',
+				period: 'all',
+				symbol: 'all'
+			}
+		};
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const refreshBtn = document.getElementById('refreshPredictionsBtn');
+			const testDataBtn = document.getElementById('testDataBtn');
+			const emptyStateAction = document.getElementById('emptyStateAction');
+			const newPredictionBtn = document.getElementById('newPredictionBtn');
+			const quickForm = document.getElementById('quickPredictionForm');
+
+			attachFilterListeners();
+
+			refreshBtn?.addEventListener('click', loadUserPredictions);
+			testDataBtn?.addEventListener('click', loadTestData);
+			emptyStateAction?.addEventListener('click', handleCreatePrediction);
+			newPredictionBtn?.addEventListener('click', handleCreatePrediction);
+
+			quickForm?.addEventListener('submit', event => {
+				event.preventDefault();
+				handleCreatePrediction();
+			});
+
+			document.querySelectorAll('.direction-btn').forEach(btn => {
+				btn.addEventListener('click', () => {
+					document.querySelectorAll('.direction-btn').forEach(b => b.classList.remove('active'));
+					btn.classList.add('active');
+				});
+			});
+
+			loadUserPredictions();
+		});
+
+		function attachFilterListeners() {
+			const statusFilter = document.getElementById('statusFilter');
+			const periodFilter = document.getElementById('periodFilter');
+			const symbolFilter = document.getElementById('symbolFilter');
+
+			statusFilter?.addEventListener('change', event => {
+				state.currentFilters.status = event.target.value;
+				applyFilters();
+			});
+
+			periodFilter?.addEventListener('change', event => {
+				state.currentFilters.period = event.target.value;
+				applyFilters();
+			});
+
+			symbolFilter?.addEventListener('change', event => {
+				state.currentFilters.symbol = event.target.value;
+				applyFilters();
+			});
+		}
+
+		async function loadUserPredictions() {
+			showLoadingState();
+
+			try {
+				const response = await fetch('/api/charts/predictions/all/');
+				if (!response.ok) {
+					throw new Error(`API error: ${response.status}`);
+				}
+
+				const payload = await response.json();
+				const allPredictions = payload.predictions || [];
+				state.predictions = allPredictions.filter(item => item.user?.username?.toLowerCase() === 'anonymous');
+			} catch (error) {
+				console.warn('Falling back to local predictions:', error.message);
+				const stored = localStorage.getItem('userPredictions');
+				state.predictions = stored ? JSON.parse(stored) : [];
+			}
+
+			hideLoadingState();
+			applyFilters();
+			renderStats();
+		}
+
+		function loadTestData() {
+			state.predictions = [
+				{
+					id: 'demo-1',
+					symbol: 'BTC',
+					stock_name: 'Bitcoin Spot',
+					market_type: 'crypto',
+					current_price: 42850,
+					predicted_price: 45200,
+					prediction_date: '2025-10-07T09:15:00Z',
+					target_date: '2025-10-14T09:15:00Z',
+					duration_days: 7,
+					status: 'pending',
+					created_at: '2025-10-07T09:15:00Z',
+					user: { username: 'anonymous' }
+				},
+				{
+					id: 'demo-2',
+					symbol: 'KOSPI200',
+					stock_name: 'KOSPI 200',
+					market_type: 'kr_stock',
+					current_price: 312.4,
+					predicted_price: 318.7,
+					prediction_date: '2025-09-28T02:00:00Z',
+					target_date: '2025-10-05T02:00:00Z',
+					duration_days: 7,
+					status: 'completed',
+					profit_rate: 2.1,
+					created_at: '2025-09-28T02:00:00Z',
+					user: { username: 'anonymous' }
+				},
+				{
+					id: 'demo-3',
+					symbol: 'AAPL',
+					stock_name: 'Apple Inc.',
+					market_type: 'us_stock',
+					current_price: 189.2,
+					predicted_price: 182.6,
+					prediction_date: '2025-09-20T13:40:00Z',
+					target_date: '2025-09-27T13:40:00Z',
+					duration_days: 7,
+					status: 'completed',
+					profit_rate: -3.4,
+					created_at: '2025-09-20T13:40:00Z',
+					user: { username: 'anonymous' }
+				}
+			];
+
+			hideLoadingState();
+			applyFilters();
+			renderStats();
+			showToast('테스트 데이터가 로드되었습니다.');
+		}
+
+		function applyFilters() {
+			const { status, period, symbol } = state.currentFilters;
+			const now = new Date();
+
+			state.filtered = state.predictions.filter(prediction => {
+				if (status !== 'all' && prediction.status !== status) {
+					return false;
+				}
+
+				if (symbol !== 'all' && prediction.market_type !== symbol) {
+					return false;
+				}
+
+				if (period !== 'all') {
+					const target = new Date(prediction.target_date || prediction.prediction_date);
+					const diff = (now - target) / (1000 * 60 * 60 * 24);
+
+					if (period === 'week' && diff > 7) return false;
+					if (period === 'month' && diff > 30) return false;
+					if (period === 'quarter' && diff > 90) return false;
+				}
+
+				return true;
+			});
+
+			renderPredictions();
+		}
+
+		function renderStats() {
+			const container = document.getElementById('statsOverview');
+
+			if (!container) return;
+
+			if (state.predictions.length === 0) {
+				container.innerHTML = `
+					<div class="metric-card primary">
+						<div class="metric-label">총 예측 수</div>
+						<div class="metric-value">0</div>
+						<div class="metric-sub">첫 예측을 등록해보세요.</div>
+					</div>
+					<div class="metric-card">
+						<div class="metric-label">정확도</div>
+						<div class="metric-value">0%</div>
+						<div class="metric-sub">완료된 예측이 필요합니다.</div>
+					</div>
+					<div class="metric-card">
+						<div class="metric-label">누적 수익률</div>
+						<div class="metric-value">0%</div>
+						<div class="metric-sub">데이터가 수집되면 표시됩니다.</div>
+					</div>
+					<div class="metric-card">
+						<div class="metric-label">연속 성공</div>
+						<div class="metric-value">0</div>
+						<div class="metric-sub">성공 기록을 시작해보세요.</div>
+					</div>
+				`;
+				return;
+			}
+
+			const completed = state.predictions.filter(p => p.status === 'completed');
+			const successful = completed.filter(p => (p.profit_rate || 0) > 0);
+			const totalReturn = completed.reduce((sum, p) => sum + (parseFloat(p.profit_rate) || 0), 0);
+
+			container.innerHTML = `
+				<div class="metric-card primary">
+					<div class="metric-label">총 예측 수</div>
+					<div class="metric-value">${state.predictions.length}</div>
+					<div class="metric-change ${state.filtered.length >= state.predictions.length ? 'positive' : ''}">
+						실시간 동기화 완료
+					</div>
+				</div>
+				<div class="metric-card">
+					<div class="metric-label">정확도</div>
+					<div class="metric-value">${completed.length ? ((successful.length / completed.length) * 100).toFixed(1) : '0.0'}%</div>
+					<div class="metric-sub">완료된 예측 기준</div>
+				</div>
+				<div class="metric-card">
+					<div class="metric-label">누적 수익률</div>
+					<div class="metric-value ${totalReturn >= 0 ? 'positive-text' : 'negative-text'}">${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(1)}%</div>
+					<div class="metric-sub">완료된 예측 합산</div>
+				</div>
+				<div class="metric-card">
+					<div class="metric-label">연속 성공</div>
+					<div class="metric-value">${calculateSuccessStreak()}</div>
+					<div class="metric-sub">최근 제출 기준</div>
+				</div>
+			`;
+		}
+
+		function calculateSuccessStreak() {
+			const completed = [...state.predictions]
+				.filter(p => p.status === 'completed')
+				.sort((a, b) => new Date(b.target_date || b.created_at) - new Date(a.target_date || a.created_at));
+
+			let streak = 0;
+			for (const prediction of completed) {
+				if ((prediction.profit_rate || 0) > 0) {
+					streak += 1;
+				} else {
+					break;
+				}
+			}
+			return streak;
+		}
+
+		function renderPredictions() {
+			const tableBody = document.getElementById('predictionsTableBody');
+			const emptyState = document.getElementById('emptyState');
+
+			if (!tableBody) return;
+
+			if (state.filtered.length === 0) {
+				tableBody.innerHTML = '';
+				emptyState?.classList.remove('hidden');
+				return;
+			}
+
+			emptyState?.classList.add('hidden');
+			const rows = state.filtered.map(renderPredictionRow).join('');
+			tableBody.innerHTML = rows;
+		}
+
+		function renderPredictionRow(prediction) {
+			const predictionDate = new Date(prediction.prediction_date);
+			const targetDate = new Date(prediction.target_date || prediction.prediction_date);
+			const now = new Date();
+			const priceChange = calculatePriceChange(prediction);
+
+			const directionClass = priceChange >= 0 ? 'positive-text' : 'negative-text';
+			const statusConfig = resolveStatusConfig(prediction, now >= targetDate);
+
+			return `
+				<tr>
+					<td>
+						<div class="table-symbol">
+							<span class="symbol-tag">${prediction.symbol}</span>
+							<span class="symbol-meta">${prediction.stock_name || '&middot;'}</span>
+						</div>
+					</td>
+					<td>
+						<div class="table-col">
+							<strong>${formatDate(predictionDate)}</strong>
+							<span>${prediction.user?.username || 'anonymous'}</span>
+						</div>
+					</td>
+					<td class="numeric">${formatCurrency(prediction.current_price)}</td>
+					<td class="numeric">${formatCurrency(prediction.predicted_price)}</td>
+					<td class="numeric ${directionClass}">
+						${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}%
+						${prediction.accuracy_percentage ? `<span class="subtext">정확도 ${parseFloat(prediction.accuracy_percentage).toFixed(1)}%</span>` : ''}
+					</td>
+					<td>
+						<div class="table-col">
+							<strong>${formatDate(targetDate)}</strong>
+							${prediction.status === 'pending' && now < targetDate ? `<span class="subtext">D-${Math.max(0, Math.ceil((targetDate - now) / 86400000))}</span>` : ''}
+						</div>
+					</td>
+					<td>
+						<span class="status-chip ${statusConfig.class}">
+							<i class="fas ${statusConfig.icon}"></i>
+							${statusConfig.label}
+						</span>
+					</td>
+					<td>
+						<div class="table-actions">
+							<button class="ghost-btn small" data-action="view" data-id="${prediction.id}">
+								자세히
+							</button>
+							${prediction.status === 'pending' ? `<button class="ghost-btn small" data-action="cancel" data-id="${prediction.id}">취소</button>` : ''}
+						</div>
+					</td>
+				</tr>
+			`;
+		}
+
+		function resolveStatusConfig(prediction, isCompleted) {
+			if (prediction.status === 'cancelled') {
+				return { label: '취소됨', class: 'neutral', icon: 'fa-ban' };
+			}
+
+			if (prediction.status === 'completed' || isCompleted) {
+				const profit = prediction.profit_rate || calculatePriceChange(prediction);
+				return profit >= 0
+					? { label: '성공', class: 'success', icon: 'fa-arrow-trend-up' }
+					: { label: '완료', class: 'warning', icon: 'fa-arrow-trend-down' };
+			}
+
+			return { label: '진행중', class: 'info', icon: 'fa-clock' };
+		}
+
+		function calculatePriceChange(prediction) {
+			const base = parseFloat(prediction.current_price) || 0;
+			const target = parseFloat(prediction.predicted_price) || base;
+
+			if (!base) return 0;
+			return ((target - base) / base) * 100;
+		}
+
+		function formatCurrency(value) {
+			const number = parseFloat(value) || 0;
+			if (Math.abs(number) >= 100000) {
+				return `$${number.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+			}
+			return `$${number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+		}
+
+		function formatDate(date) {
+			if (!(date instanceof Date) || isNaN(date)) {
+				return '-';
+			}
+			return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+		}
+
+		function showLoadingState() {
+			const loading = document.getElementById('predictionsLoading');
+			const emptyState = document.getElementById('emptyState');
+			const tableBody = document.getElementById('predictionsTableBody');
+
+			loading?.classList.remove('hidden');
+			emptyState?.classList.add('hidden');
+			if (tableBody) tableBody.innerHTML = '';
+		}
+
+		function hideLoadingState() {
+			const loading = document.getElementById('predictionsLoading');
+			loading?.classList.add('hidden');
+		}
+
+		function handleCreatePrediction() {
+			showToast('예측 작성 페이지를 준비 중입니다. 곧 제공될 예정입니다.');
+		}
+
+		function showToast(message, type = 'success') {
+			const toast = document.getElementById('predictionToast');
+			if (!toast) return;
+
+			toast.textContent = message;
+			toast.className = `home-toast visible ${type}`;
+
+			clearTimeout(showToast.timer);
+			showToast.timer = setTimeout(() => {
+				toast.classList.remove('visible');
+			}, 3200);
+		}
+
+		document.addEventListener('click', event => {
+			const target = event.target.closest('[data-action]');
+			if (!target) return;
+
+			const id = target.getAttribute('data-id');
+			const action = target.getAttribute('data-action');
+
+			if (action === 'view') {
+				showToast('상세 분석 기능은 준비 중입니다.', 'info');
+			}
+
+			if (action === 'cancel') {
+				const prediction = state.predictions.find(item => String(item.id) === String(id));
+				if (!prediction) return;
+
+				prediction.status = 'cancelled';
+				localStorage.setItem('userPredictions', JSON.stringify(state.predictions));
+				applyFilters();
+				renderStats();
+				showToast('예측이 취소되었습니다.', 'success');
+			}
+		});
+	</script>
 </body>
-
 </html>
+

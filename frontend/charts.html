@@ -1,384 +1,555 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>차트 분석 - 주식 차트 코인판매</title>
+    <title>차트 센터 - StockChart</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    
-    <!-- Korean Trading UI Design System -->
+
     <link rel="stylesheet" href="css/figma-design.css">
-    
-    <!-- Mobile Trading UI -->
     <link rel="stylesheet" href="css/mobile-trading.css">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- TradingView Charts -->
+
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 </head>
-
-<body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
+<body class="home-body">
+    <div class="home-desktop desktop-only">
+        <header class="dashboard-top-bar">
+            <div class="top-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <p class="brand-eyebrow">실시간 분석 허브</p>
+                    <h1 class="brand-title">차트 센터</h1>
+                </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
+
+            <nav class="top-nav-links">
+                <a href="index.html" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
-                <a href="charts.html" class="nav-item active">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
+                <a href="charts.html" class="top-nav-link active">
+                    <i class="fas fa-chart-area"></i>
+                    <span>차트</span>
                 </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-brain"></i>
-                    <span>AI 예측</span>
+                <a href="prediction.html" class="top-nav-link">
+                    <i class="fas fa-magic"></i>
+                    <span>예측하기</span>
                 </a>
-                <a href="ranking.html" class="nav-item">
+                <a href="my-predictions.html" class="top-nav-link">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="ranking.html" class="top-nav-link">
                     <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
+                    <span>랭킹</span>
                 </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
+                <a href="events.html" class="top-nav-link">
+                    <i class="fas fa-calendar-star"></i>
                     <span>이벤트</span>
                 </a>
             </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
+
+            <div class="top-actions">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInput" type="search" placeholder="종목 검색 (예: BTC, ETH, AAPL, TSLA)">
                 </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-chart-line text-accent-green"></i>
-                <span>차트 분석</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
+                <button id="setAlertBtn" class="ghost-btn">
+                    <i class="fas fa-bell"></i>
+                    가격 알림
                 </button>
-                <button class="btn-predict primary">
+                <button id="openPredictionBtn" class="primary-btn">
                     <i class="fas fa-brain"></i>
-                    <span>예측하기</span>
+                    AI 예측 열기
                 </button>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="figma-main">
-            <!-- Chart Selection Tabs -->
-            <div class="chart-tabs mb-3">
-                <button class="chart-tab active" data-symbol="BTCUSD">
-                    <i class="fab fa-bitcoin"></i>
-                    <span>BTC/USD</span>
-                    <span class="tab-price">$43,234.56</span>
-                </button>
-                <button class="chart-tab" data-symbol="ETHUSD">
-                    <i class="fab fa-ethereum"></i>
-                    <span>ETH/USD</span>
-                    <span class="tab-price">$2,687.90</span>
-                </button>
-                <button class="chart-tab" data-symbol="AAPL">
-                    <i class="fas fa-apple-alt"></i>
-                    <span>AAPL</span>
-                    <span class="tab-price">$178.24</span>
-                </button>
-                <button class="chart-tab" data-symbol="TSLA">
-                    <i class="fas fa-car"></i>
-                    <span>TSLA</span>
-                    <span class="tab-price">$251.89</span>
-                </button>
-            </div>
-
-            <!-- Chart Container -->
-            <div class="chart-container">
-                <div class="chart-header-info">
-                    <div class="stock-info">
-                        <span class="stock-symbol" id="currentSymbol">BTC/USD</span>
-                        <span class="stock-price" id="currentPrice">43,234.56</span>
-                        <span class="stock-change positive" id="priceChange">+2.34%</span>
-                        <span class="stock-volume">거래량: 1.2M</span>
-                    </div>
-                    <div class="chart-controls">
-                        <button class="interval-btn" data-interval="1m">1분</button>
-                        <button class="interval-btn" data-interval="5m">5분</button>
-                        <button class="interval-btn" data-interval="15m">15분</button>
-                        <button class="interval-btn active" data-interval="1h">1시간</button>
-                        <button class="interval-btn" data-interval="4h">4시간</button>
-                        <button class="interval-btn" data-interval="1d">1일</button>
-                        <button class="interval-btn" data-interval="1w">1주</button>
-                    </div>
+        <section class="home-dashboard charts-dashboard">
+            <div class="card-heading">
+                <div>
+                    <h2>선택한 종목</h2>
+                    <p>AI 서포트와 함께 멀티 자산을 살펴보세요.</p>
                 </div>
-                <div class="chart-content" id="chartContainer">
-                    <!-- TradingView Chart will be inserted here -->
+                <div class="heading-actions">
+                    <button id="syncChartBtn" class="ghost-btn">
+                        <i class="fas fa-cloud"></i>
+                        데이터 동기화
+                    </button>
+                    <button id="shareChartBtn" class="ghost-btn">
+                        <i class="fas fa-share-nodes"></i>
+                        공유하기
+                    </button>
                 </div>
             </div>
 
-            <!-- Chart Analysis Tools -->
-            <div class="analysis-tools mb-3">
-                <div class="tool-section">
-                    <h4 class="tool-title">
-                        <i class="fas fa-tools"></i>
-                        차트 분석 도구
-                    </h4>
-                    <div class="tool-buttons">
-                        <button class="tool-btn" id="trendlineBtn">
-                            <i class="fas fa-chart-line"></i>
-                            추세선
+            <div class="home-main-grid charts-layout">
+                <div class="charts-primary">
+                    <div class="chart-tabs mb-3">
+                        <button class="chart-tab active" data-symbol="BTCUSD">
+                            <i class="fab fa-bitcoin"></i>
+                            <span>BTC/USD</span>
+                            <span class="tab-price">$43,234.56</span>
                         </button>
-                        <button class="tool-btn" id="fibonacciBtn">
-                            <i class="fas fa-wave-square"></i>
-                            피보나치
+                        <button class="chart-tab" data-symbol="ETHUSD">
+                            <i class="fab fa-ethereum"></i>
+                            <span>ETH/USD</span>
+                            <span class="tab-price">$2,687.90</span>
                         </button>
-                        <button class="tool-btn" id="supportBtn">
-                            <i class="fas fa-minus"></i>
-                            지지/저항
+                        <button class="chart-tab" data-symbol="AAPL">
+                            <i class="fas fa-apple-alt"></i>
+                            <span>AAPL</span>
+                            <span class="tab-price">$178.24</span>
                         </button>
-                        <button class="tool-btn" id="volumeBtn">
-                            <i class="fas fa-chart-bar"></i>
-                            거래량
-                        </button>
-                        <button class="tool-btn" id="indicatorBtn">
-                            <i class="fas fa-wave-square"></i>
-                            지표
+                        <button class="chart-tab" data-symbol="TSLA">
+                            <i class="fas fa-car"></i>
+                            <span>TSLA</span>
+                            <span class="tab-price">$251.89</span>
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <!-- Market Overview Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="marketCap">$832.1B</div>
-                    <div class="stat-label">시가총액</div>
-                    <div class="stat-sublabel">전체 암호화폐</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="volume24h">$28.5B</div>
-                    <div class="stat-label">24시간 거래량</div>
-                    <div class="stat-sublabel">활발한 거래</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value text-success" id="dominance">52.3%</div>
-                    <div class="stat-label">BTC 도미넌스</div>
-                    <div class="stat-sublabel">시장 점유율</div>
-                </div>
-            </div>
-        </main>
+                    <div class="chart-container">
+                        <div class="chart-header-info">
+                            <div class="stock-info">
+                                <span class="stock-symbol" id="currentSymbol">BTC/USD</span>
+                                <span class="stock-price" id="currentPrice">43,234.56</span>
+                                <span class="stock-change positive" id="priceChange">+2.34%</span>
+                                <span class="stock-volume">거래량: 1.2M</span>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="interval-btn" data-interval="1m">1분</button>
+                                <button class="interval-btn" data-interval="5m">5분</button>
+                                <button class="interval-btn" data-interval="15m">15분</button>
+                                <button class="interval-btn active" data-interval="1h">1시간</button>
+                                <button class="interval-btn" data-interval="4h">4시간</button>
+                                <button class="interval-btn" data-interval="1d">1일</button>
+                                <button class="interval-btn" data-interval="1w">1주</button>
+                            </div>
+                        </div>
+                        <div class="chart-content" id="chartContainer"></div>
+                    </div>
 
-        <!-- Trading Panel -->
-        <aside class="figma-trading-panel">
-            <!-- Market Watch -->
-            <div class="trading-section">
-                <h3 class="section-title">
-                    <i class="fas fa-eye"></i>
-                    마켓 워치
-                </h3>
-                <div class="market-list">
-                    <div class="market-item active" data-symbol="BTCUSD">
-                        <div class="market-symbol">
-                            <i class="fab fa-bitcoin text-accent-green"></i>
-                            <div>
-                                <div class="symbol-name">BTC/USD</div>
-                                <div class="symbol-desc">비트코인</div>
+                    <div class="analysis-tools mb-3">
+                        <div class="tool-section">
+                            <h4 class="tool-title">
+                                <i class="fas fa-tools"></i>
+                                차트 분석 도구
+                            </h4>
+                            <div class="tool-buttons">
+                                <button class="tool-btn" id="trendlineBtn">
+                                    <i class="fas fa-chart-line"></i>
+                                    추세선
+                                </button>
+                                <button class="tool-btn" id="fibonacciBtn">
+                                    <i class="fas fa-wave-square"></i>
+                                    피보나치
+                                </button>
+                                <button class="tool-btn" id="supportBtn">
+                                    <i class="fas fa-minus"></i>
+                                    지지/저항
+                                </button>
+                                <button class="tool-btn" id="volumeBtn">
+                                    <i class="fas fa-chart-bar"></i>
+                                    거래량
+                                </button>
+                                <button class="tool-btn" id="indicatorBtn">
+                                    <i class="fas fa-wave-square"></i>
+                                    지표
+                                </button>
                             </div>
-                        </div>
-                        <div class="market-price">
-                            <div class="price">43,234.56</div>
-                            <div class="change positive">+2.34%</div>
                         </div>
                     </div>
-                    <div class="market-item" data-symbol="ETHUSD">
-                        <div class="market-symbol">
-                            <i class="fab fa-ethereum text-accent-green"></i>
-                            <div>
-                                <div class="symbol-name">ETH/USD</div>
-                                <div class="symbol-desc">이더리움</div>
-                            </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="marketCap">$832.1B</div>
+                            <div class="stat-label">시가총액</div>
+                            <div class="stat-sublabel">전체 암호화폐</div>
                         </div>
-                        <div class="market-price">
-                            <div class="price">2,687.90</div>
-                            <div class="change positive">+1.82%</div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="volume24h">$28.5B</div>
+                            <div class="stat-label">24시간 거래량</div>
+                            <div class="stat-sublabel">활발한 거래</div>
                         </div>
-                    </div>
-                    <div class="market-item" data-symbol="AAPL">
-                        <div class="market-symbol">
-                            <i class="fas fa-apple-alt text-accent-green"></i>
-                            <div>
-                                <div class="symbol-name">AAPL</div>
-                                <div class="symbol-desc">애플</div>
-                            </div>
-                        </div>
-                        <div class="market-price">
-                            <div class="price">178.24</div>
-                            <div class="change negative">-0.45%</div>
-                        </div>
-                    </div>
-                    <div class="market-item" data-symbol="TSLA">
-                        <div class="market-symbol">
-                            <i class="fas fa-car text-accent-green"></i>
-                            <div>
-                                <div class="symbol-name">TSLA</div>
-                                <div class="symbol-desc">테슬라</div>
-                            </div>
-                        </div>
-                        <div class="market-price">
-                            <div class="price">251.89</div>
-                            <div class="change positive">+3.12%</div>
-                        </div>
-                    </div>
-                    <div class="market-item" data-symbol="NVDA">
-                        <div class="market-symbol">
-                            <i class="fas fa-microchip text-accent-green"></i>
-                            <div>
-                                <div class="symbol-name">NVDA</div>
-                                <div class="symbol-desc">엔비디아</div>
-                            </div>
-                        </div>
-                        <div class="market-price">
-                            <div class="price">421.67</div>
-                            <div class="change positive">+5.23%</div>
+                        <div class="stat-card">
+                            <div class="stat-value text-success" id="dominance">52.3%</div>
+                            <div class="stat-label">BTC 도미넌스</div>
+                            <div class="stat-sublabel">시장 점유율</div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Quick Prediction -->
-            <div class="trading-section">
-                <h3 class="section-title">
-                    <i class="fas fa-bolt"></i>
-                    빠른 예측
-                </h3>
-                <form class="trading-form" id="quickPredictionForm">
-                    <div class="form-group">
-                        <label class="form-label">현재 종목: <span id="quickSymbol">BTC/USD</span></label>
-                        <div class="prediction-buttons">
-                            <button type="button" class="prediction-btn up" id="predictUp">
-                                <i class="fas fa-arrow-up"></i>
-                                <span>상승</span>
+                <aside class="charts-sidebar">
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>마켓 워치</h3>
+                                <p>즐겨찾는 자산을 빠르게 스캔하세요.</p>
+                            </div>
+                        </div>
+                        <div class="market-list">
+                            <div class="market-item active" data-symbol="BTCUSD">
+                                <div class="market-symbol">
+                                    <i class="fab fa-bitcoin text-accent-green"></i>
+                                    <div>
+                                        <div class="symbol-name">BTC/USD</div>
+                                        <div class="symbol-desc">비트코인</div>
+                                    </div>
+                                </div>
+                                <div class="market-price">
+                                    <div class="price">43,234.56</div>
+                                    <div class="change positive">+2.34%</div>
+                                </div>
+                            </div>
+                            <div class="market-item" data-symbol="ETHUSD">
+                                <div class="market-symbol">
+                                    <i class="fab fa-ethereum text-accent-green"></i>
+                                    <div>
+                                        <div class="symbol-name">ETH/USD</div>
+                                        <div class="symbol-desc">이더리움</div>
+                                    </div>
+                                </div>
+                                <div class="market-price">
+                                    <div class="price">2,687.90</div>
+                                    <div class="change positive">+1.82%</div>
+                                </div>
+                            </div>
+                            <div class="market-item" data-symbol="AAPL">
+                                <div class="market-symbol">
+                                    <i class="fas fa-apple-alt text-accent-green"></i>
+                                    <div>
+                                        <div class="symbol-name">AAPL</div>
+                                        <div class="symbol-desc">애플</div>
+                                    </div>
+                                </div>
+                                <div class="market-price">
+                                    <div class="price">178.24</div>
+                                    <div class="change negative">-0.45%</div>
+                                </div>
+                            </div>
+                            <div class="market-item" data-symbol="TSLA">
+                                <div class="market-symbol">
+                                    <i class="fas fa-car text-accent-green"></i>
+                                    <div>
+                                        <div class="symbol-name">TSLA</div>
+                                        <div class="symbol-desc">테슬라</div>
+                                    </div>
+                                </div>
+                                <div class="market-price">
+                                    <div class="price">251.89</div>
+                                    <div class="change positive">+3.12%</div>
+                                </div>
+                            </div>
+                            <div class="market-item" data-symbol="NVDA">
+                                <div class="market-symbol">
+                                    <i class="fas fa-microchip text-accent-green"></i>
+                                    <div>
+                                        <div class="symbol-name">NVDA</div>
+                                        <div class="symbol-desc">엔비디아</div>
+                                    </div>
+                                </div>
+                                <div class="market-price">
+                                    <div class="price">421.67</div>
+                                    <div class="change positive">+5.23%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>빠른 예측</h3>
+                                <p>현재 종목에 대한 즉시 의견을 제출하세요.</p>
+                            </div>
+                        </div>
+                        <form class="trading-form" id="quickPredictionForm">
+                            <div class="form-group">
+                                <label class="form-label">현재 종목: <span id="quickSymbol">BTC/USD</span></label>
+                                <div class="prediction-buttons">
+                                    <button type="button" class="prediction-btn up" id="predictUp">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>상승</span>
+                                    </button>
+                                    <button type="button" class="prediction-btn down" id="predictDown">
+                                        <i class="fas fa-arrow-down"></i>
+                                        <span>하락</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">예측 기간</label>
+                                <select class="form-select" id="quickTimeFrame">
+                                    <option value="5m">5분</option>
+                                    <option value="15m">15분</option>
+                                    <option value="1h" selected>1시간</option>
+                                    <option value="4h">4시간</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-predict">
+                                <i class="fas fa-paper-plane"></i>
+                                예측 제출
                             </button>
-                            <button type="button" class="prediction-btn down" id="predictDown">
-                                <i class="fas fa-arrow-down"></i>
-                                <span>하락</span>
-                            </button>
+                        </form>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>최근 활동</h3>
+                                <p>커뮤니티 트레이더 흐름</p>
+                            </div>
+                        </div>
+                        <div class="activity-feed">
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-chart-line text-success"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">BTC 상승 예측 성공</div>
+                                    <div class="activity-meta">2분 전 • +12.5%</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-eye text-accent-green"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">ETH 차트 분석 완료</div>
+                                    <div class="activity-meta">5분 전 • 추세선 분석</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-users text-accent-green"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">새로운 사용자 예측</div>
+                                    <div class="activity-meta">8분 전 • AAPL 하락</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-trophy text-accent-green"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">주간 랭킹 업데이트</div>
+                                    <div class="activity-meta">12분 전 • 3위 달성</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">예측 기간</label>
-                        <select class="form-select" id="quickTimeFrame">
-                            <option value="5m">5분</option>
-                            <option value="15m">15분</option>
-                            <option value="1h" selected>1시간</option>
-                            <option value="4h">4시간</option>
+                </aside>
+            </div>
+
+            <section class="charts-mobile mobile-only">
+                <div class="mobile-hero-card mobile-fade-in">
+                    <div class="mobile-hero-top">
+                        <div>
+                            <span class="mobile-hero-subtitle">현재 종목</span>
+                            <span class="mobile-hero-title" id="mobileSymbolName">BTC / USD</span>
+                        </div>
+                        <button class="mobile-notification-btn" aria-label="차트 알림">
+                            <i class="fas fa-bell"></i>
+                            <span class="mobile-notification-dot"></span>
+                        </button>
+                    </div>
+                    <div class="mobile-hero-balance">
+                        <span class="label">현재 가격</span>
+                        <span class="value" id="mobilePriceDisplay">$43,234.56</span>
+                    </div>
+                    <div class="mobile-hero-card-info">
+                        <div>
+                            <span class="mobile-card-label">24H 변화</span>
+                            <span class="mobile-card-value" id="mobileChangePercent">+2.34%</span>
+                        </div>
+                        <div class="mobile-card-change positive" id="mobileTrendLabel">강세</div>
+                    </div>
+                    <div class="mobile-hero-card-meta">
+                        <span id="mobileVolumeLabel">거래량 1.2M</span>
+                        <span class="mobile-card-chip"></span>
+                    </div>
+                </div>
+
+                <div class="mobile-quick-actions mobile-fade-in">
+                    <button class="mobile-action-btn primary">
+                        <i class="fas fa-wave-square"></i>
+                        인디케이터
+                    </button>
+                    <button class="mobile-action-btn secondary">
+                        <i class="fas fa-pencil-ruler"></i>
+                        그리기 도구
+                    </button>
+                    <button class="mobile-action-btn tertiary">
+                        <i class="fas fa-bell"></i>
+                        가격 알림
+                    </button>
+                </div>
+
+                <div class="mobile-chart-container mobile-fade-in">
+                    <div class="mobile-chart-header">
+                        <div>
+                            <div class="mobile-chart-symbol" id="mobileChartSymbol">BTC / USD</div>
+                            <div class="mobile-chart-subtitle" id="mobileChartSubtitle">비트코인 • USD 페어</div>
+                        </div>
+                        <div class="mobile-chart-price-wrap">
+                            <span class="mobile-chart-price" id="mobileChartPrice">$43,234</span>
+                            <span class="mobile-chart-change positive" id="mobileChartChange">+2.34%</span>
+                        </div>
+                    </div>
+                    <div class="mobile-chart-canvas" id="mobileAdvancedChart"></div>
+                    <div class="mobile-chart-timeframes">
+                        <button class="mobile-timeframe-btn active" data-period="1H">1H</button>
+                        <button class="mobile-timeframe-btn" data-period="4H">4H</button>
+                        <button class="mobile-timeframe-btn" data-period="1D">1D</button>
+                        <button class="mobile-timeframe-btn" data-period="1W">1W</button>
+                    </div>
+                </div>
+
+                <div class="mobile-stats-grid mobile-fade-in">
+                    <div class="mobile-stat-card">
+                        <div class="mobile-stat-label">시가총액</div>
+                        <div class="mobile-stat-value" id="mobileMarketCapStat">$832B</div>
+                        <div class="mobile-stat-change">전일 대비 +1.8%</div>
+                    </div>
+                    <div class="mobile-stat-card">
+                        <div class="mobile-stat-label">24H 거래량</div>
+                        <div class="mobile-stat-value" id="mobileVolumeStat">$28.5B</div>
+                        <div class="mobile-stat-change positive">활발한 거래</div>
+                    </div>
+                </div>
+
+                <div class="mobile-card mobile-fade-in">
+                    <div class="mobile-card-header">
+                        <div>
+                            <h3 class="mobile-card-title">차트 컨트롤</h3>
+                            <span class="mobile-card-subtitle">시간 프레임과 차트 타입을 선택하세요</span>
+                        </div>
+                        <button class="mobile-card-action">설정</button>
+                    </div>
+                    <div class="mobile-form-inline">
+                        <div class="mobile-form-group">
+                            <label class="mobile-form-label">시간 프레임</label>
+                            <select class="mobile-form-select">
+                                <option>1분</option>
+                                <option>5분</option>
+                                <option selected>1시간</option>
+                                <option>4시간</option>
+                                <option>1일</option>
+                            </select>
+                        </div>
+                        <div class="mobile-form-group">
+                            <label class="mobile-form-label">차트 타입</label>
+                            <select class="mobile-form-select">
+                                <option selected>캔들</option>
+                                <option>라인</option>
+                                <option>바</option>
+                                <option>하이킨아시</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mobile-form-group">
+                        <label class="mobile-form-label">인디케이터</label>
+                        <select class="mobile-form-select">
+                            <option selected>RSI + MACD</option>
+                            <option>볼린저 밴드</option>
+                            <option>이동 평균선</option>
+                            <option>볼륨 프로필</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-predict">
-                        <i class="fas fa-paper-plane"></i>
-                        예측 제출
-                    </button>
-                </form>
-            </div>
+                    <button class="mobile-btn">차트 업데이트</button>
+                </div>
 
-            <!-- Recent Activity -->
-            <div class="trading-section">
-                <h3 class="section-title">
-                    <i class="fas fa-clock"></i>
-                    최근 활동
-                </h3>
-                <div class="activity-feed">
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-chart-line text-success"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">BTC 상승 예측 성공</div>
-                            <div class="activity-meta">2분 전 • +12.5%</div>
-                        </div>
+                <div class="mobile-card mobile-fade-in">
+                    <div class="mobile-card-header">
+                        <h3 class="mobile-card-title">관심 종목</h3>
+                        <button class="mobile-card-action">추가</button>
                     </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-eye text-accent-green"></i>
+                    <div class="mobile-history-list">
+                        <div class="mobile-transaction-item">
+                            <div class="mobile-list-icon"><i class="fab fa-bitcoin"></i></div>
+                            <div class="mobile-list-content">
+                                <div class="mobile-list-title">BTC / USD</div>
+                                <div class="mobile-transaction-meta">43,234.56 • 거래량 1.2M</div>
+                            </div>
+                            <div class="mobile-list-value positive">+2.34%</div>
                         </div>
-                        <div class="activity-content">
-                            <div class="activity-title">ETH 차트 분석 완료</div>
-                            <div class="activity-meta">5분 전 • 추세선 분석</div>
+                        <div class="mobile-transaction-item">
+                            <div class="mobile-list-icon"><i class="fab fa-ethereum"></i></div>
+                            <div class="mobile-list-content">
+                                <div class="mobile-list-title">ETH / USD</div>
+                                <div class="mobile-transaction-meta">2,687.90 • 거래량 820K</div>
+                            </div>
+                            <div class="mobile-list-value positive">+1.82%</div>
                         </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-users text-accent-green"></i>
+                        <div class="mobile-transaction-item">
+                            <div class="mobile-list-icon"><i class="fas fa-apple-alt"></i></div>
+                            <div class="mobile-list-content">
+                                <div class="mobile-list-title">AAPL</div>
+                                <div class="mobile-transaction-meta">178.24 • 기술주</div>
+                            </div>
+                            <div class="mobile-list-value negative">-0.45%</div>
                         </div>
-                        <div class="activity-content">
-                            <div class="activity-title">새로운 사용자 예측</div>
-                            <div class="activity-meta">8분 전 • AAPL 하락</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-trophy text-accent-green"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">주간 랭킹 업데이트</div>
-                            <div class="activity-meta">12분 전 • 3위 달성</div>
+                        <div class="mobile-transaction-item">
+                            <div class="mobile-list-icon"><i class="fas fa-car"></i></div>
+                            <div class="mobile-list-content">
+                                <div class="mobile-list-title">TSLA</div>
+                                <div class="mobile-transaction-meta">251.89 • 전기차</div>
+                            </div>
+                            <div class="mobile-list-value positive">+3.12%</div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </aside>
+
+                <div class="mobile-card mobile-fade-in">
+                    <div class="mobile-card-header">
+                        <h3 class="mobile-card-title">시장 뉴스</h3>
+                        <button class="mobile-card-action">새로고침</button>
+                    </div>
+                    <ul class="mobile-news-list">
+                        <li>
+                            <span class="news-title">BTC, 주요 저항 돌파</span>
+                            <span class="news-time">5분 전</span>
+                        </li>
+                        <li>
+                            <span class="news-title">미 연준, 금리 동결 유지</span>
+                            <span class="news-time">18분 전</span>
+                        </li>
+                        <li>
+                            <span class="news-title">테슬라, 실적 기대감 상승</span>
+                            <span class="news-time">35분 전</span>
+                        </li>
+                    </ul>
+            </section>
+        </section>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav">
+    <nav class="mobile-bottom-nav mobile-only">
         <a href="index.html" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
         <a href="charts.html" class="mobile-nav-item active">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-chart-area"></i>
             <span>차트</span>
         </a>
         <a href="prediction.html" class="mobile-nav-item">
-            <i class="fas fa-brain"></i>
+            <i class="fas fa-magic"></i>
             <span>예측</span>
         </a>
         <a href="ranking.html" class="mobile-nav-item">
             <i class="fas fa-trophy"></i>
             <span>랭킹</span>
         </a>
-        <a href="subscription.html" class="mobile-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>프리미엄</span>
+        <a href="events.html" class="mobile-nav-item">
+            <i class="fas fa-calendar-star"></i>
+            <span>이벤트</span>
         </a>
     </nav>
 
@@ -643,7 +814,109 @@
     <!-- JavaScript -->
     <script>
         let currentChart = null;
+        let desktopSeries = null;
+        let mobileChart = null;
+        let mobileSeries = null;
         let currentSymbol = 'BTCUSD';
+
+        const numberFormatter = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        const symbolMeta = {
+            BTCUSD: {
+                subtitle: '비트코인 • USD 페어',
+                volume: '거래량 1.2M',
+                marketCap: '$832B',
+                volume24h: '$28.5B'
+            },
+            ETHUSD: {
+                subtitle: '이더리움 • USD 페어',
+                volume: '거래량 820K',
+                marketCap: '$323B',
+                volume24h: '$18.4B'
+            },
+            AAPL: {
+                subtitle: '애플 • 기술주',
+                volume: '거래량 23.4M',
+                marketCap: '$2.84T',
+                volume24h: '$8.2B'
+            },
+            TSLA: {
+                subtitle: '테슬라 • 전기차',
+                volume: '거래량 12.1M',
+                marketCap: '$792B',
+                volume24h: '$5.6B'
+            }
+        };
+
+        function formatCurrency(value) {
+            return '$' + numberFormatter.format(value);
+        }
+
+        function formatPercent(value) {
+            const rounded = Number.isFinite(value) ? value.toFixed(2) : '0.00';
+            return (value >= 0 ? '+' : '') + rounded + '%';
+        }
+
+        function getDisplaySymbol(symbol) {
+            if (!symbol) return '---';
+            if (symbol.endsWith('USD')) {
+                return symbol.replace('USD', '').toUpperCase() + ' / USD';
+            }
+            return symbol.toUpperCase();
+        }
+
+        function setTextContent(id, value) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+            }
+        }
+
+        function updateChangeElement(elementId, baseClass, isPositive) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.className = `${baseClass} ${isPositive ? 'positive' : 'negative'}`;
+        }
+
+        function updateMobileSummary(symbol) {
+            const data = chartData[symbol] || chartData.BTCUSD;
+            if (!data || !data.length) {
+                return;
+            }
+
+            const last = data[data.length - 1];
+            const prev = data[data.length - 2] || last;
+            const changePercent = prev.close ? ((last.close - prev.close) / prev.close) * 100 : 0;
+            const displaySymbol = getDisplaySymbol(symbol);
+            const meta = symbolMeta[symbol] || {
+                subtitle: '실시간 시장 데이터',
+                volume: '거래량 정보 없음',
+                marketCap: '—',
+                volume24h: '—'
+            };
+
+            setTextContent('mobileSymbolName', displaySymbol);
+            setTextContent('mobilePriceDisplay', formatCurrency(last.close));
+            setTextContent('mobileChangePercent', formatPercent(changePercent));
+            setTextContent('mobileChartSymbol', displaySymbol);
+            setTextContent('mobileChartSubtitle', meta.subtitle);
+            setTextContent('mobileChartPrice', formatCurrency(last.close));
+            setTextContent('mobileVolumeLabel', meta.volume);
+            setTextContent('mobileMarketCapStat', meta.marketCap);
+            setTextContent('mobileVolumeStat', meta.volume24h);
+            setTextContent('mobileChartChange', formatPercent(changePercent));
+
+            const trendLabel = document.getElementById('mobileTrendLabel');
+            if (trendLabel) {
+                trendLabel.className = `mobile-card-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+                trendLabel.textContent = changePercent >= 0 ? '강세' : '약세';
+            }
+
+            updateChangeElement('mobileChartChange', 'mobile-chart-change', changePercent >= 0);
+        }
         
         // Chart data for different symbols
         const chartData = {
@@ -705,7 +978,7 @@
             });
 
             // Add candlestick series
-            const candleSeries = currentChart.addCandlestickSeries({
+            desktopSeries = currentChart.addCandlestickSeries({
                 upColor: '#00FFA3',
                 downColor: '#ff4757',
                 borderDownColor: '#ff4757',
@@ -715,11 +988,69 @@
             });
 
             // Set initial data
-            candleSeries.setData(chartData[currentSymbol]);
+            desktopSeries.setData(chartData[currentSymbol]);
 
             // Make chart responsive
             window.addEventListener('resize', () => {
                 currentChart.applyOptions({ width: chartContainer.clientWidth });
+            });
+        }
+
+        function initializeMobileChart() {
+            if (mobileChart || !window.matchMedia('(max-width: 768px)').matches) {
+                return;
+            }
+
+            const mobileContainer = document.getElementById('mobileAdvancedChart');
+            if (!mobileContainer) {
+                return;
+            }
+
+            const containerWidth = mobileContainer.clientWidth || mobileContainer.offsetWidth;
+            if (!containerWidth) {
+                return;
+            }
+
+            mobileChart = LightweightCharts.createChart(mobileContainer, {
+                width: containerWidth,
+                height: 180,
+                layout: {
+                    background: { type: 'solid', color: '#0a1024' },
+                    textColor: '#f6f8ff',
+                },
+                grid: {
+                    vertLines: { color: 'rgba(255,255,255,0.08)' },
+                    horzLines: { color: 'rgba(255,255,255,0.08)' },
+                },
+                rightPriceScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                },
+                timeScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            mobileSeries = mobileChart.addAreaSeries({
+                topColor: 'rgba(10, 132, 255, 0.45)',
+                bottomColor: 'rgba(10, 132, 255, 0.08)',
+                lineColor: '#0A84FF',
+                lineWidth: 3,
+            });
+
+            mobileSeries.setData(chartData[currentSymbol].map(point => ({
+                time: point.time,
+                value: point.close
+            })));
+            mobileChart.timeScale().fitContent();
+
+            window.addEventListener('resize', () => {
+                if (!mobileChart) return;
+                const newWidth = mobileContainer.clientWidth || mobileContainer.offsetWidth;
+                if (newWidth) {
+                    mobileChart.applyOptions({ width: newWidth });
+                }
             });
         }
 
@@ -728,7 +1059,7 @@
             currentSymbol = symbol;
             
             // Update UI
-            document.getElementById('currentSymbol').textContent = symbol;
+            document.getElementById('currentSymbol').textContent = getDisplaySymbol(symbol).replace(' / ', '/');
             document.getElementById('quickSymbol').textContent = symbol;
             
             // Update active tab
@@ -748,22 +1079,66 @@
             });
             
             // Update chart data
-            if (currentChart) {
-                const candleSeries = currentChart.addCandlestickSeries({
-                    upColor: '#00FFA3',
-                    downColor: '#ff4757',
-                    borderDownColor: '#ff4757',
-                    borderUpColor: '#00FFA3',
-                    wickDownColor: '#ff4757',
-                    wickUpColor: '#00FFA3',
-                });
-                candleSeries.setData(chartData[symbol] || chartData.BTCUSD);
+            if (desktopSeries) {
+                desktopSeries.setData(chartData[symbol] || chartData.BTCUSD);
             }
+
+            if (mobileSeries && chartData[symbol]) {
+                mobileSeries.setData(chartData[symbol].map(point => ({
+                    time: point.time,
+                    value: point.close
+                })));
+                mobileChart.timeScale().fitContent();
+            }
+
+            const dataPoints = chartData[symbol] || chartData.BTCUSD;
+            if (dataPoints && dataPoints.length) {
+                const lastPoint = dataPoints[dataPoints.length - 1];
+                const prevPoint = dataPoints[dataPoints.length - 2] || lastPoint;
+                const changeRatio = prevPoint.close ? ((lastPoint.close - prevPoint.close) / prevPoint.close) * 100 : 0;
+                const desktopPrice = new Intl.NumberFormat().format(lastPoint.close);
+                const desktopPriceEl = document.getElementById('currentPrice');
+                if (desktopPriceEl) {
+                    desktopPriceEl.textContent = desktopPrice;
+                }
+
+                const priceChangeEl = document.getElementById('priceChange');
+                if (priceChangeEl) {
+                    priceChangeEl.textContent = formatPercent(changeRatio);
+                    priceChangeEl.className = 'stock-change ' + (changeRatio >= 0 ? 'positive' : 'negative');
+                }
+
+                const volumeEl = document.querySelector('.stock-volume');
+                const meta = symbolMeta[symbol];
+                if (volumeEl) {
+                    if (meta && meta.volume) {
+                        const parts = meta.volume.split(' ');
+                        const volumeValue = parts.length > 1 ? parts[1] : meta.volume;
+                        volumeEl.textContent = `거래량: ${volumeValue}`;
+                    } else {
+                        volumeEl.textContent = '거래량: —';
+                    }
+                }
+            }
+
+            updateMobileSummary(symbol);
         }
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeChart();
+            initializeMobileChart();
+            updateMobileSummary(currentSymbol);
+
+            const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+            mobileMediaQuery.addEventListener('change', (event) => {
+                if (event.matches) {
+                    setTimeout(() => {
+                        initializeMobileChart();
+                        updateMobileSummary(currentSymbol);
+                    }, 200);
+                }
+            });
             
             // Chart tab clicks
             document.querySelectorAll('.chart-tab').forEach(tab => {
@@ -837,13 +1212,32 @@
                 const tab = document.querySelector(`[data-symbol="${symbol}"] .tab-price`);
                 if (tab && symbol === currentSymbol) {
                     const currentPrice = parseFloat(tab.textContent.replace(/[$,]/g, ''));
-                    const newPrice = (currentPrice * (1 + variation)).toFixed(2);
-                    tab.textContent = '$' + new Intl.NumberFormat().format(newPrice);
-                    
+                    const newPrice = currentPrice * (1 + variation);
+                    const formattedTabPrice = new Intl.NumberFormat().format(newPrice);
+                    tab.textContent = '$' + formattedTabPrice;
+
                     // Update current price display
-                    document.getElementById('currentPrice').textContent = new Intl.NumberFormat().format(newPrice);
-                    document.getElementById('priceChange').textContent = (changePercent >= 0 ? '+' : '') + changePercent + '%';
-                    document.getElementById('priceChange').className = 'stock-change ' + (changePercent >= 0 ? 'positive' : 'negative');
+                    document.getElementById('currentPrice').textContent = formattedTabPrice;
+                    const priceChangeText = formatPercent(parseFloat(changePercent));
+                    const priceChangeEl = document.getElementById('priceChange');
+                    const isPositive = parseFloat(changePercent) >= 0;
+                    if (priceChangeEl) {
+                        priceChangeEl.textContent = priceChangeText;
+                        priceChangeEl.className = 'stock-change ' + (isPositive ? 'positive' : 'negative');
+                    }
+
+                    const formattedMobilePrice = formatCurrency(newPrice);
+                    setTextContent('mobilePriceDisplay', formattedMobilePrice);
+                    setTextContent('mobileChartPrice', formattedMobilePrice);
+                    const mobileChangeText = formatPercent(parseFloat(changePercent));
+                    setTextContent('mobileChangePercent', mobileChangeText);
+                    setTextContent('mobileChartChange', mobileChangeText);
+                    updateChangeElement('mobileChartChange', 'mobile-chart-change', isPositive);
+                    const trendLabel = document.getElementById('mobileTrendLabel');
+                    if (trendLabel) {
+                        trendLabel.className = `mobile-card-change ${isPositive ? 'positive' : 'negative'}`;
+                        trendLabel.textContent = isPositive ? '강세' : '약세';
+                    }
                 }
             });
         }, 3000);

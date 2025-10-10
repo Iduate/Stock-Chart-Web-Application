@@ -1,408 +1,507 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이벤트 - 주식 차트</title>
+    <title>이벤트 허브 - StockChart</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Korean Trading UI Design System -->
-    <link rel="stylesheet" href="css/figma-design.css">
-    
-    <!-- Mobile Trading UI -->
-    <link rel="stylesheet" href="css/mobile-trading.css">
-</head>
 
-<body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
+    <link rel="stylesheet" href="css/figma-design.css">
+    <link rel="stylesheet" href="css/mobile-trading.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="home-body">
+    <div class="home-desktop desktop-only">
+        <header class="dashboard-top-bar">
+            <div class="top-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-calendar-star"></i>
+                </div>
+                <div>
+                    <p class="brand-eyebrow">경진대회 & 캠페인</p>
+                    <h1 class="brand-title">이벤트 허브</h1>
+                </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item">
+
+            <nav class="top-nav-links">
+                <a href="index.html" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
+                <a href="charts.html" class="top-nav-link">
+                    <i class="fas fa-chart-area"></i>
+                    <span>차트</span>
                 </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-brain"></i>
-                    <span>AI 예측</span>
+                <a href="prediction.html" class="top-nav-link">
+                    <i class="fas fa-magic"></i>
+                    <span>예측하기</span>
                 </a>
-                <a href="ranking.html" class="nav-item">
+                <a href="my-predictions.html" class="top-nav-link">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="ranking.html" class="top-nav-link">
                     <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
+                    <span>랭킹</span>
                 </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item active">
-                    <i class="fas fa-calendar"></i>
+                <a href="events.html" class="top-nav-link active">
+                    <i class="fas fa-calendar-star"></i>
                     <span>이벤트</span>
                 </a>
             </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
+
+            <div class="top-actions">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input id="eventSearch" type="search" placeholder="이벤트 검색 (AI, 챌린지, ...)">
                 </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-calendar text-accent-green"></i>
-                <span>이벤트</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="이벤트 검색">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
+                <button id="newEventAlertBtn" class="ghost-btn">
+                    <i class="fas fa-bell"></i>
+                    알림 관리
                 </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-plus"></i>
-                    <span>참가하기</span>
+                <button id="createTeamBtn" class="primary-btn">
+                    <i class="fas fa-users"></i>
+                    팀 만들기
                 </button>
             </div>
         </header>
-        
-        <!-- Main Content -->
-        <main class="figma-main">
-            <div class="main-content">
-                <!-- Events Header -->
-                <div class="content-header">
-                    <h1>이벤트 & 경진대회</h1>
-                    <p>다양한 이벤트에 참가하고 보상을 받아보세요</p>
-                </div>
-                
-                <!-- Active Events -->
-                <div class="events-section">
-                    <h2>진행 중인 이벤트</h2>
-                    
-                    <!-- Featured Event -->
-                    <div class="featured-event">
-                        <div class="event-badge">HOT</div>
-                        <div class="event-content">
-                            <h3>2024 신년 예측 챌린지</h3>
-                            <p>새해 첫 달 수익률 예측 대회에 참가하세요</p>
-                            <div class="event-details">
-                                <span class="event-prize">🏆 총 상금 500만원</span>
-                                <span class="event-period">기간: 2024.01.01 - 2024.01.31</span>
-                                <span class="event-participants">참가자: 1,247명</span>
+
+        <section class="home-dashboard events-dashboard">
+            <div class="home-metrics" id="eventStats"></div>
+
+            <div class="home-main-grid events-layout">
+                <div class="events-primary">
+                    <div class="events-feature-card">
+                        <div class="feature-badge hot">HOT</div>
+                        <div class="feature-content">
+                            <div>
+                                <p class="feature-eyebrow">프리미엄 챔피언십</p>
+                                <h2 class="feature-title">2025 신년 예측 챌린지</h2>
+                                <p class="feature-subtitle">한 달 동안 최고의 수익률을 달성하고 상금과 프리미엄 혜택을 획득하세요.</p>
+                            </div>
+                            <div class="feature-meta">
+                                <span><i class="fas fa-trophy"></i> 총 상금 ₩5,000,000</span>
+                                <span><i class="fas fa-users"></i> 참가자 1,247명</span>
+                                <span><i class="fas fa-clock"></i> 종료 D-12</span>
                             </div>
                         </div>
-                        <button class="event-join-btn">참가하기</button>
-                    </div>
-                    
-                    <!-- Event Cards -->
-                    <div class="events-grid">
-                        <div class="event-card">
-                            <div class="event-header">
-                                <h4>주간 예측 경진대회</h4>
-                                <span class="event-status active">진행중</span>
-                            </div>
-                            <div class="event-info">
-                                <p>매주 진행되는 단기 예측 대회</p>
-                                <div class="event-meta">
-                                    <span>🏆 상금: 50만원</span>
-                                    <span>📅 매주 월요일 시작</span>
-                                    <span>👥 참가자: 523명</span>
-                                </div>
-                            </div>
-                            <div class="event-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 75%"></div>
-                                </div>
-                                <span>3일 남음</span>
-                            </div>
-                            <button class="btn-action">참가하기</button>
-                        </div>
-                        
-                        <div class="event-card">
-                            <div class="event-header">
-                                <h4>AI vs 인간 대결</h4>
-                                <span class="event-status active">진행중</span>
-                            </div>
-                            <div class="event-info">
-                                <p>AI 예측과 사용자 예측 비교 이벤트</p>
-                                <div class="event-meta">
-                                    <span>🏆 상금: 100만원</span>
-                                    <span>📅 월간 이벤트</span>
-                                    <span>👥 참가자: 2,156명</span>
-                                </div>
-                            </div>
-                            <div class="event-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 45%"></div>
-                                </div>
-                                <span>15일 남음</span>
-                            </div>
-                            <button class="btn-action">참가하기</button>
-                        </div>
-                        
-                        <div class="event-card">
-                            <div class="event-header">
-                                <h4>신규 회원 환영 이벤트</h4>
-                                <span class="event-status new">NEW</span>
-                            </div>
-                            <div class="event-info">
-                                <p>신규 가입 후 첫 예측 성공시 보상</p>
-                                <div class="event-meta">
-                                    <span>🎁 보상: 프리미엄 1개월</span>
-                                    <span>📅 상시 진행</span>
-                                    <span>👥 참가자: 856명</span>
-                                </div>
-                            </div>
-                            <div class="event-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 100%"></div>
-                                </div>
-                                <span>상시 진행</span>
-                            </div>
-                            <button class="btn-action">참가하기</button>
+                        <div class="feature-actions">
+                            <button class="ghost-btn" data-action="share">
+                                <i class="fas fa-share-nodes"></i>
+                                공유하기
+                            </button>
+                            <button class="primary-btn" data-action="join" data-id="new-year">
+                                <i class="fas fa-plus"></i>
+                                참가 신청
+                            </button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Event Rankings -->
-                <div class="event-rankings">
-                    <h2>이벤트 순위</h2>
-                    <div class="ranking-table">
-                        <div class="ranking-header">
-                            <span>순위</span>
-                            <span>참가자</span>
-                            <span>수익률</span>
-                            <span>예상 보상</span>
+
+                    <div class="card-heading">
+                        <div>
+                            <h2>진행 중인 이벤트</h2>
+                            <p>실시간으로 업데이트되는 대회에 참여하고 순위를 올려보세요.</p>
                         </div>
-                        <div class="ranking-row">
-                            <span class="rank gold">1</span>
-                            <span class="participant">
-                                <div class="participant-avatar">투</div>
-                                <span>투자왕123</span>
-                            </span>
-                            <span class="return positive">+24.7%</span>
-                            <span class="reward">₩1,000,000</span>
-                        </div>
-                        <div class="ranking-row">
-                            <span class="rank silver">2</span>
-                            <span class="participant">
-                                <div class="participant-avatar">주</div>
-                                <span>주식마스터</span>
-                            </span>
-                            <span class="return positive">+19.3%</span>
-                            <span class="reward">₩500,000</span>
-                        </div>
-                        <div class="ranking-row">
-                            <span class="rank bronze">3</span>
-                            <span class="participant">
-                                <div class="participant-avatar">AI</div>
-                                <span>AI예측러</span>
-                            </span>
-                            <span class="return positive">+15.8%</span>
-                            <span class="reward">₩300,000</span>
-                        </div>
-                        <div class="ranking-row">
-                            <span class="rank">4</span>
-                            <span class="participant">
-                                <div class="participant-avatar">나</div>
-                                <span>나도한다</span>
-                            </span>
-                            <span class="return positive">+12.1%</span>
-                            <span class="reward">₩200,000</span>
-                        </div>
-                        <div class="ranking-row">
-                            <span class="rank">5</span>
-                            <span class="participant">
-                                <div class="participant-avatar">차</div>
-                                <span>차트분석가</span>
-                            </span>
-                            <span class="return positive">+9.4%</span>
-                            <span class="reward">₩100,000</span>
+                        <div class="heading-actions">
+                            <select id="eventCategoryFilter" class="filter-select">
+                                <option value="all">전체 카테고리</option>
+                                <option value="challenge">챌린지</option>
+                                <option value="education">교육</option>
+                                <option value="promotion">프로모션</option>
+                            </select>
+                            <button id="refreshEventsBtn" class="ghost-btn">
+                                <i class="fas fa-rotate"></i>
+                                새로고침
+                            </button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Upcoming Events -->
-                <div class="upcoming-events">
-                    <h2>예정된 이벤트</h2>
-                    <div class="upcoming-list">
-                        <div class="upcoming-item">
-                            <div class="upcoming-date">
-                                <span class="date-day">15</span>
-                                <span class="date-month">2월</span>
-                            </div>
-                            <div class="upcoming-info">
-                                <h4>밸런타인 특별 이벤트</h4>
-                                <p>사랑하는 종목 예측하고 커플 상품권 받기</p>
-                            </div>
-                            <button class="btn-notify">알림 설정</button>
+
+                    <div id="eventsGrid" class="events-grid"></div>
+
+                    <div class="card-heading spaced">
+                        <div>
+                            <h2>다가오는 일정</h2>
+                            <p>미리 알림을 설정하고 중요한 이벤트를 놓치지 마세요.</p>
                         </div>
-                        <div class="upcoming-item">
-                            <div class="upcoming-date">
-                                <span class="date-day">01</span>
-                                <span class="date-month">3월</span>
-                            </div>
-                            <div class="upcoming-info">
-                                <h4>3.1절 기념 대회</h4>
-                                <p>독립 종목 찾기 이벤트</p>
-                            </div>
-                            <button class="btn-notify">알림 설정</button>
-                        </div>
+                        <button id="addCalendarBtn" class="ghost-btn">
+                            <i class="fas fa-calendar-plus"></i>
+                            캘린더 연동
+                        </button>
                     </div>
+                    <div id="upcomingList" class="upcoming-list"></div>
                 </div>
+
+                <aside class="events-sidebar">
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>실시간 순위</h3>
+                                <p>주요 이벤트 상위권 참가자</p>
+                            </div>
+                            <button id="viewFullRankingBtn" class="ghost-btn small">전체보기</button>
+                        </div>
+                        <div id="rankingTable" class="ranking-table"></div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>내 참가 현황</h3>
+                                <p>활성화된 이벤트와 최근 성과</p>
+                            </div>
+                            <button id="manageEventsBtn" class="ghost-btn small">관리</button>
+                        </div>
+                        <div id="myEvents" class="my-events"></div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <div class="card-heading">
+                            <div>
+                                <h3>공지 & 알림</h3>
+                                <p>AI 분석과 운영 공지</p>
+                            </div>
+                            <button id="refreshNewsBtn" class="ghost-btn small">새로고침</button>
+                        </div>
+                        <ul id="newsFeed" class="news-list"></ul>
+                    </div>
+                </aside>
             </div>
-        </main>
-        
-        <!-- Trading Panel -->
-        <aside class="figma-trading-panel">
-            <div class="trading-header">
-                <h3>내 참가 현황</h3>
-            </div>
-            
-            <div class="my-events">
-                <div class="my-event-item">
-                    <h4>주간 예측 경진대회</h4>
-                    <div class="my-rank">현재 순위: 23위</div>
-                    <div class="my-return">수익률: +5.2%</div>
-                </div>
-                <div class="my-event-item">
-                    <h4>AI vs 인간 대결</h4>
-                    <div class="my-rank">현재 순위: 156위</div>
-                    <div class="my-return">수익률: +2.8%</div>
-                </div>
-            </div>
-            
-            <div class="event-stats">
-                <h4>이벤트 통계</h4>
-                <div class="stat-item">
-                    <span>총 참가 횟수</span>
-                    <span>15회</span>
-                </div>
-                <div class="stat-item">
-                    <span>입상 횟수</span>
-                    <span>3회</span>
-                </div>
-                <div class="stat-item">
-                    <span>총 상금</span>
-                    <span>₩450,000</span>
-                </div>
-                <div class="stat-item">
-                    <span>평균 순위</span>
-                    <span>47위</span>
-                </div>
-            </div>
-            
-            <div class="event-notifications">
-                <h4>이벤트 알림</h4>
-                <div class="notification-item">
-                    <span>신년 예측 챌린지 종료 3일 전</span>
-                </div>
-                <div class="notification-item">
-                    <span>주간 대회 새로운 순위 업데이트</span>
-                </div>
-            </div>
-        </aside>
+        </section>
     </div>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav">
+    <nav class="mobile-bottom-nav mobile-only">
         <a href="index.html" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
         <a href="charts.html" class="mobile-nav-item">
-            <i class="fas fa-chart-line"></i>
+            <i class="fas fa-chart-area"></i>
             <span>차트</span>
         </a>
         <a href="prediction.html" class="mobile-nav-item">
-            <i class="fas fa-brain"></i>
+            <i class="fas fa-magic"></i>
             <span>예측</span>
         </a>
         <a href="ranking.html" class="mobile-nav-item">
             <i class="fas fa-trophy"></i>
             <span>랭킹</span>
         </a>
-        <a href="subscription.html" class="mobile-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>프리미엄</span>
-        </a>
         <a href="events.html" class="mobile-nav-item active">
-            <i class="fas fa-calendar"></i>
+            <i class="fas fa-calendar-star"></i>
             <span>이벤트</span>
         </a>
     </nav>
 
-    <!-- JavaScript -->
+    <div id="eventsToast" class="home-toast"></div>
+
     <script>
-        // Event participation
-        document.querySelectorAll('.event-join-btn, .btn-action').forEach(button => {
-            button.addEventListener('click', function() {
-                const eventCard = this.closest('.event-card, .featured-event');
-                const eventTitle = eventCard.querySelector('h3, h4').textContent;
-                
-                console.log(`Joining event: ${eventTitle}`);
-                alert(`${eventTitle}에 참가 신청했습니다!`);
-            });
+        const eventState = {
+            stats: [
+                { label: '이번 주 개설', value: 7, delta: '+2 신규', accent: 'positive' },
+                { label: '총 참가자', value: '28.4K', delta: '+12% MoM', accent: 'neutral' },
+                { label: '누적 상금', value: '₩38M', delta: '지급 완료', accent: 'positive' },
+                { label: 'AI 추천', value: 3, delta: '업데이트됨', accent: 'info' }
+            ],
+            events: [
+                {
+                    id: 'weekly-pro',
+                    title: '주간 수익률 챌린지',
+                    category: 'challenge',
+                    description: '5거래일 동안 최대 수익률을 기록하는 스프린트 대회',
+                    prize: '상금 ₩500,000',
+                    duration: 'D-3',
+                    participants: '참가자 532명',
+                    progress: 76,
+                    status: 'ongoing',
+                    badge: 'LIVE'
+                },
+                {
+                    id: 'ai-duel',
+                    title: 'AI vs 인간 예측 대결',
+                    category: 'challenge',
+                    description: 'AI 예측 모델과 사용자 전략을 비교하는 월간 대전',
+                    prize: '상금 ₩1,000,000',
+                    duration: 'D-15',
+                    participants: '참가자 2,182명',
+                    progress: 45,
+                    status: 'ongoing',
+                    badge: 'TRENDING'
+                },
+                {
+                    id: 'onboard',
+                    title: '신규 회원 웰컴 미션',
+                    category: 'promotion',
+                    description: '첫 예측 성공 시 프리미엄 구독을 제공하는 상시 미션',
+                    prize: '프리미엄 1개월',
+                    duration: '상시 진행',
+                    participants: '참가자 912명',
+                    progress: 100,
+                    status: 'evergreen',
+                    badge: 'NEW'
+                },
+                {
+                    id: 'alpha-lab',
+                    title: '알파 전략 실험실',
+                    category: 'education',
+                    description: 'AI 전략을 학습하고 실전에서 테스트하는 14일 워크숍',
+                    prize: '전략 템플릿 제공',
+                    duration: '시작 예정 10/21',
+                    participants: '대기자 184명',
+                    progress: 0,
+                    status: 'upcoming',
+                    badge: '예약'
+                }
+            ],
+            upcoming: [
+                { date: '10월 15일', title: '밸런타인 리워드 특집', description: '커플 포트폴리오 대회', id: 'valentine' },
+                { date: '10월 28일', title: '국내주식 올스타전', description: 'KOSPI 전략 챌린지', id: 'kospi-allstar' },
+                { date: '11월 02일', title: 'AI 전략 업데이트 설명회', description: '실시간 모델 업데이트', id: 'ai-briefing' }
+            ],
+            ranking: [
+                { rank: 1, name: '투자왕123', badge: '챌린저', returnRate: '+24.7%', reward: '₩1,000,000' },
+                { rank: 2, name: '주식마스터', badge: '타이탄', returnRate: '+19.3%', reward: '₩500,000' },
+                { rank: 3, name: 'AI예측러', badge: '프로', returnRate: '+15.8%', reward: '₩300,000' },
+                { rank: 4, name: '나도한다', badge: '루키', returnRate: '+12.1%', reward: '₩200,000' }
+            ],
+            myEvents: [
+                { title: '주간 수익률 챌린지', position: '23위', performance: '+5.2%', status: '참가 중' },
+                { title: 'AI vs 인간 대결', position: '156위', performance: '+2.8%', status: '참가 중' }
+            ],
+            news: [
+                { title: '겨울 시즌 스페셜 토너먼트 발표', meta: '방금 전 · 운영팀', tone: 'positive' },
+                { title: 'AI 분석 리포트 10월호 발행', meta: '1시간 전 · AI 인사이트', tone: 'neutral' },
+                { title: '랭킹 보상 구조 업데이트 안내', meta: '어제 · 서비스 공지', tone: 'info' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStats();
+            renderEvents();
+            renderUpcoming();
+            renderRanking();
+            renderMyEvents();
+            renderNews();
+            attachHandlers();
         });
 
-        // Notification settings
-        document.querySelectorAll('.btn-notify').forEach(button => {
-            button.addEventListener('click', function() {
-                const upcomingItem = this.closest('.upcoming-item');
-                const eventTitle = upcomingItem.querySelector('h4').textContent;
-                
-                this.textContent = '알림 설정됨';
-                this.disabled = true;
-                alert(`${eventTitle} 알림이 설정되었습니다.`);
-            });
-        });
+        function renderStats() {
+            const container = document.getElementById('eventStats');
+            container.innerHTML = eventState.stats.map(stat => `
+                <div class="metric-card ${stat.accent === 'positive' ? 'primary' : ''}">
+                    <div class="metric-label">${stat.label}</div>
+                    <div class="metric-value">${stat.value}</div>
+                    <div class="metric-change ${stat.accent}">${stat.delta}</div>
+                </div>
+            `).join('');
+        }
 
-        // Search functionality
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const searchTerm = this.value;
-                console.log(`Searching events: ${searchTerm}`);
-                alert(`"${searchTerm}" 이벤트를 검색합니다.`);
-                this.value = '';
+        function renderEvents(filter = 'all') {
+            const grid = document.getElementById('eventsGrid');
+            const filtered = eventState.events.filter(item => filter === 'all' || item.category === filter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="predictions-empty">
+                        <div class="empty-icon"><i class="fas fa-calendar-times"></i></div>
+                        <h3>선택한 카테고리의 이벤트가 없습니다</h3>
+                        <p>새로운 이벤트가 개설되면 즉시 알려드릴게요.</p>
+                    </div>
+                `;
+                return;
             }
-        });
 
-        // Add animation to cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.event-card, .ranking-row');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.classList.add('fade-in');
+            grid.innerHTML = filtered.map(event => `
+                <article class="event-card" data-category="${event.category}">
+                    <div class="event-card-top">
+                        <div>
+                            <div class="event-badge ${event.badge ? 'accent' : ''}">${event.badge || 'EVENT'}</div>
+                            <h3>${event.title}</h3>
+                            <p>${event.description}</p>
+                        </div>
+                        <div class="event-card-meta">
+                            <span><i class="fas fa-gift"></i> ${event.prize}</span>
+                            <span><i class="fas fa-clock"></i> ${event.duration}</span>
+                            <span><i class="fas fa-users"></i> ${event.participants}</span>
+                        </div>
+                    </div>
+                    <div class="event-card-bottom">
+                        <div class="progress">
+                            <div class="progress-track">
+                                <span class="progress-fill" style="width: ${event.progress}%"></span>
+                            </div>
+                            <span class="progress-label">진행률 ${event.progress}%</span>
+                        </div>
+                        <div class="event-actions">
+                            <button class="ghost-btn small" data-action="details" data-id="${event.id}">세부 정보</button>
+                            <button class="primary-btn small" data-action="join" data-id="${event.id}">참가하기</button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function renderUpcoming() {
+            const list = document.getElementById('upcomingList');
+            list.innerHTML = eventState.upcoming.map(item => `
+                <div class="upcoming-item" data-id="${item.id}">
+                    <div class="upcoming-date">
+                        <span>${item.date}</span>
+                    </div>
+                    <div class="upcoming-info">
+                        <h4>${item.title}</h4>
+                        <p>${item.description}</p>
+                    </div>
+                    <button class="ghost-btn small" data-action="remind" data-id="${item.id}">
+                        <i class="fas fa-bell"></i>
+                        알림 설정
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderRanking() {
+            const table = document.getElementById('rankingTable');
+            table.innerHTML = eventState.ranking.map(entry => `
+                <div class="ranking-row">
+                    <span class="rank ${entry.rank === 1 ? 'gold' : entry.rank === 2 ? 'silver' : entry.rank === 3 ? 'bronze' : ''}">${entry.rank}</span>
+                    <div class="participant">
+                        <span class="participant-avatar">${entry.name[0]}</span>
+                        <div>
+                            <span class="participant-name">${entry.name}</span>
+                            <span class="participant-badge">${entry.badge}</span>
+                        </div>
+                    </div>
+                    <span class="return ${entry.returnRate.startsWith('+') ? 'positive' : 'negative'}">${entry.returnRate}</span>
+                    <span class="reward">${entry.reward}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderMyEvents() {
+            const container = document.getElementById('myEvents');
+            container.innerHTML = eventState.myEvents.map(item => `
+                <div class="my-event-item">
+                    <div>
+                        <h4>${item.title}</h4>
+                        <span>${item.status}</span>
+                    </div>
+                    <div class="my-event-stats">
+                        <span class="rank">${item.position}</span>
+                        <span class="return positive">${item.performance}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderNews() {
+            const list = document.getElementById('newsFeed');
+            list.innerHTML = eventState.news.map(item => `
+                <li class="news-item ${item.tone}">
+                    <div>
+                        <span class="news-title">${item.title}</span>
+                        <span class="news-meta">${item.meta}</span>
+                    </div>
+                    <button class="ghost-btn tiny" data-action="open-news">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </li>
+            `).join('');
+        }
+
+        function attachHandlers() {
+            document.getElementById('eventCategoryFilter').addEventListener('change', event => {
+                renderEvents(event.target.value);
+                showToast('이벤트 목록이 업데이트되었습니다.', 'info');
             });
-        });
+
+            document.getElementById('refreshEventsBtn').addEventListener('click', () => {
+                showToast('최신 이벤트 정보를 불러왔습니다.');
+            });
+
+            document.getElementById('eventSearch').addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    showToast(`"${event.target.value}"에 대한 검색 결과`, 'info');
+                    event.target.value = '';
+                }
+            });
+
+            document.getElementById('addCalendarBtn').addEventListener('click', () => {
+                showToast('개인 캘린더와 연동되었습니다.', 'success');
+            });
+
+            document.getElementById('newEventAlertBtn').addEventListener('click', () => {
+                showToast('이벤트 알림 설정 패널이 곧 제공됩니다.', 'info');
+            });
+
+            document.getElementById('createTeamBtn').addEventListener('click', () => {
+                showToast('팀 결성 기능을 준비하고 있습니다.', 'info');
+            });
+
+            document.getElementById('viewFullRankingBtn').addEventListener('click', () => {
+                window.location.href = 'ranking.html';
+            });
+
+            document.getElementById('manageEventsBtn').addEventListener('click', () => {
+                showToast('마이 이벤트 관리 페이지로 이동합니다.');
+            });
+
+            document.getElementById('refreshNewsBtn').addEventListener('click', () => {
+                showToast('AI 공지를 최신 상태로 업데이트했습니다.', 'success');
+            });
+
+            document.getElementById('eventsGrid').addEventListener('click', event => {
+                const target = event.target.closest('[data-action]');
+                if (!target) return;
+
+                const action = target.getAttribute('data-action');
+                const eventId = target.getAttribute('data-id');
+                handleEventActions(action, eventId);
+            });
+
+            document.getElementById('upcomingList').addEventListener('click', event => {
+                const target = event.target.closest('[data-action="remind"]');
+                if (!target) return;
+
+                target.innerHTML = '<i class="fas fa-check"></i> 설정됨';
+                target.disabled = true;
+                showToast('알림이 설정되었습니다.', 'success');
+            });
+
+            document.querySelector('.events-feature-card').addEventListener('click', event => {
+                const target = event.target.closest('[data-action]');
+                if (!target) return;
+                handleEventActions(target.getAttribute('data-action'), target.getAttribute('data-id'));
+            });
+        }
+
+        function handleEventActions(action, id) {
+            if (action === 'join') {
+                showToast('참가 신청이 완료되었습니다. 행운을 빌어요!', 'success');
+            }
+
+            if (action === 'details') {
+                showToast('세부 정보 페이지는 준비 중입니다.', 'info');
+            }
+
+            if (action === 'share') {
+                showToast('이벤트 공유 링크를 복사했습니다.', 'success');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('eventsToast');
+            toast.textContent = message;
+            toast.className = `home-toast visible ${type}`;
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3000);
+        }
     </script>
 
-    <!-- Collapsible Sidebar Script -->
     <script src="js/collapsible-sidebar.js"></script>
 </body>
 </html>

@@ -2,201 +2,247 @@
 <html lang="ko" class="h-full">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockChart - 프리미엄 주식 예측 플랫폼</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Korean Trading UI Design System -->
-    <link rel="stylesheet" href="css/figma-design.css">
-    
-    <!-- Mobile Trading UI -->
-    <link rel="stylesheet" href="css/mobile-trading.css">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'Noto Sans KR', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-
-<body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="index.html" class="nav-item active">
-                    <i class="fas fa-home"></i>
-                    <span>홈</span>
-                </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
-                </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-brain"></i>
-                    <span>AI 예측</span>
-                </a>
-                <a href="ranking.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
-                </a>
-                <a href="subscription.html" class="nav-item">
-                    <i class="fas fa-crown"></i>
-                    <span>프리미엄</span>
-                </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>이벤트</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+        <div class="home-desktop desktop-only">
+            <section class="home-dashboard">
+                <div class="home-metrics">
+                    <div class="metric-card primary">
+                        <div class="metric-label">현재가</div>
+                        <div class="metric-value" id="homeMetricPrice">$432.32</div>
+                        <div class="metric-change positive" id="homeMetricChange">+2.24 (0.52%)</div>
                     </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
+                    <div class="metric-card">
+                        <div class="metric-label">시간 프레임</div>
+                        <div class="metric-value">1일</div>
+                        <div class="metric-sub">최근 업데이트 3분 전</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">시장 감지</div>
+                        <div class="metric-value positive" id="homeMetricTrend">강세</div>
+                        <div class="metric-sub">AI 신뢰도 92%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">24H 거래량</div>
+                        <div class="metric-value" id="homeMetricVolume">₩685.4M</div>
+                        <div class="metric-sub">주요 거래소 기준</div>
                     </div>
                 </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-home text-accent-green"></i>
-                <span>홈 대시보드</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
-                </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-user-plus"></i>
-                    <span>무료 체험</span>
-                </button>
-            </div>
-        </header>
-        
-        <!-- Mobile Content (Visible on Mobile Only) -->
-        <div class="mobile-search-container mobile-fade-in">
-            <input type="text" class="mobile-search-input" placeholder="종목 검색 (BTC, ETH, AAPL, TSLA)" id="mobileSearchInput">
+
+                <div class="home-main-grid">
+                    <div class="home-chart-card">
+                        <div class="home-chart-header">
+                            <div class="chart-title-group">
+                                <span class="chart-symbol">BTC / USD</span>
+                                <span class="chart-name">비트코인 · USD 거래쌍</span>
+                            </div>
+                            <div class="chart-controls">
+                                <button class="chart-time-btn active" data-period="1D">1D</button>
+                                <button class="chart-time-btn" data-period="1W">1W</button>
+                                <button class="chart-time-btn" data-period="1M">1M</button>
+                                <button class="chart-time-btn" data-period="1Y">1Y</button>
+                            </div>
+                        </div>
+                        <div class="home-chart-body" id="homeChart"></div>
+                        <div class="home-chart-footer">
+                            <div>
+                                <span class="footer-label">고가</span>
+                                <span class="footer-value" id="homeHighValue">$437.90</span>
+                            </div>
+                            <div>
+                                <span class="footer-label">저가</span>
+                                <span class="footer-value" id="homeLowValue">$420.12</span>
+                            </div>
+                            <div>
+                                <span class="footer-label">거래량</span>
+                                <span class="footer-value" id="homeVolumeValue">132.4K</span>
+                            </div>
+                            <div>
+                                <span class="footer-label">AI 시그널</span>
+                                <span class="footer-chip positive">상승</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside class="home-order-card">
+                        <div class="order-header">
+                            <h3>빠른 예측 등록</h3>
+                            <span>AI 모델 기반 추천 값</span>
+                        </div>
+                        <div class="order-form">
+                            <label class="order-label" for="assetSelect">자산 선택</label>
+                            <select id="assetSelect" class="order-input">
+                                <option value="BTC" selected>BTC / USD</option>
+                                <option value="ETH">ETH / USD</option>
+                                <option value="KOSPI">KOSPI 200</option>
+                                <option value="AAPL">AAPL</option>
+                            </select>
+
+                            <label class="order-label">방향 선택</label>
+                            <div class="direction-toggle" role="group">
+                                <button class="direction-btn active" data-direction="up">
+                                    <i class="fas fa-arrow-trend-up"></i>
+                                    상승
+                                </button>
+                                <button class="direction-btn" data-direction="down">
+                                    <i class="fas fa-arrow-trend-down"></i>
+                                    하락
+                                </button>
+                            </div>
+
+                            <label class="order-label" for="targetPrice">목표 가격</label>
+                            <div class="order-input-group">
+                                <span>₩</span>
+                                <input id="targetPrice" class="order-input" type="number" placeholder="43,500,000">
+                            </div>
+
+                            <label class="order-label" for="holdingPeriod">예측 기간</label>
+                            <select id="holdingPeriod" class="order-input">
+                                <option value="1D">1일</option>
+                                <option value="3D">3일</option>
+                                <option value="1W" selected>1주일</option>
+                                <option value="1M">1개월</option>
+                            </select>
+
+                            <button class="order-submit" id="submitPrediction">
+                                <i class="fas fa-meteor"></i>
+                                예측 등록하기
+                            </button>
+                        </div>
+                        <div class="order-footnote">
+                            <p><i class="fas fa-shield-alt"></i> 제출된 예측은 대시보드와 랭킹에 즉시 반영됩니다.</p>
+                            <p><i class="fas fa-clock"></i> 평균 검증 시간 2분 미만 · 신뢰도 지수 94%</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <div class="home-bottom-grid">
+                    <div class="home-prediction-board">
+                        <div class="board-header">
+                            <div>
+                                <h3>예측 보드</h3>
+                                <span>실시간 예측 기록과 성과</span>
+                            </div>
+                            <button class="board-action">전체 보기</button>
+                        </div>
+                        <table class="board-table">
+                            <thead>
+                                <tr>
+                                    <th>이름</th>
+                                    <th>날짜</th>
+                                    <th>예측가</th>
+                                    <th>기간</th>
+                                    <th>수익률</th>
+                                </tr>
+                            </thead>
+                            <tbody id="homePredictionBody">
+                                <tr>
+                                    <td>
+                                        <div class="board-user">
+                                            <span class="avatar">SR</span>
+                                            <div>
+                                                <span class="board-name">센슈얼러너</span>
+                                                <span class="board-meta">프리미엄</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2025-03-16</td>
+                                    <td>$204,354.65</td>
+                                    <td>5일</td>
+                                    <td class="negative">-3.11%</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="board-user">
+                                            <span class="avatar">JT</span>
+                                            <div>
+                                                <span class="board-name">재테크왕</span>
+                                                <span class="board-meta">AI 추천</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2025-03-16</td>
+                                    <td>$212,354.65</td>
+                                    <td>1일</td>
+                                    <td class="positive">+8.30%</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="board-user">
+                                            <span class="avatar">PM</span>
+                                            <div>
+                                                <span class="board-name">프라임모델</span>
+                                                <span class="board-meta">챌린지 TOP10</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2025-03-15</td>
+                                    <td>$198,124.12</td>
+                                    <td>1주</td>
+                                    <td class="positive">+5.87%</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="board-user">
+                                            <span class="avatar">NF</span>
+                                            <div>
+                                                <span class="board-name">나이트플로우</span>
+                                                <span class="board-meta">체험판</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>2025-03-15</td>
+                                    <td>$178,764.20</td>
+                                    <td>3일</td>
+                                    <td class="positive">+3.42%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="home-news-card">
+                        <div class="board-header">
+                            <div>
+                                <h3>최신 뉴스</h3>
+                                <span>AI 큐레이션 핵심 이슈</span>
+                            </div>
+                            <button class="board-action">새로고침</button>
+                        </div>
+                        <ul class="news-list">
+                            <li>
+                                <div>
+                                    <span class="news-title">미 연준, 금리 동결 시사 · 위험자산 반등</span>
+                                    <span class="news-meta">10분 전 · 월가 헤드라인</span>
+                                </div>
+                                <span class="news-tag positive">강세</span>
+                            </li>
+                            <li>
+                                <div>
+                                    <span class="news-title">서울 반도체 업종, AI 공급망 확대 기대감</span>
+                                    <span class="news-meta">27분 전 · 국내 증시</span>
+                                </div>
+                                <span class="news-tag neutral">중립</span>
+                            </li>
+                            <li>
+                                <div>
+                                    <span class="news-title">비트코인 ETF 순유입 8일 연속 · 기관 매수세 지속</span>
+                                    <span class="news-meta">1시간 전 · 글로벌 암호화폐</span>
+                                </div>
+                                <span class="news-tag positive">호재</span>
+                            </li>
+                            <li>
+                                <div>
+                                    <span class="news-title">전기차 섹터, 공급망 비용 증가로 변동성 확대</span>
+                                    <span class="news-meta">2시간 전 · 산업 레이더</span>
+                                </div>
+                                <span class="news-tag negative">주의</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
         </div>
-        
-        <div class="mobile-stats-grid mobile-fade-in">
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$432.32</div>
-                <div class="mobile-stat-label">BTC/USD</div>
-                <div class="mobile-stat-change positive">+2.5%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$2,845</div>
-                <div class="mobile-stat-label">ETH/USD</div>
-                <div class="mobile-stat-change positive">+1.8%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$175.43</div>
-                <div class="mobile-stat-label">AAPL</div>
-                <div class="mobile-stat-change negative">-0.7%</div>
-            </div>
-            <div class="mobile-stat-card">
-                <div class="mobile-stat-value">$257.89</div>
-                <div class="mobile-stat-label">TSLA</div>
-                <div class="mobile-stat-change positive">+3.2%</div>
-            </div>
-        </div>
-        
-        <div class="mobile-chart-container mobile-fade-in">
-            <div class="mobile-chart-header">
-                <div>
-                    <div class="mobile-chart-symbol">BTC/USD</div>
-                    <div class="mobile-chart-price">$432.32</div>
-                </div>
-                <div class="mobile-chart-change">+2.5%</div>
-            </div>
-            <canvas id="mobileChart" width="100%" height="250"></canvas>
-        </div>
-        
-        <div class="mobile-card mobile-fade-in">
-            <div class="mobile-card-header">
-                <div class="mobile-card-title">빠른 실행</div>
-            </div>
-            <button class="mobile-btn">AI 예측 시작하기</button>
-            <button class="mobile-btn secondary">차트 분석하기</button>
-            <button class="mobile-btn secondary">내 포트폴리오</button>
-        </div>
-        
-        <div class="mobile-list mobile-fade-in">
-            <div class="mobile-card-header">
-                <div class="mobile-card-title">최근 활동</div>
-                <button class="mobile-card-action">전체보기</button>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">BTC 예측 완료</div>
-                    <div class="mobile-list-subtitle">10분 전</div>
-                </div>
-                <div class="mobile-list-value positive">+5.2%</div>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">랭킹 상승</div>
-                    <div class="mobile-list-subtitle">1시간 전</div>
-                </div>
-                <div class="mobile-list-value">15위 → 12위</div>
-            </div>
-            <div class="mobile-list-item">
-                <div class="mobile-list-icon">
-                    <i class="fas fa-coins"></i>
-                </div>
-                <div class="mobile-list-content">
-                    <div class="mobile-list-title">보너스 지급</div>
-                    <div class="mobile-list-subtitle">2시간 전</div>
-                </div>
-                <div class="mobile-list-value positive">+₩50,000</div>
-            </div>
-        </div>
-        
+        </section>
+
+        <div class="home-desktop desktop-only">
         <!-- Main Content -->
     <section class="banking-header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -312,183 +358,172 @@
         </div>
     </section>
 
-    <!-- Recent Predictions -->
-    <section class="py-20 bg-white dark:bg-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    최근 성공한 예측
-                </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-400">
-                    AI가 예측한 주식들의 실제 성과를 확인해보세요
-                </p>
-            </div>
-            
-            <div class="banking-list max-w-4xl mx-auto">
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">삼성전자 (005930)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.10.01 | 목표가: 75,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+12.5%</div>
-                </div>
-                
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-car"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">현대차 (005380)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.09.28 | 목표가: 245,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+8.3%</div>
-                </div>
-                
-                <div class="banking-list-item">
-                    <div class="banking-list-item-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <div class="banking-list-item-content">
-                        <div class="banking-list-item-title">LG화학 (051910)</div>
-                        <div class="banking-list-item-subtitle">예측일: 2024.09.25 | 목표가: 420,000원</div>
-                    </div>
-                    <div class="banking-list-item-value positive">+15.7%</div>
-                </div>
-            </div>
         </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                지금 바로 시작하세요
-            </h2>
-            <p class="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-                7일 무료 체험으로 AI 주식 예측의 힘을 직접 경험해보세요.
-                신용카드 정보 없이도 시작할 수 있습니다.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="banking-btn bg-white text-purple-600 hover:bg-gray-100 text-lg px-8 py-4">
-                    <i class="fas fa-rocket"></i>
-                    무료 체험 시작
-                </button>
-                <button class="banking-btn border-2 border-white hover:bg-white hover:text-purple-600 text-lg px-8 py-4">
-                    <i class="fas fa-phone"></i>
-                    상담 받기
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="banking-nav .nav-brand text-white mb-4">
-                        <i class="fas fa-chart-line text-2xl"></i>
-                        <span>StockChart</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">
-                        AI 기반 주식 예측으로 투자의 새로운 패러다임을 제시합니다.
-                    </p>
-                    <div class="flex gap-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">서비스</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">주식 예측</a></li>
-                        <li><a href="#" class="hover:text-white">차트 분석</a></li>
-                        <li><a href="#" class="hover:text-white">포트폴리오 관리</a></li>
-                        <li><a href="#" class="hover:text-white">실시간 알림</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">지원</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">도움말</a></li>
-                        <li><a href="#" class="hover:text-white">튜토리얼</a></li>
-                        <li><a href="#" class="hover:text-white">고객지원</a></li>
-                        <li><a href="#" class="hover:text-white">API 문서</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold mb-4">회사</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white">회사소개</a></li>
-                        <li><a href="#" class="hover:text-white">채용정보</a></li>
-                        <li><a href="#" class="hover:text-white">개인정보처리방침</a></li>
-                        <li><a href="#" class="hover:text-white">이용약관</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 StockChart. All rights reserved. Made with ❤️ in Korea</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Mobile Bottom Navigation -->
-    <div class="banking-bottom-nav md:hidden">
-        <a href="#" class="banking-bottom-nav-item active">
-            <i class="fas fa-home"></i>
-            <span>홈</span>
-        </a>
-        <a href="charts.html" class="banking-bottom-nav-item">
-            <i class="fas fa-chart-line"></i>
-            <span>차트</span>
-        </a>
-        <a href="prediction.html" class="banking-bottom-nav-item">
-            <i class="fas fa-crystal-ball"></i>
-            <span>예측</span>
-        </a>
-        <a href="ranking.html" class="banking-bottom-nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>랭킹</span>
-        </a>
-        <a href="subscription.html" class="banking-bottom-nav-item">
-            <i class="fas fa-crown"></i>
-            <span>구독</span>
-        </a>
-    </div>
 
     <!-- JavaScript -->
     <script>
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const html = document.documentElement;
-        
-        darkModeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            localStorage.setItem('darkMode', html.classList.contains('dark'));
+        // Initialize homepage chart if LightweightCharts is available
+        (function initHomeChart() {
+            const container = document.getElementById('homeChart');
+            if (!container || typeof LightweightCharts === 'undefined') {
+                return;
+            }
+
+            const chart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: 360,
+                layout: {
+                    background: { type: 'solid', color: '#121212' },
+                    textColor: '#e5f4ff',
+                    fontFamily: 'Inter, "Noto Sans KR", sans-serif'
+                },
+                grid: {
+                    vertLines: { color: 'rgba(255, 255, 255, 0.06)' },
+                    horzLines: { color: 'rgba(255, 255, 255, 0.06)' }
+                },
+                rightPriceScale: { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                timeScale: { borderColor: 'rgba(255, 255, 255, 0.1)', timeVisible: true, secondsVisible: false }
+            });
+
+            const series = chart.addCandlestickSeries({
+                upColor: '#00FFA3',
+                downColor: '#ff4d67',
+                borderUpColor: '#00FFA3',
+                borderDownColor: '#ff4d67',
+                wickUpColor: '#00FFA3',
+                wickDownColor: '#ff4d67'
+            });
+
+            const baseData = [
+                { time: '2025-03-06', open: 42000, high: 42840, low: 41810, close: 42620 },
+                { time: '2025-03-07', open: 42620, high: 43120, low: 42250, close: 42870 },
+                { time: '2025-03-08', open: 42870, high: 43520, low: 42740, close: 43380 },
+                { time: '2025-03-09', open: 43380, high: 43990, low: 43110, close: 43810 },
+                { time: '2025-03-10', open: 43810, high: 44280, low: 43620, close: 44100 },
+                { time: '2025-03-11', open: 44100, high: 44420, low: 43200, close: 43560 },
+                { time: '2025-03-12', open: 43560, high: 43920, low: 43040, close: 43310 },
+                { time: '2025-03-13', open: 43310, high: 43980, low: 43140, close: 43890 },
+                { time: '2025-03-14', open: 43890, high: 44250, low: 43670, close: 44170 },
+                { time: '2025-03-15', open: 44170, high: 44620, low: 43910, close: 44480 }
+            ];
+
+            series.setData(baseData);
+            chart.timeScale().fitContent();
+
+            window.addEventListener('resize', () => {
+                chart.applyOptions({ width: container.clientWidth });
+            });
+
+            setInterval(() => {
+                const lastPoint = baseData[baseData.length - 1];
+                const variation = Math.random() * 320 - 120;
+                const newClose = Math.max(42000, lastPoint.close + variation);
+                const newPoint = {
+                    time: new Date().toISOString().split('T')[0],
+                    open: lastPoint.close,
+                    high: Math.max(lastPoint.close, newClose) + Math.random() * 160,
+                    low: Math.min(lastPoint.close, newClose) - Math.random() * 160,
+                    close: newClose
+                };
+
+                baseData.push(newPoint);
+                if (baseData.length > 40) {
+                    baseData.shift();
+                }
+
+                series.update(newPoint);
+                updateMetricSummary(newPoint);
+            }, 6000);
+
+            function updateMetricSummary(point) {
+                const priceEl = document.getElementById('homeMetricPrice');
+                const changeEl = document.getElementById('homeMetricChange');
+                const volumeEl = document.getElementById('homeMetricVolume');
+                const trendEl = document.getElementById('homeMetricTrend');
+                const highEl = document.getElementById('homeHighValue');
+                const lowEl = document.getElementById('homeLowValue');
+                const volumeFooter = document.getElementById('homeVolumeValue');
+
+                const previous = baseData[baseData.length - 2] || point;
+                const change = point.close - previous.close;
+                const changePerc = previous.close ? (change / previous.close) * 100 : 0;
+                const formattedPrice = `$${point.close.toLocaleString()}`;
+                const formattedChange = `${change >= 0 ? '+' : ''}${change.toFixed(2)} (${changePerc.toFixed(2)}%)`;
+
+                if (priceEl) priceEl.textContent = formattedPrice;
+                if (changeEl) {
+                    changeEl.textContent = formattedChange;
+                    changeEl.classList.toggle('positive', change >= 0);
+                    changeEl.classList.toggle('negative', change < 0);
+                }
+                if (volumeEl) {
+                    const mockVolume = 640 + Math.random() * 80;
+                    volumeEl.textContent = `₩${mockVolume.toFixed(1)}M`;
+                }
+                if (trendEl) {
+                    const positive = change >= 0;
+                    trendEl.textContent = positive ? '강세' : '약세';
+                    trendEl.classList.toggle('positive', positive);
+                    trendEl.classList.toggle('negative', !positive);
+                }
+                if (highEl) highEl.textContent = `$${point.high.toLocaleString()}`;
+                if (lowEl) lowEl.textContent = `$${point.low.toLocaleString()}`;
+                if (volumeFooter) volumeFooter.textContent = `${(110 + Math.random() * 20).toFixed(1)}K`;
+            }
+        })();
+
+        // Direction toggle interactions
+        document.querySelectorAll('.direction-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.direction-btn').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+            });
         });
-        
-        // Load saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            html.classList.add('dark');
+
+        const submitPredictionBtn = document.getElementById('submitPrediction');
+        if (submitPredictionBtn) {
+            submitPredictionBtn.addEventListener('click', () => {
+                submitPredictionBtn.disabled = true;
+                submitPredictionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 예측 전송 중';
+
+                setTimeout(() => {
+                    submitPredictionBtn.disabled = false;
+                    submitPredictionBtn.innerHTML = '<i class="fas fa-meteor"></i> 예측 등록하기';
+                    showToast('예측이 등록되었습니다. 대시보드에서 확인하세요.', 'success');
+                }, 1400);
+            });
         }
-        
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `home-toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.add('visible'));
+            setTimeout(() => {
+                toast.classList.remove('visible');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        // Dark mode toggle (guarded for optional button)
+        const html = document.documentElement;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                const enabled = html.classList.toggle('dark');
+                localStorage.setItem('darkMode', enabled);
+            });
+        }
+
+        const savedPreference = localStorage.getItem('darkMode');
+        if (savedPreference === 'true') {
+            html.classList.add('dark');
+        } else if (savedPreference === 'false') {
+            html.classList.remove('dark');
+        }
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -502,13 +537,13 @@
                 }
             });
         });
-        
+
         // Add animation on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -516,41 +551,8 @@
                 }
             });
         }, observerOptions);
-        
-        // Observe all elements with fade-in class
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
 
-        const messages = [
-            '플랫폼을 준비하고 있습니다...',
-            '시장 데이터를 불러오는 중...',
-            '차트 엔진을 초기화하는 중...',
-            '준비 완료!'
-        ];
-
-        let messageIndex = 0;
-
-        const progressInterval = setInterval(() => {
-            progress += Math.random() * 15 + 5;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(progressInterval);
-                loadingText.textContent = messages[3];
-            } else if (progress > 75 && messageIndex < 2) {
-                messageIndex = 2;
-                loadingText.textContent = messages[messageIndex];
-            } else if (progress > 40 && messageIndex < 1) {
-                messageIndex = 1;
-                loadingText.textContent = messages[messageIndex];
-            }
-
-            progressBar.style.width = progress + '%';
-            progressText.textContent = Math.round(progress) + '%';
-        }, 100);
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     </script>
 
     <!-- Mobile Bottom Navigation -->
@@ -580,5 +582,4 @@
     <!-- Collapsible Sidebar Script -->
     <script src="js/collapsible-sidebar.js"></script>
 </body>
-
 </html>

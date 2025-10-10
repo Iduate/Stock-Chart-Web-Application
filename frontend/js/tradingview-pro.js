@@ -197,7 +197,7 @@ function addTrustIndicators() {
     });
 
     // Add main trust bar if homepage is detected
-    if (window.location.pathname.includes('home.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+    if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
         const mainContent = document.querySelector('main') || document.querySelector('.content') || document.body;
 
         // Create trust bar

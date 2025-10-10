@@ -91,8 +91,8 @@
             </div>
         </header>
         
-        <!-- Main Content -->
-        <main class="figma-main">
+    <!-- Main Content -->
+    <main class="figma-main desktop-only">
             <div class="main-content">
                 <!-- Subscription Header -->
                 <div class="content-header">
@@ -254,6 +254,144 @@
                 </div>
             </div>
         </main>
+
+        <section class="subscription-mobile mobile-only">
+            <div class="mobile-hero-card mobile-fade-in">
+                <div class="mobile-hero-top">
+                    <div>
+                        <span class="mobile-hero-subtitle">추천 요금제</span>
+                        <span class="mobile-hero-title">프로 플랜</span>
+                    </div>
+                    <button class="mobile-notification-btn" aria-label="구독 알림">
+                        <i class="fas fa-bell"></i>
+                        <span class="mobile-notification-dot"></span>
+                    </button>
+                </div>
+                <div class="mobile-hero-balance">
+                    <span class="label">월 구독료</span>
+                    <span class="value">₩39,900</span>
+                </div>
+                <div class="mobile-hero-card-info">
+                    <div>
+                        <span class="mobile-card-label">포함 기능</span>
+                        <span class="mobile-card-value">AI 무제한 + 알림</span>
+                    </div>
+                    <div class="mobile-card-change positive">7일 무료 체험</div>
+                </div>
+                <div class="mobile-hero-card-meta">
+                    <span>구독 취소는 언제든지 가능</span>
+                    <span class="mobile-card-chip"></span>
+                </div>
+            </div>
+
+            <div class="mobile-quick-actions mobile-fade-in">
+                <button class="mobile-action-btn primary">
+                    <i class="fas fa-crown"></i>
+                    구독 시작
+                </button>
+                <button class="mobile-action-btn secondary">
+                    <i class="fas fa-sync"></i>
+                    플랜 비교
+                </button>
+                <button class="mobile-action-btn tertiary">
+                    <i class="fas fa-headset"></i>
+                    상담 요청
+                </button>
+            </div>
+
+            <div class="mobile-stats-grid mobile-fade-in">
+                <div class="mobile-stat-card">
+                    <div class="mobile-stat-label">체험 기간</div>
+                    <div class="mobile-stat-value">7일</div>
+                    <div class="mobile-stat-change">무료로 모든 기능</div>
+                </div>
+                <div class="mobile-stat-card">
+                    <div class="mobile-stat-label">만족도</div>
+                    <div class="mobile-stat-value">98%</div>
+                    <div class="mobile-stat-change positive">리뷰 4.9/5.0</div>
+                </div>
+            </div>
+
+            <div class="mobile-card mobile-fade-in">
+                <div class="mobile-card-header">
+                    <h3 class="mobile-card-title">플랜 선택</h3>
+                    <button class="mobile-card-action">연간 결제</button>
+                </div>
+                <div class="mobile-form-inline">
+                    <div class="mobile-form-group">
+                        <label class="mobile-form-label">플랜</label>
+                        <select class="mobile-form-select">
+                            <option>무료</option>
+                            <option selected>프로</option>
+                            <option>엔터프라이즈</option>
+                        </select>
+                    </div>
+                    <div class="mobile-form-group">
+                        <label class="mobile-form-label">결제 주기</label>
+                        <select class="mobile-form-select">
+                            <option selected>월간</option>
+                            <option>연간 -15%</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="mobile-btn">구독 진행하기</button>
+                <button class="mobile-btn secondary">자세한 혜택 살펴보기</button>
+            </div>
+
+            <div class="mobile-card mobile-fade-in">
+                <div class="mobile-card-header">
+                    <h3 class="mobile-card-title">주요 혜택</h3>
+                    <button class="mobile-card-action">전체보기</button>
+                </div>
+                <div class="mobile-history-list">
+                    <div class="mobile-transaction-item">
+                        <div class="mobile-list-icon"><i class="fas fa-brain"></i></div>
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">AI 예측 무제한</div>
+                            <div class="mobile-transaction-meta">추가 비용 없이 사용</div>
+                        </div>
+                        <div class="mobile-list-value positive">포함</div>
+                    </div>
+                    <div class="mobile-transaction-item">
+                        <div class="mobile-list-icon"><i class="fas fa-bell"></i></div>
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">실시간 시그널 알림</div>
+                            <div class="mobile-transaction-meta">SMS & 이메일</div>
+                        </div>
+                        <div class="mobile-list-value positive">포함</div>
+                    </div>
+                    <div class="mobile-transaction-item">
+                        <div class="mobile-list-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">전문가 리포트</div>
+                            <div class="mobile-transaction-meta">매주 업데이트</div>
+                        </div>
+                        <div class="mobile-list-value positive">포함</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-card mobile-fade-in">
+                <div class="mobile-card-header">
+                    <h3 class="mobile-card-title">자주 묻는 질문</h3>
+                    <button class="mobile-card-action">문의하기</button>
+                </div>
+                <ul class="mobile-news-list">
+                    <li>
+                        <span class="news-title">언제든지 플랜 변경이 가능한가요?</span>
+                        <span class="news-time">언제든지</span>
+                    </li>
+                    <li>
+                        <span class="news-title">체험 종료 시 자동 결제되나요?</span>
+                        <span class="news-time">알림 제공</span>
+                    </li>
+                    <li>
+                        <span class="news-title">결제 수단은 어떤 것이 있나요?</span>
+                        <span class="news-time">카드 · PayPal</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
         
         <!-- Trading Panel -->
         <aside class="figma-trading-panel">
