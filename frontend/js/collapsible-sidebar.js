@@ -7,8 +7,9 @@ class CollapsibleSidebar {
     constructor() {
         this.container = document.querySelector('.figma-container');
         this.leftSidebar = document.querySelector('.figma-sidebar');
-    this.rightPanel = document.querySelector('.figma-trading-panel');
-    this.hasRightPanel = !!this.rightPanel;
+        this.rightPanel = document.querySelector('.figma-trading-panel');
+        this.hasRightPanel = !!this.rightPanel;
+        this.defaultColumns = this.container ? window.getComputedStyle(this.container).gridTemplateColumns : '';
         
         this.isLeftCollapsed = false;
         this.isRightCollapsed = false;
@@ -104,15 +105,26 @@ class CollapsibleSidebar {
     }
     
     updateContainerState() {
-        // Remove all collapse classes
+        // Remove all collapse classes and inline overrides
         this.container.classList.remove('left-collapsed', 'right-collapsed', 'both-collapsed');
-        
-        // Add appropriate classes based on state
+        this.container.style.gridTemplateColumns = '';
+
+        if (!this.hasRightPanel) {
+            // Maintain a two-column layout on pages without a trading panel
+            if (this.isLeftCollapsed) {
+                this.container.style.gridTemplateColumns = '80px 1fr';
+            } else {
+                this.container.style.gridTemplateColumns = this.defaultColumns || '260px 1fr';
+            }
+            return;
+        }
+
+        // Add appropriate classes based on state when both panels exist
         if (this.isLeftCollapsed && this.isRightCollapsed) {
             this.container.classList.add('both-collapsed');
         } else if (this.isLeftCollapsed) {
             this.container.classList.add('left-collapsed');
-        } else if (this.isRightCollapsed && this.hasRightPanel) {
+        } else if (this.isRightCollapsed) {
             this.container.classList.add('right-collapsed');
         }
     }

@@ -1228,6 +1228,7 @@ body {
    ============================================================= */
 .prediction-page {
     grid-template-columns: 260px 1fr;
+    grid-template-rows: 80px 1fr;
     grid-template-areas:
         "sidebar header"
         "sidebar main";
@@ -1247,9 +1248,13 @@ body {
 
 .prediction-dashboard {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: minmax(0, 1.2fr) 360px;
     gap: 32px;
     align-items: start;
+}
+
+.prediction-dashboard.single-column {
+    grid-template-columns: 1fr;
 }
 
 .dashboard-left {

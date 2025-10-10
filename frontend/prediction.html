@@ -31,9 +31,54 @@
                 <span>주식 차트</span>
             </div>
             
-            <!-- Main Content -->
-            <main class="figma-main prediction-main">
-                <div class="prediction-dashboard">
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>차트 분석</span>
+                </a>
+                <a href="prediction.html" class="nav-item active">
+                    <i class="fas fa-bullseye"></i>
+                    <span>사용자 예측</span>
+                </a>
+                <a href="ranking.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>수익률 랭킹</span>
+                </a>
+                <a href="subscription.html" class="nav-item">
+                    <i class="fas fa-crown"></i>
+                    <span>프리미엄</span>
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <!-- Header -->
+        <header class="figma-header prediction-header">
+            <div class="header-logo">
+                <i class="fas fa-chart-line text-accent-green"></i>
+                <span>주식 예측</span>
+            </div>
+            
+            <div class="header-search">
+                <input type="text" class="search-input" placeholder="예측할 종목 검색 (예: BTC, ETH, AAPL, TSLA)" id="searchInput">
+            </div>
+            
+            <div class="header-actions">
+                <button class="btn-predict"><i class="fas fa-user"></i> 로그인</button>
+                <button class="btn-predict primary"><i class="fas fa-chart-line"></i> 예측 시작</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="figma-main prediction-main">
+            <div class="prediction-dashboard">
                     <section class="dashboard-left">
                         <header class="dashboard-header">
                             <div class="profile-block">
@@ -353,7 +398,12 @@
             headerSearchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     const symbol = this.value.toUpperCase();
-                    document.getElementById('symbolSelect').value = symbol;
+                    if (symbol) {
+                        document.getElementById('symbolSelect').value = symbol;
+                        const activeInterval = document.querySelector('.timeframe-control-btn.active').dataset.period;
+                        initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
+                        updatePriceInfo(symbol);
+                    }
                     this.value = '';
                 }
             });
