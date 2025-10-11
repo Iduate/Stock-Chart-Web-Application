@@ -1956,7 +1956,7 @@ body {
     color: #6f7a92;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
     .prediction-dashboard {
         grid-template-columns: 1fr;
     }
