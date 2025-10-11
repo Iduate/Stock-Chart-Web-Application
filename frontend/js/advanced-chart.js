@@ -6,6 +6,54 @@
 let currentWidget = null;
 let currentPeriod = new Date();
 let selectedPoints = [];
+let mobilePredictionChart = null;
+let mobilePredictionSeries = null;
+let activeMobileSymbol = 'BTC/USD';
+
+const mobilePredictionData = {
+    'BTC/USD': [
+        { time: '2025-10-01', value: 42000 },
+        { time: '2025-10-02', value: 43050 },
+        { time: '2025-10-03', value: 43780 },
+        { time: '2025-10-04', value: 43210 },
+        { time: '2025-10-05', value: 43990 }
+    ],
+    'ETH/USD': [
+        { time: '2025-10-01', value: 2780 },
+        { time: '2025-10-02', value: 2825 },
+        { time: '2025-10-03', value: 2880 },
+        { time: '2025-10-04', value: 2840 },
+        { time: '2025-10-05', value: 2905 }
+    ],
+    'AAPL': [
+        { time: '2025-10-01', value: 184 },
+        { time: '2025-10-02', value: 186 },
+        { time: '2025-10-03', value: 188 },
+        { time: '2025-10-04', value: 187 },
+        { time: '2025-10-05', value: 189 }
+    ],
+    'TSLA': [
+        { time: '2025-10-01', value: 242 },
+        { time: '2025-10-02', value: 248 },
+        { time: '2025-10-03', value: 252 },
+        { time: '2025-10-04', value: 247 },
+        { time: '2025-10-05', value: 255 }
+    ],
+    'MSFT': [
+        { time: '2025-10-01', value: 336 },
+        { time: '2025-10-02', value: 338 },
+        { time: '2025-10-03', value: 340 },
+        { time: '2025-10-04', value: 339 },
+        { time: '2025-10-05', value: 342 }
+    ],
+    'GOOGL': [
+        { time: '2025-10-01', value: 132 },
+        { time: '2025-10-02', value: 134 },
+        { time: '2025-10-03', value: 133 },
+        { time: '2025-10-04', value: 135 },
+        { time: '2025-10-05', value: 136 }
+    ]
+};
 
 // Initialize Advanced TradingView Chart
 function initializeAdvancedChart(symbol = 'AAPL', interval = 'D') {
@@ -54,6 +102,80 @@ function initializeAdvancedChart(symbol = 'AAPL', interval = 'D') {
     });
 }
 
+function initializeMobilePredictionChart(symbol = 'BTC/USD') {
+    if (mobilePredictionChart || typeof LightweightCharts === 'undefined') {
+        return;
+    }
+
+    const container = document.getElementById('mobilePredictionChart');
+    if (!container) {
+        return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const width = Math.max(240, Math.floor(rect.width || container.offsetWidth || window.innerWidth - 32));
+
+    mobilePredictionChart = LightweightCharts.createChart(container, {
+        width,
+        height: 190,
+        layout: {
+            background: { type: 'solid', color: '#0a1024' },
+            textColor: '#f6f8ff'
+        },
+        grid: {
+            vertLines: { color: 'rgba(255,255,255,0.05)' },
+            horzLines: { color: 'rgba(255,255,255,0.05)' }
+        },
+        rightPriceScale: {
+            borderColor: 'rgba(255,255,255,0.08)'
+        },
+        timeScale: {
+            borderColor: 'rgba(255,255,255,0.08)',
+            timeVisible: true,
+            secondsVisible: false
+        }
+    });
+
+    mobilePredictionSeries = mobilePredictionChart.addAreaSeries({
+        lineColor: '#0A84FF',
+        topColor: 'rgba(10, 132, 255, 0.45)',
+        bottomColor: 'rgba(10, 132, 255, 0.08)',
+        lineWidth: 3
+    });
+
+    updateMobilePredictionChart(symbol);
+
+    window.addEventListener('resize', () => {
+        if (!mobilePredictionChart) return;
+        const bounds = container.getBoundingClientRect();
+        const newWidth = Math.max(240, Math.floor(bounds.width || container.offsetWidth || window.innerWidth - 32));
+        mobilePredictionChart.applyOptions({ width: newWidth });
+    });
+}
+
+function updateMobilePredictionChart(symbol) {
+    const container = document.getElementById('mobilePredictionChart');
+    if (!container || !mobilePredictionSeries) {
+        return;
+    }
+
+    const normalized = symbol.replace(/\s+/g, '').toUpperCase();
+    let datasetKey = Object.keys(mobilePredictionData).find(key => key.replace(/\s+/g, '').toUpperCase() === normalized);
+
+    if (!datasetKey) {
+        datasetKey = Object.keys(mobilePredictionData).find(key => key.replace(/\s+|\/USD/gi, '').toUpperCase() === normalized);
+    }
+
+    if (!datasetKey && normalized && !normalized.includes('/')) {
+        datasetKey = Object.keys(mobilePredictionData).find(key => key.replace(/\s+/g, '').toUpperCase() === `${normalized}/USD`);
+    }
+
+    const data = mobilePredictionData[datasetKey || 'BTC/USD'];
+    mobilePredictionSeries.setData(data);
+    mobilePredictionChart.timeScale().fitContent();
+    activeMobileSymbol = datasetKey || 'BTC/USD';
+}
+
 // Chart Search Functionality
 function setupChartSearch() {
     const searchInput = document.getElementById('chartSearchInput');
@@ -68,6 +190,7 @@ function setupChartSearch() {
                     const activeInterval = document.querySelector('.timeframe-control-btn.active')?.dataset.period || 'D';
                     initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
                     updatePriceInfo(symbol);
+                    updateMobilePredictionChart(symbol);
                 }
             }
         });
@@ -265,6 +388,8 @@ function animateVolumeBars() {
 // Initialize everything when page loads
 function initializeAdvancedChartSystem() {
     initializeAdvancedChart();
+    initializeMobilePredictionChart(activeMobileSymbol);
+    updateMobilePredictionChart(activeMobileSymbol);
     setupChartSearch();
     setupTimeNavigation();
     setupDrawingTools();
@@ -304,9 +429,29 @@ function initializeAdvancedChartSystem() {
                 const activeInterval = document.querySelector('.timeframe-control-btn.active')?.dataset.period || 'D';
                 initializeAdvancedChart(symbol, convertPeriodToInterval(activeInterval));
                 updatePriceInfo(symbol);
+                updateMobilePredictionChart(symbol);
             }
         });
     }
+
+    document.querySelectorAll('.mobile-timeframe-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mobile-timeframe-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateMobilePredictionChart(activeMobileSymbol);
+        });
+    });
+
+    const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+    const ensureMobileChart = () => {
+        if (mobileMediaQuery.matches) {
+            initializeMobilePredictionChart(activeMobileSymbol);
+            updateMobilePredictionChart(activeMobileSymbol);
+        }
+    };
+
+    ensureMobileChart();
+    mobileMediaQuery.addEventListener('change', ensureMobileChart);
 }
 
 // Auto-initialize when TradingView is loaded

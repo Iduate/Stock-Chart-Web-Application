@@ -27,7 +27,7 @@
             </div>
 
             <nav class="top-nav-links">
-                <a href="/" class="top-nav-link">
+                <a href="index.html" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
@@ -192,8 +192,94 @@
         </section>
     </div>
 
+    <section class="ranking-mobile mobile-only">
+        <div class="mobile-hero-card mobile-fade-in">
+            <div class="mobile-hero-top">
+                <div>
+                    <span class="mobile-hero-subtitle" id="mobileFilterLabel">랭킹 보드</span>
+                    <span class="mobile-hero-title" id="mobileLeaderName">랭커를 불러오는 중</span>
+                </div>
+                <button class="mobile-notification-btn" id="mobileJoinRankingBtn" aria-label="랭킹 참가">
+                    <i class="fas fa-flag-checkered"></i>
+                </button>
+            </div>
+            <div class="mobile-hero-balance">
+                <span class="label">수익률</span>
+                <span class="value" id="mobileLeaderReturn">+0.0%</span>
+            </div>
+            <div class="mobile-hero-card-info">
+                <div>
+                    <span class="mobile-card-label">승률</span>
+                    <span class="mobile-card-value" id="mobileLeaderWinRate">0%</span>
+                </div>
+                <div class="mobile-card-change" id="mobileLeaderTier">티어 정보 없음</div>
+            </div>
+            <div class="mobile-hero-card-meta">
+                <span id="mobileLeaderStreak">연속 0승</span>
+                <span class="mobile-card-chip"></span>
+            </div>
+        </div>
+
+        <div class="mobile-filter-grid mobile-fade-in" id="mobileFilterChips"></div>
+
+        <div class="mobile-stats-grid mobile-fade-in">
+            <div class="mobile-stat-card">
+                <div class="mobile-stat-label">참가자 수</div>
+                <div class="mobile-stat-value" id="mobileStatParticipants">0</div>
+                <div class="mobile-stat-change">실시간 업데이트</div>
+            </div>
+            <div class="mobile-stat-card">
+                <div class="mobile-stat-label">최고 수익률</div>
+                <div class="mobile-stat-value" id="mobileStatTopReturn">+0.0%</div>
+                <div class="mobile-stat-change positive" id="mobileStatTopUser">-</div>
+            </div>
+            <div class="mobile-stat-card">
+                <div class="mobile-stat-label">평균 수익률</div>
+                <div class="mobile-stat-value" id="mobileStatAvgReturn">0.0%</div>
+                <div class="mobile-stat-change" id="mobileStatWinRate">승률 0%</div>
+            </div>
+            <div class="mobile-stat-card">
+                <div class="mobile-stat-label">최고 연속 성공</div>
+                <div class="mobile-stat-value" id="mobileStatBestStreak">0</div>
+                <div class="mobile-stat-change">연승 기록</div>
+            </div>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <div>
+                    <h3 class="mobile-card-title">Top 랭커</h3>
+                    <span class="mobile-card-subtitle" id="mobileLeaderboardSubtitle">상위 5명 실시간</span>
+                </div>
+            </div>
+            <div class="mobile-history-list" id="mobileLeaderboardList"></div>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <div>
+                    <h3 class="mobile-card-title">전략 인사이트</h3>
+                    <span class="mobile-card-subtitle" id="mobileInsightsSubtitle">기간별 요약</span>
+                </div>
+                <button class="mobile-card-action" id="mobileRefreshInsightsBtn">새로고침</button>
+            </div>
+            <ul class="mobile-news-list" id="mobileInsightsList"></ul>
+        </div>
+
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <div>
+                    <h3 class="mobile-card-title">다가오는 대회</h3>
+                    <span class="mobile-card-subtitle">참가 추천 일정</span>
+                </div>
+                <button class="mobile-card-action" id="mobileOpenEventsBtn">전체 보기</button>
+            </div>
+            <div class="mobile-history-list" id="mobileTournamentsList"></div>
+        </div>
+    </section>
+
     <nav class="mobile-bottom-nav mobile-only">
-    <a href="/" class="mobile-nav-item">
+    <a href="index.html" class="mobile-nav-item">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </a>
@@ -288,6 +374,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             renderFilters();
+            renderMobileFilters();
             renderStats();
             renderLeaderboard();
             renderTable();
@@ -295,6 +382,7 @@
             renderProfile();
             renderUpcoming();
             renderStrategies();
+            renderMobileRanking();
             attachRankingHandlers();
         });
 
@@ -302,6 +390,17 @@
             const container = document.getElementById('timeframeTabs');
             container.innerHTML = rankingState.filters.map(filter => `
                 <button class="ghost-btn small ${filter.id === rankingState.currentFilter ? 'active' : ''}" data-filter="${filter.id}">
+                    ${filter.label}
+                </button>
+            `).join('');
+        }
+
+        function renderMobileFilters() {
+            const chips = document.getElementById('mobileFilterChips');
+            if (!chips) return;
+
+            chips.innerHTML = rankingState.filters.map(filter => `
+                <button type="button" class="mobile-filter-chip ${filter.id === rankingState.currentFilter ? 'active' : ''}" data-mobile-filter="${filter.id}">
                     ${filter.label}
                 </button>
             `).join('');
@@ -526,26 +625,224 @@
             `).join('');
         }
 
+        function renderMobileRanking() {
+            const heroName = document.getElementById('mobileLeaderName');
+            if (!heroName) return;
+
+            const entries = getFilteredEntries(true);
+            const filterLabel = getFilterLabel();
+
+            const filterLabelEl = document.getElementById('mobileFilterLabel');
+            if (filterLabelEl) {
+                filterLabelEl.textContent = filterLabel ? `${filterLabel} 리더보드` : '랭킹 보드';
+            }
+
+            const heroReturnEl = document.getElementById('mobileLeaderReturn');
+            const heroWinRateEl = document.getElementById('mobileLeaderWinRate');
+            const heroTierEl = document.getElementById('mobileLeaderTier');
+            const heroStreakEl = document.getElementById('mobileLeaderStreak');
+
+            if (!entries.length) {
+                heroName.textContent = '표시할 랭커가 없습니다';
+                if (heroReturnEl) heroReturnEl.textContent = '+0.0%';
+                if (heroWinRateEl) heroWinRateEl.textContent = '0%';
+                if (heroTierEl) {
+                    heroTierEl.className = 'mobile-card-change';
+                    heroTierEl.textContent = '티어 정보 없음';
+                }
+                if (heroStreakEl) heroStreakEl.textContent = '연속 0승';
+
+                updateMobileStats(entries);
+                updateMobileLeaderboard(entries);
+                updateMobileInsights();
+                updateMobileTournaments();
+                return;
+            }
+
+            const leader = entries[0];
+            const formattedReturn = `${leader.returnRate >= 0 ? '+' : ''}${leader.returnRate.toFixed(1)}%`;
+            const formattedWinRate = `${leader.winRate.toFixed(1)}%`;
+
+            heroName.textContent = leader.username;
+            if (heroReturnEl) heroReturnEl.textContent = formattedReturn;
+            if (heroWinRateEl) heroWinRateEl.textContent = formattedWinRate;
+            if (heroTierEl) {
+                const emphasized = leader.tier === '챌린저' || leader.tier === '타이탄';
+                heroTierEl.className = `mobile-card-change ${emphasized ? 'positive' : ''}`.trim();
+                heroTierEl.textContent = leader.tier;
+            }
+            if (heroStreakEl) heroStreakEl.textContent = `연속 ${leader.streak}승`;
+
+            updateMobileStats(entries);
+            updateMobileLeaderboard(entries);
+            updateMobileInsights();
+            updateMobileTournaments();
+        }
+
+        function updateMobileStats(entries) {
+            const participantsEl = document.getElementById('mobileStatParticipants');
+            const topReturnEl = document.getElementById('mobileStatTopReturn');
+            const topUserEl = document.getElementById('mobileStatTopUser');
+            const avgReturnEl = document.getElementById('mobileStatAvgReturn');
+            const winRateEl = document.getElementById('mobileStatWinRate');
+            const bestStreakEl = document.getElementById('mobileStatBestStreak');
+
+            if (!participantsEl) return;
+
+            if (!entries.length) {
+                participantsEl.textContent = '0';
+                if (topReturnEl) topReturnEl.textContent = '+0.0%';
+                if (topUserEl) topUserEl.textContent = '-';
+                if (avgReturnEl) avgReturnEl.textContent = '0.0%';
+                if (winRateEl) winRateEl.textContent = '승률 0%';
+                if (bestStreakEl) bestStreakEl.textContent = '0';
+                return;
+            }
+
+            const participants = entries.length;
+            const topEntry = entries[0];
+            const avgReturn = entries.reduce((sum, item) => sum + item.returnRate, 0) / entries.length;
+            const avgWinRate = entries.reduce((sum, item) => sum + item.winRate, 0) / entries.length;
+            const bestStreak = Math.max(...entries.map(item => item.streak));
+
+            participantsEl.textContent = participants.toString();
+            if (topReturnEl) topReturnEl.textContent = `${topEntry.returnRate >= 0 ? '+' : ''}${topEntry.returnRate.toFixed(1)}%`;
+            if (topUserEl) topUserEl.textContent = topEntry.username;
+            if (avgReturnEl) avgReturnEl.textContent = `${avgReturn.toFixed(1)}%`;
+            if (winRateEl) winRateEl.textContent = `승률 ${avgWinRate.toFixed(1)}%`;
+            if (bestStreakEl) bestStreakEl.textContent = bestStreak.toString();
+        }
+
+        function updateMobileLeaderboard(entries) {
+            const list = document.getElementById('mobileLeaderboardList');
+            if (!list) return;
+
+            if (!entries.length) {
+                list.innerHTML = `
+                    <div class="mobile-transaction-item">
+                        <div class="mobile-list-icon"><i class="fas fa-user-slash"></i></div>
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">랭킹 데이터를 찾을 수 없습니다.</div>
+                            <div class="mobile-transaction-meta">필터를 조정하거나 기간을 변경해보세요.</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = entries.slice(0, 5).map((item, index) => `
+                <div class="mobile-transaction-item">
+                    <div class="mobile-list-icon">${index + 1}</div>
+                    <div class="mobile-list-content">
+                        <div class="mobile-list-title">${item.username}</div>
+                        <div class="mobile-transaction-meta">${item.tier} · 승률 ${item.winRate.toFixed(1)}% · ${item.trades}회</div>
+                    </div>
+                    <div class="mobile-list-value ${item.returnRate >= 0 ? 'positive' : 'negative'}">${item.returnRate >= 0 ? '+' : ''}${item.returnRate.toFixed(1)}%</div>
+                </div>
+            `).join('');
+
+            const subtitle = document.getElementById('mobileLeaderboardSubtitle');
+            if (subtitle) {
+                const label = getFilterLabel();
+                const count = Math.min(entries.length, 5);
+                subtitle.textContent = label ? `상위 ${count}명 · ${label} 기준` : `상위 ${count}명`;
+            }
+        }
+
+        function updateMobileInsights() {
+            const insightsList = document.getElementById('mobileInsightsList');
+            if (!insightsList) return;
+
+            const insights = rankingState.insights[rankingState.currentFilter] || [];
+            if (!insights.length) {
+                insightsList.innerHTML = `
+                    <li>
+                        <span class="news-title">표시할 인사이트가 없습니다.</span>
+                        <span class="news-time">데이터 대기 중</span>
+                    </li>
+                `;
+                return;
+            }
+
+            insightsList.innerHTML = insights.map((text, index) => `
+                <li>
+                    <span class="news-title">${text}</span>
+                    <span class="news-time">인사이트 ${index + 1}</span>
+                </li>
+            `).join('');
+
+            const subtitle = document.getElementById('mobileInsightsSubtitle');
+            if (subtitle) {
+                const label = getFilterLabel();
+                subtitle.textContent = label ? `${label} 기준 전략 요약` : '전략 요약';
+            }
+        }
+
+        function updateMobileTournaments() {
+            const list = document.getElementById('mobileTournamentsList');
+            if (!list) return;
+
+            if (!rankingState.upcoming.length) {
+                list.innerHTML = `
+                    <div class="mobile-transaction-item">
+                        <div class="mobile-list-icon"><i class="fas fa-calendar-times"></i></div>
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">예정된 대회가 없습니다.</div>
+                            <div class="mobile-transaction-meta">새로운 이벤트가 등록되면 알려드릴게요.</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = rankingState.upcoming.map(item => `
+                <div class="mobile-transaction-item">
+                    <div class="mobile-list-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="mobile-list-content">
+                        <div class="mobile-list-title">${item.title}</div>
+                        <div class="mobile-transaction-meta">${item.date} · ${item.status}</div>
+                    </div>
+                    <div class="mobile-list-value positive">${item.reward}</div>
+                </div>
+            `).join('');
+        }
+
         function attachRankingHandlers() {
             document.getElementById('timeframeTabs').addEventListener('click', event => {
                 const button = event.target.closest('button[data-filter]');
                 if (!button) return;
                 rankingState.currentFilter = button.dataset.filter;
                 renderFilters();
+                renderMobileFilters();
                 refreshRankingView();
                 showRankingToast(`${button.textContent.trim()} 리더보드로 전환했습니다.`, 'info');
             });
+
+            const mobileFilterChips = document.getElementById('mobileFilterChips');
+            if (mobileFilterChips) {
+                mobileFilterChips.addEventListener('click', event => {
+                    const chip = event.target.closest('[data-mobile-filter]');
+                    if (!chip) return;
+                    rankingState.currentFilter = chip.dataset.mobileFilter;
+                    renderFilters();
+                    renderMobileFilters();
+                    refreshRankingView();
+                    showRankingToast(`${chip.textContent.trim()} 리더보드로 전환했습니다.`, 'info');
+                });
+            }
 
             document.getElementById('rankingTierFilter').addEventListener('change', event => {
                 rankingState.tierFilter = event.target.value;
                 renderTable();
                 renderLeaderboard();
                 renderStats();
+                renderMobileRanking();
             });
 
             document.getElementById('rankingSort').addEventListener('change', event => {
                 rankingState.sortKey = event.target.value;
                 renderTable();
+                renderMobileRanking();
             });
 
             document.getElementById('rankingSearch').addEventListener('keydown', event => {
@@ -554,6 +851,7 @@
                     renderTable();
                     renderLeaderboard();
                     renderStats();
+                    renderMobileRanking();
                     event.target.value = '';
                 }
             });
@@ -577,6 +875,7 @@
                 renderTable();
                 renderLeaderboard();
                 renderStats();
+                renderMobileRanking();
                 showRankingToast('필터와 검색 조건이 초기화되었습니다.', 'success');
             });
 
@@ -588,8 +887,31 @@
                 showRankingToast('랭킹 참가 신청이 완료되었습니다. 화이팅!', 'success');
             });
 
+            const mobileJoinBtn = document.getElementById('mobileJoinRankingBtn');
+            if (mobileJoinBtn) {
+                mobileJoinBtn.addEventListener('click', () => {
+                    showRankingToast('모바일에서 랭킹 참가 신청을 완료했습니다!', 'success');
+                });
+            }
+
+            const mobileRefreshBtn = document.getElementById('mobileRefreshInsightsBtn');
+            if (mobileRefreshBtn) {
+                mobileRefreshBtn.addEventListener('click', () => {
+                    showRankingToast('전략 인사이트를 새로고침했습니다.', 'success');
+                    updateMobileInsights();
+                });
+            }
+
+            const mobileEventsBtn = document.getElementById('mobileOpenEventsBtn');
+            if (mobileEventsBtn) {
+                mobileEventsBtn.addEventListener('click', () => {
+                    window.location.href = 'events.html';
+                });
+            }
+
             document.getElementById('refreshInsightsBtn').addEventListener('click', () => {
                 showRankingToast('전략 인사이트가 최신 상태로 업데이트되었습니다.', 'success');
+                updateMobileInsights();
             });
 
             document.getElementById('compareStrategiesBtn').addEventListener('click', () => {
@@ -624,10 +946,12 @@
         }
 
         function refreshRankingView() {
+            renderMobileFilters();
             renderStats();
             renderLeaderboard();
             renderTable();
             renderInsights();
+            renderMobileRanking();
         }
 
         function getFilteredEntries(includeSort = false) {
