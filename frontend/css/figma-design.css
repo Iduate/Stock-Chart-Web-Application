@@ -1274,6 +1274,19 @@ body {
     grid-template-columns: minmax(0, 1.2fr) 360px;
     gap: 32px;
     align-items: start;
+    max-width: 1380px;
+    margin: 0 auto;
+}
+
+@media (min-width: 1025px) {
+    .prediction-dashboard {
+        grid-template-columns: minmax(0, 1.65fr) minmax(340px, 0.75fr);
+    }
+
+    .dashboard-right {
+        width: 100%;
+        max-width: 400px;
+    }
 }
 
 .prediction-dashboard.single-column {
@@ -1956,7 +1969,7 @@ body {
     color: #6f7a92;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .prediction-dashboard {
         grid-template-columns: 1fr;
     }
