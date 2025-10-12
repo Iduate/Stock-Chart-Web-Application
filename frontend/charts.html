@@ -455,6 +455,17 @@
             </div>
         </div>
 
+        <!-- Mobile secondary chart card -->
+        <div class="mobile-card mobile-fade-in">
+            <div class="mobile-card-header">
+                <div>
+                    <h3 class="mobile-card-title" id="mobileSecondaryTitle">보조 차트</h3>
+                    <span class="mobile-card-subtitle">현재 종목의 보조 시각화 (캔들)</span>
+                </div>
+            </div>
+            <div class="mobile-secondary-chart" id="mobileSecondaryChart"></div>
+        </div>
+
         <div class="mobile-stats-grid mobile-fade-in">
             <div class="mobile-stat-card">
                 <div class="mobile-stat-label">시가총액</div>
@@ -714,6 +725,11 @@
             background: var(--accent-green);
             color: var(--bg-primary);
             border-color: var(--accent-green);
+        }
+
+        /* Mobile secondary chart */
+        .mobile-secondary-chart {
+            height: 180px;
         }
 
         @media (max-width: 992px) {
@@ -1063,6 +1079,8 @@
         let secondarySeries = null;
         let mobileChart = null;
         let mobileSeries = null;
+        let mobileSecondaryChart = null;
+        let mobileSecondarySeries = null;
         let currentSymbol = 'BTCUSD';
 
         const numberFormatter = new Intl.NumberFormat('en-US', {
@@ -1366,6 +1384,63 @@
             });
         }
 
+        function initializeMobileSecondaryChart() {
+            if (mobileSecondaryChart || !window.matchMedia('(max-width: 768px)').matches) {
+                return;
+            }
+
+            const container = document.getElementById('mobileSecondaryChart');
+            if (!container) return;
+
+            let width = container.getBoundingClientRect().width || container.clientWidth || container.offsetWidth || (window.innerWidth - 32);
+            width = Math.max(240, Math.floor(width));
+
+            mobileSecondaryChart = LightweightCharts.createChart(container, {
+                width: width,
+                height: 180,
+                layout: {
+                    background: { type: 'solid', color: '#0a1024' },
+                    textColor: '#f6f8ff',
+                },
+                grid: {
+                    vertLines: { color: 'rgba(255,255,255,0.08)' },
+                    horzLines: { color: 'rgba(255,255,255,0.08)' },
+                },
+                rightPriceScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                },
+                timeScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            mobileSecondarySeries = mobileSecondaryChart.addCandlestickSeries({
+                upColor: '#22c55e',
+                downColor: '#ef4444',
+                borderUpColor: '#22c55e',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#22c55e',
+                wickDownColor: '#ef4444',
+            });
+
+            if (chartData[currentSymbol]) {
+                mobileSecondarySeries.setData(chartData[currentSymbol]);
+                mobileSecondaryChart.timeScale().fitContent();
+            }
+
+            const title = document.getElementById('mobileSecondaryTitle');
+            if (title) title.textContent = `보조 차트 • ${getDisplaySymbol(currentSymbol)}`;
+
+            window.addEventListener('resize', () => {
+                if (!mobileSecondaryChart) return;
+                let newWidth = container.getBoundingClientRect().width || container.clientWidth || container.offsetWidth || (window.innerWidth - 32);
+                newWidth = Math.max(240, Math.floor(newWidth));
+                mobileSecondaryChart.applyOptions({ width: newWidth });
+            });
+        }
+
         // Switch symbol
         function switchSymbol(symbol) {
             currentSymbol = symbol;
@@ -1413,6 +1488,13 @@
                 mobileChart.timeScale().fitContent();
             }
 
+            if (mobileSecondarySeries && chartData[symbol]) {
+                mobileSecondarySeries.setData(chartData[symbol]);
+                mobileSecondaryChart.timeScale().fitContent();
+                const title = document.getElementById('mobileSecondaryTitle');
+                if (title) title.textContent = `보조 차트 • ${getDisplaySymbol(symbol)}`;
+            }
+
             const dataPoints = chartData[symbol] || chartData.BTCUSD;
             if (dataPoints && dataPoints.length) {
                 const lastPoint = dataPoints[dataPoints.length - 1];
@@ -1453,6 +1535,7 @@
             initializeChart();
             initializeSecondaryChart();
             initializeMobileChart();
+            initializeMobileSecondaryChart();
             updateMobileSummary(currentSymbol);
 
             const mobileMediaQuery = window.matchMedia('(max-width: 768px)');
@@ -1460,6 +1543,7 @@
                 if (event.matches) {
                     setTimeout(() => {
                         initializeMobileChart();
+                        initializeMobileSecondaryChart();
                         updateMobileSummary(currentSymbol);
                     }, 200);
                 }
