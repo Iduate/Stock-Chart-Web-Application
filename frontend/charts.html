@@ -378,6 +378,19 @@
         </div>
     </section>
 
+    <!-- Secondary full-width chart (desktop) -->
+    <section class="charts-secondary-section desktop-only">
+        <div class="secondary-full-card">
+            <div class="card-heading">
+                <div>
+                    <h3 id="secondaryChartTitle">보조 차트 • BTC/USD</h3>
+                    <p>주요 차트 아래의 보조 시각화 (캔들)</p>
+                </div>
+            </div>
+            <div class="secondary-advanced-chart" id="secondaryChartContainer"></div>
+        </div>
+    </section>
+
     <section class="charts-mobile mobile-only">
         <div class="mobile-hero-card mobile-fade-in">
             <div class="mobile-hero-top">
@@ -683,6 +696,18 @@
 
         #chartContainer {
             height: 450px;
+        }
+
+        /* Secondary full-width chart */
+        .secondary-full-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-medium);
+            padding: var(--spacing-md);
+        }
+
+        .secondary-advanced-chart {
+            height: 360px;
         }
 
         .interval-btn.active {
@@ -1034,6 +1059,8 @@
     <script>
         let currentChart = null;
         let desktopSeries = null;
+        let secondaryChart = null;
+        let secondarySeries = null;
         let mobileChart = null;
         let mobileSeries = null;
         let currentSymbol = 'BTCUSD';
@@ -1228,6 +1255,56 @@
             });
         }
 
+        // Initialize secondary full-width desktop chart
+        function initializeSecondaryChart() {
+            const container = document.getElementById('secondaryChartContainer');
+            if (!container) return;
+
+            secondaryChart = LightweightCharts.createChart(container, {
+                width: container.clientWidth,
+                height: 360,
+                layout: {
+                    background: { type: 'solid', color: '#111827' },
+                    textColor: '#e5edff',
+                },
+                grid: {
+                    vertLines: { color: 'rgba(255,255,255,0.06)' },
+                    horzLines: { color: 'rgba(255,255,255,0.06)' },
+                },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                rightPriceScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                },
+                timeScale: {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    timeVisible: true,
+                    secondsVisible: false,
+                },
+            });
+
+            secondarySeries = secondaryChart.addCandlestickSeries({
+                upColor: '#22c55e',
+                downColor: '#ef4444',
+                borderUpColor: '#22c55e',
+                borderDownColor: '#ef4444',
+                wickUpColor: '#22c55e',
+                wickDownColor: '#ef4444',
+            });
+
+            if (chartData[currentSymbol]) {
+                secondarySeries.setData(chartData[currentSymbol]);
+            }
+            const title = document.getElementById('secondaryChartTitle');
+            if (title) title.textContent = `보조 차트 • ${getDisplaySymbol(currentSymbol)}`;
+
+            window.addEventListener('resize', () => {
+                if (!secondaryChart) return;
+                secondaryChart.applyOptions({ width: container.clientWidth });
+            });
+        }
+
         function initializeMobileChart() {
             if (mobileChart || !window.matchMedia('(max-width: 768px)').matches) {
                 return;
@@ -1322,6 +1399,12 @@
                 desktopSeries.setData(chartData[symbol] || chartData.BTCUSD);
             }
 
+            if (secondarySeries) {
+                secondarySeries.setData(chartData[symbol] || chartData.BTCUSD);
+                const title = document.getElementById('secondaryChartTitle');
+                if (title) title.textContent = `보조 차트 • ${getDisplaySymbol(symbol)}`;
+            }
+
             if (mobileSeries && chartData[symbol]) {
                 mobileSeries.setData(chartData[symbol].map(point => ({
                     time: point.time,
@@ -1368,6 +1451,7 @@
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeChart();
+            initializeSecondaryChart();
             initializeMobileChart();
             updateMobileSummary(currentSymbol);
 
