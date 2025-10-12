@@ -2485,9 +2485,8 @@ body {
         padding: var(--spacing-lg);
         background: rgba(10, 15, 30, 0.85);
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        position: sticky;
-        top: 0;
-        z-index: 20;
+        /* Scroll with the page (non-sticky) to match home behavior */
+        position: static;
         backdrop-filter: blur(18px);
     }
 
