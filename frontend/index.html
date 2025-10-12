@@ -22,6 +22,62 @@
 </head>
 
 <body class="h-full">
+    <!-- Desktop Top Navigation (mirrors charts.html) -->
+    <div class="home-desktop desktop-only">
+        <header class="dashboard-top-bar">
+            <div class="top-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <p class="brand-eyebrow">실시간 분석 허브</p>
+                    <h1 class="brand-title">홈</h1>
+                </div>
+            </div>
+
+            <nav class="top-nav-links">
+                <a href="/" class="top-nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>홈</span>
+                </a>
+                <a href="charts.html" class="top-nav-link">
+                    <i class="fas fa-chart-area"></i>
+                    <span>차트</span>
+                </a>
+                <a href="prediction.html" class="top-nav-link">
+                    <i class="fas fa-magic"></i>
+                    <span>예측하기</span>
+                </a>
+                <a href="my-predictions.html" class="top-nav-link">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="ranking.html" class="top-nav-link">
+                    <i class="fas fa-trophy"></i>
+                    <span>랭킹</span>
+                </a>
+                <a href="events.html" class="top-nav-link">
+                    <i class="fas fa-calendar-star"></i>
+                    <span>이벤트</span>
+                </a>
+            </nav>
+
+            <div class="top-actions">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input id="searchInputTop" class="search-input" type="search" placeholder="종목 검색 (예: BTC, ETH, AAPL, TSLA)">
+                </div>
+                <button id="setAlertBtnTop" class="ghost-btn">
+                    <i class="fas fa-bell"></i>
+                    가격 알림
+                </button>
+                <a href="prediction.html" class="primary-btn" style="text-decoration:none;">
+                    <i class="fas fa-lightbulb"></i>
+                    전략 예측 열기
+                </a>
+            </div>
+        </header>
+    </div>
     <div class="home-desktop desktop-only">
             <section class="home-dashboard">
                 <div class="home-metrics">
