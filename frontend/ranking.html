@@ -192,6 +192,42 @@
         </section>
     </div>
 
+    <!-- Secondary insights (desktop) -->
+    <section class="charts-secondary-section desktop-only">
+        <div class="charts-secondary-grid">
+            <div class="chart-mini-card">
+                <div class="mini-card-header"><span>BTC / USD</span><strong>$43,234</strong></div>
+                <div class="mini-chart-canvas" id="rankMiniChartBTC"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header"><span>ETH / USD</span><strong>$2,687</strong></div>
+                <div class="mini-chart-canvas" id="rankMiniChartETH"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header"><span>AAPL</span><strong>$178.24</strong></div>
+                <div class="mini-chart-canvas" id="rankMiniChartAAPL"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header"><span>TSLA</span><strong>$251.89</strong></div>
+                <div class="mini-chart-canvas" id="rankMiniChartTSLA"></div>
+            </div>
+            <div class="movers-card">
+                <div class="card-heading">
+                    <div>
+                        <h3>전략 Top Movers</h3>
+                        <p>변동이 큰 전략/종목 요약</p>
+                    </div>
+                </div>
+                <div class="movers-list">
+                    <div class="mover-row positive"><div class="mover-symbol"><i class="fab fa-bitcoin"></i><span>BTC</span></div><div class="mover-values"><span class="price">$43,480</span><span class="change">+3.12%</span></div></div>
+                    <div class="mover-row positive"><div class="mover-symbol"><i class="fab fa-ethereum"></i><span>ETH</span></div><div class="mover-values"><span class="price">$2,704</span><span class="change">+2.18%</span></div></div>
+                    <div class="mover-row negative"><div class="mover-symbol"><i class="fas fa-apple-alt"></i><span>AAPL</span></div><div class="mover-values"><span class="price">$176.90</span><span class="change">-0.76%</span></div></div>
+                    <div class="mover-row positive"><div class="mover-symbol"><i class="fas fa-microchip"></i><span>NVDA</span></div><div class="mover-values"><span class="price">$421.67</span><span class="change">+1.34%</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="ranking-mobile mobile-only">
         <div class="mobile-hero-card mobile-fade-in">
             <div class="mobile-hero-top">
@@ -300,6 +336,29 @@
             <span>이벤트</span>
         </a>
     </nav>
+
+    <script>
+        (function initRankMiniCharts(){
+            if (typeof LightweightCharts === 'undefined') return;
+            const ids = ['rankMiniChartBTC','rankMiniChartETH','rankMiniChartAAPL','rankMiniChartTSLA'];
+            const bases = [43000, 2680, 178, 252];
+            const colors = ['#00FFA3','#5BD5FF','#8CE99A','#FFD166'];
+            const charts=[];
+            function gen(base){
+                const now = Math.floor(Date.now()/1000);
+                return Array.from({length:40},(_,i)=>({time:now-(40-i)*3600,value:base+Math.sin(i/3)*base*0.005+(Math.random()-0.5)*base*0.002}));
+            }
+            ids.forEach((id,idx)=>{
+                const el=document.getElementById(id); if(!el) return;
+                const chart=LightweightCharts.createChart(el,{width:el.clientWidth,height:140,layout:{background:{type:'solid',color:'transparent'},textColor:'#cfe6ff'},grid:{vertLines:{color:'rgba(255,255,255,0.06)'},horzLines:{color:'rgba(255,255,255,0.06)'}},rightPriceScale:{visible:false},timeScale:{borderColor:'rgba(255,255,255,0.06)'}});
+                const series=chart.addAreaSeries({lineColor:colors[idx],topColor:colors[idx]+'44',bottomColor:colors[idx]+'11'});
+                series.setData(gen(bases[idx]));
+                chart.timeScale().fitContent();
+                charts.push({chart,el});
+            });
+            window.addEventListener('resize',()=>charts.forEach(({chart,el})=>chart.applyOptions({width:el.clientWidth})));
+        })();
+    </script>
 
     <div id="rankingToast" class="home-toast"></div>
 
