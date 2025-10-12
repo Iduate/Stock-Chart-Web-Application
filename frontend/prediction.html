@@ -528,6 +528,42 @@
 
     <!-- JavaScript -->
     <script>
+        // Ensure mobile nav active state reflects current page
+        (function () {
+            var path = location.pathname.replace(/\/+$/, '') || '/';
+            document.querySelectorAll('.mobile-bottom-nav .mobile-nav-item').forEach(function(a){
+                var href = a.getAttribute('href');
+                var match = (href === '/' && path === '/') || (href !== '/' && path.endsWith(href));
+                a.classList.toggle('active', !!match);
+                if (match) a.setAttribute('aria-current', 'page');
+            });
+        })();
+
+        // Minimal mobile prediction chart init as a fallback
+        function initMobilePredictionChart() {
+            var el = document.getElementById('mobilePredictionChart');
+            if (!el || typeof LightweightCharts === 'undefined') return;
+            if (el.__chartInit) return; // prevent double init
+            el.__chartInit = true;
+            var chart = LightweightCharts.createChart(el, {
+                width: el.clientWidth,
+                height: 180,
+                layout: { background: { type: 'solid', color: '#0b1224' }, textColor: '#eaf2ff' },
+                grid: { vertLines: { color: 'rgba(255,255,255,0.06)' }, horzLines: { color: 'rgba(255,255,255,0.06)' }},
+                rightPriceScale: { borderColor: 'rgba(255,255,255,0.1)' },
+                timeScale: { borderColor: 'rgba(255,255,255,0.1)' }
+            });
+            var series = chart.addAreaSeries({ lineColor: '#0A84FF', topColor: 'rgba(10,132,255,0.35)', bottomColor: 'rgba(10,132,255,0.05)' });
+            var now = Date.now();
+            var data = Array.from({length: 50}, (_, i) => ({ time: Math.floor((now/1000) - (50-i)*3600), value: 43000 + Math.sin(i/5)*300 + i*5 }));
+            series.setData(data);
+            chart.timeScale().fitContent();
+            window.addEventListener('resize', function(){ chart.applyOptions({ width: el.clientWidth }); });
+        }
+
+        // Delay init to ensure CSS layout applied
+        document.addEventListener('DOMContentLoaded', function(){ setTimeout(initMobilePredictionChart, 100); });
+
         let selectedDirection = null;
 
         function selectDirection(direction) {

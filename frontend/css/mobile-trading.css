@@ -51,9 +51,10 @@
 @media (max-width: 768px) {
     /* Layout Visibility */
     .mobile-only { display: block !important; }
-    .desktop-only,
-    .figma-trading-panel,
-    .figma-sidebar { display: none !important; }
+     /* Keep sidebar hidden on mobile, but allow desktop-marked content to be visible
+         so important sections (charts/forms) aren't lost on mobile. */
+     .figma-trading-panel,
+     .figma-sidebar { display: none !important; }
 
     .figma-container {
         display: block;
@@ -93,6 +94,20 @@
         padding: 92px var(--mobile-padding) 120px;
         background: transparent;
     }
+
+    /* Prediction: stack left (chart) and right (form) on mobile */
+    .prediction-dashboard { display: block; }
+    .prediction-dashboard .dashboard-left,
+    .prediction-dashboard .dashboard-right {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 0 var(--mobile-padding);
+        grid-column: auto;
+    }
+    .chart-card.card-dark,
+    .tradingview-widget-container,
+    #advanced_tradingview_chart { width: 100% !important; min-height: 320px; }
 
     /* Bottom Navigation */
     .mobile-bottom-nav {
@@ -637,10 +652,7 @@
 }
 
 /* ===== VISIBILITY HELPERS ===== */
-.mobile-only {
-    display: none;
-}
-
-.desktop-only {
-    display: block;
-}
+/* By default, show both mobile and desktop blocks; specific media rules above
+   will hide large structures like sidebars. */
+.mobile-only { display: block; }
+.desktop-only { display: block; }
