@@ -2552,7 +2552,20 @@ body {
     }
 
     @media (max-width: 768px) {
-        .charts-secondary-section { display: none; }
+        .charts-secondary-section { display: block; padding: var(--spacing-md); }
+        .charts-secondary-grid {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(260px, 80%);
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .charts-secondary-grid > * { scroll-snap-align: start; }
+        .chart-mini-card, .movers-card { min-width: 260px; }
+        .mini-chart-canvas { height: 120px; }
     }
 
     .top-brand {
