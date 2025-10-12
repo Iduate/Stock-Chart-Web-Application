@@ -1979,6 +1979,16 @@ body {
     }
 }
 
+/* Force two-column layout on desktop and ensure sidebar sits on the right. */
+@media (min-width: 769px) {
+    .prediction-dashboard {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.8fr);
+    }
+    .dashboard-left { grid-column: 1; }
+    .dashboard-right { grid-column: 2; }
+}
+
 @media (max-width: 768px) {
     .prediction-page {
         grid-template-columns: 1fr;

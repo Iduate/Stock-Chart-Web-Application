@@ -156,6 +156,9 @@ def serve_frontend_file(request, path):
                 print(f"DEBUG: Guessed MIME type: {content_type}")
         
         # HTTP 응답 생성
+        # Ensure UTF-8 for text types (HTML/CSS/JS)
+        if content_type.startswith('text/') and 'charset' not in content_type:
+            content_type = f"{content_type}; charset=utf-8"
         response = HttpResponse(content, content_type=content_type)
         
         # 디버깅 헤더 추가

@@ -55,12 +55,14 @@ def serve_html_page(request, page_name=None):
         with open(frontend_path, 'r', encoding='utf-8') as file:
             content = file.read()
         
-        return HttpResponse(content, content_type='text/html')
+    # Ensure UTF-8 charset for proper Korean text rendering
+    response = HttpResponse(content, content_type='text/html; charset=utf-8')
+    return response
         
     except FileNotFoundError:
         raise Http404(f"Page '{page_name}' not found")
     except Exception as e:
-        return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html')
+    return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html; charset=utf-8')
 
 def home(request):
     """홈페이지 뷰 - frontend/index.html 서빙 (CSS/JS 인라인 포함)"""
@@ -119,14 +121,16 @@ def home(request):
         # 디버깅 정보 추가
         content = content.replace('</head>', f'<!-- Inline CSS/JS embedded | API Keys Configured | DEBUG: {settings.DEBUG} -->\n</head>')
         
-        return HttpResponse(content, content_type='text/html')
+    # Ensure UTF-8 charset for proper Korean text rendering
+    response = HttpResponse(content, content_type='text/html; charset=utf-8')
+    return response
         
     except FileNotFoundError as e:
         # 만약 frontend 파일이 없으면 기존 템플릿 사용
         return render(request, 'home.html')
     except Exception as e:
         # 에러 발생시 디버깅 정보와 함께 표시
-        return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html')
+    return HttpResponse(f'<h1>Error loading page</h1><p>{str(e)}</p>', content_type='text/html; charset=utf-8')
 
 @api_view(['GET'])
 def api_status(request):
