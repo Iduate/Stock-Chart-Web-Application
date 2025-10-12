@@ -317,6 +317,67 @@
         </section>
     </div>
 
+    <!-- Secondary charts and insights (desktop) -->
+    <section class="charts-secondary-section desktop-only">
+        <div class="charts-secondary-grid">
+            <div class="chart-mini-card">
+                <div class="mini-card-header">
+                    <span>BTC / USD</span>
+                    <strong id="miniBtcPrice">$43,234</strong>
+                </div>
+                <div class="mini-chart-canvas" id="miniChartBTC"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header">
+                    <span>ETH / USD</span>
+                    <strong id="miniEthPrice">$2,687</strong>
+                </div>
+                <div class="mini-chart-canvas" id="miniChartETH"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header">
+                    <span>AAPL</span>
+                    <strong id="miniAaplPrice">$178.24</strong>
+                </div>
+                <div class="mini-chart-canvas" id="miniChartAAPL"></div>
+            </div>
+            <div class="chart-mini-card">
+                <div class="mini-card-header">
+                    <span>TSLA</span>
+                    <strong id="miniTslaPrice">$251.89</strong>
+                </div>
+                <div class="mini-chart-canvas" id="miniChartTSLA"></div>
+            </div>
+
+            <div class="movers-card">
+                <div class="card-heading">
+                    <div>
+                        <h3>오늘의 Top Movers</h3>
+                        <p>가장 큰 변동을 보이는 자산</p>
+                    </div>
+                </div>
+                <div class="movers-list">
+                    <div class="mover-row positive">
+                        <div class="mover-symbol"><i class="fab fa-bitcoin"></i><span>BTC</span></div>
+                        <div class="mover-values"><span class="price">$43,480</span><span class="change">+3.12%</span></div>
+                    </div>
+                    <div class="mover-row positive">
+                        <div class="mover-symbol"><i class="fab fa-ethereum"></i><span>ETH</span></div>
+                        <div class="mover-values"><span class="price">$2,704</span><span class="change">+2.18%</span></div>
+                    </div>
+                    <div class="mover-row negative">
+                        <div class="mover-symbol"><i class="fas fa-apple-alt"></i><span>AAPL</span></div>
+                        <div class="mover-values"><span class="price">$176.90</span><span class="change">-0.76%</span></div>
+                    </div>
+                    <div class="mover-row positive">
+                        <div class="mover-symbol"><i class="fas fa-microchip"></i><span>NVDA</span></div>
+                        <div class="mover-values"><span class="price">$421.67</span><span class="change">+1.34%</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="charts-mobile mobile-only">
         <div class="mobile-hero-card mobile-fade-in">
             <div class="mobile-hero-top">
@@ -520,6 +581,57 @@
             <span>이벤트</span>
         </a>
     </nav>
+
+    <script>
+        // Initialize mini charts for secondary section
+        (function initMiniCharts(){
+            if (typeof LightweightCharts === 'undefined') return;
+
+            const defs = [
+                { id: 'miniChartBTC', color: '#00FFA3', priceId: 'miniBtcPrice', base: 43000 },
+                { id: 'miniChartETH', color: '#5BD5FF', priceId: 'miniEthPrice', base: 2680 },
+                { id: 'miniChartAAPL', color: '#8CE99A', priceId: 'miniAaplPrice', base: 178 },
+                { id: 'miniChartTSLA', color: '#FFD166', priceId: 'miniTslaPrice', base: 252 }
+            ];
+
+            function genData(base, points=40){
+                const now = Math.floor(Date.now()/1000);
+                return Array.from({length: points}, (_, i) => ({
+                    time: now - (points - i) * 3600,
+                    value: base + Math.sin(i/3) * base * 0.005 + (Math.random()-0.5) * base * 0.002
+                }));
+            }
+
+            const charts = [];
+            defs.forEach(d => {
+                const el = document.getElementById(d.id);
+                if (!el) return;
+                const chart = LightweightCharts.createChart(el, {
+                    width: el.clientWidth,
+                    height: 140,
+                    layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#cfe6ff', fontFamily: 'Inter, "Noto Sans KR", sans-serif' },
+                    grid: { vertLines: { color: 'rgba(255,255,255,0.06)' }, horzLines: { color: 'rgba(255,255,255,0.06)' } },
+                    rightPriceScale: { visible: false },
+                    timeScale: { borderColor: 'rgba(255,255,255,0.06)' }
+                });
+                const series = chart.addAreaSeries({ lineColor: d.color, topColor: d.color + '44', bottomColor: d.color + '11' });
+                const data = genData(d.base);
+                series.setData(data);
+                chart.timeScale().fitContent();
+                charts.push({ chart, el });
+                const last = data[data.length-1];
+                const priceEl = document.getElementById(d.priceId);
+                if (priceEl) {
+                    const formatted = d.base > 1000 ? '$' + last.value.toFixed(2).toLocaleString() : '$' + last.value.toFixed(2);
+                    priceEl.textContent = formatted;
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                charts.forEach(({chart, el}) => chart.applyOptions({ width: el.clientWidth }));
+            });
+        })();
+    </script>
 
     <!-- Additional CSS for chart-specific components -->
     <style>
