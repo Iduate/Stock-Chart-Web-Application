@@ -36,7 +36,34 @@ class SocialAuthInitiateView(APIView):
     
     def get(self, request, provider_name):
         try:
-            provider = SocialAuthManager.get_provider(provider_name)
+            try:
+                provider = SocialAuthManager.get_provider(provider_name)
+            except SocialAuthError:
+                # Attempt to auto-seed provider settings (currently only Google)
+                if provider_name == 'google':
+                    from .social_models import SocialProvider, SocialAuthConfig
+                    import os
+                    client_id = getattr(settings, 'GOOGLE_CLIENT_ID', None) or os.environ.get('GOOGLE_CLIENT_ID')
+                    client_secret = getattr(settings, 'GOOGLE_CLIENT_SECRET', '') or os.environ.get('GOOGLE_CLIENT_SECRET', '')
+                    if not client_id:
+                        return Response({'error': 'Google Client ID is not configured on the server.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    provider_obj, _ = SocialProvider.objects.update_or_create(
+                        name='google',
+                        defaults={
+                            'display_name': 'Google',
+                            'client_id': client_id,
+                            'client_secret': client_secret or '',
+                            'authorization_url': 'https://accounts.google.com/o/oauth2/v2/auth',
+                            'token_url': 'https://oauth2.googleapis.com/token',
+                            'user_info_url': 'https://openidconnect.googleapis.com/v1/userinfo',
+                            'scope': 'openid email profile',
+                            'is_active': True,
+                        }
+                    )
+                    SocialAuthConfig.objects.get_or_create(provider=provider_obj)
+                    provider = SocialAuthManager.get_provider(provider_name)
+                else:
+                    return Response({'error': f"Provider '{provider_name}' is not configured."}, status=status.HTTP_400_BAD_REQUEST)
             
             # 상태 토큰 생성
             state_token = SocialLoginAttempt.generate_state_token()

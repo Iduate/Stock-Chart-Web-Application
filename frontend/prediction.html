@@ -528,47 +528,14 @@
     <!-- JavaScript -->
     <script>
         // Login via Google OAuth
-        async function startGoogleLogin() {
-            try {
-                const btn = document.getElementById('loginButton');
-                if (btn) {
-                    btn.classList.add('loading');
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
-                }
-
-                    // Use canonical social route: /api/auth/social/<provider>/login/
-                    const endpoints = [
-                        '/api/auth/social/google/login/',
-                        '/api/auth/social/google/login/',
-                        '/api/auth/social/google/login',
-                        '/api/users/auth/social/google/login/'
-                    ];
-
-                let lastError = null;
-                for (const url of endpoints) {
-                    try {
-                        const res = await fetch(url, { credentials: 'same-origin' });
-                        if (!res.ok) { lastError = new Error('HTTP ' + res.status); continue; }
-                        const data = await res.json();
-                        if (data && data.auth_url) {
-                            window.location.href = data.auth_url;
-                            return;
-                        }
-                        lastError = new Error('No auth_url in response');
-                    } catch (e) {
-                        lastError = e;
-                    }
-                }
-                throw lastError || new Error('인증 URL을 받지 못했습니다.');
-            } catch (err) {
-                alert('Google 로그인 시작 중 오류: ' + err.message);
-            } finally {
-                const btn = document.getElementById('loginButton');
-                if (btn) {
-                    btn.classList.remove('loading');
-                    btn.innerHTML = '<i class="fas fa-user"></i> 로그인';
-                }
+        function startGoogleLogin() {
+            const btn = document.getElementById('loginButton');
+            if (btn) {
+                btn.classList.add('loading');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
             }
+            // Direct redirect (server will create auth_url or auto-seed provider and then redirect if ?redirect=true)
+            window.location.href = '/api/auth/social/google/login/?redirect=true';
         }
 
         document.addEventListener('DOMContentLoaded', function(){
