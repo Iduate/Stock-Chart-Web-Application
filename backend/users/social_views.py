@@ -48,6 +48,13 @@ class SocialAuthInitiateView(APIView):
             # 인증 URL 생성
             auth_url = provider.get_authorization_url(request, state_token)
             
+            # 옵션: ?redirect=true 시 즉시 리다이렉트 (프런트엔드 단순 링크 대응)
+            redirect_flag = request.GET.get('redirect') or request.GET.get('redirect_to_provider')
+            if isinstance(redirect_flag, str):
+                redirect_flag = redirect_flag.lower() in ('1', 'true', 'yes', 'y')
+            if redirect_flag:
+                return redirect(auth_url)
+            
             return Response({
                 'auth_url': auth_url,
                 'state_token': state_token,
