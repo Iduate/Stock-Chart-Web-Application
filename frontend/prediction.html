@@ -536,16 +536,30 @@
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
                 }
 
-                // Endpoint is mounted at /api/auth/auth/social/<provider>/login/
-                const res = await fetch('/api/auth/auth/social/google/login/');
-                if (!res.ok) throw new Error('로그인 초기화 실패');
-                const data = await res.json();
-                if (data && data.auth_url) {
-                    // Redirect to Google's OAuth consent screen
-                    window.location.href = data.auth_url;
-                    return;
+                // Try multiple possible API bases to be robust across deployments
+                const endpoints = [
+                    '/api/auth/auth/social/google/login/',
+                    '/api/auth/social/google/login/',
+                    '/api/auth/social/google/login',
+                    '/api/users/auth/social/google/login/'
+                ];
+
+                let lastError = null;
+                for (const url of endpoints) {
+                    try {
+                        const res = await fetch(url, { credentials: 'same-origin' });
+                        if (!res.ok) { lastError = new Error('HTTP ' + res.status); continue; }
+                        const data = await res.json();
+                        if (data && data.auth_url) {
+                            window.location.href = data.auth_url;
+                            return;
+                        }
+                        lastError = new Error('No auth_url in response');
+                    } catch (e) {
+                        lastError = e;
+                    }
                 }
-                throw new Error('인증 URL을 받지 못했습니다.');
+                throw lastError || new Error('인증 URL을 받지 못했습니다.');
             } catch (err) {
                 alert('Google 로그인 시작 중 오류: ' + err.message);
             } finally {
