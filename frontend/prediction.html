@@ -73,7 +73,7 @@
             </div>
             
             <div class="header-actions">
-                <a href="social-auth-demo.html" class="btn-predict" id="loginButton"><i class="fas fa-user"></i> 로그인</a>
+                <a href="#" class="btn-predict" id="loginButton"><i class="fas fa-user"></i> 로그인</a>
             </div>
         </header>
 
@@ -527,6 +527,46 @@
 
     <!-- JavaScript -->
     <script>
+        // Login via Google OAuth
+        async function startGoogleLogin() {
+            try {
+                const btn = document.getElementById('loginButton');
+                if (btn) {
+                    btn.classList.add('loading');
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
+                }
+
+                // Endpoint is mounted at /api/auth/auth/social/<provider>/login/
+                const res = await fetch('/api/auth/auth/social/google/login/');
+                if (!res.ok) throw new Error('로그인 초기화 실패');
+                const data = await res.json();
+                if (data && data.auth_url) {
+                    // Redirect to Google's OAuth consent screen
+                    window.location.href = data.auth_url;
+                    return;
+                }
+                throw new Error('인증 URL을 받지 못했습니다.');
+            } catch (err) {
+                alert('Google 로그인 시작 중 오류: ' + err.message);
+            } finally {
+                const btn = document.getElementById('loginButton');
+                if (btn) {
+                    btn.classList.remove('loading');
+                    btn.innerHTML = '<i class="fas fa-user"></i> 로그인';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            const loginBtn = document.getElementById('loginButton');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    startGoogleLogin();
+                });
+            }
+        });
+
         // Ensure mobile nav active state reflects current page
         (function () {
             var path = location.pathname.replace(/\/+$/, '') || '/';
