@@ -5,7 +5,7 @@
 
 class SocialAuthManager {
     constructor(options = {}) {
-        this.baseUrl = options.baseUrl || '/api/users/auth';
+    this.baseUrl = options.baseUrl || '/api/auth';
         this.csrfToken = this.getCSRFToken();
         this.providers = [];
         this.currentProvider = null;
@@ -76,7 +76,7 @@ class SocialAuthManager {
             });
 
             if (!response.ok) {
-                throw new Error('인증 URL 생성 실패');
+                throw new Error(`인증 URL 생성 실패 (HTTP ${response.status})`);
             }
 
             const data = await response.json();

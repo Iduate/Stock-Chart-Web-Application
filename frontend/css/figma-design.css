@@ -431,6 +431,11 @@ body {
     background: var(--accent-green-hover);
 }
 
+.btn-predict.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
 /* ===== PREDICTION TABLE ===== */
 .predictions-table {
     background: var(--bg-card);

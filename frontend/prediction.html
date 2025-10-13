@@ -73,7 +73,8 @@
             </div>
             
             <div class="header-actions">
-                <a href="/api/auth/social/google/login/?redirect=true" class="btn-predict" id="loginButton"><i class="fas fa-user"></i> 로그인</a>
+                <a href="#" class="btn-predict" id="signupButton"><i class="fas fa-user-plus"></i> 회원가입</a>
+                <a href="#" class="btn-secondary" id="loginButton"><i class="fas fa-sign-in-alt"></i> 로그인</a>
             </div>
         </header>
 
@@ -526,24 +527,188 @@
     </nav>
 
     <!-- JavaScript -->
+    <script src="js/social-auth.js?v=2025.10.13"></script>
     <script>
-        // Login via Google OAuth
-        function startGoogleLogin() {
-            const btn = document.getElementById('loginButton');
-            if (btn) {
-                btn.classList.add('loading');
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
+        let predictionSignupAuth = null;
+
+        function setAuthButtonState(buttonId, isLoading, defaultText, completeText) {
+            const btn = document.getElementById(buttonId);
+            if (!btn) return;
+            btn.classList.toggle('loading', isLoading);
+            btn.innerHTML = isLoading ? '<i class="fas fa-spinner fa-spin"></i> 진행 중...' : defaultText;
+            if (!isLoading && completeText) {
+                btn.innerHTML = completeText;
             }
-            // Direct redirect (server will create auth_url or auto-seed provider and then redirect if ?redirect=true)
-            window.location.href = '/api/auth/social/google/login/?redirect=true';
+        }
+
+        function ensureCredentialsModal() {
+            if (document.getElementById('credentialsModal')) {
+                return;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.id = 'credentialsModal';
+            overlay.className = 'auth-modal-overlay hidden';
+            overlay.innerHTML = `
+                <div class="auth-modal" role="dialog" aria-modal="true">
+                    <button type="button" class="auth-modal-close" data-close>&times;</button>
+                    <h2 class="auth-modal-title">로그인</h2>
+                    <p class="auth-modal-subtitle">기존 계정으로 로그인하세요.</p>
+                    <form id="credentialsLoginForm" class="auth-modal-form">
+                        <label class="auth-modal-label" for="credentialsEmail">이메일</label>
+                        <input type="email" id="credentialsEmail" class="auth-modal-input" required placeholder="you@example.com">
+                        <label class="auth-modal-label" for="credentialsPassword">비밀번호</label>
+                        <input type="password" id="credentialsPassword" class="auth-modal-input" required placeholder="••••••••">
+                        <div id="credentialsMessage" class="auth-modal-message" role="alert" aria-live="polite"></div>
+                        <button type="submit" class="auth-modal-submit" id="credentialsSubmit">
+                            <i class="fas fa-sign-in-alt"></i> 로그인
+                        </button>
+                    </form>
+                </div>
+            `;
+
+            overlay.addEventListener('click', function(e){
+                if (e.target === overlay) {
+                    closeCredentialsModal();
+                }
+            });
+
+            overlay.querySelector('[data-close]').addEventListener('click', closeCredentialsModal);
+
+            overlay.querySelector('#credentialsLoginForm').addEventListener('submit', handleCredentialsLogin);
+
+            document.body.appendChild(overlay);
+        }
+
+        function openCredentialsModal() {
+            ensureCredentialsModal();
+            const overlay = document.getElementById('credentialsModal');
+            overlay.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            const emailField = document.getElementById('credentialsEmail');
+            if (emailField) {
+                setTimeout(() => emailField.focus(), 50);
+            }
+        }
+
+        function closeCredentialsModal() {
+            const overlay = document.getElementById('credentialsModal');
+            if (!overlay) return;
+            overlay.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            const form = document.getElementById('credentialsLoginForm');
+            if (form) {
+                form.reset();
+            }
+            const message = document.getElementById('credentialsMessage');
+            if (message) {
+                message.textContent = '';
+                message.className = 'auth-modal-message';
+            }
+            const submit = document.getElementById('credentialsSubmit');
+            if (submit) {
+                submit.disabled = false;
+                submit.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인';
+            }
+        }
+
+        function getCSRFToken() {
+            const match = document.cookie.match(/csrftoken=([^;]+)/);
+            return match ? decodeURIComponent(match[1]) : '';
+        }
+
+        async function handleCredentialsLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('credentialsEmail').value.trim();
+            const password = document.getElementById('credentialsPassword').value;
+            const message = document.getElementById('credentialsMessage');
+            const submit = document.getElementById('credentialsSubmit');
+
+            if (!email || !password) {
+                message.textContent = '이메일과 비밀번호를 모두 입력해주세요.';
+                message.classList.add('error');
+                return;
+            }
+
+            submit.disabled = true;
+            submit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 확인 중';
+            message.textContent = '';
+            message.className = 'auth-modal-message';
+
+            try {
+                const response = await fetch('/api/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || '로그인에 실패했습니다.');
+                }
+
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    if (data.user) {
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                    }
+                }
+
+                message.textContent = data.message || '로그인되었습니다.';
+                message.classList.add('success');
+                submit.innerHTML = '<i class="fas fa-check"></i> 완료';
+
+                setTimeout(() => {
+                    closeCredentialsModal();
+                    window.location.reload();
+                }, 800);
+
+            } catch (error) {
+                message.textContent = error.message;
+                message.classList.add('error');
+                submit.disabled = false;
+                submit.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function(){
             const loginBtn = document.getElementById('loginButton');
+            const signupBtn = document.getElementById('signupButton');
+
+            predictionSignupAuth = new SocialAuthManager({
+                baseUrl: '/api/auth',
+                onStart: function () {
+                    setAuthButtonState('signupButton', true, '<i class="fas fa-user-plus"></i> 회원가입');
+                },
+                onSuccess: function () {
+                    setAuthButtonState('signupButton', false, '<i class="fas fa-user-plus"></i> 회원가입', '<i class="fas fa-check"></i> 완료');
+                    window.location.href = '/';
+                },
+                onError: function (error) {
+                    setAuthButtonState('signupButton', false, '<i class="fas fa-user-plus"></i> 회원가입');
+                    alert(`Google 회원가입 시작 중 오류: ${error.message}`);
+                }
+            });
+
+            if (signupBtn) {
+                signupBtn.addEventListener('click', function(e){
+                    e.preventDefault();
+                    if (!predictionSignupAuth) {
+                        alert('회원가입 시스템을 초기화하는 중입니다. 잠시 후 다시 시도해주세요.');
+                        return;
+                    }
+                    predictionSignupAuth.startSocialLogin('google', { redirect: true });
+                });
+            }
+
             if (loginBtn) {
                 loginBtn.addEventListener('click', function(e){
                     e.preventDefault();
-                    startGoogleLogin();
+                    openCredentialsModal();
                 });
             }
         });

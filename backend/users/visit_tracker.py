@@ -35,11 +35,16 @@ class VisitTracker:
     
     def can_access_premium(self):
         """Check if the user can access premium content"""
-        # Authenticated users are checked by their profile settings
+        # Authenticated users: enforce 3-visit limit for free users, unlimited for paid/admin
         if self.request.user.is_authenticated:
-            return self.request.user.can_access_premium()
-        
-        # Anonymous users are limited to 3 visits
+            user = self.request.user
+            # Admin or paid users have unlimited premium access
+            if getattr(user, 'user_type', 'free') in ('admin', 'paid'):
+                return True
+            # Free users: limit to 3 premium accesses
+            return getattr(user, 'free_access_count', 0) < 3
+
+        # Anonymous users are limited to 3 visits per session
         return self.get_visit_count() < 3
     
     def needs_payment_prompt(self):

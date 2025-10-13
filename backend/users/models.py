@@ -39,21 +39,26 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username} ({self.get_user_type_display()})"
     
-    def can_access_premium(self):
-        """프리미엄 기능 접근 권한 확인"""
+    def can_access_premium(self, *, premium: bool = True) -> bool:
+        """프리미엄 기능 접근 권한 확인
+        premium=True: premium endpoints/features (predictions list, rankings, etc.)
+        premium=False: basic chart viewing (more permissive)
+        """
         # Admin users have full access
         if self.user_type == 'admin':
             return True
-        
+
         # Paid users have full access
         if self.user_type == 'paid':
             return True
-            
-        # Free users get basic chart access (no limit for basic viewing)
-        # Only advanced features like predictions/rankings have limits
+
+        # Free users: allow basic chart viewing, limit premium features via VisitTracker
         if self.user_type == 'free':
-            return True  # Allow basic chart viewing for all logged-in users
-            
+            if premium:
+                # For premium checks, VisitTracker enforces the 3-visit cap; return based on current count
+                return self.free_access_count < 3
+            return True
+
         return False
     
     def increment_free_access(self):
