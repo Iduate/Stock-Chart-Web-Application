@@ -11,20 +11,19 @@ from django.conf import settings
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from typing import Dict, Any, Optional, Tuple, TYPE_CHECKING
-from django.contrib.auth import get_user_model
 import logging
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import AbstractUser
-    from .social_models import (
-        SocialProvider, SocialAccount, SocialLoginAttempt, 
-        SocialAuthConfig, SocialLoginSession
+    from users.social_models import (
+        SocialProvider, SocialAccount, SocialLoginAttempt,
+        SocialAuthConfig, SocialLoginSession,
     )
     User = AbstractUser
 else:
-    from .social_models import (
-        SocialProvider, SocialAccount, SocialLoginAttempt, 
-        SocialAuthConfig, SocialLoginSession
+    from users.social_models import (
+        SocialProvider, SocialAccount, SocialLoginAttempt,
+        SocialAuthConfig, SocialLoginSession,
     )
     User = get_user_model()
 

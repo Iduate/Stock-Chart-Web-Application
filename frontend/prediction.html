@@ -536,13 +536,13 @@
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인...';
                 }
 
-                // Try multiple possible API bases to be robust across deployments
-                const endpoints = [
-                    '/api/auth/auth/social/google/login/',
-                    '/api/auth/social/google/login/',
-                    '/api/auth/social/google/login',
-                    '/api/users/auth/social/google/login/'
-                ];
+                    // Use canonical social route: /api/auth/social/<provider>/login/
+                    const endpoints = [
+                        '/api/auth/social/google/login/',
+                        '/api/auth/social/google/login/',
+                        '/api/auth/social/google/login',
+                        '/api/users/auth/social/google/login/'
+                    ];
 
                 let lastError = null;
                 for (const url of endpoints) {
