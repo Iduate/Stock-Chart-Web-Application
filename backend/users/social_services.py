@@ -156,7 +156,12 @@ class BaseSocialProvider:
     
     def get_redirect_uri(self, request) -> str:
         """리다이렉트 URI 생성"""
-        scheme = 'https' if request.is_secure() else 'http'
+        # Respect reverse proxy headers (Render/NGINX) for HTTPS
+        xf_proto = request.META.get('HTTP_X_FORWARDED_PROTO')
+        if xf_proto:
+            scheme = 'https' if 'https' in xf_proto.split(',')[0].lower() else 'http'
+        else:
+            scheme = 'https' if request.is_secure() else 'http'
         host = request.get_host()
         return f"{scheme}://{host}/api/auth/social/{self.provider_name}/callback/"
     

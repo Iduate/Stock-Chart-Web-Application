@@ -20,6 +20,8 @@ urlpatterns = [
     path('subscription/', payment_views.subscription_page, name='subscription'),
     path('reset-free-visits/', payment_views.reset_free_visits, name='reset_free_visits'),
     
-    # 소셜 인증 URL 포함
-    path('auth/', include('users.social_urls', namespace='social_auth')),
+    # 소셜 인증 URL 포함 (기존 경로 유지)
+    path('auth/', include(('users.social_urls', 'social_auth'), namespace='social_auth')),
+    # 캐노니컬 경로: /api/auth/social/
+    path('social/', include(('users.social_urls', 'social_auth'), namespace='social_auth_alt')),
 ]
