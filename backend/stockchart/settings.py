@@ -297,7 +297,14 @@ CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')
 
 # API 키 설정
-GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
+# Google OAuth
+# Use environment variables in production; fall back to a safe default client_id
+# so that social auth can initialize without a server error. The client secret
+# is optional for the authorization URL step and can remain empty.
+GOOGLE_CLIENT_ID = config(
+    'GOOGLE_CLIENT_ID',
+    default='344149544124-0uu1if146t438cae5m8j0veivpf0pl6b.apps.googleusercontent.com'
+)
 GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 APPLE_CLIENT_ID = config('APPLE_CLIENT_ID', default='')
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='')

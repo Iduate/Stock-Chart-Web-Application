@@ -167,11 +167,16 @@ class BaseSocialProvider:
     def get_client_ip(self, request):
         """클라이언트 IP 주소 획득"""
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        ip = None
         if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-        return ip
+            # Take first IP and strip whitespace; guard against empty header
+            first = x_forwarded_for.split(',')[0].strip()
+            ip = first if first else None
+        if not ip:
+            raw = request.META.get('REMOTE_ADDR')
+            ip = raw.strip() if isinstance(raw, str) else raw
+        # If still falsy, return None so the DB field (null=True) is respected
+        return ip or None
 
 
 class GoogleProvider(BaseSocialProvider):
