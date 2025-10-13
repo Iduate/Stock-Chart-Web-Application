@@ -71,6 +71,11 @@ class SocialAuthInitiateView(APIView):
             # 세션에 정보 저장
             request.session[f'social_auth_state_{provider_name}'] = state_token
             request.session[f'social_auth_provider_{provider_name}'] = provider_name
+            # 프론트엔드 리다이렉트 플래그 저장 (쿼리: ?frontend_redirect=true)
+            frontend_redirect_flag = request.GET.get('frontend_redirect')
+            if isinstance(frontend_redirect_flag, str):
+                frontend_redirect_flag = frontend_redirect_flag.lower() in ('1', 'true', 'yes', 'y')
+            request.session[f'social_auth_frontend_redirect_{provider_name}'] = bool(frontend_redirect_flag)
             
             # 인증 URL 생성
             auth_url = provider.get_authorization_url(request, state_token)
@@ -193,14 +198,52 @@ class SocialAuthCallbackView(APIView):
                 'session_id': social_session.session_id
             }
             
-            # 프론트엔드로 리다이렉트 (웹에서 호출된 경우)
-            if request.GET.get('redirect_to_frontend', '').lower() == 'true':
-                frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3000')
-                redirect_url = f"{frontend_url}/auth/social/success?"
-                redirect_url += f"token={access_token}&refresh={refresh_token}&provider={provider_name}"
-                if created:
-                    redirect_url += "&created=true"
-                return redirect(redirect_url)
+            # 프론트엔드로 리다이렉트 (Initiate 단계에서 지정된 경우)
+            frontend_redirect = request.session.get(f'social_auth_frontend_redirect_{provider_name}', False)
+            if frontend_redirect:
+                # 현재 호스트 기반으로 prediction.html로 이동하고 URL fragment에 토큰/사용자 정보를 전달
+                xf_proto = request.META.get('HTTP_X_FORWARDED_PROTO')
+                scheme = 'https' if xf_proto and 'https' in xf_proto.split(',')[0].lower() else ('https' if request.is_secure() else 'http')
+                host = request.get_host()
+                import urllib.parse, json as _json
+                # Cookie mode: store tokens in HttpOnly cookies instead of fragment
+                if getattr(settings, 'AUTH_COOKIE_MODE', False):
+                    from django.shortcuts import redirect as _redirect
+                    url = f"{scheme}://{host}/prediction.html#login=success"
+                    resp = _redirect(url)
+                    access_name = getattr(settings, 'AUTH_COOKIE_ACCESS_NAME', 'sc_access')
+                    refresh_name = getattr(settings, 'AUTH_COOKIE_REFRESH_NAME', 'sc_refresh')
+                    cookie_params = {
+                        'httponly': True,
+                        'secure': getattr(settings, 'AUTH_COOKIE_SECURE', True),
+                        'samesite': getattr(settings, 'AUTH_COOKIE_SAMESITE', 'Lax'),
+                        'path': '/',
+                    }
+                    domain = getattr(settings, 'AUTH_COOKIE_DOMAIN', None)
+                    if domain:
+                        cookie_params['domain'] = domain
+                    resp.set_cookie(access_name, access_token, **cookie_params)
+                    resp.set_cookie(refresh_name, refresh_token, **cookie_params)
+                    # Minimal non-HttpOnly cookie to let frontend know cookie mode is active
+                    resp.set_cookie('auth_cookie_mode', '1', secure=cookie_params['secure'], samesite=cookie_params['samesite'], path='/')
+                    # 세션 정리 후 리다이렉트
+                    self._cleanup_session(request, provider_name)
+                    request.session.pop(f'social_auth_frontend_redirect_{provider_name}', None)
+                    return resp
+                else:
+                    fragment = {
+                        'access': access_token,
+                        'refresh': refresh_token,
+                        'provider': provider_name,
+                        'created': created,
+                        'user': response_data['user']
+                    }
+                    frag_str = urllib.parse.quote(_json.dumps(fragment))
+                    url = f"{scheme}://{host}/prediction.html#auth={frag_str}"
+                    # 세션 정리 후 리다이렉트
+                    self._cleanup_session(request, provider_name)
+                    request.session.pop(f'social_auth_frontend_redirect_{provider_name}', None)
+                    return redirect(url)
             
             return Response(response_data)
             
@@ -464,9 +507,25 @@ def social_logout(request):
         # Django 세션 로그아웃
         logout(request)
         
-        return Response({
-            'message': '로그아웃되었습니다.'
-        })
+        # Clear auth cookies if cookie mode is enabled
+        try:
+            from rest_framework.response import Response as DRFResponse
+            resp = DRFResponse({'message': '로그아웃되었습니다.'})
+            if getattr(settings, 'AUTH_COOKIE_MODE', False):
+                access_name = getattr(settings, 'AUTH_COOKIE_ACCESS_NAME', 'sc_access')
+                refresh_name = getattr(settings, 'AUTH_COOKIE_REFRESH_NAME', 'sc_refresh')
+                cookie_params = {
+                    'path': '/',
+                }
+                domain = getattr(settings, 'AUTH_COOKIE_DOMAIN', None)
+                if domain:
+                    cookie_params['domain'] = domain
+                resp.delete_cookie(access_name, **cookie_params)
+                resp.delete_cookie(refresh_name, **cookie_params)
+                resp.delete_cookie('auth_cookie_mode', path='/', domain=domain if domain else None)
+            return resp
+        except Exception:
+            return Response({'message': '로그아웃되었습니다.'})
         
     except Exception as e:
         logger.error(f"Social logout error: {str(e)}")

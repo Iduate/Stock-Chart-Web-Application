@@ -319,3 +319,12 @@ TIINGO_API_KEY = config('TIINGO_API_KEY', default='')
 MARKETSTACK_API_KEY = config('MARKETSTACK_API_KEY', default='')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Optional: Auth cookies (HttpOnly) instead of localStorage
+# Enable by setting AUTH_COOKIE_MODE=true in environment
+AUTH_COOKIE_MODE = config('AUTH_COOKIE_MODE', default=False, cast=bool)
+AUTH_COOKIE_SECURE = config('AUTH_COOKIE_SECURE', default=not DEBUG, cast=bool)
+AUTH_COOKIE_SAMESITE = config('AUTH_COOKIE_SAMESITE', default='Lax')  # 'Lax' or 'Strict'
+AUTH_COOKIE_DOMAIN = config('AUTH_COOKIE_DOMAIN', default=None)
+AUTH_COOKIE_ACCESS_NAME = config('AUTH_COOKIE_ACCESS_NAME', default='sc_access')
+AUTH_COOKIE_REFRESH_NAME = config('AUTH_COOKIE_REFRESH_NAME', default='sc_refresh')

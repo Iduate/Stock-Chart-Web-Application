@@ -528,6 +528,7 @@
 
     <!-- JavaScript -->
     <script src="js/social-auth.js?v=2025.10.13"></script>
+    <script src="js/auth-ui.js?v=2025.10.13"></script>
     <script>
         let predictionSignupAuth = null;
 
@@ -701,7 +702,10 @@
                         alert('회원가입 시스템을 초기화하는 중입니다. 잠시 후 다시 시도해주세요.');
                         return;
                     }
-                    predictionSignupAuth.startSocialLogin('google', { redirect: true });
+                    // Request frontend redirect so the callback returns to prediction.html with tokens
+                    const url = '/api/auth/social/google/login/?redirect=true&frontend_redirect=true';
+                    setAuthButtonState('signupButton', true, '<i class="fas fa-user-plus"></i> 회원가입');
+                    window.location.href = url;
                 });
             }
 
@@ -748,6 +752,27 @@
 
         // Delay init to ensure CSS layout applied
         document.addEventListener('DOMContentLoaded', function(){ setTimeout(initMobilePredictionChart, 100); });
+
+        // Handle tokens passed via URL fragment after social login
+        (function handleAuthFromFragment(){
+            try {
+                if (!location.hash || !location.hash.startsWith('#auth=')) return;
+                const payload = decodeURIComponent(location.hash.substring(6));
+                const data = JSON.parse(payload);
+                if (data && data.access) {
+                    localStorage.setItem('access_token', data.access);
+                    if (data.refresh) localStorage.setItem('refresh_token', data.refresh);
+                    if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+                    // Clean the hash from the URL without reloading
+                    history.replaceState(null, '', location.pathname + location.search);
+                    // Update UI quickly
+                    const sb = document.getElementById('signupButton');
+                    if (sb) sb.innerHTML = '<i class="fas fa-check"></i> 완료';
+                    // Optionally reload to reflect logged-in state across the app
+                    setTimeout(function(){ window.location.reload(); }, 400);
+                }
+            } catch (e) { console.error('Auth fragment parse error', e); }
+        })();
 
         let selectedDirection = null;
 
