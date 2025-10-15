@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.utils import timezone
+from datetime import timedelta
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -116,6 +117,8 @@ class SocialAuthCallbackView(APIView):
     
     def _handle_callback(self, request, provider_name):
         try:
+            # Remember whether we should redirect back to the frontend on completion/error
+            frontend_redirect = request.session.get(f'social_auth_frontend_redirect_{provider_name}', False)
             # 파라미터 획득
             if request.method == 'GET':
                 code = request.GET.get('code')
@@ -153,14 +156,27 @@ class SocialAuthCallbackView(APIView):
             # 사용자 인증
             user, created = SocialAuthManager.authenticate_user(auth_result['login_attempt'])
             
-            # 소셜 로그인 세션 생성
+            # 소셜 로그인 세션 생성 (모델 필드에 맞게 생성)
+            token_data = auth_result.get('token_data', {})
+            expires_in = int(token_data.get('expires_in', 3600))
+            expires_at = timezone.now() + timedelta(seconds=expires_in)
+            # 세션 키는 상태 토큰을 재사용하거나 새로 생성
+            try:
+                session_key = auth_result['login_attempt'].state_token
+            except Exception:
+                from .social_models import SocialLoginAttempt
+                session_key = SocialLoginAttempt.generate_state_token()
+
             social_session = SocialLoginSession.objects.create(
                 user=user,
                 provider=SocialProvider.objects.get(name=provider_name),
-                login_attempt=auth_result['login_attempt'],
+                session_key=session_key,
+                access_token=token_data.get('access_token', ''),
+                refresh_token=token_data.get('refresh_token', ''),
+                expires_at=expires_at,
                 ip_address=provider.get_client_ip(request),
                 user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                is_mobile=self._is_mobile_request(request)
+                is_active=True,
             )
             
             # JWT 토큰 생성
@@ -195,11 +211,10 @@ class SocialAuthCallbackView(APIView):
                     'name': auth_result['user_info'].get('name'),
                     'profile_image': auth_result['user_info'].get('profile_image')
                 },
-                'session_id': social_session.session_id
+                'session_key': social_session.session_key
             }
             
             # 프론트엔드로 리다이렉트 (Initiate 단계에서 지정된 경우)
-            frontend_redirect = request.session.get(f'social_auth_frontend_redirect_{provider_name}', False)
             if frontend_redirect:
                 # 현재 호스트 기반으로 prediction.html로 이동하고 URL fragment에 토큰/사용자 정보를 전달
                 xf_proto = request.META.get('HTTP_X_FORWARDED_PROTO')
@@ -248,11 +263,31 @@ class SocialAuthCallbackView(APIView):
             return Response(response_data)
             
         except SocialAuthError as e:
+            # 프론트엔드 리다이렉트 모드일 경우, 에러도 프론트로 리다이렉트
+            if request.session.get(f'social_auth_frontend_redirect_{provider_name}', False):
+                xf_proto = request.META.get('HTTP_X_FORWARDED_PROTO')
+                scheme = 'https' if xf_proto and 'https' in xf_proto.split(',')[0].lower() else ('https' if request.is_secure() else 'http')
+                host = request.get_host()
+                from django.shortcuts import redirect as _redirect
+                # 민감 정보 노출 없이 에러 코드만 전달
+                url = f"{scheme}://{host}/prediction.html#login=error&reason=social_auth_error"
+                self._cleanup_session(request, provider_name)
+                request.session.pop(f'social_auth_frontend_redirect_{provider_name}', None)
+                return _redirect(url)
             return Response({
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.error(f"Social auth callback error for {provider_name}: {str(e)}")
+            if request.session.get(f'social_auth_frontend_redirect_{provider_name}', False):
+                xf_proto = request.META.get('HTTP_X_FORWARDED_PROTO')
+                scheme = 'https' if xf_proto and 'https' in xf_proto.split(',')[0].lower() else ('https' if request.is_secure() else 'http')
+                host = request.get_host()
+                from django.shortcuts import redirect as _redirect
+                url = f"{scheme}://{host}/prediction.html#login=error&reason=server_error"
+                self._cleanup_session(request, provider_name)
+                request.session.pop(f'social_auth_frontend_redirect_{provider_name}', None)
+                return _redirect(url)
             return Response({
                 'error': '소셜 로그인 처리 중 오류가 발생했습니다.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -482,12 +517,13 @@ def refresh_social_token(request):
 def social_logout(request):
     """소셜 로그인 세션 종료"""
     try:
-        session_id = request.data.get('session_id')
+        # session_key 우선 사용, 하위호환을 위해 session_id도 지원
+        session_key = request.data.get('session_key') or request.data.get('session_id')
         
-        if session_id:
+        if session_key:
             try:
                 social_session = SocialLoginSession.objects.get(
-                    session_id=session_id,
+                    session_key=session_key,
                     user=request.user,
                     is_active=True
                 )
