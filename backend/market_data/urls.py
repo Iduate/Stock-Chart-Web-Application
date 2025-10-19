@@ -46,6 +46,7 @@ urlpatterns = [
     path('marketstack/<str:symbol>/', views.get_marketstack_quote, name='marketstack_simple'),
     path('finnhub/forex/<str:from_currency>/<str:to_currency>/', views.get_finnhub_forex, name='finnhub_forex'),
     path('news/', views.get_market_news, name='market_news'),
+    path('alerts/create/', views.create_market_alert, name='alerts_create'),
     path('company/<str:symbol>/', views.get_company_profile, name='company_profile'),
     
     # 관심 종목 관리

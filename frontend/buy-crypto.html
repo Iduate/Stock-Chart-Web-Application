@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>암호화폐 구매</title>
+  <link rel="stylesheet" href="css/figma-design.css" />
+  <script src="js/auth-ui.js" defer></script>
+  <style>
+    .buy-card{max-width:720px;margin:32px auto;background:#0b1224;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:24px;color:#eaf2ff}
+    .buy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .buy-grid label{font-size:12px;color:#a8b3c7;margin-bottom:6px;display:block}
+    .buy-grid input,.buy-grid select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#0f1730;color:#eaf2ff}
+    .buy-actions{margin-top:16px;display:flex;gap:12px}
+  </style>
+  <script>
+    async function startMoonPay(){
+      const access = localStorage.getItem('access_token');
+      if (!access && !document.cookie.includes('auth_cookie_mode=1')){
+        alert('로그인이 필요합니다. 우측 상단에서 로그인해주세요.');
+        return;
+      }
+      const crypto = document.getElementById('crypto').value;
+      const fiat = document.getElementById('fiat').value;
+      const amount = document.getElementById('amount').value;
+      const wallet = document.getElementById('wallet').value.trim();
+      const body = { crypto, fiat, amount, wallet_address: wallet || undefined };
+      try{
+        const res = await fetch('/api/payments/onramp/moonpay/init/',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+            ...(access ? { 'Authorization': 'Bearer '+access } : {})
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if(!res.ok){ throw new Error(data.error || '요청 실패'); }
+        window.location.href = data.url;
+      }catch(e){
+        console.error(e);
+        alert('구매 시작 중 오류가 발생했습니다: ' + e.message);
+      }
+    }
+    // simple success/cancel markers
+    document.addEventListener('DOMContentLoaded', function(){
+      if (location.pathname.endsWith('/payment-success.html')){
+        alert('결제가 완료되었을 수 있습니다. MoonPay 영수증을 확인해주세요.');
+      } else if (location.pathname.endsWith('/payment-cancel.html')){
+        alert('결제가 취소되었습니다.');
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="buy-card">
+    <h2>카드로 암호화폐 구매</h2>
+    <p style="opacity:.8">신용/체크카드로 비트코인(BTC), 이더리움(ETH) 등을 구매할 수 있습니다.</p>
+
+    <div class="buy-grid">
+      <div>
+        <label for="crypto">암호화폐</label>
+        <select id="crypto">
+          <option value="BTC">Bitcoin (BTC)</option>
+          <option value="ETH">Ethereum (ETH)</option>
+        </select>
+      </div>
+      <div>
+        <label for="fiat">결제 통화</label>
+        <select id="fiat">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="KRW">KRW</option>
+        </select>
+      </div>
+      <div>
+        <label for="amount">결제 금액</label>
+        <input id="amount" type="number" min="20" step="1" placeholder="예: 100" />
+      </div>
+      <div>
+        <label for="wallet">지갑 주소 (선택)</label>
+        <input id="wallet" type="text" placeholder="입력하지 않으면 MoonPay에서 입력합니다" />
+      </div>
+    </div>
+
+    <div class="buy-actions">
+      <button class="btn-predict" onclick="startMoonPay()"><i class="fas fa-credit-card"></i> 카드로 구매하기</button>
+      <a class="btn-secondary" href="/index.html">돌아가기</a>
+    </div>
+
+    <p style="margin-top:10px;color:#a8b3c7;font-size:12px">고지: 구매는 제3자 제공업체(MoonPay)를 통해 처리되며, KYC가 필요할 수 있습니다.</p>
+  </div>
+
+  <script src="https://kit.fontawesome.com/a2e0e6ad65.js" crossorigin="anonymous"></script>
+</body>
+</html>

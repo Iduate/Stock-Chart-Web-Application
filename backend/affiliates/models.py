@@ -70,9 +70,12 @@ class AffiliatePartner(models.Model):
             if not AffiliatePartner.objects.filter(partner_code=code).exists():
                 return code
     
-    def get_referral_link(self, base_url='https://stockchart.kr'):
-        """추천 링크 생성"""
-        return f"{base_url}?ref={self.partner_code}"
+    def get_referral_link(self, base_url='https://stockchart.kr', target_url='/'):
+        """추천 링크 생성 (추적 엔드포인트 경유)
+        By directing traffic to /api/affiliates/track/, we ensure clicks are logged
+        before redirecting users to the desired target.
+        """
+        return f"{base_url}/api/affiliates/track/?ref={self.partner_code}&target={target_url}"
     
     def calculate_commission(self, amount):
         """수수료 계산"""
@@ -110,20 +113,20 @@ class ReferralLink(models.Model):
         ordering = ['-created_at']
     
     def get_full_url(self, base_url='https://stockchart.kr'):
-        """전체 URL 생성"""
-        url = f"{base_url}{self.target_url}"
-        params = []
-        params.append(f"ref={self.partner.partner_code}")
-        params.append(f"link_id={self.link_id}")
-        
+        """전체 URL 생성 (추적 엔드포인트 경유)"""
+        track = f"{base_url}/api/affiliates/track/"
+        params = [
+            f"ref={self.partner.partner_code}",
+            f"link_id={self.link_id}",
+            f"target={self.target_url}",
+        ]
         if self.utm_source:
             params.append(f"utm_source={self.utm_source}")
         if self.utm_medium:
             params.append(f"utm_medium={self.utm_medium}")
         if self.utm_campaign:
             params.append(f"utm_campaign={self.utm_campaign}")
-        
-        return f"{url}?{'&'.join(params)}"
+        return f"{track}?{'&'.join(params)}"
     
     def __str__(self):
         return f"{self.partner.partner_code} - {self.name}"

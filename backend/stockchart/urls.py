@@ -14,10 +14,10 @@ urlpatterns = [
     path('api/status/', views.api_status, name='api_status'),
     path('api/auth/', include('users.urls')),
     path('api/charts/', include('charts.urls')),
-    path('api/payments/', include('payment_system.urls')),
+    path('api/payments/', include('payments.urls')),
     # path('api/korean-payments/', include('korean_payments.urls')),  # 한국 결제 게이트웨이 API - Temporarily disabled
     path('api/market-data/', include('market_data.urls')),
-    # path('api/affiliates/', include('affiliates.urls')),  # 새로 추가된 홍보파트너 API - Temporarily disabled for Railway deployment
+    path('api/affiliates/', include('affiliates.urls')),  # 홍보파트너 API
     # path('api/i18n/', include('i18n.urls')),  # 다국어 지원 API - Temporarily disabled for Railway deployment
     # Direct market endpoints for compatibility
     path('api/market/stocks/', views.market_stocks_redirect, name='market_stocks_redirect'),
@@ -34,7 +34,11 @@ urlpatterns = [
     path('events.html', views.serve_html_page, {'page_name': 'events.html'}, name='events_page'),
     path('subscription.html', views.serve_html_page, {'page_name': 'subscription.html'}, name='subscription_page'),
     path('payment.html', views.serve_html_page, {'page_name': 'payment.html'}, name='payment_page'),  # 결제 페이지 추가
+    path('buy-crypto.html', views.serve_html_page, {'page_name': 'buy-crypto.html'}, name='buy_crypto_page'),
+    path('payment-success.html', views.serve_html_page, {'page_name': 'payment-success.html'}, name='payment_success_page'),
+    path('payment-cancel.html', views.serve_html_page, {'page_name': 'payment-cancel.html'}, name='payment_cancel_page'),
     path('partners.html', views.serve_html_page, {'page_name': 'partners.html'}, name='partners_page'),  # 파트너 페이지 추가
+    path('index.html', views.serve_html_page, {'page_name': 'index.html'}, name='index_page'),
     
     # 홈페이지는 마지막에 위치 (모든 static 파일 처리 후)
     path('', views.home, name='home'),

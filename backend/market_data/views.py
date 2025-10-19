@@ -10,16 +10,65 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from .services import get_market_service
-from .models import MarketData, PriceHistory
-from .serializers import MarketDataSerializer, PriceHistorySerializer
+from .models import MarketData, PriceHistory, MarketAlert
+from .serializers import MarketDataSerializer, PriceHistorySerializer, MarketAlertSerializer
 from .precision_handler import PrecisionHandler
 import json
 import logging
 import time
 import requests
 from django.conf import settings
+from decimal import Decimal, InvalidOperation
 
 logger = logging.getLogger(__name__)
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_market_alert(request):
+    """Create a market price alert.
+
+    Expected JSON body:
+    - symbol: str (required)
+    - market: str (optional, default 'crypto')
+    - alert_type: str (optional, default 'price_up')
+    - trigger_price: number/str (required)
+    - message: str (optional)
+    """
+    try:
+        data = request.data if hasattr(request, 'data') and request.data else json.loads(request.body or '{}')
+        symbol = (data.get('symbol') or '').strip().upper()
+        market = (data.get('market') or 'crypto').strip()
+        alert_type = (data.get('alert_type') or 'price_up').strip()
+        trigger_price = data.get('trigger_price')
+
+        if not symbol or trigger_price is None:
+            return Response({'error': 'symbol and trigger_price are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            trigger_price_dec = Decimal(str(trigger_price))
+        except (InvalidOperation, ValueError, TypeError):
+            return Response({'error': 'trigger_price must be a valid number'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # For initial creation, default current_price to trigger_price; can be updated by background jobs later
+        current_price = trigger_price_dec
+        message = data.get('message') or f"{symbol} 가격 알림 {trigger_price_dec} 설정"
+
+        alert = MarketAlert.objects.create(
+            symbol=symbol,
+            market=market,
+            alert_type=alert_type,
+            trigger_price=trigger_price_dec,
+            current_price=current_price,
+            message=message,
+            is_triggered=False,
+        )
+
+        serializer = MarketAlertSerializer(alert)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        logger.exception(f"Failed to create market alert: {e}")
+        return Response({'error': '알림 생성 중 오류가 발생했습니다', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def get_crypto_data(request, symbol):

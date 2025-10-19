@@ -17,7 +17,8 @@ from .models import (
     InternationalPayment, ExchangeRate, PaymentWebhook,
     PaymentMethod, PaymentPlan
 )
-from .serializers import (
+# Import directly from international_serializers to avoid re-export timing issues
+from .international_serializers import (
     InternationalPaymentSerializer, InternationalPaymentCreateSerializer,
     ExchangeRateSerializer, PaymentWebhookSerializer
 )

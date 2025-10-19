@@ -39,10 +39,12 @@ def serve_html_page(request, page_name=None):
     
     # 허용된 페이지 목록 (보안을 위해)
     allowed_pages = [
-        'home.html', 'charts.html', 'prediction.html', 
-        'my-predictions.html', 'ranking.html', 'events.html', 
-        'subscription.html', 'payment.html', 'partners.html', 
-        'index.html'
+        'home.html', 'charts.html', 'prediction.html',
+        'my-predictions.html', 'ranking.html', 'events.html',
+        'subscription.html', 'payment.html', 'partners.html',
+        'index.html',
+        # Payments/crypto pages
+        'buy-crypto.html', 'payment-success.html', 'payment-cancel.html'
     ]
     
     if page_name not in allowed_pages:

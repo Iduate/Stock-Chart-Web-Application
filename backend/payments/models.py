@@ -74,7 +74,7 @@ class Payment(models.Model):
         ('ETH', '이더리움'),
     ]
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='사용자')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='사용자', null=True, blank=True)
     plan = models.ForeignKey(PaymentPlan, on_delete=models.CASCADE, verbose_name='요금제')
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE, verbose_name='결제 수단')
     amount = models.DecimalField('결제 금액', max_digits=15, decimal_places=8)

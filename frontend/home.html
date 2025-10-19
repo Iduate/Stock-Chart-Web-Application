@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>홈 - 주식 차트</title>
+    <meta name="description" content="주식 차트 예측 플랫폼 - 실시간 차트와 전략 예측을 활용해 보세요.">
+    <meta property="og:title" content="주식 차트 예측 플랫폼">
+    <meta property="og:description" content="실시간 차트, 전략 예측, 수익률 랭킹을 제공합니다.">
+    <meta property="og:type" content="website">
 
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -61,6 +65,10 @@
                 <button id="setAlertBtn" class="ghost-btn">
                     <i class="fas fa-bell"></i>
                     가격 알림
+                </button>
+                <button class="ghost-btn" data-share="web" title="공유">
+                    <i class="fas fa-share-alt"></i>
+                    공유
                 </button>
                 <a href="prediction.html" class="primary-btn" style="text-decoration:none;">
                     <i class="fas fa-lightbulb"></i>
@@ -150,5 +158,7 @@
         })();
     </script>
     <script src="js/auth-ui.js?v=2025.10.13"></script>
+    <script src="js/share.js"></script>
+    <script src="js/alerts-and-news.js"></script>
 </body>
 </html>

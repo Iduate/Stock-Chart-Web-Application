@@ -85,7 +85,7 @@ INSTALLED_APPS = [
     'payments',
     'market_data',
     'marketdata',
-    # 'affiliates',  # 새로 추가된 홍보파트너 앱 - Temporarily disabled for Railway deployment
+    'affiliates',  # 홍보파트너 API 사용
     # 'i18n',  # 다국어 지원 앱 - Temporarily disabled for Railway deployment
     # 'korean_payments.apps.KoreanPaymentsConfig',  # 한국 결제 게이트웨이 앱 - Temporarily disabled
 ]
@@ -128,9 +128,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'stockchart.wsgi.application'
 
 # 데이터베이스 설정
+# Local developer convenience: set USE_SQLITE=true in backend/.env to use a local SQLite DB
+USE_SQLITE = config('USE_SQLITE', default=False, cast=bool)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL and HAS_DJ_DATABASE_URL:
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+elif DATABASE_URL and HAS_DJ_DATABASE_URL:
     # Production: Use Render/Railway/Heroku database URL
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
@@ -328,3 +337,8 @@ AUTH_COOKIE_SAMESITE = config('AUTH_COOKIE_SAMESITE', default='Lax')  # 'Lax' or
 AUTH_COOKIE_DOMAIN = config('AUTH_COOKIE_DOMAIN', default=None)
 AUTH_COOKIE_ACCESS_NAME = config('AUTH_COOKIE_ACCESS_NAME', default='sc_access')
 AUTH_COOKIE_REFRESH_NAME = config('AUTH_COOKIE_REFRESH_NAME', default='sc_refresh')
+
+# Fiat-to-crypto on-ramp (MoonPay)
+MOONPAY_API_KEY = config('MOONPAY_API_KEY', default='')
+MOONPAY_SECRET_KEY = config('MOONPAY_SECRET_KEY', default='')
+MOONPAY_SANDBOX = config('MOONPAY_SANDBOX', default=True, cast=bool)

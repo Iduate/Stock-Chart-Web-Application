@@ -54,6 +54,100 @@
 			],
 			"isBackground": true,
 			"group": "build"
+		},
+		{
+			"label": "Django 마이그레이션 생성 (workspace venv)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"makemigrations"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Django 마이그레이션 (workspace venv)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"migrate"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Django Development Server (workspace venv)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"runserver",
+				"0.0.0.0:8000"
+			],
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Django makemigrations affiliates",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"makemigrations",
+				"affiliates"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Django makemigrations (payments seed)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"makemigrations",
+				"payments"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Django migrate (apply seed)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"migrate"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Make migration for nullable Payment.user",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"makemigrations",
+				"payments"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Apply migrations (payments)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"migrate",
+				"payments"
+			],
+			"group": "build"
 		}
 	]
 }

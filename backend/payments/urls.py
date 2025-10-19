@@ -5,6 +5,7 @@ from .international_views import (
     InternationalPaymentViewSet, ExchangeRateViewSet,
     PaymentStatsView, PaymentWebhookView
 )
+from .views import MoonPayOnRampInitView, MoonPayOnRampCallbackView, paypal_webhook
 
 router = DefaultRouter()
 router.register(r'plans', views.PaymentPlanViewSet)
@@ -20,17 +21,14 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(international_router.urls)),
     
-    # Legacy payment endpoints
-    path('subscribe/', views.SubscribeView.as_view(), name='subscribe'),
-    path('paypal/create/', views.PayPalCreatePaymentView.as_view(), name='paypal_create'),
-    path('paypal/execute/', views.PayPalExecutePaymentView.as_view(), name='paypal_execute'),
-    path('crypto/create/', views.CryptoPaymentView.as_view(), name='crypto_create'),
-    
     # International payment stats
     path('stats/', PaymentStatsView.as_view(), name='payment-stats'),
     
     # Webhook endpoints
-    path('webhook/paypal/', views.PayPalWebhookView.as_view(), name='paypal_webhook'),
-    path('webhook/crypto/', views.CryptoWebhookView.as_view(), name='crypto_webhook'),
+    path('webhook/paypal/', paypal_webhook, name='paypal_webhook'),
     path('webhook/<str:provider>/', PaymentWebhookView.as_view(), name='international-webhook'),
+
+    # Fiat-to-crypto on-ramp (MoonPay)
+    path('onramp/moonpay/init/', MoonPayOnRampInitView.as_view({'post': 'create'}), name='moonpay_onramp_init'),
+    path('onramp/moonpay/callback/', MoonPayOnRampCallbackView.as_view({'get': 'list'}), name='moonpay_onramp_callback'),
 ]

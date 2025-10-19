@@ -240,6 +240,28 @@ Stock Chart Web/
 └── 📄 README.md                  # This documentation
 ```
 
+## 💳 Buy Crypto with Card (MoonPay)
+
+We support a simple fiat-to-crypto on-ramp via MoonPay so users can purchase Bitcoin (BTC) or Ethereum (ETH) with credit/debit cards.
+
+Environment variables (set in `backend/.env` or hosting dashboard):
+
+```
+MOONPAY_API_KEY=your-moonpay-api-key
+MOONPAY_SECRET_KEY=your-moonpay-secret
+MOONPAY_SANDBOX=true
+```
+
+Backend endpoint:
+- POST `/api/payments/onramp/moonpay/init/` → returns `{ url }` (signed MoonPay URL)
+
+Frontend:
+- Open `frontend/buy-crypto.html` to start a purchase. On success/cancel, users are redirected to `payment-success.html` or `payment-cancel.html`.
+
+Notes:
+- KYC may be required by the provider. We do not custody funds; assets are sent to the user’s wallet.
+
+
 ## 📈 Current Implementation Status
 
 ### ✅ Completed Features

@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>결제하기 - 주식 차트</title>
+    <meta name="description" content="주식 차트 프리미엄 구독 결제 페이지">
+    <meta property="og:title" content="결제하기 - 주식 차트">
+    <meta property="og:description" content="프리미엄 구독을 결제하고 모든 기능을 이용하세요.">
+    <meta property="og:type" content="website">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
     
     <!-- Fonts -->
@@ -96,6 +100,10 @@
                 <button class="btn-predict primary">
                     <i class="fas fa-credit-card"></i>
                     <span>결제하기</span>
+                </button>
+                <button class="btn-predict" data-share="web">
+                    <i class="fas fa-share-alt"></i>
+                    <span>공유</span>
                 </button>
             </div>
         </header>
@@ -343,6 +351,25 @@
 
     <!-- JavaScript -->
     <script>
+        async function createPayPalOrder(planId, currency='USD'){
+            try{
+                const res = await fetch('/api/payments/create-paypal-order/',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({plan_id: planId, currency})
+                });
+                return await res.json();
+            }catch(e){ console.error(e); alert('결제 생성 중 오류가 발생했습니다.'); }
+        }
+        async function capturePayPalPayment(orderId){
+            try{
+                const res = await fetch('/api/payments/capture-paypal-payment/',{
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({order_id: orderId})
+                });
+                return await res.json();
+            }catch(e){ console.error(e); alert('결제 확인 중 오류가 발생했습니다.'); }
+        }
+
         // Payment method selection
         document.querySelectorAll('.payment-method').forEach(method => {
             method.addEventListener('click', function() {
@@ -437,5 +464,6 @@
 
     <!-- Collapsible Sidebar Script -->
     <script src="js/collapsible-sidebar.js"></script>
+    <script src="js/share.js"></script>
 </body>
 </html>
