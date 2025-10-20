@@ -9,320 +9,448 @@
     <meta property="og:description" content="프리미엄 구독을 결제하고 모든 기능을 이용하세요.">
     <meta property="og:type" content="website">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
-    
-    <!-- Fonts -->
+
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Korean Trading UI Design System -->
-    <link rel="stylesheet" href="css/figma-design.css">
-    
-    <!-- Mobile Trading UI -->
-    <link rel="stylesheet" href="css/mobile-trading.css">
-    
-    <!-- Payment scripts -->
-    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-    <script src="https://js.tosspayments.com/v1/payment"></script>
-    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-</head>
 
-<body>
-    <!-- Korean Trading UI Container -->
-    <div class="figma-container">
-        
-        <!-- Sidebar -->
-        <aside class="figma-sidebar">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>주식 차트</span>
+    <!-- Core styles -->
+    <link rel="stylesheet" href="css/figma-design.css?v=2025.10.19">
+    <link rel="stylesheet" href="css/mobile-trading.css?v=2025.10.19">
+
+    <!-- Payment scripts -->
+    <script src="https://cdn.iamport.kr/v1/iamport.js" defer></script>
+    <script src="https://js.tosspayments.com/v1/payment" defer></script>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js" defer></script>
+</head>
+<body class="home-body payment-page">
+    <div class="home-desktop desktop-only">
+        <header class="dashboard-top-bar">
+            <div class="top-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div>
+                    <p class="brand-eyebrow">프리미엄 결제 허브</p>
+                    <h1 class="brand-title">결제 센터</h1>
+                </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="/" class="nav-item">
+
+            <nav class="top-nav-links">
+                <a href="/" class="top-nav-link">
                     <i class="fas fa-home"></i>
                     <span>홈</span>
                 </a>
-                <a href="charts.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>차트 분석</span>
+                <a href="charts.html" class="top-nav-link">
+                    <i class="fas fa-chart-area"></i>
+                    <span>차트</span>
                 </a>
-                <a href="prediction.html" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>사용자 예측</span>
+                <a href="prediction.html" class="top-nav-link">
+                    <i class="fas fa-magic"></i>
+                    <span>예측하기</span>
                 </a>
-                <a href="ranking.html" class="nav-item">
+                <a href="my-predictions.html" class="top-nav-link">
+                    <i class="fas fa-user-chart"></i>
+                    <span>내 예측</span>
+                </a>
+                <a href="ranking.html" class="top-nav-link">
                     <i class="fas fa-trophy"></i>
-                    <span>수익률 랭킹</span>
+                    <span>랭킹</span>
                 </a>
-                <a href="subscription.html" class="nav-item">
+                <a href="events.html" class="top-nav-link">
+                    <i class="fas fa-calendar-star"></i>
+                    <span>이벤트</span>
+                </a>
+                <a href="subscription.html" class="top-nav-link">
                     <i class="fas fa-crown"></i>
                     <span>프리미엄</span>
                 </a>
-                <a href="events.html" class="nav-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>이벤트</span>
-                </a>
-                <a href="payment.html" class="nav-item active">
+                <a href="payment.html" class="top-nav-link active" aria-current="page">
                     <i class="fas fa-credit-card"></i>
                     <span>결제</span>
                 </a>
+                <a href="partners.html" class="top-nav-link">
+                    <i class="fas fa-handshake"></i>
+                    <span>파트너</span>
+                </a>
             </nav>
-            
-            <div class="sidebar-bottom">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">게스트</div>
-                        <div class="user-status">무료 계정</div>
-                    </div>
+
+            <div class="top-actions">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="search" class="search-input" placeholder="플랜, 결제수단 검색">
                 </div>
-            </div>
-        </aside>
-        
-        <!-- Header -->
-        <header class="figma-header">
-            <div class="header-logo">
-                <i class="fas fa-credit-card text-accent-green"></i>
-                <span>결제하기</span>
-            </div>
-            
-            <div class="header-search">
-                <input type="text" class="search-input" placeholder="플랜 검색">
-            </div>
-            
-            <div class="header-actions">
-                <button class="btn-predict">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>로그인</span>
-                </button>
-                <button class="btn-predict primary">
-                    <i class="fas fa-credit-card"></i>
-                    <span>결제하기</span>
-                </button>
-                <button class="btn-predict" data-share="web">
+                <button class="ghost-btn" type="button" data-share="web">
                     <i class="fas fa-share-alt"></i>
-                    <span>공유</span>
+                    공유
+                </button>
+                <button class="primary-btn" type="button" onclick="document.getElementById('billingForm').scrollIntoView({behavior: 'smooth'})">
+                    <i class="fas fa-lock"></i>
+                    결제 진행
                 </button>
             </div>
         </header>
-        
-        <!-- Main Content -->
-        <main class="figma-main">
-            <div class="main-content">
-                <!-- Payment Header -->
-                <div class="content-header">
-                    <h1>💳 결제하기</h1>
-                    <p>원하는 플랜을 선택하고 안전하게 결제하세요</p>
-                </div>
-                
-                <!-- Selected Plan Info -->
-                <div class="selected-plan-info">
-                    <h2>선택된 플랜</h2>
-                    <div class="plan-summary">
-                        <div class="plan-details">
-                            <h3 id="selectedPlanName">프로 플랜</h3>
-                            <p id="selectedPlanDescription">모든 프리미엄 기능과 고급 분석 도구</p>
-                            <div class="plan-price">
-                                <span id="selectedPlanPrice">₩39,900</span>
-                                <span>/월</span>
-                            </div>
-                        </div>
-                        <button class="change-plan-btn" onclick="changePlan()">
-                            <i class="fas fa-edit"></i>
-                            플랜 변경
+
+        <section class="home-dashboard payment-dashboard">
+            <div class="page-hero-card payment-hero">
+                <div class="hero-content">
+                    <span class="hero-eyebrow">실시간 보안 모니터링</span>
+                    <h2 class="hero-title">모든 플랜을 안전하게 결제하세요</h2>
+                    <p class="hero-subtitle">암호화된 결제 채널과 다중 인증을 통해 고객님의 결제 정보를 철저히 보호합니다. 언제든지 플랜을 변경하고 빠르게 결제할 수 있습니다.</p>
+                    <div class="hero-actions">
+                        <button class="primary-btn" type="button" onclick="changePlan()">
+                            <i class="fas fa-crown"></i>
+                            플랜 비교
+                        </button>
+                        <button class="ghost-btn" type="button" onclick="window.open('payment-success.html','_blank')">
+                            <i class="fas fa-eye"></i>
+                            결제 데모 보기
                         </button>
                     </div>
                 </div>
-                
-                <!-- Payment Methods -->
-                <div class="payment-methods-section">
-                    <h2>결제 방법 선택</h2>
-                    <div class="payment-methods">
-                        <div class="payment-method" data-method="card">
-                            <div class="method-icon">
-                                <i class="fas fa-credit-card"></i>
-                            </div>
-                            <div class="method-info">
-                                <h3>신용카드</h3>
-                                <p>Visa, MasterCard, JCB</p>
-                            </div>
-                            <div class="method-radio">
-                                <input type="radio" name="paymentMethod" value="card" checked>
-                            </div>
-                        </div>
-                        
-                        <div class="payment-method" data-method="kakao">
-                            <div class="method-icon">
-                                <i class="fas fa-comments" style="color: #fee500;"></i>
-                            </div>
-                            <div class="method-info">
-                                <h3>카카오페이</h3>
-                                <p>간편하고 안전한 결제</p>
-                            </div>
-                            <div class="method-radio">
-                                <input type="radio" name="paymentMethod" value="kakao">
-                            </div>
-                        </div>
-                        
-                        <div class="payment-method" data-method="toss">
-                            <div class="method-icon">
-                                <i class="fas fa-mobile-alt" style="color: #3182f6;"></i>
-                            </div>
-                            <div class="method-info">
-                                <h3>토스페이</h3>
-                                <p>토스 앱으로 간편 결제</p>
-                            </div>
-                            <div class="method-radio">
-                                <input type="radio" name="paymentMethod" value="toss">
-                            </div>
-                        </div>
-                        
-                        <div class="payment-method" data-method="bank">
-                            <div class="method-icon">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="method-info">
-                                <h3>계좌이체</h3>
-                                <p>무통장 입금</p>
-                            </div>
-                            <div class="method-radio">
-                                <input type="radio" name="paymentMethod" value="bank">
-                            </div>
-                        </div>
+                <div class="hero-metrics">
+                    <div class="hero-metric">
+                        <span class="metric-label">보안 업타임</span>
+                        <span class="metric-value accent">99.99%</span>
+                        <span class="metric-sub">지난 12개월</span>
                     </div>
-                </div>
-                
-                <!-- Billing Information -->
-                <div class="billing-info-section">
-                    <h2>결제 정보</h2>
-                    <form class="billing-form" id="billingForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>이름</label>
-                                <input type="text" id="customerName" placeholder="홍길동" required>
-                            </div>
-                            <div class="form-group">
-                                <label>이메일</label>
-                                <input type="email" id="customerEmail" placeholder="example@email.com" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>전화번호</label>
-                                <input type="tel" id="customerPhone" placeholder="010-1234-5678" required>
-                            </div>
-                            <div class="form-group">
-                                <label>회사명 (선택)</label>
-                                <input type="text" id="companyName" placeholder="회사명">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Order Summary -->
-                <div class="order-summary-section">
-                    <h2>주문 요약</h2>
-                    <div class="order-summary">
-                        <div class="summary-row">
-                            <span>플랜</span>
-                            <span id="summaryPlanName">프로 플랜</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>월 요금</span>
-                            <span id="summaryPlanPrice">₩39,900</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>할인</span>
-                            <span class="discount">-₩0</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span>총 결제 금액</span>
-                            <span id="totalAmount">₩39,900</span>
-                        </div>
+                    <div class="hero-metric">
+                        <span class="metric-label">평균 승인 속도</span>
+                        <span class="metric-value">2.4초</span>
+                        <span class="metric-sub">글로벌 평균 대비 38% 빠름</span>
                     </div>
-                </div>
-                
-                <!-- Terms and Conditions -->
-                <div class="terms-section">
-                    <div class="terms-checkbox">
-                        <input type="checkbox" id="agreeTerms" required>
-                        <label for="agreeTerms">
-                            <a href="#" onclick="showTerms()">이용약관</a> 및 
-                            <a href="#" onclick="showPrivacy()">개인정보처리방침</a>에 동의합니다
-                        </label>
+                    <div class="hero-metric">
+                        <span class="metric-label">지원 결제수단</span>
+                        <span class="metric-value">12+</span>
+                        <span class="metric-sub">카드 · 간편 결제 · 암호화폐</span>
                     </div>
-                    <div class="terms-checkbox">
-                        <input type="checkbox" id="agreePayment" required>
-                        <label for="agreePayment">결제 정보 제공에 동의합니다</label>
-                    </div>
-                </div>
-                
-                <!-- Payment Button -->
-                <div class="payment-button-section">
-                    <button class="payment-submit-btn" onclick="processPayment()">
-                        <i class="fas fa-lock"></i>
-                        <span id="paymentBtnText">₩39,900 결제하기</span>
-                    </button>
-                    <p class="payment-security">
-                        <i class="fas fa-shield-alt"></i>
-                        SSL 보안 결제로 안전하게 보호됩니다
-                    </p>
                 </div>
             </div>
-        </main>
-        
-        <!-- Trading Panel -->
-        <aside class="figma-trading-panel">
-            <div class="trading-header">
-                <h3>결제 도움말</h3>
+
+            <div class="page-grid payment-grid">
+                <div class="page-main-column">
+                    <section class="section-card selected-plan-card">
+                        <header class="section-header">
+                            <div>
+                                <h2>선택된 플랜</h2>
+                                <p>언제든지 다른 요금제로 전환할 수 있습니다.</p>
+                            </div>
+                            <button class="ghost-btn small" type="button" onclick="changePlan()">
+                                <i class="fas fa-pen"></i>
+                                플랜 변경
+                            </button>
+                        </header>
+                        <div class="plan-summary">
+                            <div class="plan-pill">활성</div>
+                            <div class="plan-details">
+                                <h3 id="selectedPlanName">프로 플랜</h3>
+                                <p id="selectedPlanDescription">모든 프리미엄 기능과 고급 분석 도구</p>
+                            </div>
+                            <div class="plan-price">
+                                <span id="selectedPlanPrice">₩39,900</span>
+                                <span class="plan-period">/월</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section-card payment-methods-card">
+                        <header class="section-header">
+                            <div>
+                                <h2>결제 방법 선택</h2>
+                                <p>보안이 검증된 결제 파트너를 통해 빠르게 결제하세요.</p>
+                            </div>
+                        </header>
+                        <div class="payment-methods">
+                            <button class="payment-method" type="button" data-method="card">
+                                <div class="method-icon gradient">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h3>신용카드</h3>
+                                    <p>Visa, MasterCard, JCB, American Express</p>
+                                </div>
+                                <div class="method-radio">
+                                    <input type="radio" name="paymentMethod" value="card" checked>
+                                </div>
+                            </button>
+                            <button class="payment-method" type="button" data-method="kakao">
+                                <div class="method-icon kakao">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h3>카카오페이</h3>
+                                    <p>카카오 계정으로 간편하게 결제</p>
+                                </div>
+                                <div class="method-radio">
+                                    <input type="radio" name="paymentMethod" value="kakao">
+                                </div>
+                            </button>
+                            <button class="payment-method" type="button" data-method="toss">
+                                <div class="method-icon toss">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h3>토스페이</h3>
+                                    <p>토스 앱에서 즉시 승인</p>
+                                </div>
+                                <div class="method-radio">
+                                    <input type="radio" name="paymentMethod" value="toss">
+                                </div>
+                            </button>
+                            <button class="payment-method" type="button" data-method="bank">
+                                <div class="method-icon bank">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <div class="method-info">
+                                    <h3>계좌이체</h3>
+                                    <p>무통장 입금과 기업 맞춤 청구</p>
+                                </div>
+                                <div class="method-radio">
+                                    <input type="radio" name="paymentMethod" value="bank">
+                                </div>
+                            </button>
+                        </div>
+                    </section>
+
+                    <section class="section-card billing-card" id="billingCard">
+                        <header class="section-header">
+                            <div>
+                                <h2>결제 정보</h2>
+                                <p>사업자 등록 번호는 청구서에 표시됩니다.</p>
+                            </div>
+                            <span class="section-chip">보안입력</span>
+                        </header>
+                        <form class="billing-form" id="billingForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="customerName">이름</label>
+                                    <input type="text" id="customerName" placeholder="홍길동" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="customerEmail">이메일</label>
+                                    <input type="email" id="customerEmail" placeholder="example@email.com" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="customerPhone">전화번호</label>
+                                    <input type="tel" id="customerPhone" placeholder="010-1234-5678" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="companyName">회사명 (선택)</label>
+                                    <input type="text" id="companyName" placeholder="회사명">
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="section-card order-summary-card">
+                        <header class="section-header">
+                            <div>
+                                <h2>주문 요약</h2>
+                                <p>결제 전 최종 금액과 혜택을 확인하세요.</p>
+                            </div>
+                        </header>
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>플랜</span>
+                                <span id="summaryPlanName">프로 플랜</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>월 요금</span>
+                                <span id="summaryPlanPrice">₩39,900</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>할인</span>
+                                <span class="discount">-₩0</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>부가세 (10%)</span>
+                                <span id="taxAmount">₩3,990</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>총 결제 금액</span>
+                                <span id="totalAmount">₩43,890</span>
+                            </div>
+                        </div>
+                        <div class="payment-terms">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="agreeTerms" required>
+                                <span><a href="#" onclick="showTerms(); return false;">이용약관</a> 및 <a href="#" onclick="showPrivacy(); return false;">개인정보처리방침</a>에 동의합니다.</span>
+                            </label>
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="agreePayment" required>
+                                <span>결제 정보 제공에 동의합니다.</span>
+                            </label>
+                        </div>
+                        <div class="payment-actions">
+                            <button class="payment-submit-btn" type="button" onclick="processPayment()">
+                                <i class="fas fa-shield-alt"></i>
+                                <span id="paymentBtnText">₩43,890 결제하기</span>
+                            </button>
+                            <p class="payment-security">
+                                <i class="fas fa-lock"></i>
+                                SSL 256bit 암호화로 처리됩니다.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section class="section-card payment-social-proof">
+                        <header class="section-header">
+                            <div>
+                                <h2>고객 신뢰 지표</h2>
+                                <p>결제 여정에서 확인된 핵심 성과와 실제 사용자 피드백입니다.</p>
+                            </div>
+                        </header>
+                        <div class="social-proof-layout">
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <span class="metric-label">결제 성공률</span>
+                                    <span class="metric-value accent">99.98%</span>
+                                    <span class="metric-trend"><i class="fas fa-arrow-up"></i> 지난 분기 대비 +0.6%</span>
+                                    <span class="metric-note">다중 게이트웨이 자동 전환</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">평균 승인 시간</span>
+                                    <span class="metric-value">2.4초</span>
+                                    <span class="metric-trend"><i class="fas fa-bolt"></i> 글로벌 평균 대비 38% 빠름</span>
+                                    <span class="metric-note">AI fraud shield와 병렬 처리</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">구독 유지율</span>
+                                    <span class="metric-value accent">93%</span>
+                                    <span class="metric-trend"><i class="fas fa-clock"></i> 6개월 연속 유지</span>
+                                    <span class="metric-note">자동 청구 & 알림 워크플로우</span>
+                                </div>
+                            </div>
+                            <div class="testimonials-grid">
+                                <article class="testimonial-card">
+                                    <span class="testimonial-badge">스타트업 대표</span>
+                                    <p class="testimonial-quote">"결제 성공률이 높아진 덕분에 리텐션 캠페인에 집중할 수 있었고, 해외 고객 결제도 문제 없이 처리되고 있어요."</p>
+                                    <div class="testimonial-author">
+                                        <span class="author-name">이은지</span>
+                                        <span class="author-role">Growth Lead · FinHub</span>
+                                    </div>
+                                </article>
+                                <article class="testimonial-card">
+                                    <span class="testimonial-badge">프리미엄 멤버</span>
+                                    <p class="testimonial-quote">"결제 단계가 간결하고 빠릅니다. 인증 절차도 안전하다고 느껴져서 매달 안심하고 자동 결제를 사용하고 있어요."</p>
+                                    <div class="testimonial-author">
+                                        <span class="author-name">정민호</span>
+                                        <span class="author-role">프로 트레이더 · 서울</span>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="page-side-column">
+                    <section class="section-card support-card">
+                        <header class="section-header">
+                            <div>
+                                <h3>결제 지원 센터</h3>
+                                <p>전담 팀이 24시간 응답합니다.</p>
+                            </div>
+                        </header>
+                        <div class="support-grid">
+                            <div class="support-item">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <span class="support-label">전화 상담</span>
+                                    <strong>1588-1234</strong>
+                                </div>
+                            </div>
+                            <div class="support-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <span class="support-label">이메일</span>
+                                    <strong>payment@stockchart.com</strong>
+                                </div>
+                            </div>
+                            <div class="support-item">
+                                <i class="fas fa-comments"></i>
+                                <div>
+                                    <span class="support-label">실시간 채팅</span>
+                                    <strong>평일 09:00 - 24:00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section-card security-card">
+                        <header class="section-header">
+                            <div>
+                                <h3>보안 인증</h3>
+                                <p>국제 표준을 준수합니다.</p>
+                            </div>
+                        </header>
+                        <div class="security-badges">
+                            <div class="security-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>SSL 인증</span>
+                            </div>
+                            <div class="security-badge">
+                                <i class="fas fa-lock"></i>
+                                <span>256bit 암호화</span>
+                            </div>
+                            <div class="security-badge">
+                                <i class="fas fa-check-circle"></i>
+                                <span>PCI DSS 준수</span>
+                            </div>
+                            <div class="security-meta">국내외 결제망과 실시간으로 연동됩니다.</div>
+                        </div>
+                    </section>
+
+                    <section class="section-card refund-card">
+                        <header class="section-header">
+                            <div>
+                                <h3>환불 및 정책</h3>
+                                <p>투명한 구독 관리를 지원합니다.</p>
+                            </div>
+                        </header>
+                        <ul class="refund-policy">
+                            <li>7일 전액 환불 보장</li>
+                            <li>언제든지 플랜 변경 가능</li>
+                            <li>남은 기간 비례 환불</li>
+                            <li>기업 고객 전용 문의 채널 지원</li>
+                        </ul>
+                    </section>
+
+                    <section class="section-card process-card">
+                        <header class="section-header">
+                            <div>
+                                <h3>결제 진행 단계</h3>
+                                <p>3단계로 2분 내 결제 완료</p>
+                            </div>
+                        </header>
+                        <ol class="process-list">
+                            <li>
+                                <span class="step-number">1</span>
+                                <div>
+                                    <h4>플랜 확인</h4>
+                                    <p>요금제와 혜택을 검토한 뒤 결제 수단을 선택합니다.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="step-number">2</span>
+                                <div>
+                                    <h4>정보 입력</h4>
+                                    <p>필수 정보와 영수증 수령 이메일을 입력합니다.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="step-number">3</span>
+                                <div>
+                                    <h4>보안 결제</h4>
+                                    <p>선택한 결제수단으로 인증을 완료하면 즉시 활성화됩니다.</p>
+                                </div>
+                            </li>
+                        </ol>
+                    </section>
+                </aside>
             </div>
-            
-            <div class="payment-help">
-                <div class="help-item">
-                    <h4>결제 문의</h4>
-                    <p>결제 관련 문의사항이 있으시면 언제든지 연락주세요</p>
-                    <div class="contact-info">
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <span>1588-1234</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>payment@stockchart.com</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="help-item">
-                    <h4>안전한 결제</h4>
-                    <div class="security-badges">
-                        <div class="security-badge">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>SSL 인증</span>
-                        </div>
-                        <div class="security-badge">
-                            <i class="fas fa-lock"></i>
-                            <span>256bit 암호화</span>
-                        </div>
-                        <div class="security-badge">
-                            <i class="fas fa-check-circle"></i>
-                            <span>PCI DSS 준수</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="help-item">
-                    <h4>환불 정책</h4>
-                    <ul class="refund-policy">
-                        <li>7일 무료 체험 기간</li>
-                        <li>언제든지 구독 취소 가능</li>
-                        <li>미사용 기간 비례 환불</li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
+        </section>
     </div>
 
     <!-- Mobile Bottom Navigation -->
@@ -349,42 +477,55 @@
         </a>
     </nav>
 
-    <!-- JavaScript -->
     <script>
-        async function createPayPalOrder(planId, currency='USD'){
-            try{
-                const res = await fetch('/api/payments/create-paypal-order/',{
-                    method:'POST',
-                    headers:{'Content-Type':'application/json'},
-                    body: JSON.stringify({plan_id: planId, currency})
+        async function createPayPalOrder(planId, currency = 'USD') {
+            try {
+                const res = await fetch('/api/payments/create-paypal-order/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan_id: planId, currency })
                 });
                 return await res.json();
-            }catch(e){ console.error(e); alert('결제 생성 중 오류가 발생했습니다.'); }
+            } catch (e) {
+                console.error(e);
+                alert('결제 생성 중 오류가 발생했습니다.');
+            }
         }
-        async function capturePayPalPayment(orderId){
-            try{
-                const res = await fetch('/api/payments/capture-paypal-payment/',{
-                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({order_id: orderId})
+
+        async function capturePayPalPayment(orderId) {
+            try {
+                const res = await fetch('/api/payments/capture-paypal-payment/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId })
                 });
                 return await res.json();
-            }catch(e){ console.error(e); alert('결제 확인 중 오류가 발생했습니다.'); }
+            } catch (e) {
+                console.error(e);
+                alert('결제 확인 중 오류가 발생했습니다.');
+            }
         }
 
         // Payment method selection
         document.querySelectorAll('.payment-method').forEach(method => {
-            method.addEventListener('click', function() {
-                // Remove active class from all methods
+            method.addEventListener('click', function () {
                 document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
-                
-                // Add active class to clicked method
                 this.classList.add('active');
-                
-                // Check the radio button
                 this.querySelector('input[type="radio"]').checked = true;
             });
         });
 
-        // Form validation
+        function updateTotals() {
+            const priceText = document.getElementById('selectedPlanPrice').textContent.replace(/[^0-9]/g, '');
+            const price = Number(priceText || 0);
+            const tax = Math.round(price * 0.1);
+            const total = price + tax;
+            document.getElementById('summaryPlanPrice').textContent = `₩${price.toLocaleString()}`;
+            document.getElementById('taxAmount').textContent = `₩${tax.toLocaleString()}`;
+            document.getElementById('totalAmount').textContent = `₩${total.toLocaleString()}`;
+            document.getElementById('paymentBtnText').textContent = `₩${total.toLocaleString()} 결제하기`;
+        }
+
         function validateForm() {
             const name = document.getElementById('customerName').value;
             const email = document.getElementById('customerEmail').value;
@@ -405,7 +546,6 @@
             return true;
         }
 
-        // Process payment
         function processPayment() {
             if (!validateForm()) {
                 return;
@@ -413,57 +553,44 @@
 
             const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
             const amount = document.getElementById('totalAmount').textContent;
-            
-            // Show loading state
             const btn = document.querySelector('.payment-submit-btn');
+
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 결제 처리 중...';
             btn.disabled = true;
 
-            // Simulate payment processing
             setTimeout(() => {
                 alert(`${selectedMethod} 결제가 성공적으로 완료되었습니다!\n결제 금액: ${amount}`);
-                
-                // Reset button
-                btn.innerHTML = '<i class="fas fa-lock"></i> ₩39,900 결제하기';
+                updateTotals();
+                btn.innerHTML = '<i class="fas fa-shield-alt"></i> <span id="paymentBtnText">' + amount + ' 결제하기</span>';
                 btn.disabled = false;
-                
-                // Redirect to success page (in real app)
-                // window.location.href = 'payment-success.html';
-            }, 3000);
+            }, 2500);
         }
 
-        // Change plan
         function changePlan() {
-            alert('플랜 변경 페이지로 이동합니다.');
             window.location.href = 'subscription.html';
         }
 
-        // Show terms
         function showTerms() {
             alert('이용약관을 표시합니다.');
         }
 
-        // Show privacy policy
         function showPrivacy() {
             alert('개인정보처리방침을 표시합니다.');
         }
 
-        // Initialize payment methods
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set first payment method as active
-            document.querySelector('.payment-method').classList.add('active');
-            
-            // Add animation to form elements
-            const formGroups = document.querySelectorAll('.form-group');
-            formGroups.forEach((group, index) => {
-                group.style.animationDelay = `${index * 0.1}s`;
+        document.addEventListener('DOMContentLoaded', function () {
+            const firstMethod = document.querySelector('.payment-method');
+            if (firstMethod) {
+                firstMethod.classList.add('active');
+            }
+            document.querySelectorAll('.form-group').forEach((group, index) => {
+                group.style.animationDelay = `${index * 0.08}s`;
                 group.classList.add('fade-in');
             });
+            updateTotals();
         });
     </script>
 
-    <!-- Collapsible Sidebar Script -->
-    <script src="js/collapsible-sidebar.js"></script>
     <script src="js/share.js"></script>
 </body>
 </html>
