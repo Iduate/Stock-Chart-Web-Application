@@ -75,7 +75,7 @@
                     <i class="fas fa-share-alt"></i>
                     공유하기
                 </button>
-                <button class="primary-btn" type="button">
+                <button class="primary-btn" type="button" id="openPortalTop">
                     <i class="fas fa-handshake"></i>
                     파트너 포털 열기
                 </button>
@@ -89,11 +89,11 @@
                     <h2 class="hero-title">StockChart와 함께 성장하세요</h2>
                     <p class="hero-subtitle">전문 투자 커뮤니티와 함께 브랜드를 확장하고, 추천 수익과 공동 마케팅 혜택을 누려보세요. 전담 매니저가 캠페인을 설계해드립니다.</p>
                     <div class="partner-actions">
-                        <button class="action-btn primary">
+                        <button class="action-btn primary" type="button" id="openApplication">
                             <i class="fas fa-rocket"></i>
                             파트너 신청하기
                         </button>
-                        <button class="action-btn secondary">
+                        <button class="action-btn secondary" type="button" id="openDashboard">
                             <i class="fas fa-gauge-high"></i>
                             파트너 대시보드
                         </button>
@@ -129,6 +129,222 @@
 
             <div class="page-grid partner-grid">
                 <div class="page-main-column">
+                    <section class="section-card" id="authNotice" style="display:none;">
+                        <header class="section-header">
+                            <div>
+                                <h2>로그인이 필요합니다</h2>
+                                <p>파트너 포털은 회원에게만 제공됩니다. 로그인 후 다시 시도해주세요.</p>
+                            </div>
+                        </header>
+                        <div class="info-banner">
+                            <i class="fas fa-lock"></i>
+                            <div>
+                                <p>아직 계정이 없다면 빠르게 가입한 뒤 파트너 신청서를 제출할 수 있습니다.</p>
+                                <p style="margin-top:8px;">상단의 로그인 버튼을 사용하거나 고객 성공팀에 문의하세요.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section-card" id="applicationSection" style="display:none;">
+                        <header class="section-header">
+                            <div>
+                                <h2>파트너 신청</h2>
+                                <p>필수 정보를 입력하면 1영업일 내 담당 매니저가 검토합니다.</p>
+                            </div>
+                            <span class="section-chip">STEP 1</span>
+                        </header>
+                        <form class="partner-form billing-form" id="partnerApplicationForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="partnerCompany">회사명</label>
+                                    <input type="text" id="partnerCompany" name="company_name" placeholder="예: 스탁 인사이트" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="partnerPhone">연락처</label>
+                                    <input type="tel" id="partnerPhone" name="phone_number" placeholder="010-0000-0000" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="partnerBizReg">사업자등록번호 (선택)</label>
+                                    <input type="text" id="partnerBizReg" name="business_registration" placeholder="123-45-67890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="partnerWebsite">웹사이트</label>
+                                    <input type="url" id="partnerWebsite" name="website" placeholder="https://example.com">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="partnerInstagram">인스타그램</label>
+                                    <input type="text" id="partnerInstagram" placeholder="@stockchart">
+                                </div>
+                                <div class="form-group">
+                                    <label for="partnerYoutube">유튜브</label>
+                                    <input type="text" id="partnerYoutube" placeholder="https://youtube.com/...">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="partnerBlog">블로그/기타</label>
+                                    <input type="text" id="partnerBlog" placeholder="https://blog.naver.com/...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="partnerBank">정산 은행</label>
+                                    <input type="text" id="partnerBank" placeholder="은행명">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="partnerAccount">정산 계좌번호</label>
+                                    <input type="text" id="partnerAccount" placeholder="000000-00-000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="partnerAccountHolder">예금주</label>
+                                    <input type="text" id="partnerAccountHolder" placeholder="홍길동">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1 1 100%;">
+                                    <label for="partnerNotes">추가 메모</label>
+                                    <textarea id="partnerNotes" rows="3" placeholder="진행 중인 캠페인, 주요 채널 등"></textarea>
+                                </div>
+                            </div>
+                            <button class="primary-btn" type="submit" id="submitApplication">
+                                <i class="fas fa-paper-plane"></i>
+                                신청서 제출
+                            </button>
+                            <p class="form-helper" id="applicationFeedback" style="margin-top:12px;"></p>
+                        </form>
+                    </section>
+
+                    <section class="section-card" id="pendingSection" style="display:none;">
+                        <header class="section-header">
+                            <div>
+                                <h2>승인 검토 중</h2>
+                                <p>담당자가 서류를 확인하고 있으며 곧 파트너 포털 접근 권한이 열립니다.</p>
+                            </div>
+                            <span class="section-chip warning">PENDING</span>
+                        </header>
+                        <div class="info-banner">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div>
+                                <p>추가 자료가 필요하면 등록하신 연락처로 안내드릴 예정입니다.</p>
+                                <p style="margin-top:8px;">정산 은행 정보나 포트폴리오 링크를 업데이트해야 한다면 고객 성공팀에 공유해주세요.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section-card" id="dashboardSection" style="display:none;">
+                        <header class="section-header">
+                            <div>
+                                <h2>파트너 대시보드</h2>
+                                <p>실적, 추천 링크, 수수료 현황을 한 번에 확인하세요.</p>
+                            </div>
+                            <span class="section-chip success" id="partnerStatusBadge">ACTIVE</span>
+                        </header>
+                        <div class="dashboard-summary" id="partnerSummary">
+                            <div class="summary-card">
+                                <span class="summary-label">파트너 코드</span>
+                                <strong id="summaryPartnerCode">-</strong>
+                                <button class="ghost-btn small" id="copyPartnerCode"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="summary-card">
+                                <span class="summary-label">30일 클릭</span>
+                                <strong id="summaryClicks">0</strong>
+                            </div>
+                            <div class="summary-card">
+                                <span class="summary-label">30일 전환</span>
+                                <strong id="summaryConversions">0</strong>
+                            </div>
+                            <div class="summary-card">
+                                <span class="summary-label">미지급 수수료</span>
+                                <strong id="summaryPending">0</strong>
+                            </div>
+                        </div>
+                        <div class="dashboard-actions">
+                            <button class="ghost-btn" id="requestPayout">
+                                <i class="fas fa-won-sign"></i>
+                                수수료 지급 요청
+                            </button>
+                            <button class="ghost-btn" id="refreshDashboard">
+                                <i class="fas fa-rotate"></i>
+                                새로고침
+                            </button>
+                        </div>
+                        <div class="dashboard-panels">
+                            <section class="panel" id="linkPanel">
+                                <header>
+                                    <h3>추천 링크</h3>
+                                    <button class="ghost-btn small" id="toggleLinkForm"><i class="fas fa-plus"></i> 새 링크</button>
+                                </header>
+                                <form class="inline-form" id="newLinkForm" style="display:none;">
+                                    <input type="text" id="newLinkName" placeholder="캠페인명 (예: 카카오 채널)" required>
+                                    <input type="url" id="newLinkTarget" placeholder="타겟 URL" required>
+                                    <input type="text" id="newLinkUTMSource" placeholder="utm_source">
+                                    <input type="text" id="newLinkUTMMedium" placeholder="utm_medium">
+                                    <input type="text" id="newLinkUTMCampaign" placeholder="utm_campaign">
+                                    <button class="primary-btn" type="submit">생성</button>
+                                </form>
+                                <table class="data-table" id="linksTable">
+                                    <thead>
+                                        <tr>
+                                            <th>이름</th>
+                                            <th>URL</th>
+                                            <th>클릭</th>
+                                            <th>전환</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+
+                            <section class="panel" id="commissionPanel">
+                                <header>
+                                    <h3>수수료 내역</h3>
+                                </header>
+                                <table class="data-table" id="commissionTable">
+                                    <thead>
+                                        <tr>
+                                            <th>일자</th>
+                                            <th>유형</th>
+                                            <th>금액</th>
+                                            <th>상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+
+                            <section class="panel" id="performancePanel">
+                                <header>
+                                    <h3>최근 12개월 성과</h3>
+                                </header>
+                                <table class="data-table" id="performanceTable">
+                                    <thead>
+                                        <tr>
+                                            <th>기간</th>
+                                            <th>클릭</th>
+                                            <th>전환</th>
+                                            <th>매출</th>
+                                            <th>수수료</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </section>
+
+                            <section class="panel" id="materialPanel">
+                                <header>
+                                    <h3>홍보 자료</h3>
+                                </header>
+                                <div class="material-grid" id="materialsGrid"></div>
+                            </section>
+                        </div>
+                        <p class="form-helper" id="dashboardFeedback" style="margin-top:16px;"></p>
+                    </section>
+
                     <section class="section-card partner-benefits">
                         <header class="section-header">
                             <div>
@@ -318,19 +534,19 @@
                         </header>
                         <div class="stat-item">
                             <span>추천 회원 수</span>
-                            <span>0명</span>
+                            <span id="statReferrals">-</span>
                         </div>
                         <div class="stat-item">
                             <span>이번 달 수익</span>
-                            <span>₩0</span>
+                            <span id="statMonthlyCommission">-</span>
                         </div>
                         <div class="stat-item">
                             <span>총 누적 수익</span>
-                            <span>₩0</span>
+                            <span id="statTotalCommission">-</span>
                         </div>
                         <div class="stat-item">
                             <span>전환율</span>
-                            <span>0%</span>
+                            <span id="statConversionRate">-</span>
                         </div>
                     </section>
 
@@ -341,9 +557,9 @@
                                 <p>모바일에서도 동일하게 사용할 수 있습니다.</p>
                             </div>
                         </header>
-                        <button class="btn-action">추천 링크 복사</button>
-                        <button class="btn-action secondary">마케팅 자료 다운로드</button>
-                        <button class="btn-action secondary">수익 내역 보기</button>
+                        <button class="btn-action" id="quickCopyLink">추천 링크 복사</button>
+                        <button class="btn-action secondary" id="quickMaterials">마케팅 자료 보기</button>
+                        <button class="btn-action secondary" id="quickCommissions">수익 내역 보기</button>
                     </section>
 
                     <section class="section-card partner-tips">
@@ -416,40 +632,7 @@
         </a>
     </nav>
 
-    <script>
-        document.querySelector('.action-btn.primary').addEventListener('click', function () {
-            alert('파트너 신청 페이지로 이동합니다. 곧 신청 양식이 준비될 예정입니다.');
-        });
-
-        document.querySelector('.action-btn.secondary').addEventListener('click', function () {
-            alert('파트너 로그인이 필요합니다. 로그인 페이지로 이동합니다.');
-        });
-
-        document.querySelectorAll('.btn-action').forEach(button => {
-            button.addEventListener('click', function () {
-                const action = this.textContent;
-
-                if (action.includes('링크 복사')) {
-                    navigator.clipboard.writeText('https://stockchart.com/ref/user123')
-                        .then(() => alert('추천 링크가 클립보드에 복사되었습니다!'))
-                        .catch(() => alert('링크 복사에 실패했습니다.'));
-                } else if (action.includes('마케팅 자료')) {
-                    alert('마케팅 자료 다운로드를 시작합니다.');
-                } else if (action.includes('수익 내역')) {
-                    alert('수익 내역 페이지로 이동합니다.');
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const cards = document.querySelectorAll('.benefit-card, .story-card, .step');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-                card.classList.add('fade-in');
-            });
-        });
-    </script>
-
     <script src="js/share.js"></script>
+    <script src="js/partners.js"></script>
 </body>
 </html>

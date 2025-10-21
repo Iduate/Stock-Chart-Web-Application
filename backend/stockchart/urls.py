@@ -37,6 +37,8 @@ urlpatterns = [
     path('buy-crypto.html', views.serve_html_page, {'page_name': 'buy-crypto.html'}, name='buy_crypto_page'),
     path('payment-success.html', views.serve_html_page, {'page_name': 'payment-success.html'}, name='payment_success_page'),
     path('payment-cancel.html', views.serve_html_page, {'page_name': 'payment-cancel.html'}, name='payment_cancel_page'),
+    path('privacy-policy.html', views.serve_html_page, {'page_name': 'privacy-policy.html'}, name='privacy_policy_page'),
+    path('terms-of-service.html', views.serve_html_page, {'page_name': 'terms-of-service.html'}, name='tos_page'),
     path('partners.html', views.serve_html_page, {'page_name': 'partners.html'}, name='partners_page'),  # 파트너 페이지 추가
     path('index.html', views.serve_html_page, {'page_name': 'index.html'}, name='index_page'),
     

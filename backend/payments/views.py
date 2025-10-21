@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -282,9 +283,24 @@ class PaymentViewSet(viewsets.ModelViewSet):
             logger.error(f"Failed creating commission transaction: {e}")
 
 
+class MoonPayStatusView(APIView):
+    """Lightweight endpoint for the frontend to detect MoonPay configuration."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        configured = bool(getattr(settings, 'MOONPAY_API_KEY', '') and getattr(settings, 'MOONPAY_SECRET_KEY', ''))
+        sandbox = bool(getattr(settings, 'MOONPAY_SANDBOX', True))
+        return Response({
+            'configured': configured,
+            'sandbox': sandbox
+        })
+
+
 class MoonPayOnRampInitView(viewsets.ViewSet):
     """Create a signed MoonPay buy URL and return it to the frontend"""
-    permission_classes = [IsAuthenticated]
+    # AllowAny so external testers (e.g., boss) can start MoonPay without logging in.
+    # If authenticated, we still attach the user to downstream records where relevant.
+    permission_classes = [AllowAny]
 
     def create(self, request):
         if not settings.MOONPAY_API_KEY or not settings.MOONPAY_SECRET_KEY:

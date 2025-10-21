@@ -43,6 +43,6 @@ class TokenAuthenticationMiddleware(MiddlewareMixin):
             except Exception:
                 pass
         
-        # If no valid token found, keep the user as anonymous (but not for admin URLs)
-        request.user = AnonymousUser()
+        # Otherwise leave request.user as assigned by SessionAuthentication
+        # (do not force AnonymousUser which would override logged-in sessions)
         return None

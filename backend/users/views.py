@@ -53,6 +53,8 @@ class LoginView(APIView):
             user = None
             
         if user and user.is_active:
+            # Ensure Django session-based authentication is active
+            login(request, user)
             # Generate session token (simplified - in production use proper JWT)
             token = str(uuid.uuid4())
             
@@ -190,9 +192,12 @@ class GoogleOAuthView(APIView):
                 'message': '사용자 생성에 실패했습니다.'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        # Generate a token for the user
+        # Log the user in to enable SessionAuthentication and set a token for compatibility
         import uuid
+        login(request, user)
         token = str(uuid.uuid4())
+        request.session['auth_token'] = token
+        request.session['user_id'] = user.id
         
         # Return user data and token
         return Response({

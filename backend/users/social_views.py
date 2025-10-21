@@ -155,6 +155,11 @@ class SocialAuthCallbackView(APIView):
             
             # 사용자 인증
             user, created = SocialAuthManager.authenticate_user(auth_result['login_attempt'])
+            # Ensure Django session is established for SessionAuthentication
+            try:
+                login(request, user)
+            except Exception:
+                pass
             
             # 소셜 로그인 세션 생성 (모델 필드에 맞게 생성)
             token_data = auth_result.get('token_data', {})
