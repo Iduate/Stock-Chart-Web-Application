@@ -54,6 +54,32 @@
       const errBox = document.getElementById('buyError');
       if (errBox) errBox.textContent='';
       try{
+        // First check availability for the chosen region/amount to avoid 'coming soon' page
+        try{
+          const availability = await fetch(`/api/payments/onramp/moonpay/available/?crypto=${encodeURIComponent(crypto)}&fiat=${encodeURIComponent(fiat)}&amount=${encodeURIComponent(amount)}`);
+          const availJson = await availability.json().catch(() => ({}));
+          if (!availability.ok || !availJson.available){
+            const errBox = document.getElementById('buyError');
+            let message = availJson.body || availJson.reason || availJson.error || '이 지역에서는 현재 지원하지 않습니다.';
+            // If MoonPay provides structured info, show friendly instruction
+            if (availJson.moonpay){
+              const mp = availJson.moonpay;
+              if (mp.moonPayErrorCode || mp.message){
+                message = `MoonPay: ${mp.moonPayErrorCode || ''} ${mp.message || ''}`.trim();
+              }
+              // If on-ramp disabled in live, prompt to use sandbox or contact support
+              if (mp.message && mp.message.includes('On-Ramp is not yet enabled')){
+                message += ' — 실시간 온램프가 활성화되어 있지 않습니다. Sandbox 테스트를 사용하거나 MoonPay 지원(team@moonpay.com)으로 연락하세요.';
+              }
+            }
+            if (errBox) errBox.textContent = '지원 불가: ' + message;
+            return;
+          }
+        }catch(e){
+          // if the availability call fails, continue and let the main call handle errors
+          console.warn('Availability check failed, proceeding to init', e);
+        }
+
         const res = await fetch('/api/payments/onramp/moonpay/init/',{
           method:'POST',
           headers:{

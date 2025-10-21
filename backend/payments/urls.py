@@ -5,7 +5,7 @@ from .international_views import (
     InternationalPaymentViewSet, ExchangeRateViewSet,
     PaymentStatsView, PaymentWebhookView
 )
-from .views import MoonPayOnRampInitView, MoonPayOnRampCallbackView, paypal_webhook, MoonPayStatusView
+from .views import MoonPayOnRampInitView, MoonPayOnRampCallbackView, paypal_webhook, MoonPayStatusView, MoonPayAvailabilityView
 
 router = DefaultRouter()
 router.register(r'plans', views.PaymentPlanViewSet)
@@ -32,4 +32,5 @@ urlpatterns = [
     path('onramp/moonpay/init/', MoonPayOnRampInitView.as_view({'post': 'create'}), name='moonpay_onramp_init'),
     path('onramp/moonpay/callback/', MoonPayOnRampCallbackView.as_view({'get': 'list'}), name='moonpay_onramp_callback'),
     path('onramp/moonpay/status/', MoonPayStatusView.as_view(), name='moonpay_status'),
+    path('onramp/moonpay/available/', MoonPayAvailabilityView.as_view(), name='moonpay_availability'),
 ]

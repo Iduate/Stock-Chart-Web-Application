@@ -12,6 +12,7 @@ from payments.serializers import PaymentSerializer, PaymentPlanSerializer, Coupo
 from payments.models import Coupon
 from payments.paypal_utils import create_paypal_order, capture_paypal_order
 from decimal import Decimal
+import requests
 import uuid
 import json
 import logging
@@ -349,6 +350,55 @@ class MoonPayOnRampInitView(viewsets.ViewSet):
         return Response({
             'url': signed_url
         })
+
+
+class MoonPayAvailabilityView(APIView):
+    """Server-side availability check using MoonPay quote endpoint.
+    Returns available:true if MoonPay responds with a quote for the parameters.
+    Useful to avoid redirecting users to a 'coming soon to your region' page.
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        if not settings.MOONPAY_API_KEY:
+            return Response({'available': False, 'reason': 'not_configured'})
+
+        crypto = (request.GET.get('crypto') or 'BTC').lower()
+        fiat = (request.GET.get('fiat') or 'USD').upper()
+        amount = request.GET.get('amount') or '1'
+
+        url = f'https://api.moonpay.com/v3/currencies/{crypto}/quote'
+        params = {
+            'baseCurrencyAmount': amount,
+            'baseCurrencyCode': fiat,
+            'apiKey': settings.MOONPAY_API_KEY,
+            'areFeesIncluded': 'true'
+        }
+
+        try:
+            r = requests.get(url, params=params, timeout=10)
+            if r.status_code == 200:
+                return Response({'available': True})
+            else:
+                # Try to parse common error reasons into a short message
+                body = r.text or ''
+                reason = ''
+                if r.status_code == 400 and 'region' in body.lower():
+                    reason = 'region_unsupported'
+                elif r.status_code == 400 and 'amount' in body.lower():
+                    reason = 'invalid_amount'
+                else:
+                    reason = 'error'
+                # Try to parse JSON error from MoonPay
+                parsed = None
+                try:
+                    parsed = r.json()
+                except Exception:
+                    parsed = None
+                return Response({'available': False, 'status': r.status_code, 'reason': reason, 'body': body, 'moonpay': parsed})
+        except Exception as e:
+            logger.error(f'MoonPay availability check failed: {e}')
+            return Response({'available': False, 'reason': 'request_failed', 'error': str(e)})
 
 
 class MoonPayOnRampCallbackView(viewsets.ViewSet):
