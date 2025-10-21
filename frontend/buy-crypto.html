@@ -12,6 +12,7 @@
     .buy-grid label{font-size:12px;color:#a8b3c7;margin-bottom:6px;display:block}
     .buy-grid input,.buy-grid select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#0f1730;color:#eaf2ff}
     .buy-actions{margin-top:16px;display:flex;gap:12px}
+    .error-text{color:#ff7a8a;font-size:12px;margin-top:8px}
   </style>
   <script>
     async function getAccessTokenFromCookies() {
@@ -39,11 +40,19 @@
         // non-fatal; continue
       }
 
-      const crypto = document.getElementById('crypto').value;
-      const fiat = document.getElementById('fiat').value;
-      const amount = document.getElementById('amount').value;
+      const crypto = document.getElementById('crypto').value.toUpperCase();
+      const fiat = (document.getElementById('fiat').value || 'USD').toUpperCase();
+      const amountRaw = document.getElementById('amount').value;
+      const amount = parseFloat(amountRaw);
+      if (isNaN(amount) || amount <= 0) {
+        const errBox = document.getElementById('buyError');
+        if (errBox) errBox.textContent = '올바른 금액을 입력하세요.';
+        return;
+      }
       const wallet = document.getElementById('wallet').value.trim();
       const body = { crypto, fiat, amount, wallet_address: wallet || undefined };
+      const errBox = document.getElementById('buyError');
+      if (errBox) errBox.textContent='';
       try{
         const res = await fetch('/api/payments/onramp/moonpay/init/',{
           method:'POST',
@@ -53,14 +62,22 @@
           },
           body: JSON.stringify(body)
         });
-        const data = await res.json().catch(() => ({}));
+        let data = {};
+        try { data = await res.json(); } catch (e) { data = {}; }
         if(!res.ok || !data.url){
-          throw new Error(data.error || data.detail || '요청 실패');
+          // Try to extract text error for better visibility
+          let textMsg = '';
+          try { textMsg = await res.text(); } catch {}
+          const msg = data.error || data.detail || textMsg || '요청 실패';
+          if (errBox) errBox.textContent = '오류: ' + msg;
+          throw new Error(msg);
         }
         window.location.href = data.url;
       }catch(e){
         console.error(e);
-        alert('구매 시작 중 오류가 발생했습니다: ' + e.message);
+        if (!document.getElementById('buyError')){
+          alert('구매 시작 중 오류가 발생했습니다: ' + e.message);
+        }
       }
     }
     // simple success/cancel markers
@@ -87,6 +104,27 @@
         alert('결제가 완료되었을 수 있습니다. MoonPay 영수증을 확인해주세요.');
       } else if (location.pathname.endsWith('/payment-cancel.html')){
         alert('결제가 취소되었습니다.');
+      }
+    });
+    // Bind click handler without inline attribute (CSP safe)
+    document.addEventListener('DOMContentLoaded', function(){
+      const btn = document.getElementById('buyWithCardBtn');
+      if (btn){
+        btn.addEventListener('click', async function(){
+          // simple loading guard
+          if (btn.getAttribute('data-loading') === '1') return;
+          const original = btn.innerHTML;
+          btn.setAttribute('data-loading', '1');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+          try {
+            await startMoonPay();
+          } finally {
+            btn.removeAttribute('data-loading');
+            btn.disabled = false;
+            btn.innerHTML = original;
+          }
+        });
       }
     });
   </script>
@@ -125,9 +163,11 @@
     </div>
 
     <div class="buy-actions">
-      <button class="btn-predict" onclick="startMoonPay()"><i class="fas fa-credit-card"></i> 카드로 구매하기</button>
+  <button id="buyWithCardBtn" class="btn-predict"><i class="fas fa-credit-card"></i> 카드로 구매하기</button>
       <a class="btn-secondary" href="/index.html">돌아가기</a>
     </div>
+
+    <div id="buyError" class="error-text" role="alert" aria-live="polite"></div>
 
     <p style="margin-top:10px;color:#a8b3c7;font-size:12px">고지: 구매는 제3자 제공업체(MoonPay)를 통해 처리되며, KYC가 필요할 수 있습니다.</p>
   </div>

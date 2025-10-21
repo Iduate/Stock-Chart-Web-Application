@@ -301,6 +301,7 @@ class MoonPayOnRampInitView(viewsets.ViewSet):
     # AllowAny so external testers (e.g., boss) can start MoonPay without logging in.
     # If authenticated, we still attach the user to downstream records where relevant.
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def create(self, request):
         if not settings.MOONPAY_API_KEY or not settings.MOONPAY_SECRET_KEY:
@@ -309,8 +310,8 @@ class MoonPayOnRampInitView(viewsets.ViewSet):
         base_url = 'https://buy-sandbox.moonpay.com' if settings.MOONPAY_SANDBOX else 'https://buy.moonpay.com'
 
         # Inputs
-        crypto_currency_code = request.data.get('crypto', 'BTC')  # e.g., BTC or ETH
-        fiat_currency_code = request.data.get('fiat', 'USD')
+        crypto_currency_code = (request.data.get('crypto', 'BTC') or 'BTC').upper()  # e.g., BTC or ETH
+        fiat_currency_code = (request.data.get('fiat', 'USD') or 'USD').upper()
         fiat_amount = request.data.get('amount')  # optional
         wallet_address = request.data.get('wallet_address')  # optional; if omitted, MoonPay collects it
 
@@ -326,7 +327,13 @@ class MoonPayOnRampInitView(viewsets.ViewSet):
         if wallet_address:
             params['walletAddress'] = wallet_address
         if fiat_amount:
-            params['baseCurrencyAmount'] = str(fiat_amount)
+            # Ensure the amount is numeric and formatted appropriately (MoonPay expects numeric string)
+            try:
+                amt = float(fiat_amount)
+                # MoonPay expects amounts in decimal form, avoid scientific notation
+                params['baseCurrencyAmount'] = ('%.2f' % amt).rstrip('0').rstrip('.')
+            except Exception:
+                params['baseCurrencyAmount'] = str(fiat_amount)
 
         # Sign the URL
         query = urlencode(sorted(params.items()))
