@@ -291,9 +291,15 @@ class MoonPayStatusView(APIView):
     def get(self, request):
         configured = bool(getattr(settings, 'MOONPAY_API_KEY', '') and getattr(settings, 'MOONPAY_SECRET_KEY', ''))
         sandbox = bool(getattr(settings, 'MOONPAY_SANDBOX', True))
+        # Small helper to infer key mode for easier troubleshooting
+        api_key = getattr(settings, 'MOONPAY_API_KEY', '') or ''
+        key_mode = 'test' if api_key.startswith('pk_test_') else ('live' if api_key.startswith('pk_live_') else 'unknown')
+        key_mode_mismatch = (sandbox and key_mode == 'live') or ((not sandbox) and key_mode == 'test')
         return Response({
             'configured': configured,
-            'sandbox': sandbox
+            'sandbox': sandbox,
+            'key_mode': key_mode,
+            'key_mode_mismatch': key_mode_mismatch,
         })
 
 
@@ -367,7 +373,10 @@ class MoonPayAvailabilityView(APIView):
         fiat = (request.GET.get('fiat') or 'USD').upper()
         amount = request.GET.get('amount') or '1'
 
-        url = f'https://api.moonpay.com/v3/currencies/{crypto}/quote'
+        # Respect sandbox/live setting. Previously this always hit live API which
+        # causes "On-Ramp is not yet enabled for live use" even in sandbox mode.
+        base_api = 'https://api-sandbox.moonpay.com' if getattr(settings, 'MOONPAY_SANDBOX', True) else 'https://api.moonpay.com'
+        url = f'{base_api}/v3/currencies/{crypto}/quote'
         params = {
             'baseCurrencyAmount': amount,
             'baseCurrencyCode': fiat,
@@ -383,6 +392,7 @@ class MoonPayAvailabilityView(APIView):
                 # Try to parse common error reasons into a short message
                 body = r.text or ''
                 reason = ''
+                switch_to_sandbox = False
                 if r.status_code == 400 and 'region' in body.lower():
                     reason = 'region_unsupported'
                 elif r.status_code == 400 and 'amount' in body.lower():
@@ -395,7 +405,27 @@ class MoonPayAvailabilityView(APIView):
                     parsed = r.json()
                 except Exception:
                     parsed = None
-                return Response({'available': False, 'status': r.status_code, 'reason': reason, 'body': body, 'moonpay': parsed})
+                # Detect common live-mode error when account isn't enabled yet
+                try:
+                    code = (parsed or {}).get('code') or (parsed or {}).get('errorCode') or ''
+                    msg = (parsed or {}).get('message') or ''
+                    if isinstance(msg, dict):
+                        msg = msg.get('message', '')
+                    text = f"{code} {msg}".lower()
+                    if 'not yet enabled for live use' in text:
+                        reason = 'live_not_enabled'
+                        switch_to_sandbox = True
+                except Exception:
+                    pass
+
+                return Response({
+                    'available': False,
+                    'status': r.status_code,
+                    'reason': reason,
+                    'switch_to_sandbox': switch_to_sandbox,
+                    'body': body,
+                    'moonpay': parsed,
+                })
         except Exception as e:
             logger.error(f'MoonPay availability check failed: {e}')
             return Response({'available': False, 'reason': 'request_failed', 'error': str(e)})
