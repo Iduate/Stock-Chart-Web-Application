@@ -148,6 +148,64 @@
 				"payments"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Django system check (workspace venv, cwd backend)",
+			"type": "shell",
+			"command": "cd backend; \"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"check"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Django migrate (workspace venv, cwd backend)",
+			"type": "shell",
+			"command": "cd backend; \"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"migrate",
+				"--noinput"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Django system check (workspace venv, cwd backend)",
+			"type": "shell",
+			"command": "cd backend; \"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"check"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Django Development Server (workspace venv)",
+			"type": "shell",
+			"command": "\"C:/Users/DAVID IDUATE/Desktop/KOREAN STOCK WEBSITE/Stock-Chart-Web-Application/.venv/Scripts/python.exe\"",
+			"args": [
+				"manage.py",
+				"runserver",
+				"0.0.0.0:8000"
+			],
+			"isBackground": true,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
 		}
 	]
 }

@@ -13,138 +13,88 @@
     .buy-grid input,.buy-grid select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#0f1730;color:#eaf2ff}
     .buy-actions{margin-top:16px;display:flex;gap:12px}
     .error-text{color:#ff7a8a;font-size:12px;margin-top:8px}
+    /* Modal iframe for embedded provider */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
+    .modal{width:min(1000px,95vw);height:min(700px,90vh);background:#0b1224;border:1px solid rgba(255,255,255,.12);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal-header h3{margin:0;font-size:14px;color:#eaf2ff}
+    .modal-close{background:transparent;border:0;color:#a8b3c7;font-size:16px;cursor:pointer}
+    .modal-body{flex:1;}
+    .modal-body iframe{width:100%;height:100%;border:0;background:#0b1224}
+    .hidden{display:none}
   </style>
   <script>
-    async function getAccessTokenFromCookies() {
-      const m = document.cookie.match(/(?:^|;\s*)sc_access=([^;]+)/);
-      return m ? decodeURIComponent(m[1]) : null;
-    }
-
-    async function ensureAuth() {
-      const ls = localStorage.getItem('access_token');
-      const cookieToken = await getAccessTokenFromCookies();
-      return ls || cookieToken;
-    }
-
-    async function startMoonPay(){
-      const access = await ensureAuth();
-      // Check MoonPay status before trying
-      try{
-        const st = await fetch('/api/payments/onramp/moonpay/status/');
-        const stJson = await st.json().catch(() => ({}));
-        if (!st.ok || !stJson.configured){
-          alert('코인 결제 설정이 아직 완료되지 않았습니다. 관리자에게 문의해주세요.');
-          return;
-        }
-      }catch{
-        // non-fatal; continue
-      }
-
+    async function startChangeNOW(){
       const crypto = document.getElementById('crypto').value.toUpperCase();
       const fiat = (document.getElementById('fiat').value || 'USD').toUpperCase();
       const amountRaw = document.getElementById('amount').value;
       const amount = parseFloat(amountRaw);
+      const errBox = document.getElementById('buyError');
+      if (errBox) errBox.textContent = '';
       if (isNaN(amount) || amount <= 0) {
-        const errBox = document.getElementById('buyError');
         if (errBox) errBox.textContent = '올바른 금액을 입력하세요.';
         return;
       }
       const wallet = document.getElementById('wallet').value.trim();
-      const body = { crypto, fiat, amount, wallet_address: wallet || undefined };
-      const errBox = document.getElementById('buyError');
-      if (errBox) errBox.textContent='';
-      try{
-        // First check availability for the chosen region/amount to avoid 'coming soon' page
-        try{
-          const availability = await fetch(`/api/payments/onramp/moonpay/available/?crypto=${encodeURIComponent(crypto)}&fiat=${encodeURIComponent(fiat)}&amount=${encodeURIComponent(amount)}`);
-          const availJson = await availability.json().catch(() => ({}));
-          if (!availability.ok || !availJson.available){
-            const errBox = document.getElementById('buyError');
-            let message = availJson.body || availJson.reason || availJson.error || '이 지역에서는 현재 지원하지 않습니다.';
-            // If MoonPay provides structured info, show friendly instruction
-            if (availJson.moonpay){
-              const mp = availJson.moonpay;
-              if (mp.moonPayErrorCode || mp.message){
-                message = `MoonPay: ${mp.moonPayErrorCode || ''} ${mp.message || ''}`.trim();
-              }
-              // If on-ramp disabled in live, prompt to use sandbox or contact support
-              if (mp.message && mp.message.includes('On-Ramp is not yet enabled')){
-                message += ' — 실시간 온램프가 활성화되어 있지 않습니다. Sandbox 테스트를 사용하거나 MoonPay 지원(team@moonpay.com)으로 연락하세요.';
-              }
-            }
-            if (errBox) errBox.textContent = '지원 불가: ' + message;
-            return;
-          }
-        }catch(e){
-          // if the availability call fails, continue and let the main call handle errors
-          console.warn('Availability check failed, proceeding to init', e);
-        }
-
-        const res = await fetch('/api/payments/onramp/moonpay/init/',{
-          method:'POST',
-          headers:{
-            'Content-Type':'application/json',
-            ...(access ? { 'Authorization': 'Bearer '+access } : {})
-          },
-          body: JSON.stringify(body)
+      // Ask server to construct a ChangeNOW URL (API key kept server-side)
+      let url = '';
+      try {
+        const res = await fetch('/api/payments/changenow/init/', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({crypto, fiat, amount, wallet_address: wallet})
         });
-        let data = {};
-        try { data = await res.json(); } catch (e) { data = {}; }
-        if(!res.ok || !data.url){
-          // Try to extract text error for better visibility
-          let textMsg = '';
-          try { textMsg = await res.text(); } catch {}
-          const msg = data.error || data.detail || textMsg || '요청 실패';
-          if (errBox) errBox.textContent = '오류: ' + msg;
-          throw new Error(msg);
+        const js = await res.json();
+        if (res.ok && js && js.url) {
+          url = js.url;
+        } else {
+          throw new Error(js && js.error ? js.error : '초기화 실패');
         }
-        window.location.href = data.url;
-      }catch(e){
-        console.error(e);
-        if (!document.getElementById('buyError')){
-          alert('구매 시작 중 오류가 발생했습니다: ' + e.message);
-        }
+      } catch (e) {
+        if (errBox) errBox.textContent = '초기화 오류: ' + (e.message || e);
+        return;
       }
+
+      // Embed in modal iframe (ChangeNOW opens fine in iframe or new tab)
+      const overlay = document.getElementById('cnModal');
+      const frame = document.getElementById('cnFrame');
+      frame.src = url;
+      overlay.style.display = 'flex';
+      frame.focus();
     }
-    // simple success/cancel markers
+
     document.addEventListener('DOMContentLoaded', async function(){
-      try{
-        const st = await fetch('/api/payments/onramp/moonpay/status/');
-        const stJson = await st.json().catch(() => ({}));
-        const banner = document.getElementById('statusBanner');
+      // Show provider status
+      const banner = document.getElementById('statusBanner');
+      try {
+        const st = await fetch('/api/payments/changenow/status/');
+        const js = await st.json().catch(() => ({}));
         if (banner){
-          if (!st.ok){
-            banner.textContent = '상태 확인 실패: 서버 연결 문제';
-            banner.classList.add('warning');
-          } else if (!stJson.configured){
-            banner.textContent = '관리자 설정 필요: MOONPAY_API_KEY / SECRET이 비어 있습니다 (샌드박스='+(stJson.sandbox?'예':'아니오')+', 키 모드='+(stJson.key_mode||'unknown')+')';
+          if (!st.ok || !js.configured){
+            banner.textContent = '설정 필요: CHANGENOW_API_KEY 누락';
             banner.classList.add('warning');
           } else {
-            banner.textContent = '코인 결제를 사용할 수 있습니다'+(stJson.sandbox?' (샌드박스)':' (라이브)');
+            banner.textContent = 'ChangeNOW 카드 구매 위젯 사용 중';
             banner.classList.add('ok');
           }
         }
-      }catch{}
-
-      if (location.pathname.endsWith('/payment-success.html')){
-        alert('결제가 완료되었을 수 있습니다. MoonPay 영수증을 확인해주세요.');
-      } else if (location.pathname.endsWith('/payment-cancel.html')){
-        alert('결제가 취소되었습니다.');
+      } catch {
+        if (banner){
+          banner.textContent = '상태 확인 실패: 서버 연결 문제';
+          banner.classList.add('warning');
+        }
       }
-    });
-    // Bind click handler without inline attribute (CSP safe)
-    document.addEventListener('DOMContentLoaded', function(){
+
       const btn = document.getElementById('buyWithCardBtn');
       if (btn){
         btn.addEventListener('click', async function(){
-          // simple loading guard
           if (btn.getAttribute('data-loading') === '1') return;
           const original = btn.innerHTML;
           btn.setAttribute('data-loading', '1');
           btn.disabled = true;
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
           try {
-            await startMoonPay();
+            await startChangeNOW();
           } finally {
             btn.removeAttribute('data-loading');
             btn.disabled = false;
@@ -172,9 +122,6 @@
       <div>
         <label for="fiat">결제 통화</label>
         <select id="fiat">
-                  if (availJson.switch_to_sandbox){
-                    message += ' (힌트: 서버를 샌드박스 모드로 전환하세요)';
-                  }
           <option value="USD">USD</option>
           <option value="EUR">EUR</option>
           <option value="GBP">GBP</option>
@@ -186,8 +133,8 @@
         <input id="amount" type="number" min="20" step="1" placeholder="예: 100" />
       </div>
       <div>
-        <label for="wallet">지갑 주소 (선택)</label>
-        <input id="wallet" type="text" placeholder="입력하지 않으면 MoonPay에서 입력합니다" />
+  <label for="wallet">지갑 주소 (선택)</label>
+  <input id="wallet" type="text" placeholder="입력하지 않으면 결제 페이지에서 입력합니다" />
       </div>
     </div>
 
@@ -198,8 +145,33 @@
 
     <div id="buyError" class="error-text" role="alert" aria-live="polite"></div>
 
-    <p style="margin-top:10px;color:#a8b3c7;font-size:12px">고지: 구매는 제3자 제공업체(MoonPay)를 통해 처리되며, KYC가 필요할 수 있습니다.</p>
+    <p style="margin-top:10px;color:#a8b3c7;font-size:12px">고지: 구매는 제3자 제공업체(ChangeNOW)에서 처리되며, 제공업체 정책에 따라 KYC가 필요할 수 있습니다.</p>
   </div>
+
+  <!-- Embedded ChangeNOW modal -->
+  <div id="cnModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cnTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="cnTitle">ChangeNOW 결제</h3>
+        <button class="modal-close" id="cnClose" aria-label="닫기">✕</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="cnFrame" title="ChangeNOW Checkout" referrerpolicy="no-referrer"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Close modal handlers
+    (function(){
+      const overlay = document.getElementById('cnModal');
+      const closeBtn = document.getElementById('cnClose');
+      function close(){ overlay.style.display='none'; const f=document.getElementById('cnFrame'); if (f) f.src='about:blank'; }
+      closeBtn?.addEventListener('click', close);
+      overlay?.addEventListener('click', (e)=>{ if (e.target===overlay) close(); });
+      window.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay && overlay.style.display==='flex') close(); });
+    })();
+  </script>
 
   <script src="https://kit.fontawesome.com/a2e0e6ad65.js" crossorigin="anonymous"></script>
 </body>

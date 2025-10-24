@@ -342,3 +342,15 @@ AUTH_COOKIE_REFRESH_NAME = config('AUTH_COOKIE_REFRESH_NAME', default='sc_refres
 MOONPAY_API_KEY = config('MOONPAY_API_KEY', default='')
 MOONPAY_SECRET_KEY = config('MOONPAY_SECRET_KEY', default='')
 MOONPAY_SANDBOX = config('MOONPAY_SANDBOX', default=True, cast=bool)
+
+# Fiat-to-crypto on-ramp (Transak)
+# Public API key used in widget/session creation, plus optional webhook secret
+# and environment flag (sandbox or production)
+TRANSAK_API_KEY = config('TRANSAK_API_KEY', default='')
+TRANSAK_WEBHOOK_SECRET = config('TRANSAK_WEBHOOK_SECRET', default='')
+TRANSAK_ENV = config('TRANSAK_ENV', default='sandbox')  # 'sandbox' or 'production'
+
+# Fiat on-ramp (ChangeNOW) – used when integrating ChangeNOW widget/redirect
+CHANGENOW_API_KEY = config('CHANGENOW_API_KEY', default='')
+
+# Deprecated on-ramp integrations have been removed (ChangeNOW/Onramper)

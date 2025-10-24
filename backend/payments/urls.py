@@ -5,7 +5,13 @@ from .international_views import (
     InternationalPaymentViewSet, ExchangeRateViewSet,
     PaymentStatsView, PaymentWebhookView
 )
-from .views import MoonPayOnRampInitView, MoonPayOnRampCallbackView, paypal_webhook, MoonPayStatusView, MoonPayAvailabilityView
+from .views import paypal_webhook
+from .views import (
+    TransakStatusView,
+    TransakInitView,
+    ChangeNOWStatusView,
+    ChangeNOWInitView,
+)
 
 router = DefaultRouter()
 router.register(r'plans', views.PaymentPlanViewSet)
@@ -27,10 +33,11 @@ urlpatterns = [
     # Webhook endpoints
     path('webhook/paypal/', paypal_webhook, name='paypal_webhook'),
     path('webhook/<str:provider>/', PaymentWebhookView.as_view(), name='international-webhook'),
-
-    # Fiat-to-crypto on-ramp (MoonPay)
-    path('onramp/moonpay/init/', MoonPayOnRampInitView.as_view({'post': 'create'}), name='moonpay_onramp_init'),
-    path('onramp/moonpay/callback/', MoonPayOnRampCallbackView.as_view({'get': 'list'}), name='moonpay_onramp_callback'),
-    path('onramp/moonpay/status/', MoonPayStatusView.as_view(), name='moonpay_status'),
-    path('onramp/moonpay/available/', MoonPayAvailabilityView.as_view(), name='moonpay_availability'),
+    # Transak
+    # Transak on-ramp
+    path('transak/status/', TransakStatusView.as_view(), name='transak_status'),
+    path('transak/init/', TransakInitView.as_view({'post': 'create'}), name='transak_init'),
+    # ChangeNOW
+    path('changenow/status/', ChangeNOWStatusView.as_view(), name='changenow_status'),
+    path('changenow/init/', ChangeNOWInitView.as_view({'post': 'create'}), name='changenow_init'),
 ]

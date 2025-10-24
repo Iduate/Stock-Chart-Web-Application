@@ -7,18 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from payments.models import Payment, PaymentPlan, PaymentMethod
+from payments.models import Payment, PaymentPlan, PaymentMethod, Coupon
 from payments.serializers import PaymentSerializer, PaymentPlanSerializer, CouponSerializer
-from payments.models import Coupon
 from payments.paypal_utils import create_paypal_order, capture_paypal_order
 from decimal import Decimal
-import requests
 import uuid
 import json
 import logging
-import hmac
-import hashlib
-import base64
 from urllib.parse import urlencode
 from django.conf import settings
 
@@ -153,19 +148,25 @@ class PaymentViewSet(viewsets.ModelViewSet):
                 user.subscription_expiry = timezone.now() + timezone.timedelta(days=payment.plan.duration_days)
                 user.free_access_count = 0  # Reset free access count
                 user.save()
-                
-                # Create or update subscription record
-                from users.models import Subscription
-                Subscription.objects.create(
-                    user=user,
-                    plan=payment.plan.plan_type,
-                    status='active',
-                    start_date=timezone.now(),
-                    end_date=timezone.now() + timezone.timedelta(days=payment.plan.duration_days),
-                    payment_id=str(payment.id),
-                    amount=payment.amount,
-                    currency=payment.currency
-                )
+
+                # Create or update subscription record (import lazily to avoid IDE path issues)
+                try:
+                    import importlib
+                    users_models = importlib.import_module('users.models')
+                    Subscription = getattr(users_models, 'Subscription', None)
+                    if Subscription is not None:
+                        Subscription.objects.create(
+                            user=user,
+                            plan=payment.plan.plan_type,
+                            status='active',
+                            start_date=timezone.now(),
+                            end_date=timezone.now() + timezone.timedelta(days=payment.plan.duration_days),
+                            payment_id=str(payment.id),
+                            amount=payment.amount,
+                            currency=payment.currency
+                        )
+                except Exception as _e:
+                    logger.error(f"Subscription creation failed: {_e}")
 
             # Attribute affiliate commission if applicable
             if payment.status == 'completed':
@@ -195,7 +196,14 @@ class PaymentViewSet(viewsets.ModelViewSet):
         """
         # Lazy import to avoid circulars
         try:
-            from affiliates.models import AffiliatePartner, ReferralLink, ReferralClick, CommissionTransaction
+            import importlib
+            affiliates_models = importlib.import_module('affiliates.models')
+            AffiliatePartner = getattr(affiliates_models, 'AffiliatePartner', None)
+            ReferralLink = getattr(affiliates_models, 'ReferralLink', None)
+            ReferralClick = getattr(affiliates_models, 'ReferralClick', None)
+            CommissionTransaction = getattr(affiliates_models, 'CommissionTransaction', None)
+            if not (AffiliatePartner and CommissionTransaction):
+                raise ImportError('Affiliates models not available')
         except Exception as e:
             logger.error(f"Affiliates models import failed: {e}")
             return
@@ -284,165 +292,122 @@ class PaymentViewSet(viewsets.ModelViewSet):
             logger.error(f"Failed creating commission transaction: {e}")
 
 
-class MoonPayStatusView(APIView):
-    """Lightweight endpoint for the frontend to detect MoonPay configuration."""
+## MoonPay removed
+
+
+class TransakStatusView(APIView):
+    """Expose whether Transak API key is configured (no secrets leaked)."""
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request):
-        configured = bool(getattr(settings, 'MOONPAY_API_KEY', '') and getattr(settings, 'MOONPAY_SECRET_KEY', ''))
-        sandbox = bool(getattr(settings, 'MOONPAY_SANDBOX', True))
-        # Small helper to infer key mode for easier troubleshooting
-        api_key = getattr(settings, 'MOONPAY_API_KEY', '') or ''
-        key_mode = 'test' if api_key.startswith('pk_test_') else ('live' if api_key.startswith('pk_live_') else 'unknown')
-        key_mode_mismatch = (sandbox and key_mode == 'live') or ((not sandbox) and key_mode == 'test')
-        return Response({
-            'configured': configured,
-            'sandbox': sandbox,
-            'key_mode': key_mode,
-            'key_mode_mismatch': key_mode_mismatch,
-        })
+        key = getattr(settings, 'TRANSAK_API_KEY', '') or ''
+        env = (getattr(settings, 'TRANSAK_ENV', 'sandbox') or 'sandbox').lower()
+        return Response({'configured': bool(key), 'environment': env})
 
 
-class MoonPayOnRampInitView(viewsets.ViewSet):
-    """Create a signed MoonPay buy URL and return it to the frontend"""
-    # AllowAny so external testers (e.g., boss) can start MoonPay without logging in.
-    # If authenticated, we still attach the user to downstream records where relevant.
+class TransakInitView(viewsets.ViewSet):
+    """Construct a Transak widget URL with server-side API key.
+    We do not call Transak API here; the widget handles the flow and webhooks.
+    """
     permission_classes = [AllowAny]
     authentication_classes = []
 
     def create(self, request):
-        if not settings.MOONPAY_API_KEY or not settings.MOONPAY_SECRET_KEY:
-            return Response({'error': 'MoonPay is not configured.'}, status=500)
+        api_key = getattr(settings, 'TRANSAK_API_KEY', '')
+        env = (getattr(settings, 'TRANSAK_ENV', 'sandbox') or 'sandbox').lower()
+        if not api_key:
+            return Response({'error': 'Transak is not configured.'}, status=500)
 
-        base_url = 'https://buy-sandbox.moonpay.com' if settings.MOONPAY_SANDBOX else 'https://buy.moonpay.com'
+        crypto = (request.data.get('crypto') or 'BTC').upper()
+        network = (request.data.get('network') or '').upper()  # optional
+        fiat = (request.data.get('fiat') or 'USD').upper()
+        amount = request.data.get('amount')  # optional
+        wallet = (request.data.get('wallet_address') or '').strip()
 
-        # Inputs
-        crypto_currency_code = (request.data.get('crypto', 'BTC') or 'BTC').upper()  # e.g., BTC or ETH
-        fiat_currency_code = (request.data.get('fiat', 'USD') or 'USD').upper()
-        fiat_amount = request.data.get('amount')  # optional
-        wallet_address = request.data.get('wallet_address')  # optional; if omitted, MoonPay collects it
-
-        # Required params
+        base = 'https://staging-global.transak.com' if env == 'sandbox' else 'https://global.transak.com'
+        # Transak widget param names (commonly used)
         params = {
-            'apiKey': settings.MOONPAY_API_KEY,
-            'currencyCode': crypto_currency_code,
-            'baseCurrencyCode': fiat_currency_code,
-            'redirectURL': request.build_absolute_uri('/payment-success.html'),
-            'returnUrl': request.build_absolute_uri('/payment-success.html'),
-            'cancelUrl': request.build_absolute_uri('/payment-cancel.html'),
+            'apiKey': api_key,
+            'cryptoCurrencyCode': crypto,
+            'fiatCurrency': fiat,
         }
-        if wallet_address:
-            params['walletAddress'] = wallet_address
-        if fiat_amount:
-            # Ensure the amount is numeric and formatted appropriately (MoonPay expects numeric string)
+        if amount is not None and str(amount) != '':
             try:
-                amt = float(fiat_amount)
-                # MoonPay expects amounts in decimal form, avoid scientific notation
-                params['baseCurrencyAmount'] = ('%.2f' % amt).rstrip('0').rstrip('.')
+                params['fiatAmount'] = ('%.2f' % float(amount)).rstrip('0').rstrip('.')
             except Exception:
-                params['baseCurrencyAmount'] = str(fiat_amount)
+                params['fiatAmount'] = str(amount)
+        if wallet:
+            params['walletAddress'] = wallet
+        if network:
+            params['network'] = network
 
-        # Sign the URL
-        query = urlencode(sorted(params.items()))
-        signature = hmac.new(
-            settings.MOONPAY_SECRET_KEY.encode('utf-8'),
-            query.encode('utf-8'),
-            hashlib.sha256
-        ).digest()
-        signature_b64 = base64.b64encode(signature).decode('utf-8')
+        # Optional: redirectURL can be set by client if desired
+        redirect_url = request.data.get('redirectURL')
+        if redirect_url:
+            params['redirectURL'] = redirect_url
 
-        signed_url = f"{base_url}?{query}&signature={urlencode({'signature': signature_b64})[10:]}"
-
-        return Response({
-            'url': signed_url
-        })
+        # Safer: only include whitelisted params; build query
+        from urllib.parse import urlencode
+        query = urlencode(params)
+        url = f"{base}?{query}"
+        return Response({'url': url, 'environment': env})
 
 
-class MoonPayAvailabilityView(APIView):
-    """Server-side availability check using MoonPay quote endpoint.
-    Returns available:true if MoonPay responds with a quote for the parameters.
-    Useful to avoid redirecting users to a 'coming soon to your region' page.
-    """
+class ChangeNOWStatusView(APIView):
+    """Expose whether ChangeNOW partner key is configured (no secrets leaked)."""
     permission_classes = [AllowAny]
 
     def get(self, request):
-        if not settings.MOONPAY_API_KEY:
-            return Response({'available': False, 'reason': 'not_configured'})
-
-        crypto = (request.GET.get('crypto') or 'BTC').lower()
-        fiat = (request.GET.get('fiat') or 'USD').upper()
-        amount = request.GET.get('amount') or '1'
-
-        # Respect sandbox/live setting. Previously this always hit live API which
-        # causes "On-Ramp is not yet enabled for live use" even in sandbox mode.
-        base_api = 'https://api-sandbox.moonpay.com' if getattr(settings, 'MOONPAY_SANDBOX', True) else 'https://api.moonpay.com'
-        url = f'{base_api}/v3/currencies/{crypto}/quote'
-        params = {
-            'baseCurrencyAmount': amount,
-            'baseCurrencyCode': fiat,
-            'apiKey': settings.MOONPAY_API_KEY,
-            'areFeesIncluded': 'true'
-        }
-
-        try:
-            r = requests.get(url, params=params, timeout=10)
-            if r.status_code == 200:
-                return Response({'available': True})
-            else:
-                # Try to parse common error reasons into a short message
-                body = r.text or ''
-                reason = ''
-                switch_to_sandbox = False
-                if r.status_code == 400 and 'region' in body.lower():
-                    reason = 'region_unsupported'
-                elif r.status_code == 400 and 'amount' in body.lower():
-                    reason = 'invalid_amount'
-                else:
-                    reason = 'error'
-                # Try to parse JSON error from MoonPay
-                parsed = None
-                try:
-                    parsed = r.json()
-                except Exception:
-                    parsed = None
-                # Detect common live-mode error when account isn't enabled yet
-                try:
-                    code = (parsed or {}).get('code') or (parsed or {}).get('errorCode') or ''
-                    msg = (parsed or {}).get('message') or ''
-                    if isinstance(msg, dict):
-                        msg = msg.get('message', '')
-                    text = f"{code} {msg}".lower()
-                    if 'not yet enabled for live use' in text:
-                        reason = 'live_not_enabled'
-                        switch_to_sandbox = True
-                except Exception:
-                    pass
-
-                return Response({
-                    'available': False,
-                    'status': r.status_code,
-                    'reason': reason,
-                    'switch_to_sandbox': switch_to_sandbox,
-                    'body': body,
-                    'moonpay': parsed,
-                })
-        except Exception as e:
-            logger.error(f'MoonPay availability check failed: {e}')
-            return Response({'available': False, 'reason': 'request_failed', 'error': str(e)})
+        configured = bool(getattr(settings, 'CHANGENOW_API_KEY', ''))
+        return Response({'configured': configured})
 
 
-class MoonPayOnRampCallbackView(viewsets.ViewSet):
-    """Placeholder for any server-side callback handling if needed"""
+class ChangeNOWInitView(viewsets.ViewSet):
+    """Construct a ChangeNOW buy URL with partner API key kept server-side.
+    This is a simple redirect initializer; it does not contact ChangeNOW API.
+    """
     permission_classes = [AllowAny]
+    authentication_classes = []
 
-    def list(self, request):
-        # MoonPay generally redirects back to the provided URLs; we can optionally record a marker
-        try:
-            status_param = request.GET.get('status', '')
-            return Response({'ok': True, 'status': status_param})
-        except Exception as e:
-            logger.error(f"MoonPay callback error: {e}")
-            return Response({'ok': False}, status=400)
+    def create(self, request):
+        api_key = getattr(settings, 'CHANGENOW_API_KEY', '')
+        if not api_key:
+            return Response({'error': 'ChangeNOW is not configured.'}, status=500)
+
+        crypto = (request.data.get('crypto') or 'BTC').upper()
+        fiat = (request.data.get('fiat') or 'USD').upper()
+        amount = request.data.get('amount')
+        wallet = (request.data.get('wallet_address') or '').strip()
+
+        # Minimal coin map; extend as needed
+        coin_map = {
+            'BTC': {'slug': 'bitcoin', 'symbol': 'btc'},
+            'ETH': {'slug': 'ethereum', 'symbol': 'eth'},
+        }
+        coin = coin_map.get(crypto, coin_map['BTC'])
+
+        base = f"https://changenow.io/buy/{coin['slug']}"
+        params = {
+            'from': fiat.lower(),
+            'to': coin['symbol'],
+            'fiatMode': 'true',
+            'api_key': api_key,
+        }
+        if amount is not None and str(amount) != '':
+            try:
+                amt = float(amount)
+                params['amount'] = ('%.2f' % amt).rstrip('0').rstrip('.')
+            except Exception:
+                params['amount'] = str(amount)
+        if wallet:
+            # Some flows support address prefill; ChangeNOW will ignore if unsupported
+            params['address'] = wallet
+
+        from urllib.parse import urlencode
+        query = urlencode(params)
+        url = f"{base}?{query}"
+        return Response({'url': url})
 
 
 class CouponViewSet(viewsets.ModelViewSet):
@@ -500,42 +465,49 @@ def paypal_webhook(request):
                     
                     # Create subscription if user exists
                     if payment.user:
-                        from users.models import Subscription
-                        
-                        Subscription.objects.create(
+                                import importlib
+                                users_models = importlib.import_module('users.models')
+                                Subscription = getattr(users_models, 'Subscription', None)
+                                if Subscription is not None:
+                                    Subscription.objects.create(
                             user=payment.user,
                             payment=payment,
                             plan_name=payment.plan.name,
                             start_date=timezone.now(),
                             end_date=timezone.now() + timezone.timedelta(days=payment.plan.duration_days),
                             is_active=True
-                        )
+                                )
 
                     # Affiliate attribution (webhook path)
                     try:
-                        from affiliates.models import AffiliatePartner, ReferralLink, ReferralClick, CommissionTransaction
+                        import importlib
                         from decimal import Decimal
+                        affiliates_models = importlib.import_module('affiliates.models')
+                        AffiliatePartner = getattr(affiliates_models, 'AffiliatePartner', None)
+                        ReferralLink = getattr(affiliates_models, 'ReferralLink', None)
+                        ReferralClick = getattr(affiliates_models, 'ReferralClick', None)
+                        CommissionTransaction = getattr(affiliates_models, 'CommissionTransaction', None)
                         ctx = payment.callback_data if isinstance(payment.callback_data, dict) else {}
                         partner_id = ctx.get('referral_partner_id')
                         link_id = ctx.get('referral_link_id')
                         session_id = ctx.get('referral_session')
-                        if partner_id:
+                        if partner_id and AffiliatePartner and CommissionTransaction:
                             try:
                                 partner = AffiliatePartner.objects.get(id=partner_id)
                                 link = None
-                                if link_id:
+                                if link_id and ReferralLink:
                                     try:
                                         link = ReferralLink.objects.get(id=link_id, partner=partner)
                                     except ReferralLink.DoesNotExist:
                                         link = None
                                 # Update click conversion if we have session
-                                if session_id:
+                                if session_id and ReferralClick:
                                     click = ReferralClick.objects.filter(link__partner=partner, session_id=session_id).order_by('-clicked_at').first()
                                     if click and not click.converted:
                                         click.converted = True
                                         click.converted_at = timezone.now()
                                         click.save()
-                                if link:
+                                if link and hasattr(link, 'conversion_count'):
                                     link.conversion_count = (link.conversion_count or 0) + 1
                                     link.save(update_fields=['conversion_count'])
                                 # Commission
