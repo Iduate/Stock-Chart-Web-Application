@@ -24,7 +24,7 @@
     .hidden{display:none}
   </style>
   <script>
-    async function startChangeNOW(){
+  async function startChangeNOW(){
       const crypto = document.getElementById('crypto').value.toUpperCase();
       const fiat = (document.getElementById('fiat').value || 'USD').toUpperCase();
       const amountRaw = document.getElementById('amount').value;
@@ -55,12 +55,27 @@
         return;
       }
 
-      // Embed in modal iframe (ChangeNOW opens fine in iframe or new tab)
-      const overlay = document.getElementById('cnModal');
-      const frame = document.getElementById('cnFrame');
-      frame.src = url;
-      overlay.style.display = 'flex';
-      frame.focus();
+      // Many card providers block iframe embedding (X-Frame-Options). Prefer new tab.
+      try {
+        const popup = window.open(url, '_blank', 'noopener');
+        if (popup) {
+          // Best UX: open in new tab; nothing else to do
+          popup.opener = null;
+          return;
+        }
+      } catch (_) {}
+
+      // Fallbacks: if popup blocked, try full-page redirect. If you prefer modal, 
+      // comment out the next line and keep iframe usage below.
+      window.location.href = url;
+      return;
+
+      // (Optional) Embed in modal iframe as a last resort. Some providers may refuse.
+      // const overlay = document.getElementById('cnModal');
+      // const frame = document.getElementById('cnFrame');
+      // frame.src = url;
+      // overlay.style.display = 'flex';
+      // frame.focus();
     }
 
     document.addEventListener('DOMContentLoaded', async function(){
